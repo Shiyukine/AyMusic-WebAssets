@@ -1,12 +1,8 @@
 import Utils from "../../../class/utils/utils.js";
 import Import from "../../../class/import.js";
 
-export default class loginPanel
+export default class loginPanel extends HTMLDivElement
 {
-    /**
-     * @type {HTMLElement}
-     */
-    #bg = document.createElement("div");
     /**
      * @type {HTMLIFrameElement}
      */
@@ -42,23 +38,20 @@ export default class loginPanel
         })
     }
 
-    constructor(parent, isForModification)
+    constructor(isForModification)
     {
+        super(isForModification);
+        var shadow = this.attachShadow({ mode: "open" })
         this.logged = function () { }
         this.isForModification = isForModification;
-        this.#bg.innerHTML = Import.loadHTML("/ui/components/loginPanel/loginPanel.html")
-        this.#bg.style.width = "100%"
-        this.#bg.style.height = "100%"
-        this.#bg.style.position = "absolute"
-        this.parent = parent
-        this.#iframe = this.#bg.getElementsByClassName("iframe")[0]
-        this.#cache = this.#bg.getElementsByClassName("cache")[0]
-        this.#svg = this.#bg.getElementsByClassName("svg")[0]
-        this.parent.appendChild(this.#bg)
-        this.#bg.getElementsByClassName("cssImport")[0].onload = () =>
+        shadow.innerHTML = Import.loadHTML("/ui/components/loginPanel/loginPanel.html")
+        this.#iframe = this.shadowRoot.getElementById("iframe")
+        this.#cache = this.shadowRoot.getElementById("cache")
+        this.#svg = this.shadowRoot.getElementById("svg")
+        this.shadowRoot.getElementById("cssImport").onload = () =>
         {
-            this.#bg.getElementsByClassName("loginBG")[0].ontransitionend = (ev) => { };
-            this.#bg.getElementsByClassName("loginBG")[0].style = ""
+            this.shadowRoot.getElementById("loginBG").ontransitionend = (ev) => { };
+            this.shadowRoot.getElementById("loginBG").style = ""
         }
         this.#iframe.onload = async (ifr) =>
         {
@@ -82,12 +75,12 @@ export default class loginPanel
                         avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif"
                     }
                     console.log("Welcome " + Utils.actualAccount.name + " on AyMusic !")
-                    this.#bg.getElementsByClassName("loginBG")[0].ontransitionend = (ev) =>
+                    this.shadowRoot.getElementById("loginBG").ontransitionend = (ev) =>
                     {
-                        this.parent.removeChild(this.#bg)
+                        this.shadowRoot.getRootNode().host.parentElement.removeChild(this)
                         this.#eventEl.dispatchEvent(new CustomEvent("logged"));
                     };
-                    this.#bg.getElementsByClassName("loginBG")[0].style.opacity = "0%"
+                    this.shadowRoot.getElementById("loginBG").style.opacity = "0%"
                 }
             }
         })

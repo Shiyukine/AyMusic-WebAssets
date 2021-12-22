@@ -1,12 +1,8 @@
 import Import from "../../../class/import.js";
 import Utils from "../../../class/utils/utils.js";
 
-export default class infoPanel
+export default class infoPanel extends HTMLDivElement
 {
-    /**
-     * @type {HTMLDivElement}
-     */
-    #bg = document.createElement("div");
     /**
      * @type {HTMLElement}
      */
@@ -32,18 +28,16 @@ export default class infoPanel
 
     textReturn = "";
 
-    constructor(parent, text, subtext = null, buttons = null, isloading = false)
+    constructor(text, subtext = null, buttons = null, isloading = false)
     {
-        this.#bg.innerHTML = Import.loadHTML("/ui/components/infoPanel/infoPanel.html")
-        this.#bg.style.width = "100%"
-        this.#bg.style.height = "100%"
-        this.#bg.style.position = "absolute"
-        this.parent = parent
-        this.#textEl = this.#bg.getElementsByClassName("text")[0]
-        this.#subtextEl = this.#bg.getElementsByClassName("subtext")[0]
-        this.#svg = this.#bg.getElementsByClassName("svg")[0]
-        this.#btnList = this.#bg.getElementsByClassName("btnList")[0]
-        this.#progressBar = this.#bg.getElementsByClassName("progressBar")[0]
+        super(text, subtext, buttons, isloading)
+        var shadow = this.attachShadow({ mode: 'open' });
+        shadow.innerHTML = Import.loadHTML("/ui/components/infoPanel/infoPanel.html")
+        this.#textEl = shadow.getElementById("text")
+        this.#subtextEl = shadow.getElementById("subtext")
+        this.#svg = shadow.getElementById("svg")
+        this.#btnList = shadow.getElementById("btnList")
+        this.#progressBar = shadow.getElementById("progressBar")
         this.changeText(text, subtext)
         this.changeloading(isloading)
         if (buttons)
@@ -53,18 +47,17 @@ export default class infoPanel
                 this.addButton(el.text, el.isPositive, el.onclick)
             });
         }
-        this.parent.appendChild(this.#bg)
-        this.#bg.getElementsByClassName("cssImport")[0].onload = () =>
+        this.shadowRoot.getElementById("cssImport").onload = () =>
         {
-            this.#bg.getElementsByClassName("panelInfoBG")[0].ontransitionend = (ev) => { };
-            this.#bg.getElementsByClassName("panelInfoBG")[0].style = ""
+            this.shadowRoot.getElementById("panelInfoBG").ontransitionend = (ev) => { };
+            this.shadowRoot.getElementById("panelInfoBG").style = ""
             this.#loaded = true
         }
     }
 
     show()
     {
-        if (this.#loaded) this.#bg.getElementsByClassName("cssImport")[0].dispatchEvent(new CustomEvent("load"))
+        if (this.#loaded) this.shadowRoot.getElementById("cssImport").dispatchEvent(new CustomEvent("load"))
     }
 
     showDialog()
@@ -72,7 +65,7 @@ export default class infoPanel
         return new Promise(resolve =>
         {
             this.show()
-            this.#bg.style.zIndex = "101"
+            this.style.zIndex = "101"
             setInterval(() =>
             {
                 if (this.textReturn != "")
@@ -108,7 +101,7 @@ export default class infoPanel
             else
             {
                 this.#svg.classList.add("playSVG")
-                this.#bg.getElementsByClassName("panelInfo")[0].insertBefore(this.#bg.getElementsByClassName("panelInfo")[0].firstChild, this.#svg)
+                this.shadowRoot.getElementById("panelInfo").insertBefore(this.shadowRoot.getElementById("panelInfo").firstChild, this.#svg)
             }
         }
         //todo
@@ -116,16 +109,16 @@ export default class infoPanel
 
     hide()
     {
-        this.#bg.getElementsByClassName("panelInfoBG")[0].style.opacity = "0%"
+        this.shadowRoot.getElementById("panelInfoBG").style.opacity = "0%"
     }
 
     close()
     {
-        this.#bg.getElementsByClassName("panelInfoBG")[0].ontransitionend = (event) =>
+        this.shadowRoot.getElementById("panelInfoBG").ontransitionend = (event) =>
         {
-            this.parent.removeChild(this.#bg)
+            this.shadowRoot.getRootNode().host.parentElement.removeChild(this)
         }
-        this.#bg.getElementsByClassName("panelInfoBG")[0].style.opacity = "0%"
+        this.shadowRoot.getElementById("panelInfoBG").style.opacity = "0%"
         //this.changeloading(false)
     }
 

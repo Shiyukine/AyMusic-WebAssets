@@ -9,6 +9,9 @@ import menuWindow from "./ui/windows/menu/menu.js";
 async function main()
 {
     document.body.ondragstart = () => { return false }
+    customElements.define('info-panel', infoPanel, { extends: "div" })
+    customElements.define('login-panel', loginPanel, { extends: "div" })
+    customElements.define("left-menu", menuWindow, { extends: "div" })
     /**
      * @type {AyMusic}
      */
@@ -23,7 +26,10 @@ async function main()
                 Window.setTopBarWindow()
                 Window.setDevToolLogger()
             }
-            var loadPanel = new infoPanel(document.getElementById("main"), "Searching for updates...", "Please wait...", null, true)
+            var loadPanel = new infoPanel("Searching for updates...", "Please wait...", null, true)
+            document.getElementById("main").appendChild(loadPanel)
+            loadPanel.style.width = loadPanel.style.height = "100%"
+            loadPanel.style.position = "absolute"
             loadPanel.show()
             console.log("Getting server URL")
             if (!Utils.useLocalServer)
@@ -35,7 +41,10 @@ async function main()
             Update.searchUpdate(loadPanel)
             await Utils.delay(2000)
             loadPanel.changeText("Connecting to your account...")
-            var logP = new loginPanel(document.getElementById("main"), false)
+            var logP = new loginPanel(false)
+            logP.style.width = logP.style.height = "100%"
+            logP.style.position = "absolute"
+            document.getElementById("main").appendChild(logP)
             loadPanel.hide()
             logP.logged = async () =>
             {
@@ -48,7 +57,7 @@ async function main()
                 let mainPanel = document.getElementById("main")
                 mainPanel.removeChild(lp)
                 document.body.classList.remove("loading")
-                new menuWindow(mainPanel)
+                mainPanel.appendChild(new menuWindow())
             }
         }
         catch (e)

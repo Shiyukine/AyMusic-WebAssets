@@ -8,7 +8,11 @@
   }
 }
 
-.panelInfo {
+p {
+    font-family: "QuickSand";
+}
+
+#panelInfo {
     background-color: rgb(49, 49, 49, 0.8);
     width: 500px;
     height: 150px;
@@ -21,18 +25,18 @@
     scrollbar-width: thin;
 }
 
-.panelInfo *::-webkit-scrollbar {
+#panelInfo *::-webkit-scrollbar {
 	width: 8px;
     height: 8px;
     border-radius: 4px;
 }
 
-.panelInfo *::-webkit-scrollbar-thumb {
+#panelInfo *::-webkit-scrollbar-thumb {
     border-radius: 4px;
     border: 0px solid transparent;
 }
 
-.panelInfoBG {
+#panelInfoBG {
     z-index: 100;
     backdrop-filter: blur(20px);
     background-color: rgba(71, 71, 71, 0.5);
@@ -53,7 +57,7 @@
     opacity: 0%;
 }
 
-.panelInfo svg {
+#panelInfo svg {
     transform: rotate(-90deg);
     stroke-dasharray: 251; /* (2PI * 40px) */
     stroke-dashoffset: 251;
@@ -69,12 +73,12 @@
     margin-right: 30px;
 }
 
-.panelInfo svg.playSVG {
+#panelInfo svg.playSVG {
     animation-play-state: running !important;
     visibility: visible !important;
 }
 
-.text {
+#text {
     color: #67b7fd;
     font-weight: bold;
     margin-bottom: 0%;
@@ -82,7 +86,7 @@
     margin-left: 20px;
 }
 
-.subtext {
+#subtext {
     margin-top: 10px;
     color: white;
     overflow-y: auto;
@@ -94,26 +98,26 @@
     user-select: text;
 }
 
-.btnList {
+#btnList {
     float: right;
     bottom: 15px;
     right: 15px;
     position: absolute;
 }
 
-.btnList button:focus {
+#btnList button:focus {
 	background: #67b7fd radial-gradient(circle, transparent 1%, #67b7fd 1%) center/15000%;
 	color: black;
 	font-weight: normal;
 }
 
-.btnList button:hover {
+#btnList button:hover {
 	background: #67b7fd radial-gradient(circle, transparent 1%, #67b7fd 1%) center/15000%;
 	color: black;
 	font-weight: normal;
 }
 
-.btnList button:active {
+#btnList button:active {
 	background-color: white;
 	color: black;
 	background-size: 100%;
@@ -121,7 +125,7 @@
 	font-weight: normal;
 }
 
-.btnList button {
+#btnList button {
 	background-position: center;
 	transition: background 0.6s;
 	border-radius: 10px;
@@ -139,18 +143,18 @@
     margin-left: 5px;
 }
 
-.btnList button:disabled {
+#btnList button:disabled {
 	opacity: 0.6;
 	cursor: not-allowed;
 }
 
-.btnList>.negative {
+#btnList>.negative {
     border: none;
     box-shadow: none;
     margin-top: 2px;
 }
 
-.progressBar {
+#progressBar {
     background-color: #67b7fd;
     height: 7px;
     position: absolute;

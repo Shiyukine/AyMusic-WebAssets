@@ -1,24 +1,18 @@
 import Utils from "../../../class/utils/utils.js";
 import Import from "../../../class/import.js";
 
-export default class menuWindow
+export default class menuWindow extends HTMLDivElement
 {
-    /**
-     * @type {HTMLElement}
-     */
-    #bg = document.createElement("div");
-
-    constructor(parent)
+    constructor()
     {
-        this.parent = parent
-        this.#bg.innerHTML = Import.loadHTML("/ui/windows/menu/menu.html")
-        this.#bg.style.width = "100px"
-        this.#bg.style.height = "100%"
-        this.#bg.style.position = "absolute"
-        this.parent = parent
-        this.accountEl = this.#bg.getElementsByClassName("acc_pp")[0]
+        super();
+        var shadow = this.attachShadow({ mode: "open" })
+        shadow.innerHTML = Import.loadHTML("/ui/windows/menu/menu.html")
+        this.style.width = "100px"
+        this.style.height = "100%"
+        this.style.position = "absolute"
+        this.accountEl = this.shadowRoot.getElementById("acc_pp")
         this.changeAccountAvatar()
-        this.parent.appendChild(this.#bg)
     }
 
     changeAccountAvatar()

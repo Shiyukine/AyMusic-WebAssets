@@ -36,12 +36,13 @@ export default class Utils
     static async newError(info, subText)
     {
         console.error(info, "\n", subText)
-        let errPanel = new infoPanel(document.getElementById("main"), info, subText, [{
+        let errPanel = new infoPanel(info, subText, [{
             text: "OK", isPositive: true, onclick: () =>
             {
                 errPanel.close()
             }
         }], false)
+        document.getElementById("main").appendChild(errPanel)
         await errPanel.showDialog()
     }
 }
