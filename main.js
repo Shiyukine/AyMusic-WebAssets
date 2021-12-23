@@ -9,19 +9,19 @@ import listenWindow from "./ui/windows/listen/listen.js";
 
 async function main()
 {
+    Utils.app = window.app = new AyMusic();
     document.body.ondragstart = () => { return false; };
     customElements.define('info-panel', infoPanel, { extends: "div" });
     customElements.define('login-panel', loginPanel, { extends: "div" });
     customElements.define("left-menu", menuWindow, { extends: "div" });
     customElements.define("listen-window", listenWindow, { extends: "div" });
     //
-    app = new AyMusic();
-    app.loaded = async function ()
+    Utils.app.loaded = async function ()
     {
         try
         {
-            console.log("AyMusic client registered : " + app.platform);
-            if (app.platform == "Windows")
+            console.log("AyMusic client registered : " + Utils.app.platform);
+            if (Utils.app.platform == "Windows")
             {
                 Window.setTopBarWindow();
                 Window.setDevToolLogger();
@@ -33,7 +33,7 @@ async function main()
             loadPanel.show();
             console.log("Getting server URL");
             if (!Utils.useLocalServer)
-                Utils.servURL = await app.remoteClient.httpRequestGET("https://raw.githubusercontent.com/Shiyukine/Shiyukine/main/serv.txt");
+                Utils.servURL = await Utils.app.remoteClient.httpRequestGET("https://raw.githubusercontent.com/Shiyukine/Shiyukine/main/serv.txt");
             else
                 Utils.servURL = "http://192.168.0.33/";
             console.log("Server URL : " + Utils.servURL);
@@ -58,6 +58,7 @@ async function main()
                 mainPanel.removeChild(lp);
                 document.body.classList.remove("loading");
                 mainPanel.appendChild(new menuWindow());
+                mainPanel.appendChild(new listenWindow())
             };
         }
         catch (e)

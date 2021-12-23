@@ -57,7 +57,6 @@ export default class loginPanel extends HTMLDivElement
         {
             if ((await this.#getIframeUrl()).includes("islogged.php"))
             {
-                this.#iframe.style.visibility = "collapse"
                 this.#iframe.contentWindow.postMessage({ message: "html" }, Utils.servURL)
             }
         }

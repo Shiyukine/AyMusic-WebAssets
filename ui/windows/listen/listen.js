@@ -7,16 +7,6 @@ export default class listenWindow extends HTMLDivElement
     {
         super();
         var shadow = this.attachShadow({ mode: "open" })
-        shadow.innerHTML = Import.loadHTML("/ui/windows/menu/menu.html")
-        this.style.width = "100px"
-        this.style.height = "100%"
-        this.style.position = "absolute"
-        this.accountEl = this.shadowRoot.getElementById("acc_pp")
-        this.changeAccountAvatar()
-    }
-
-    changeAccountAvatar()
-    {
-        this.accountEl.src = Utils.actualAccount.avatarUrl
+        shadow.innerHTML = Import.loadHTML("/ui/windows/listen/listen.html")
     }
 }

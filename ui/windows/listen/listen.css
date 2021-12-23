@@ -1,22 +1,119 @@
 .listen svg {
     color: white;
     margin: auto;
-    margin-top: 2px;
     cursor: pointer;
 }
 
-.listen .activated {
-    background-color: rgb(60, 60, 60);
-}
-
-.listen svg:hover, .listen img:hover {
+.listen svg:hover {
     background-color: rgb(221, 221, 221, 0.3);
 }
 
-.listen svg, .listen img {
+.listen svg {
     width: 48px;
     height: 48px;
     border-radius: 15px;
-    padding: 5px;
+    padding: 1px;
     transition: 0.4s background;
+}
+
+.listen {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background-color: rgb(27, 27, 27);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    box-shadow: 0px 0px 20px black;
+    padding: 10px;
+    padding-bottom: 0px;
+}
+
+img {
+    width: 70px;
+    border-radius: 15px;
+    float: left;
+    margin-right: 10px;
+}
+
+.left {
+    float: left;
+    display: flex;
+}
+
+svg.mini {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 12px;
+}
+
+.middle {
+    text-align: center;
+    margin: auto;
+    width: 40%;
+}
+
+p {
+    color: white;
+    font-family: "Quicksand";
+    margin: 0px;
+}
+
+.middle p {
+    float: left;
+}
+
+.right {
+    position: absolute;
+    bottom: 5px;
+    right: 15px;
+}
+
+.right svg {
+    width: 36px;
+    height: 36px;
+}
+
+#slider {
+    --range: calc(var(--max) - var(--min));
+    --ratio: calc((var(--value) - var(--min)) / var(--range));
+    --sx: calc(0.5 * 2em + var(--ratio) * (100% - 2em));
+    width: 74%;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 7px;
+    -webkit-appearance: none; 
+    appearance: none;
+    background-color: gray;
+    border-radius: 50px;
+    height: 8px;
+    --value: 50;
+    --min: 0;
+    --max: 100;
+}
+
+#music_title {
+    font-size: 22px;
+}
+
+#music_artist {
+    color: gray;
+}
+
+#slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%; 
+  background: #1095d3;
+  cursor: pointer;
+  margin-top: -4.55px;
+}
+
+#slider::-webkit-slider-runnable-track {
+    background: linear-gradient(#10a2e6,#10a2e6) 0/var(--sx) 100% no-repeat, #535353;
+    border-radius: 15px;
+    height: 8px;
 }

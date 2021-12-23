@@ -1,5 +1,4 @@
 import Import from "../../../class/import.js";
-import Utils from "../../../class/utils/utils.js";
 
 export default class infoPanel extends HTMLDivElement
 {
@@ -50,7 +49,7 @@ export default class infoPanel extends HTMLDivElement
         }
         this.shadowRoot.getElementById("cssImport").onload = () =>
         {
-            this.shadowRoot.getElementById("panelInfoBG").ontransitionend = (ev) => { };
+            this.shadowRoot.getElementById("panelInfoBG").ontransitionend = () => { };
             this.shadowRoot.getElementById("panelInfoBG").style = "";
             this.#loaded = true;
         }
@@ -115,7 +114,7 @@ export default class infoPanel extends HTMLDivElement
 
     close()
     {
-        this.shadowRoot.getElementById("panelInfoBG").ontransitionend = (event) =>
+        this.shadowRoot.getElementById("panelInfoBG").ontransitionend = () =>
         {
             this.shadowRoot.getRootNode().host.parentElement.removeChild(this);
         }

@@ -11,6 +11,11 @@ export default class Utils
             avatarUrl: "/resources/noavatar.png"
         }
 
+    /**
+     * @type {AyMusic}
+     */
+    static app = null;
+
     static delay(ms)
     {
         return new Promise(resolve => setTimeout(() => resolve(), ms))
