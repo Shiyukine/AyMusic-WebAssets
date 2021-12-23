@@ -1,0 +1,11 @@
+{
+    "name": "aymusic",
+    "version": "0.1.0",
+    "description": "blabla",
+    "main": "index.js",
+    "author": "Shiyukine",
+    "license": "ISC",
+    "dependencies": {
+        "jshint": "^2.13.1"
+    }
+}

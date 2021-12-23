@@ -1,0 +1,22 @@
+.listen svg {
+    color: white;
+    margin: auto;
+    margin-top: 2px;
+    cursor: pointer;
+}
+
+.listen .activated {
+    background-color: rgb(60, 60, 60);
+}
+
+.listen svg:hover, .listen img:hover {
+    background-color: rgb(221, 221, 221, 0.3);
+}
+
+.listen svg, .listen img {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+    padding: 5px;
+    transition: 0.4s background;
+}

@@ -197,12 +197,3 @@ svg, img {
 svg:hover, img:hover {
     background-color: rgb(221, 221, 221, 0.5);
 }
-
-.separatorH {
-    background-color: gray; 
-    width: 48px; 
-    height: 1px; 
-    margin: auto; 
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
