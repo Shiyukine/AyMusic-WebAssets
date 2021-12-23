@@ -50,10 +50,10 @@ export default class loginPanel extends HTMLDivElement
         this.#svg = this.shadowRoot.getElementById("svg")
         this.shadowRoot.getElementById("cssImport").onload = () =>
         {
-            this.shadowRoot.getElementById("loginBG").ontransitionend = (ev) => { };
+            this.shadowRoot.getElementById("loginBG").ontransitionend = () => { };
             this.shadowRoot.getElementById("loginBG").style = ""
         }
-        this.#iframe.onload = async (ifr) =>
+        this.#iframe.onload = async () =>
         {
             if ((await this.#getIframeUrl()).includes("islogged.php"))
             {
@@ -61,7 +61,7 @@ export default class loginPanel extends HTMLDivElement
                 this.#iframe.contentWindow.postMessage({ message: "html" }, Utils.servURL)
             }
         }
-        window.addEventListener("message", async (e) =>
+        window.addEventListener("message", (e) =>
         {
             if (e.origin == Utils.servURL.slice(0, -1))
             {
@@ -75,7 +75,7 @@ export default class loginPanel extends HTMLDivElement
                         avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif"
                     }
                     console.log("Welcome " + Utils.actualAccount.name + " on AyMusic !")
-                    this.shadowRoot.getElementById("loginBG").ontransitionend = (ev) =>
+                    this.shadowRoot.getElementById("loginBG").ontransitionend = () =>
                     {
                         this.shadowRoot.getRootNode().host.parentElement.removeChild(this)
                         this.#eventEl.dispatchEvent(new CustomEvent("logged"));
