@@ -22,11 +22,12 @@
     left: 0;
     right: 0;
     height: 80px;
-    background-color: rgb(63, 63, 63);
+    background-color: rgb(63, 63, 63, 0.84);
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     padding: 10px;
     padding-bottom: 0px;
+    backdrop-filter: blur(10px);
 }
 
 img {
@@ -84,7 +85,7 @@ p {
     margin-top: 7px;
     -webkit-appearance: none; 
     appearance: none;
-    background-color: gray;
+    background-color: #727272;
     border-radius: 50px;
     height: 8px;
     --value: 50;
@@ -112,7 +113,7 @@ p {
 }
 
 #slider::-webkit-slider-runnable-track {
-    background: linear-gradient(#10a2e6,#10a2e6) 0/var(--sx) 100% no-repeat, #535353;
+    background: linear-gradient(#10a2e6,#10a2e6) 0/var(--sx) 100% no-repeat, #727272;
     border-radius: 15px;
     height: 8px;
 }

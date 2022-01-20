@@ -54,6 +54,7 @@ async function main()
                 let lp = document.getElementById("loadPanel");
                 lp.children[0].classList.add("pauseSVG");
                 let mainPanel = document.getElementById("main");
+                mainPanel.style.backgroundImage = "url(/resources/background.jpg)"
                 mainPanel.removeChild(lp);
                 document.body.classList.remove("loading");
                 mainPanel.appendChild(new menuWindow());
