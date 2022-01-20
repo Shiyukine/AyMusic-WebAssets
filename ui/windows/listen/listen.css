@@ -45,13 +45,25 @@ img {
 svg.mini {
     width: 24px;
     height: 24px;
+    margin: 0 10px;
     margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+svg.miniButNot {
+    width: 40px;
+    height: 40px;
+    margin: 0 3px;
+    margin-bottom: 4.5px;
+    border-radius: 15px;
 }
 
 .middle {
     text-align: center;
     margin: auto;
     width: 40%;
+    --value: 20;
+    --max: 100;
 }
 
 p {
@@ -75,22 +87,28 @@ p {
     height: 36px;
 }
 
+#pbInfo {
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 74%;
+    height: 8px;
+}
+
 #slider {
     --range: calc(var(--max) - var(--min));
     --ratio: calc((var(--value) - var(--min)) / var(--range));
     --sx: calc(0.5 * 2em + var(--ratio) * (100% - 2em));
-    width: 74%;
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-top: 7px;
+    width: 100%;
     -webkit-appearance: none; 
     appearance: none;
     background-color: #727272;
     border-radius: 50px;
     height: 8px;
-    --value: 50;
     --min: 0;
-    --max: 100;
+    outline: none;
+    margin: 0;
+    margin-top: 7.4px;
+    visibility: hidden;
 }
 
 #music_title {
@@ -109,11 +127,25 @@ p {
   border-radius: 50%; 
   background: #1095d3;
   cursor: pointer;
-  margin-top: -4.55px;
+  margin-top: -4.7px;
 }
 
 #slider::-webkit-slider-runnable-track {
     background: linear-gradient(#10a2e6,#10a2e6) 0/var(--sx) 100% no-repeat, #727272;
+    border-radius: 15px;
+    height: 8px;
+}
+
+#progressBar {
+    height: 8px;
+    border-radius: 15px;
+    bottom: 16px;
+    background-color: #727272;
+}
+
+#progressBar>.state {
+    background-color: white;
+    width: calc(var(--value) / var(--max) * 100%);
     border-radius: 15px;
     height: 8px;
 }
