@@ -1,0 +1,184 @@
+p {
+    font-family: "Quicksand";
+    margin: 0px;
+    color:white;
+}
+
+.settings {
+    background-color: rgb(50, 50, 50);
+    width: 100%;
+    border-radius: 15px;
+    height: 100%;
+}
+
+#menu {
+    position: absolute;
+    top: 86px;
+    left: 25px;
+    bottom: 25px;
+    width: 220px;
+    background-color: rgb(65, 65, 65);
+    border-radius: 15px;
+    padding: 10px;
+}
+
+#menu p {
+    border-radius: 15px;
+    font-size: 20px;
+    color: white;
+    padding: 10px;
+    margin: 0px;
+    margin-bottom: 4px;
+    color: rgb(215, 215, 215);
+    transition: background 0.4s;
+}
+
+#menu .selected {
+    background-color: rgb(99, 99, 99);
+    color: white;
+}
+
+#menu p:hover {
+    background-color: rgb(83, 83, 83);
+}
+
+#view {
+    margin-left: 272px;
+    top: 25px;
+    border-radius: 15px;
+    position: relative;
+}
+
+.panel {
+    visibility: collapse;
+    width: 100%;
+    position: absolute;
+}
+
+#view .selected {
+    visibility: visible;
+}
+
+.panel>p {
+    font-size: 25px;
+    color: rgb(0, 204, 255);
+    font-weight: bold;
+}
+
+.sub {
+    background-color: rgb(59, 59, 59);
+    border-radius: 15px;
+    padding-bottom: 0px;
+    margin-right: 25px;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.sub .set {
+    display: flex;
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-bottom: 7px;
+    padding-bottom: 7px;
+    border-bottom: gray solid 1px;
+}
+
+.sub .last {
+    border-bottom: inherit;
+}
+
+.settings .slider {
+  -webkit-appearance: none;
+  width: 43px;
+  height: 25px;
+  padding: 0 5px;
+  border-radius: 12.5px;
+  background: rgb(0, 162, 255);
+  outline: none;
+  float: right;
+}
+
+.settings .slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+
+.settings .slider::-moz-range-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  border: none;
+  stroke: transparent;
+}
+
+.settings .select-container {
+    float: right;
+    position: relative; 
+    background-color: rgb(80, 80, 80);
+    border-radius: 15px;
+	overflow: hidden; 
+}
+
+.settings select {
+	height: auto;
+	border: 0; 
+	margin: 0;
+    margin-right: 5px;
+	padding: 4px 5px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+    outline: none;
+    color: white;
+    background-color: rgba(0, 0, 0, 0);
+    font-family: "Quicksand";
+    font-size: 18px;
+    width: 150px;
+}
+
+.settings select option {
+    background-color: rgb(56, 56, 56);
+    color: white;
+}
+
+.sub p {
+    float: left;
+    margin: auto;
+    margin-left: 0px;
+}
+
+.havesub {
+    display: block !important;
+}
+
+.havesub p {
+    float: none !important;
+}
+
+.setsub {
+    background-color: rgb(77, 77, 77);
+    border-radius: 15px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    padding: 10px;
+}
+
+.setsub>p.title {
+    font-size: 20px;
+    color: rgb(0, 204, 255);
+    font-weight: bold;
+}
+
+.wintitle {
+    text-align: center;
+    font-size: 30px;
+    padding-top: 20px;
+}

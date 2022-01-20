@@ -104,7 +104,6 @@ export default class infoPanel extends HTMLDivElement
                 this.shadowRoot.getElementById("panelInfo").insertBefore(this.shadowRoot.getElementById("panelInfo").firstChild, this.#svg);
             }
         }
-        //todo
     }
 
     hide()

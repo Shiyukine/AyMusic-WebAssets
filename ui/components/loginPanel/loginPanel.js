@@ -53,9 +53,12 @@ export default class loginPanel extends HTMLDivElement
             this.shadowRoot.getElementById("loginBG").ontransitionend = () => { };
             this.shadowRoot.getElementById("loginBG").style = ""
         }
+        let loaded = false;
         this.#iframe.onload = async () =>
         {
-            if ((await this.#getIframeUrl()).includes("islogged.php"))
+            let url = await this.#getIframeUrl();
+            loaded = true;
+            if (url.includes("islogged.php"))
             {
                 this.#iframe.contentWindow.postMessage({ message: "html" }, Utils.servURL)
             }
@@ -83,6 +86,10 @@ export default class loginPanel extends HTMLDivElement
                 }
             }
         })
+        setTimeout(() =>
+        {
+            if (!loaded) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
+        }, 21000)
         if (!isForModification)
         {
             this.#iframe.src = Utils.servURL + "login/?inapp=1&date=" + Date.now().toString()

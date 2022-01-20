@@ -1,0 +1,122 @@
+<style type="text/css"
+    id="cssImport">
+    @import url("/ui/windows/settings/settings.css");
+</style>
+<div class="settings">
+    <p class="wintitle">{settings}</p>
+    <div>
+        <div id="menu">
+            <p class="selected">{set.general}</p>
+            <p>{set.music}</p>
+            <p>{set.about}</p>
+        </div>
+        <div id="view">
+            <div class="panel selected">
+                <p>{set.general}</p>
+                <div class="sub">
+                    <div class="set">
+                        <p>{set.general.lang}</p>
+                        <div class="select-container">
+                            <select name="langs"
+                                id="gen_langs">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="set">
+                        <p>{set.general.theme}</p>
+                        <div class="select-container">
+                            <select name="langs"
+                                id="gen_theme">
+                                <option value="dark">Dark</option>
+                                <option value="white">White</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="set">
+                        <p>{set.general.discordRPC}</p>
+                        <input type="range"
+                            min="0"
+                            max="1"
+                            value="1"
+                            class="slider"
+                            id="gen_discordRPC">
+                    </div>
+                    <div class="set last">
+                        <p>{set.general.logs}</p>
+                        <input type="range"
+                            min="0"
+                            max="1"
+                            value="1"
+                            class="slider"
+                            id="gen_logs">
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <p>{set.music}</p>
+                <div class="sub">
+                    <div class="set">
+                        <p>{set.music.createMix}</p>
+                        <input type="range"
+                            min="0"
+                            max="1"
+                            value="1"
+                            class="slider"
+                            id="music_createMix">
+                    </div>
+                    <div class="set">
+                        <p>{set.music.volume}</p>
+                        <input type="range"
+                            min="0"
+                            max="1"
+                            value="1"
+                            class="slider"
+                            id="music_vol">
+                    </div>
+                    <div class="set">
+                        <p>{set.music.skipSilences}</p>
+                        <input type="range"
+                            min="0"
+                            max="1"
+                            value="1"
+                            class="slider"
+                            id="music_skipS">
+                    </div>
+                    <div class="set last">
+                        <p>{set.music.adblock}</p>
+                        <input type="range"
+                            min="0"
+                            max="1"
+                            value="1"
+                            class="slider"
+                            id="music_adblock">
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <p>{set.about}</p>
+                <div class="sub">
+                    <div class="set havesub last">
+                        <p style="color: rgb(231, 231, 231);">AyMusic has been created by <b>Shiyukine</b> in 2021.
+                            <br>
+                            <br>
+                            AyMusic allows you to create playlists with music on Spotify, Youtube, Deezer, Soundclound
+                            and
+                            locally. You can use this application if you want to create a playlist of music on Spotify
+                            but
+                            there's some music that you can't find on Spotify but on another platform.
+                            <br>
+                            With AyMusic you can do this without any problems. Create a playlist, add your music to one
+                            platform and then add it to other platforms and AyMusic will play your favourite music!
+                        </p>
+                        <div class="setsub">
+                            <p class="title">{set.about.updates}</p>
+                            <br>
+                            <p id="about_ver">version - </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

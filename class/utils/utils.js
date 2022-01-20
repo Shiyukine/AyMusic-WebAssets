@@ -1,5 +1,6 @@
 import Import from "../import.js";
 import infoPanel from "../../ui/components/infoPanel/infoPanel.js";
+import AyMusic from "../AyMusic.js";
 
 export default class Utils
 {
@@ -11,10 +12,7 @@ export default class Utils
             avatarUrl: "/resources/noavatar.png"
         }
 
-    /**
-     * @type {AyMusic}
-     */
-    static app = null;
+    static app = new AyMusic();
 
     static delay(ms)
     {

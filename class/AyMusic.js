@@ -2,7 +2,16 @@ export default class AyMusic
 {
     remoteClient = null;
     #eventEl = null;
-    settings = {}
+    settings = {
+        lang: "English",
+        theme: "Dark",
+        adblock: true,
+        createMix: false,
+        discordRPC: true,
+        writeLogs: false,
+        volume: 66,
+        skipSilence: false
+    }
 
     constructor()
     {
@@ -23,10 +32,23 @@ export default class AyMusic
             this.versionName = versionName;
             this.versionId = versionId;
             this.remoteClient = remoteClient;
-            this.settings = JSON.parse(await this.remoteClient.getSettingFile())
-            if (!this.settings)
+            let newS = JSON.parse(await this.remoteClient.getSettingFile())
+            if (newS)
             {
-                console.error("There are no settings imported !")
+                Array.from(this.settings).forEach(x =>
+                {
+                    if (!Array.from(newS).includes(x))
+                    {
+                        console.warn("Adding settings which didn't exists : " + x)
+                        newS[x] = this.settings[x]
+                    }
+                })
+                this.settings = newS
+            }
+            else
+            {
+                this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
+                console.warn("No settings imported. Creating new setting file")
             }
             this.#eventEl.dispatchEvent(new CustomEvent("loaded"));
         }

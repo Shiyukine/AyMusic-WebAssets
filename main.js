@@ -1,5 +1,4 @@
 import infoPanel from "./ui/components/infoPanel/infoPanel.js";
-import AyMusic from "./class/AyMusic.js";
 import Window from "./class/window.js";
 import Update from "./class/update.js";
 import Utils from "./class/utils/utils.js";
@@ -9,7 +8,7 @@ import listenWindow from "./ui/windows/listen/listen.js";
 
 async function main()
 {
-    Utils.app = window.app = new AyMusic();
+    window.app = Utils.app;
     document.body.ondragstart = () => { return false; };
     customElements.define('info-panel', infoPanel, { extends: "div" });
     customElements.define('login-panel', loginPanel, { extends: "div" });
