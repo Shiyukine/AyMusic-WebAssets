@@ -5,21 +5,23 @@ p {
 }
 
 .settings {
-    background-color: rgb(50, 50, 50);
     width: 100%;
     border-radius: 15px;
     height: 100%;
 }
 
+#main {
+    display: contents;
+}
+
 #menu {
-    position: absolute;
-    top: 86px;
-    left: 25px;
-    bottom: 25px;
     width: 220px;
-    background-color: rgb(65, 65, 65);
+    background-color: rgba(65, 65, 65, 0.6);
     border-radius: 15px;
     padding: 10px;
+    margin-left: 15px;
+    float: left;
+    height: calc(100% - 78px - 15px);
 }
 
 #menu p {
@@ -30,29 +32,30 @@ p {
     margin: 0px;
     margin-bottom: 4px;
     color: rgb(215, 215, 215);
-    transition: background 0.4s;
+    transition: background 0.4s, color 0.4s;
+    cursor: pointer;
 }
 
 #menu .selected {
-    background-color: rgb(99, 99, 99);
+    background-color: rgb(110, 110, 110, 0.6);
     color: white;
 }
 
 #menu p:hover {
-    background-color: rgb(83, 83, 83);
+    background-color: rgba(99, 99, 99, 0.6);
 }
 
 #view {
     margin-left: 272px;
-    top: 25px;
+    margin-top: 25px;
     border-radius: 15px;
     position: relative;
 }
 
 .panel {
     visibility: collapse;
-    width: 100%;
     position: absolute;
+    width: 100%;
 }
 
 #view .selected {
@@ -66,7 +69,7 @@ p {
 }
 
 .sub {
-    background-color: rgb(59, 59, 59);
+    background-color: rgb(59, 59, 59, 0.6);
     border-radius: 15px;
     padding-bottom: 0px;
     margin-right: 25px;
@@ -81,6 +84,7 @@ p {
     margin-bottom: 7px;
     padding-bottom: 7px;
     border-bottom: gray solid 1px;
+    min-height: 33px;
 }
 
 .sub .last {
@@ -89,7 +93,7 @@ p {
 
 .settings .slider {
   -webkit-appearance: none;
-  width: 43px;
+  width: 35px;
   height: 25px;
   padding: 0 5px;
   border-radius: 12.5px;
@@ -123,7 +127,7 @@ p {
 .settings .select-container {
     float: right;
     position: relative; 
-    background-color: rgb(80, 80, 80);
+    background-color: rgb(80, 80, 80, 0.6);
     border-radius: 15px;
 	overflow: hidden; 
 }
@@ -133,12 +137,17 @@ p {
 	border: 0; 
 	margin: 0;
     margin-right: 5px;
-	padding: 4px 5px;
+	padding: 5px 11px;
 	overflow: hidden;
 	text-overflow: ellipsis;
     outline: none;
+    -webkit-appearance: none;
     color: white;
     background-color: rgba(0, 0, 0, 0);
+    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z' fill='white'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position-x: 100%;
+    background-position-y: 5px;
     font-family: "Quicksand";
     font-size: 18px;
     width: 150px;
@@ -164,7 +173,7 @@ p {
 }
 
 .setsub {
-    background-color: rgb(77, 77, 77);
+    background-color: rgb(77, 77, 77, 0.6);
     border-radius: 15px;
     margin-top: 20px;
     margin-bottom: 5px;

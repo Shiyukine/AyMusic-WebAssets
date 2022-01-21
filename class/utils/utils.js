@@ -4,7 +4,7 @@ import AyMusic from "../AyMusic.js";
 
 export default class Utils
 {
-    static useLocalServer = true
+    static useLocalServer = false
     static servURL = ""
     static actualAccount =
         {

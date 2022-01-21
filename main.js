@@ -1,19 +1,20 @@
-import infoPanel from "./ui/components/infoPanel/infoPanel.js";
 import Window from "./class/window.js";
 import Update from "./class/update.js";
 import Utils from "./class/utils/utils.js";
-import loginPanel from "./ui/components/loginPanel/loginPanel.js";
-import menuWindow from "./ui/windows/menu/menu.js";
-import listenWindow from "./ui/windows/listen/listen.js";
-
+import InfoPanel from "./ui/components/infoPanel/infoPanel.js";
+import LoginPanel from "./ui/components/loginPanel/loginPanel.js";
+import MenuWindow from "./ui/windows/menu/menu.js";
+import ListenWindow from "./ui/windows/listen/listen.js";
+import SettingsWindow from "./ui/windows/settings/settings.js";
 async function main()
 {
     window.app = Utils.app;
     document.body.ondragstart = () => { return false; };
-    customElements.define('info-panel', infoPanel, { extends: "div" });
-    customElements.define('login-panel', loginPanel, { extends: "div" });
-    customElements.define("left-menu", menuWindow, { extends: "div" });
-    customElements.define("listen-window", listenWindow, { extends: "div" });
+    customElements.define('info-panel', InfoPanel, { extends: "div" });
+    customElements.define('login-panel', LoginPanel, { extends: "div" });
+    customElements.define("left-menu", MenuWindow, { extends: "div" });
+    customElements.define("listen-window", ListenWindow, { extends: "div" });
+    customElements.define("settings-window", SettingsWindow, { extends: "div" });
     //
     Utils.app.loaded = async function ()
     {
@@ -25,22 +26,23 @@ async function main()
                 Window.setTopBarWindow();
                 Window.setDevToolLogger();
             }
-            var loadPanel = new infoPanel("Searching for updates...", "Please wait...", null, true);
+            var loadPanel = new InfoPanel("Searching for updates...", "Please wait...", null, true);
             document.getElementById("main").appendChild(loadPanel);
             loadPanel.style.width = loadPanel.style.height = "100%";
             loadPanel.style.position = "absolute";
             loadPanel.show();
             console.log("Getting server URL");
             if (!Utils.useLocalServer)
-                Utils.servURL = await Utils.app.remoteClient.httpRequestGET("https://raw.githubusercontent.com/Shiyukine/Shiyukine/main/serv.txt");
+                Utils.servURL = (await Utils.app.remoteClient.httpRequestGET("https://raw.githubusercontent.com/Shiyukine/Shiyukine/main/serv.txt")).replace("\n", "");
             else
                 Utils.servURL = "http://192.168.0.33/";
+            await Utils.app.remoteClient.changeServURL(Utils.servURL)
             console.log("Server URL : " + Utils.servURL);
             //
             Update.searchUpdate(loadPanel);
             await Utils.delay(2000);
             loadPanel.changeText("Connecting to your account...");
-            var logP = new loginPanel(false);
+            var logP = new LoginPanel(false);
             logP.style.width = logP.style.height = "100%";
             logP.style.position = "absolute";
             document.getElementById("main").appendChild(logP);
@@ -54,11 +56,14 @@ async function main()
                 let lp = document.getElementById("loadPanel");
                 lp.children[0].classList.add("pauseSVG");
                 let mainPanel = document.getElementById("main");
-                mainPanel.style.backgroundImage = "url(/resources/background.jpg)"
+                document.body.style.backgroundImage = "url(/resources/background.jpg)"
+                document.getElementsByClassName("windowTopBar")[0].classList.add("loaded")
                 mainPanel.removeChild(lp);
                 document.body.classList.remove("loading");
-                mainPanel.appendChild(new menuWindow());
-                mainPanel.appendChild(new listenWindow())
+                let menuWin = new MenuWindow()
+                mainPanel.appendChild(menuWin);
+                menuWin.changeWindow(menuWin.UserWindows.Home)
+                mainPanel.appendChild(new ListenWindow())
             };
         }
         catch (e)

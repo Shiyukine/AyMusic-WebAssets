@@ -1,7 +1,7 @@
 import Utils from "../../../class/utils/utils.js";
 import Import from "../../../class/import.js";
 
-export default class loginPanel extends HTMLDivElement
+export default class LoginPanel extends HTMLDivElement
 {
     /**
      * @type {HTMLIFrameElement}
@@ -54,6 +54,22 @@ export default class loginPanel extends HTMLDivElement
             this.shadowRoot.getElementById("loginBG").style = ""
         }
         let loaded = false;
+        Utils.app.remoteClient.registerIframeUrl(Utils.servURL + "login/", `//injected script by AyMusic app
+            addEventListener('message', (e) =>
+            {
+                if(e.origin.includes('myapp://root'))
+                {
+                    if(e.data.message == 'getURL')
+                    {
+                        parent.postMessage({message: 'callbackURL', data: document.location.toString()}, 'myapp://root')
+                    }
+                    if(e.data.message == 'html')
+                    {
+                        parent.postMessage({message: 'callbackHTML', data: document.body.innerHTML}, 'myapp://root')
+                    }
+                }
+            })
+            console.log('script injected for URL = ' + document.location.toString())`)
         this.#iframe.onload = async () =>
         {
             let url = await this.#getIframeUrl();

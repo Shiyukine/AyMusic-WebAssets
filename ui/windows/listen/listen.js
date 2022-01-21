@@ -1,7 +1,6 @@
 import Import from "../../../class/import.js";
-import Utils from "../../../class/utils/utils.js";
 
-export default class listenWindow extends HTMLDivElement
+export default class ListenWindow extends HTMLDivElement
 {
     constructor()
     {

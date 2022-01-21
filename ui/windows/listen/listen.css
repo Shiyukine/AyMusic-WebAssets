@@ -23,8 +23,6 @@
     right: 0;
     height: 80px;
     background-color: rgb(63, 63, 63, 0.84);
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
     padding: 10px;
     padding-bottom: 0px;
     backdrop-filter: blur(10px);

@@ -1,8 +1,7 @@
 import Import from "../../../class/import.js";
 
-export default class infoPanel extends HTMLDivElement
+export default class InfoPanel extends HTMLDivElement
 {
-    /* jshint ignore:-E058 */
     /**
      * @type {HTMLElement}
      */
