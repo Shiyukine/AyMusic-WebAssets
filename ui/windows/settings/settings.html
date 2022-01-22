@@ -8,6 +8,7 @@
         <div id="menu">
             <p class="selected">{set.general}</p>
             <p>{set.music}</p>
+            <p>{set.account}</p>
             <p>{set.about}</p>
         </div>
         <div id="view">
@@ -90,6 +91,27 @@
                             value="1"
                             class="slider"
                             id="music_adblock">
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <p>{set.account}</p>
+                <div class="sub">
+                    <div class="set havesub last account">
+                        <div class="account-1">
+                            <p class="big">{set.account.name}</p>
+                            <p id="acc_name">UserName</p>
+                            <br>
+                            <p class="big">{set.account.email}</p>
+                            <p id="acc_email">Email</p>
+                            <br>
+                            <button>{set.account.change}</button>
+                            <br>
+                            <button>{set.account.logout}</button>
+                        </div>
+                        <div class="account-2">
+                            <img src="/resources/noavatar.png" alt="" id="acc_img">
+                        </div>
                     </div>
                 </div>
             </div>

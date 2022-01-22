@@ -28,11 +28,11 @@
 }
 
 .menu .activated {
-    background-color: rgba(105, 105, 105, 0.3);
+    background-color: rgba(150, 150, 150, 0.3);
 }
 
 .menu svg:hover, img:hover {
-    background-color: rgba(150, 150, 150, 0.3);
+    background-color: rgba(105, 105, 105, 0.3);
 }
 
 .menu svg, .menu img {

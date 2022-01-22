@@ -4,11 +4,12 @@ import AyMusic from "../AyMusic.js";
 
 export default class Utils
 {
-    static useLocalServer = false
+    static useLocalServer = true
     static servURL = ""
     static actualAccount =
         {
             name: "Unknown",
+            email: "Unknown",
             avatarUrl: "/resources/noavatar.png"
         }
 

@@ -1,5 +1,5 @@
-import Utils from "../../../class/utils/utils.js";
 import Import from "../../../class/import.js";
+import Utils from "../../../class/utils/utils.js";
 
 export default class SettingsWindow extends HTMLDivElement
 {
@@ -17,22 +17,26 @@ export default class SettingsWindow extends HTMLDivElement
             else newIndex = this.selectedIndex - 1
             if (newIndex > shadow.getElementById("menu").children.length - 1) newIndex -= 1
             if (newIndex < 0) newIndex += 1
-            this.changeView(shadow, newIndex)
+            this.changeView(newIndex)
         };
         Array.from(shadow.getElementById("menu").children).forEach((x, y) =>
         {
             x.onclick = () => {
-                this.changeView(shadow, y)
+                this.changeView(y)
             }
         })
+        //
+        shadow.getElementById("acc_img").src = Utils.actualAccount.avatarUrl;
+        shadow.getElementById("acc_name").innerText = Utils.actualAccount.name;
+        shadow.getElementById("acc_email").innerText = Utils.actualAccount.email;
     }
 
-    changeView(shadow, newIndex)
+    changeView(newIndex)
     {
-        shadow.getElementById("menu").children[this.selectedIndex].classList.remove("selected")
-        shadow.getElementById("view").children[this.selectedIndex].classList.remove("selected")
-        shadow.getElementById("menu").children[newIndex].classList.add("selected")
-        shadow.getElementById("view").children[newIndex].classList.add("selected")
+        this.shadowRoot.getElementById("menu").children[this.selectedIndex].classList.remove("selected")
+        this.shadowRoot.getElementById("view").children[this.selectedIndex].classList.remove("selected")
+        this.shadowRoot.getElementById("menu").children[newIndex].classList.add("selected")
+        this.shadowRoot.getElementById("view").children[newIndex].classList.add("selected")
         this.selectedIndex = newIndex
     }
 }

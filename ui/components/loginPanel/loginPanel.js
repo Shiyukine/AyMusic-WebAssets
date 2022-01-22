@@ -90,6 +90,7 @@ export default class LoginPanel extends HTMLDivElement
                     let value = i => params[i].split(" = ")[1]
                     Utils.actualAccount = {
                         name: value(2),
+                        email: value(0),
                         avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif"
                     }
                     console.log("Welcome " + Utils.actualAccount.name + " on AyMusic !")
@@ -105,7 +106,7 @@ export default class LoginPanel extends HTMLDivElement
         setTimeout(() =>
         {
             if (!loaded) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
-        }, 21000)
+        }, 21500)
         if (!isForModification)
         {
             this.#iframe.src = Utils.servURL + "login/?inapp=1&date=" + Date.now().toString()

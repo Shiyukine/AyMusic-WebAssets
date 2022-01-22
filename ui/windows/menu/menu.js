@@ -19,13 +19,18 @@ export default class MenuWindow extends HTMLDivElement {
         this.accountEl = this.shadowRoot.getElementById("acc_pp");
         this.changeAccountAvatar();
         window.addEventListener("popstate", (e) => {
-            if (e.state.where == "menu") this.changeWindow(e.state.window, false)
+            if (e.state.where == "menu") this.changeWindow(e.state.window, e.state.menu, false)
         })
         Array.from(shadow.getElementById("main").getElementsByTagName("svg")).forEach((el) => {
             el.onclick = () => {
-                this.changeWindow(this.UserWindows[el.id])
+                this.changeWindow(this.UserWindows[el.id], el.id)
             }
         })
+        shadow.getElementById("acc_pp").onclick = () => 
+        {
+            let win = this.changeWindow(this.UserWindows.Settings, "Settings")
+            if(win) win.changeView(2)
+        }
     }
 
     changeAccountAvatar() {
@@ -33,14 +38,15 @@ export default class MenuWindow extends HTMLDivElement {
     }
 
     UserWindows = Object.freeze({ "Home": 1, "Library": 2, "Settings": 3 })
-    anwindow = { win: null, enum: null }
+    anwindow = { win: null, enum: null, menu: null }
 
     /**
      * Change user window
      * @param {UserWindows} newWindow 
      * @param {Boolean} updateHistory
      */
-    changeWindow(newWindow, updateHistory = true) {
+    changeWindow(newWindow, menuId, updateHistory = true) {
+        let menu = this.shadowRoot.getElementById(menuId)
         if (!this.anWindow || newWindow != this.anWindow.enum) {
             let awindow;
             if (newWindow == this.UserWindows.Home) {
@@ -51,13 +57,14 @@ export default class MenuWindow extends HTMLDivElement {
                 awindow = new SettingsWindow()
             }
             awindow.classList.add("aWindow")
-            if (updateHistory) window.history.pushState({ where: "menu", window: newWindow }, "", "/index.html")
+            if (updateHistory) window.history.pushState({ where: "menu", window: newWindow, menu: menuId }, "", "/index.html")
             if (this.anWindow) {
                 let thisW = this.anWindow.win
                 thisW.ontransitionend = () => {
                     document.getElementById("main").removeChild(thisW)
                 }
                 thisW.style.opacity = "0%";
+                this.shadowRoot.getElementById(this.anWindow.menu).classList.remove("activated")
             }
             document.getElementById("main").appendChild(awindow)
             if (newWindow != this.UserWindows.Home) {
@@ -65,7 +72,10 @@ export default class MenuWindow extends HTMLDivElement {
                 awindow.offsetHeight
             }
             awindow.classList.add("loaded")
-            this.anWindow = { win: awindow, enum: newWindow }
+            menu.classList.add("activated")
+            this.anWindow = { win: awindow, enum: newWindow, menu: menuId }
+            return awindow
         }
+        return null
     }
 }
