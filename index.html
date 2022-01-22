@@ -10,7 +10,13 @@
         <title>AyMusic</title>
         <link rel="stylesheet"
             href="/main.css">
-        <script src="index.js"></script>
+        <script>
+            var app = null;
+            //pour JS module, utiliser Utils.newError(info, subtext)
+            function newError(info, subText) {
+                console.error(info, "\n", subText)
+            }
+        </script>
         <script src="/main.js"
             type="module"></script>
     </head>
