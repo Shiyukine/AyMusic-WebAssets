@@ -86,7 +86,7 @@ p {
     padding-left: 10px;
     margin-bottom: 7px;
     padding-bottom: 7px;
-    border-bottom: gray solid 1px;
+    border-bottom: rgba(99, 99, 99, 0.6) solid 1px;
     min-height: 33px;
 }
 
@@ -103,6 +103,7 @@ p {
   background: rgb(0, 162, 255);
   outline: none;
   float: right;
+  margin: auto 0;
 }
 
 .settings .slider::-webkit-slider-thumb {
@@ -201,8 +202,8 @@ p {
 
 #acc_img {
     border-radius: 50%;
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     right: 0;
     float: right;
 }
@@ -268,4 +269,8 @@ button {
 button:disabled {
 	opacity: 0.6;
 	cursor: not-allowed;
+}
+
+.sinfo {
+    color: rgb(165, 165, 165);
 }

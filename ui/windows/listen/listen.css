@@ -114,7 +114,7 @@ p {
 }
 
 #music_artist {
-    color: gray;
+    color: rgb(165, 165, 165);
 }
 
 #slider::-webkit-slider-thumb {

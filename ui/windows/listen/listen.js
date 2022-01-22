@@ -1,4 +1,5 @@
 import Import from "../../../class/import.js";
+import Translations from "../../../class/translations.js";
 
 export default class ListenWindow extends HTMLDivElement
 {
@@ -29,5 +30,6 @@ export default class ListenWindow extends HTMLDivElement
             shadow.getElementById("progressBar").style.visibility = "visible"
             shadow.getElementById("slider").style.visibility = "hidden"
         }
+        new Translations(shadow.children[1])
     }
 }

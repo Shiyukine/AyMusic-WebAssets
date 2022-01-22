@@ -1,4 +1,5 @@
 import Import from "../../../class/import.js";
+import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
 
 export default class SettingsWindow extends HTMLDivElement
@@ -29,6 +30,14 @@ export default class SettingsWindow extends HTMLDivElement
         shadow.getElementById("acc_img").src = Utils.actualAccount.avatarUrl;
         shadow.getElementById("acc_name").innerText = Utils.actualAccount.name;
         shadow.getElementById("acc_email").innerText = Utils.actualAccount.email;
+        new Translations(shadow.children[1])
+        /*var cb = document.getElementById("settings").getElementsByClassName("view")[0].querySelectorAll("select")[0]
+                this.allTranslations["Available"].forEach(y => {
+                    var l = document.createElement("option")
+                    l.name = y
+                    l.innerText = y
+                    cb.appendChild(l)
+                })*/
     }
 
     changeView(newIndex)

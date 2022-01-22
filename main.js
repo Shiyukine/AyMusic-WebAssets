@@ -6,6 +6,7 @@ import LoginPanel from "./ui/components/loginPanel/loginPanel.js";
 import MenuWindow from "./ui/windows/menu/menu.js";
 import ListenWindow from "./ui/windows/listen/listen.js";
 import SettingsWindow from "./ui/windows/settings/settings.js";
+import Translations from "./class/translations.js";
 async function main()
 {
     window.app = Utils.app;
@@ -15,17 +16,19 @@ async function main()
     customElements.define("left-menu", MenuWindow, { extends: "div" });
     customElements.define("listen-window", ListenWindow, { extends: "div" });
     customElements.define("settings-window", SettingsWindow, { extends: "div" });
+    new Translations(document.body)
     //
     Utils.app.loaded = async function ()
     {
         try
         {
-            console.log("AyMusic client registered : " + Utils.app.platform);
+            console.log("AyMusic client registered : " + Utils.app.platform + ", version : " + Utils.app.versionName + " (" + Utils.app.versionId + ")");
             if (Utils.app.platform == "Windows")
             {
                 Window.setTopBarWindow();
                 Window.setDevToolLogger();
             }
+            document.getElementById("version_name").innerText = "Version - " + Utils.app.versionName + " (" + Utils.app.versionId + ")"
             var loadPanel = new InfoPanel("Searching for updates...", "Please wait...", null, true);
             document.getElementById("main").appendChild(loadPanel);
             loadPanel.style.width = loadPanel.style.height = "100%";

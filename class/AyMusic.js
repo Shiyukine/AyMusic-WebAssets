@@ -1,7 +1,7 @@
 export default class AyMusic
 {
     remoteClient = null;
-    #eventEl = null;
+    #eventEl = document.createElement("event");
     settings = {
         lang: "English",
         theme: "Dark",
@@ -60,8 +60,7 @@ export default class AyMusic
 
     set loaded(callback)
     {
-        this.#eventEl = document.createElement("event")
-        this.#eventEl.addEventListener("loaded", callback)
+        this.addEventListener("loaded", callback)
     }
 
     changeSetting(settingName, value)
@@ -73,5 +72,16 @@ export default class AyMusic
     getSetting(settingName)
     {
         return this.settings[settingName]
+    }
+
+    changeLanguage(language)
+    {
+        this.changeSetting("lang", language)
+        this.#eventEl.dispatchEvent(new CustomEvent("langchanged"));
+    }
+
+    addEventListener(event, callback)
+    {
+        this.#eventEl.addEventListener(event, callback)
     }
 }

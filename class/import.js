@@ -57,9 +57,9 @@ export default class Import
             {
                 if (this.readyState !== 4) return;
                 if (this.status !== 200) return; // or whatever error handling you want
+                else resolve(xhr.responseText)
             };
             xhr.send();
-            resolve(xhr.responseText)
         })
     }
 }
