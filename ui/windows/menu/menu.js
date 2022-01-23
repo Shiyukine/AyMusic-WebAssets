@@ -8,29 +8,34 @@ export default class MenuWindow extends HTMLDivElement {
     constructor() {
         super();
         var shadow = this.attachShadow({ mode: "open" });
-        shadow.innerHTML = Import.loadHTML("/ui/windows/menu/menu.html");
-        this.shadowRoot.getElementById("cssImport").onload = () => {
-            this.shadowRoot.getElementById("main").ontransitionend = () => { };
-            this.shadowRoot.getElementById("main").style = "";
-            this.style.width = "100px";
-            this.style.height = "100%";
-            this.style.position = "absolute";
-        }
-        this.accountEl = this.shadowRoot.getElementById("acc_pp");
-        this.changeAccountAvatar();
-        window.addEventListener("popstate", (e) => {
-            if (e.state.where == "menu") this.changeWindow(e.state.window, e.state.menu, false)
-        })
-        Array.from(shadow.getElementById("main").getElementsByTagName("svg")).forEach((el) => {
-            el.onclick = () => {
-                this.changeWindow(this.UserWindows[el.id], el.id)
+        this.style.opacity = "0%"
+        this.style.transition = "opacity 0.7s"
+        Import.getData("/ui/windows/menu/menu.html").then((html) => {
+            shadow.innerHTML = html;
+            this.shadowRoot.getElementById("cssImport").onload = () => {
+                this.shadowRoot.getElementById("main").ontransitionend = () => { };
+                this.shadowRoot.getElementById("main").style = "";
+                this.style.width = "100px";
+                this.style.height = "100%";
+                this.style.position = "absolute";
+                this.style.opacity = "1"
             }
+            this.accountEl = this.shadowRoot.getElementById("acc_pp");
+            this.changeAccountAvatar();
+            window.addEventListener("popstate", (e) => {
+                if (e.state.where == "menu") this.changeWindow(e.state.window, e.state.menu, false)
+            })
+            Array.from(shadow.getElementById("main").getElementsByTagName("svg")).forEach((el) => {
+                el.onclick = () => {
+                    this.changeWindow(this.UserWindows[el.id], el.id)
+                }
+            })
+            shadow.getElementById("acc_pp").onclick = () => {
+                let win = this.changeWindow(this.UserWindows.Settings, "Settings")
+                if (win) win.changeView(2)
+            }
+            this.changeWindow(this.UserWindows.Home, "Home")
         })
-        shadow.getElementById("acc_pp").onclick = () => 
-        {
-            let win = this.changeWindow(this.UserWindows.Settings, "Settings")
-            if(win) win.changeView(2)
-        }
     }
 
     changeAccountAvatar() {

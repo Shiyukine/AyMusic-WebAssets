@@ -65,7 +65,6 @@ async function main()
                 document.body.classList.remove("loading");
                 let menuWin = new MenuWindow()
                 mainPanel.appendChild(menuWin);
-                menuWin.changeWindow(menuWin.UserWindows.Home, "Home")
                 mainPanel.appendChild(new ListenWindow())
             };
         }

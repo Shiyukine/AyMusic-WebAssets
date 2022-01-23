@@ -10,34 +10,37 @@ export default class SettingsWindow extends HTMLDivElement
     {
         super();
         var shadow = this.attachShadow({ mode: "open" })
-        shadow.innerHTML = Import.loadHTML("/ui/windows/settings/settings.html")
-        shadow.getElementById("menu").onwheel = (ev) =>
-        {
-            let newIndex;
-            if (ev.deltaY > 0) newIndex = this.selectedIndex + 1
-            else newIndex = this.selectedIndex - 1
-            if (newIndex > shadow.getElementById("menu").children.length - 1) newIndex -= 1
-            if (newIndex < 0) newIndex += 1
-            this.changeView(newIndex)
-        };
-        Array.from(shadow.getElementById("menu").children).forEach((x, y) =>
-        {
-            x.onclick = () => {
-                this.changeView(y)
-            }
+        this.style.opacity = "0%"
+        this.style.transition = "opacity 0.7s"
+        Import.getData("/ui/windows/settings/settings.html").then((html) => {
+            shadow.innerHTML = html
+            shadow.getElementById("menu").onwheel = (ev) => {
+                let newIndex;
+                if (ev.deltaY > 0) newIndex = this.selectedIndex + 1
+                else newIndex = this.selectedIndex - 1
+                if (newIndex > shadow.getElementById("menu").children.length - 1) newIndex -= 1
+                if (newIndex < 0) newIndex += 1
+                this.changeView(newIndex)
+            };
+            Array.from(shadow.getElementById("menu").children).forEach((x, y) => {
+                x.onclick = () => {
+                    this.changeView(y)
+                }
+            })
+            //
+            shadow.getElementById("acc_img").src = Utils.actualAccount.avatarUrl;
+            shadow.getElementById("acc_name").innerText = Utils.actualAccount.name;
+            shadow.getElementById("acc_email").innerText = Utils.actualAccount.email;
+            new Translations(shadow.children[1])
+            /*var cb = document.getElementById("settings").getElementsByClassName("view")[0].querySelectorAll("select")[0]
+                    this.allTranslations["Available"].forEach(y => {
+                        var l = document.createElement("option")
+                        l.name = y
+                        l.innerText = y
+                        cb.appendChild(l)
+                    })*/
+            this.style.opacity = "1"
         })
-        //
-        shadow.getElementById("acc_img").src = Utils.actualAccount.avatarUrl;
-        shadow.getElementById("acc_name").innerText = Utils.actualAccount.name;
-        shadow.getElementById("acc_email").innerText = Utils.actualAccount.email;
-        new Translations(shadow.children[1])
-        /*var cb = document.getElementById("settings").getElementsByClassName("view")[0].querySelectorAll("select")[0]
-                this.allTranslations["Available"].forEach(y => {
-                    var l = document.createElement("option")
-                    l.name = y
-                    l.innerText = y
-                    cb.appendChild(l)
-                })*/
     }
 
     changeView(newIndex)

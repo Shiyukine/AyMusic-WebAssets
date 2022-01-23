@@ -31,6 +31,7 @@ export default class Import
     /**
      * @param {String|URL} filePath filepath
     */
+    /*
     static loadHTML(filePath)
     {
         var xhr = new XMLHttpRequest();
@@ -42,7 +43,7 @@ export default class Import
         };
         xhr.send();
         return xhr.responseText
-    }
+    }*/
 
     /**
      * @param {String|URL} filePath filepath

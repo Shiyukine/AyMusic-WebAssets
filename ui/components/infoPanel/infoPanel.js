@@ -31,27 +31,29 @@ export default class InfoPanel extends HTMLDivElement
     {
         super(text, subtext, buttons, isloading);
         var shadow = this.attachShadow({ mode: 'open' });
-        shadow.innerHTML = Import.loadHTML("/ui/components/infoPanel/infoPanel.html")
-        this.#textEl = shadow.getElementById("text");
-        this.#subtextEl = shadow.getElementById("subtext");
-        this.#svg = shadow.getElementById("svg");
-        this.#btnList = shadow.getElementById("btnList");
-        this.#progressBar = shadow.getElementById("progressBar");
-        this.changeText(text, subtext);
-        this.changeloading(isloading);
-        if (buttons)
-        {
-            buttons.forEach(el =>
-            {
-                this.addButton(el.text, el.isPositive, el.onclick);
-            });
-        }
-        this.shadowRoot.getElementById("cssImport").onload = () =>
-        {
-            this.shadowRoot.getElementById("panelInfoBG").ontransitionend = () => { };
-            this.shadowRoot.getElementById("panelInfoBG").style = "";
-            this.#loaded = true;
-        }
+        this.style.opacity = "0%"
+        this.style.transition = "opacity 0.7s"
+        Import.getData("/ui/components/infoPanel/infoPanel.html").then((html) => {
+            shadow.innerHTML = html
+            this.#textEl = shadow.getElementById("text");
+            this.#subtextEl = shadow.getElementById("subtext");
+            this.#svg = shadow.getElementById("svg");
+            this.#btnList = shadow.getElementById("btnList");
+            this.#progressBar = shadow.getElementById("progressBar");
+            this.changeText(text, subtext);
+            this.changeloading(isloading);
+            if (buttons) {
+                buttons.forEach(el => {
+                    this.addButton(el.text, el.isPositive, el.onclick);
+                });
+            }
+            this.shadowRoot.getElementById("cssImport").onload = () => {
+                this.shadowRoot.getElementById("panelInfoBG").ontransitionend = () => { };
+                this.shadowRoot.getElementById("panelInfoBG").style = "";
+                this.#loaded = true;
+            }
+            this.style.opacity = "1"
+        })
     }
 
     show()

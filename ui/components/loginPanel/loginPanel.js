@@ -44,17 +44,19 @@ export default class LoginPanel extends HTMLDivElement
         var shadow = this.attachShadow({ mode: "open" })
         this.logged = function () { }
         this.isForModification = isForModification;
-        shadow.innerHTML = Import.loadHTML("/ui/components/loginPanel/loginPanel.html")
-        this.#iframe = this.shadowRoot.getElementById("iframe")
-        this.#cache = this.shadowRoot.getElementById("cache")
-        this.#svg = this.shadowRoot.getElementById("svg")
-        this.shadowRoot.getElementById("cssImport").onload = () =>
-        {
-            this.shadowRoot.getElementById("loginBG").ontransitionend = () => { };
-            this.shadowRoot.getElementById("loginBG").style = ""
-        }
-        let loaded = false;
-        Utils.app.remoteClient.registerIframeUrl(Utils.servURL + "login/", `//injected script by AyMusic app
+        this.style.opacity = "0%"
+        this.style.transition = "opacity 0.7s"
+        Import.getData("/ui/components/loginPanel/loginPanel.html").then((html) => {
+            shadow.innerHTML = html
+            this.#iframe = this.shadowRoot.getElementById("iframe")
+            this.#cache = this.shadowRoot.getElementById("cache")
+            this.#svg = this.shadowRoot.getElementById("svg")
+            this.shadowRoot.getElementById("cssImport").onload = () => {
+                this.shadowRoot.getElementById("loginBG").ontransitionend = () => { };
+                this.shadowRoot.getElementById("loginBG").style = ""
+            }
+            let loaded = false;
+            Utils.app.remoteClient.registerIframeUrl(Utils.servURL + "login/", `//injected script by AyMusic app
             addEventListener('message', (e) =>
             {
                 if(e.origin.includes('myapp://root'))
@@ -70,47 +72,41 @@ export default class LoginPanel extends HTMLDivElement
                 }
             })
             console.log('script injected for URL = ' + document.location.toString())`)
-        this.#iframe.onload = async () =>
-        {
-            let url = await this.#getIframeUrl();
-            loaded = true;
-            if (url.includes("islogged.php"))
-            {
-                this.#iframe.contentWindow.postMessage({ message: "html" }, Utils.servURL)
-            }
-        }
-        window.addEventListener("message", (e) =>
-        {
-            if (e.origin == Utils.servURL.slice(0, -1))
-            {
-                if (e.data.message == "callbackHTML")
-                {
-                    let text = e.data.data.split("<br>").join("\n");
-                    let params = text.split("\n")
-                    let value = i => params[i].split(" = ")[1]
-                    Utils.actualAccount = {
-                        name: value(2),
-                        email: value(0),
-                        avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif"
-                    }
-                    console.log("Welcome " + Utils.actualAccount.name + " on AyMusic !")
-                    this.shadowRoot.getElementById("loginBG").ontransitionend = () =>
-                    {
-                        this.shadowRoot.getRootNode().host.parentElement.removeChild(this)
-                        this.#eventEl.dispatchEvent(new CustomEvent("logged"));
-                    };
-                    this.shadowRoot.getElementById("loginBG").style.opacity = "0%"
+            this.#iframe.onload = async () => {
+                let url = await this.#getIframeUrl();
+                loaded = true;
+                if (url.includes("islogged.php")) {
+                    this.#iframe.contentWindow.postMessage({ message: "html" }, Utils.servURL)
                 }
             }
+            window.addEventListener("message", (e) => {
+                if (e.origin == Utils.servURL.slice(0, -1)) {
+                    if (e.data.message == "callbackHTML") {
+                        let text = e.data.data.split("<br>").join("\n");
+                        let params = text.split("\n")
+                        let value = i => params[i].split(" = ")[1]
+                        Utils.actualAccount = {
+                            name: value(2),
+                            email: value(0),
+                            avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif"
+                        }
+                        console.log("Welcome " + Utils.actualAccount.name + " on AyMusic !")
+                        this.shadowRoot.getElementById("loginBG").ontransitionend = () => {
+                            this.shadowRoot.getRootNode().host.parentElement.removeChild(this)
+                            this.#eventEl.dispatchEvent(new CustomEvent("logged"));
+                        };
+                        this.shadowRoot.getElementById("loginBG").style.opacity = "0%"
+                    }
+                }
+            })
+            setTimeout(() => {
+                if (!loaded) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
+            }, 21500)
+            if (!isForModification) {
+                this.#iframe.src = Utils.servURL + "login/?inapp=1&date=" + Date.now().toString()
+            }
+            this.style.opacity = "1"
         })
-        setTimeout(() =>
-        {
-            if (!loaded) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
-        }, 21500)
-        if (!isForModification)
-        {
-            this.#iframe.src = Utils.servURL + "login/?inapp=1&date=" + Date.now().toString()
-        }
     }
 
     set logged(callback)
