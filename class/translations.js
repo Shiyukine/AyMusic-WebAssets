@@ -18,7 +18,7 @@ export default class Translations
                     this.allTranslations = JSON.parse(trls)
                 }
                 else console.error("Unable to load translations file")
-                let trl = this.allTranslations[Utils.app.settings.lang]
+                let trl = this.allTranslations[Utils.app.settings.gen_langs]
                 this.changeLang(trl)
                 let self = this
                 var observer = new MutationObserver(function () {
@@ -29,7 +29,7 @@ export default class Translations
                     subtree: true
                 });
                 Utils.app.addEventListener("langchanged", () => {
-                    this.changeLang(this.allTranslations[Utils.app.settings.lang])
+                    this.changeLang(this.allTranslations[Utils.app.settings.gen_langs])
                 })
             }
             catch (e) {
@@ -59,7 +59,7 @@ export default class Translations
     changeLang(trl)
     {
         if (!trl) {
-            Utils.newError("Translations in " + Utils.app.settings.lang + " not found", "Language set to English.")
+            Utils.newError("Translations in " + Utils.app.settings.gen_langs + " not found", "Language set to English.")
             trl = this.allTranslations["English"]
         }
         this.translate(trl)

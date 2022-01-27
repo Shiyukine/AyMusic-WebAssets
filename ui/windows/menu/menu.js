@@ -72,10 +72,6 @@ export default class MenuWindow extends HTMLDivElement {
                 this.shadowRoot.getElementById(this.anWindow.menu).classList.remove("activated")
             }
             document.getElementById("main").appendChild(awindow)
-            if (newWindow != this.UserWindows.Home) {
-                //wait for element load
-                awindow.offsetHeight
-            }
             awindow.classList.add("loaded")
             menu.classList.add("activated")
             this.anWindow = { win: awindow, enum: newWindow, menu: menuId }

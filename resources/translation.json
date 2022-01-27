@@ -3,8 +3,6 @@
         "English"
     ],
     "English": {
-        "{loading.haveError}": "If you see this text for a long moment, please report this bug to the Aketsuky™ Team.",
-        "{loading.dev}": "Developed by Aketsuky™",
         "{settings}": "Settings",
         "{set.general}": "General",
         "{set.general.lang}": "Language",

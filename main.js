@@ -16,7 +16,6 @@ async function main()
     customElements.define("left-menu", MenuWindow, { extends: "div" });
     customElements.define("listen-window", ListenWindow, { extends: "div" });
     customElements.define("settings-window", SettingsWindow, { extends: "div" });
-    new Translations(document.body)
     //
     Utils.app.loaded = async function ()
     {
@@ -28,6 +27,7 @@ async function main()
                 Window.setTopBarWindow();
                 Window.setDevToolLogger();
             }
+            new Translations(document.body)
             document.getElementById("version_name").innerText = "Version - " + Utils.app.versionName + " (" + Utils.app.versionId + ")"
             var loadPanel = new InfoPanel("Searching for updates...", "Please wait...", null, true);
             document.getElementById("main").appendChild(loadPanel);

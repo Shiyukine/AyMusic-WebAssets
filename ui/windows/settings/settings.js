@@ -40,6 +40,53 @@ export default class SettingsWindow extends HTMLDivElement
                         cb.appendChild(l)
                     })*/
             this.style.opacity = "1"
+            Import.getData("/resources/translation.json").then((trls) => {
+                try {
+                    var allTranslations = ""
+                    if (trls) {
+                        allTranslations = JSON.parse(trls)
+                    }
+                    else console.error("Unable to load translations file")
+                    for (var i in allTranslations["Available"]) {
+                        let trl = allTranslations["Available"][i]
+                        var opt = document.createElement("option")
+                        opt.value = trl
+                        opt.innerText = trl
+                        shadow.getElementById("gen_langs").appendChild(opt)
+                    }
+                }
+                catch (e) {
+                    Utils.newError("Unable to get translations", e)
+                }
+            });
+            shadow.querySelectorAll("*").forEach((x) => {
+                if (typeof Utils.app.settings[x.id] !== "undefined") {
+                    if (x.tagName == "INPUT" && x.max == "1") {
+                        x.value = Utils.app.getSetting(x.id) ? 1 : 0
+                        x.style.backgroundColor = x.value == "1" ? "" : "gray"
+                        x.oninput = () => {
+                            Utils.app.changeSetting(x.id, x.value == "1")
+                            x.style.backgroundColor = x.value == "1" ? "" : "gray"
+                            x.value = Utils.app.getSetting(x.id) ? 1 : 0
+                        }
+                    }
+                    if (x.tagName == "INPUT" && x.max != "1") {
+                        x.value = parseInt(Utils.app.getSetting(x.id))
+                        x.oninput = () => {
+                            Utils.app.changeSetting(x.id, x.value)
+                            //x.value = parseInt(Utils.app.getSetting(x.id))
+                        }
+                    }
+                    if (x.tagName == "SELECT") {
+                        x.value = Utils.app.getSetting(x.id)
+                        x.onchange = () => {
+                            Utils.app.changeSetting(x.id, x.value)
+                            x.value = Utils.app.getSetting(x.id)
+                        }
+                    }
+                }
+            })
+            shadow.getElementById("about_ver").innerText += " " + Utils.app.versionName + " (" + Utils.app.versionId + ")"
         })
     }
 

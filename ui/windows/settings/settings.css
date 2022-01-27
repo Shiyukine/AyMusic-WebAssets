@@ -94,9 +94,13 @@ p {
     border-bottom: inherit;
 }
 
+.settings .slider[max="1"] {
+  width: 35px !important;
+}
+
 .settings .slider {
   -webkit-appearance: none;
-  width: 35px;
+  width: 150px;
   height: 25px;
   padding: 0 5px;
   border-radius: 12.5px;
@@ -104,6 +108,7 @@ p {
   outline: none;
   float: right;
   margin: auto 0;
+  transition: 0.4s;
 }
 
 .settings .slider::-webkit-slider-thumb {
@@ -169,6 +174,8 @@ p {
 }
 
 .havesub {
+    padding-top: 1px;
+    padding-left: 15px !important;
     display: block !important;
 }
 
@@ -181,7 +188,7 @@ p {
     border-radius: 15px;
     margin-top: 20px;
     margin-bottom: 5px;
-    padding: 10px;
+    padding: 15px;
 }
 
 .setsub>p.title {

@@ -3,14 +3,14 @@ export default class AyMusic
     remoteClient = null;
     #eventEl = document.createElement("event");
     settings = {
-        lang: "English",
-        theme: "Dark",
-        adblock: true,
-        createMix: false,
-        discordRPC: true,
-        writeLogs: false,
-        volume: 66,
-        skipSilence: false
+        gen_langs: "English",
+        gen_theme: "Dark",
+        gen_discordRPC: true,
+        gen_logs: false,
+        music_adblock: true,
+        music_createMix: false,
+        music_vol: 66,
+        music_skipS: false
     }
 
     constructor()
@@ -32,24 +32,25 @@ export default class AyMusic
             this.versionName = versionName;
             this.versionId = versionId;
             this.remoteClient = remoteClient;
-            let newS = JSON.parse(await this.remoteClient.getSettingFile())
+            let newS = await this.remoteClient.getSettingFile()
             if (newS)
             {
-                Array.from(this.settings).forEach(x =>
+                newS = JSON.parse(newS)
+                for(var x in this.settings)
                 {
-                    if (!Array.from(newS).includes(x))
+                    if (typeof newS[x] === "undefined")
                     {
                         console.warn("Adding settings which didn't exists : " + x)
                         newS[x] = this.settings[x]
                     }
-                })
-                this.settings = newS
+                }
+                this.settings = newS   
             }
             else
             {
-                this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
                 console.warn("No settings imported. Creating new setting file")
             }
+            this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
             this.#eventEl.dispatchEvent(new CustomEvent("loaded"));
         }
         catch (e)
@@ -67,10 +68,12 @@ export default class AyMusic
     {
         this.settings[settingName] = value
         this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
+        console.log("Setting : " + settingName + " is changed to : " + value)
     }
 
     getSetting(settingName)
     {
+        console.log("Getting setting : " + settingName + ". Value : " + this.settings[settingName])
         return this.settings[settingName]
     }
 
