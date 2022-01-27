@@ -32,14 +32,6 @@ export default class SettingsWindow extends HTMLDivElement
             shadow.getElementById("acc_name").innerText = Utils.actualAccount.name;
             shadow.getElementById("acc_email").innerText = Utils.actualAccount.email;
             new Translations(shadow.children[1])
-            /*var cb = document.getElementById("settings").getElementsByClassName("view")[0].querySelectorAll("select")[0]
-                    this.allTranslations["Available"].forEach(y => {
-                        var l = document.createElement("option")
-                        l.name = y
-                        l.innerText = y
-                        cb.appendChild(l)
-                    })*/
-            this.style.opacity = "1"
             Import.getData("/resources/translation.json").then((trls) => {
                 try {
                     var allTranslations = ""
@@ -87,15 +79,19 @@ export default class SettingsWindow extends HTMLDivElement
                 }
             })
             shadow.getElementById("about_ver").innerText += " " + Utils.app.versionName + " (" + Utils.app.versionId + ")"
+            this.changeView(this.selectedIndex)
+            this.style.opacity = "1"
         })
     }
 
     changeView(newIndex)
     {
-        this.shadowRoot.getElementById("menu").children[this.selectedIndex].classList.remove("selected")
-        this.shadowRoot.getElementById("view").children[this.selectedIndex].classList.remove("selected")
-        this.shadowRoot.getElementById("menu").children[newIndex].classList.add("selected")
-        this.shadowRoot.getElementById("view").children[newIndex].classList.add("selected")
+        try {
+            this.shadowRoot.getElementById("menu").children[this.selectedIndex].classList.remove("selected")
+            this.shadowRoot.getElementById("view").children[this.selectedIndex].classList.remove("selected")
+            this.shadowRoot.getElementById("menu").children[newIndex].classList.add("selected")
+            this.shadowRoot.getElementById("view").children[newIndex].classList.add("selected")
+        } catch {}
         this.selectedIndex = newIndex
     }
 }

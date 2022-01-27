@@ -77,6 +77,6 @@ export default class MenuWindow extends HTMLDivElement {
             this.anWindow = { win: awindow, enum: newWindow, menu: menuId }
             return awindow
         }
-        return null
+        return this.anWindow.win
     }
 }
