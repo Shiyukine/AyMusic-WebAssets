@@ -52,7 +52,6 @@ export default class LoginPanel extends HTMLDivElement {
             this.addScript()
             this.#iframe.onload = async () => {
                 let url = await this.#getIframeUrl();
-                this.addScript()
                 loaded = true;
                 if (url.includes("islogged.php")) {
                     this.#iframe.contentWindow.postMessage({ message: "html" }, Utils.servURL)
@@ -71,7 +70,7 @@ export default class LoginPanel extends HTMLDivElement {
                             name: value(2),
                             id: value(3),
                             email: value(0),
-                            avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif"
+                            avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif?date=" + Date.now().toString()
                         }
                         console.log("Welcome " + Utils.actualAccount.id + " to AyMusic !")
                         if (isForModification == "modify") {
@@ -114,7 +113,7 @@ export default class LoginPanel extends HTMLDivElement {
 
     addScript() {
         try {
-            Utils.app.remoteClient.registerIframeUrl(Utils.servURL + "login/", `//injected script by AyMusic app
+            Utils.app.remoteClient.registerIframeUrl(Utils.servURL, `//injected script by AyMusic app
             addEventListener('message', (e) =>
             {
                 if(e.origin.includes('myapp://root'))
@@ -128,8 +127,7 @@ export default class LoginPanel extends HTMLDivElement {
                         parent.postMessage({message: 'callbackHTML', data: document.body.innerHTML}, 'myapp://root')
                     }
                 }
-            })
-            console.log('script injected for URL = ' + document.location.toString())`)
+            })`)
         }
         catch {
             console.warn("Login script already added")
