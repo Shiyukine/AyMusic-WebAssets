@@ -281,3 +281,8 @@ button:disabled {
 .sinfo {
     color: rgb(165, 165, 165);
 }
+
+.hidden {
+    visibility: collapse;
+    position: absolute;
+}

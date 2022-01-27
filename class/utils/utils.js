@@ -2,26 +2,24 @@ import Import from "../import.js";
 import infoPanel from "../../ui/components/infoPanel/infoPanel.js";
 import AyMusic from "../AyMusic.js";
 
-export default class Utils
-{
+export default class Utils {
     static useLocalServer = true
     static servURL = ""
     static actualAccount =
         {
             name: "Unknown",
+            id: "Unknown",
             email: "Unknown",
             avatarUrl: "/resources/noavatar.png"
         }
 
     static app = new AyMusic();
 
-    static delay(ms)
-    {
+    static delay(ms) {
         return new Promise(resolve => setTimeout(() => resolve(), ms))
     }
 
-    static createSVGPath(pathName, color, click, taille)
-    {
+    static createSVGPath(pathName, color, click, taille) {
         return new Promise((resolve) => {
             Import.getData("/resources/paths.json").then((data) => {
                 let paths = JSON.parse(data)
@@ -41,12 +39,10 @@ export default class Utils
         })
     }
 
-    static async newError(info, subText)
-    {
+    static async newError(info, subText) {
         console.error(info, "\n", subText)
         let errPanel = new infoPanel(info, subText, [{
-            text: "OK", isPositive: true, onclick: () =>
-            {
+            text: "OK", isPositive: true, onclick: () => {
                 errPanel.close()
             }
         }], false)

@@ -10,6 +10,7 @@ export default class MenuWindow extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: "open" });
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.7s"
+        this.id = "menu_win"
         Import.getData("/ui/windows/menu/menu.html").then((html) => {
             shadow.innerHTML = html;
             this.shadowRoot.getElementById("cssImport").onload = () => {

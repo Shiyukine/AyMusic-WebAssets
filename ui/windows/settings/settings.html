@@ -1,5 +1,4 @@
-<style type="text/css"
-    id="cssImport">
+<style type="text/css" id="cssImport">
     @import url("/ui/windows/settings/settings.css");
 </style>
 <div class="settings">
@@ -18,38 +17,27 @@
                     <div class="set">
                         <p>{set.general.lang}</p>
                         <div class="select-container">
-                            <select name="langs"
-                                id="gen_langs">
+                            <select name="langs" id="gen_langs">
                             </select>
                         </div>
                     </div>
                     <div class="set">
                         <p>{set.general.theme}</p>
                         <div class="select-container">
-                            <select name="langs"
-                                id="gen_theme">
+                            <select name="langs" id="gen_theme">
                                 <option value="Dark">Dark</option>
                                 <option value="White">White</option>
                             </select>
                         </div>
                     </div>
                     <div class="set">
-                        <p><span>{set.general.discordRPC}</span><br><span class="sinfo">{set.general.discordRPC.info}</span></p>
-                        <input type="range"
-                            min="0"
-                            max="1"
-                            value="1"
-                            class="slider"
-                            id="gen_discordRPC">
+                        <p><span>{set.general.discordRPC}</span><br><span
+                                class="sinfo">{set.general.discordRPC.info}</span></p>
+                        <input type="range" min="0" max="1" value="1" class="slider" id="gen_discordRPC">
                     </div>
                     <div class="set last">
                         <p>{set.general.logs}</p>
-                        <input type="range"
-                            min="0"
-                            max="1"
-                            value="1"
-                            class="slider"
-                            id="gen_logs">
+                        <input type="range" min="0" max="1" value="1" class="slider" id="gen_logs">
                     </div>
                 </div>
             </div>
@@ -58,39 +46,19 @@
                 <div class="sub">
                     <div class="set">
                         <p>{set.music.createMix}</p>
-                        <input type="range"
-                            min="0"
-                            max="1"
-                            value="1"
-                            class="slider"
-                            id="music_createMix">
+                        <input type="range" min="0" max="1" value="1" class="slider" id="music_createMix">
                     </div>
                     <div class="set">
                         <p>{set.music.volume}</p>
-                        <input type="range"
-                            min="0"
-                            max="100"
-                            value="1"
-                            class="slider"
-                            id="music_vol">
+                        <input type="range" min="0" max="100" value="1" class="slider" id="music_vol">
                     </div>
-                    <div class="set">
-                        <p>{set.music.skipSilences}</p>
-                        <input type="range"
-                            min="0"
-                            max="1"
-                            value="1"
-                            class="slider"
-                            id="music_skipS">
+                    <div class="set hidden">
+                        <p>{set.music.adblock}</p>
+                        <input type="range" min="0" max="1" value="1" class="slider" id="music_adblock">
                     </div>
                     <div class="set last">
-                        <p>{set.music.adblock}</p>
-                        <input type="range"
-                            min="0"
-                            max="1"
-                            value="1"
-                            class="slider"
-                            id="music_adblock">
+                        <p>{set.music.skipSilences}</p>
+                        <input type="range" min="0" max="1" value="1" class="slider" id="music_skipS">
                     </div>
                 </div>
             </div>
@@ -105,9 +73,9 @@
                             <p class="big">{set.account.email}</p>
                             <p id="acc_email">Email</p>
                             <br>
-                            <button>{set.account.change}</button>
+                            <button id="acc_change">{set.account.change}</button>
                             <br>
-                            <button>{set.account.logout}</button>
+                            <button id="acc_logout">{set.account.logout}</button>
                         </div>
                         <div class="account-2">
                             <img src="/resources/noavatar.png" alt="" id="acc_img">

@@ -7,8 +7,8 @@ import MenuWindow from "./ui/windows/menu/menu.js";
 import ListenWindow from "./ui/windows/listen/listen.js";
 import SettingsWindow from "./ui/windows/settings/settings.js";
 import Translations from "./class/translations.js";
-async function main()
-{
+
+async function main() {
     window.app = Utils.app;
     document.body.ondragstart = () => { return false; };
     customElements.define('info-panel', InfoPanel, { extends: "div" });
@@ -17,13 +17,10 @@ async function main()
     customElements.define("listen-window", ListenWindow, { extends: "div" });
     customElements.define("settings-window", SettingsWindow, { extends: "div" });
     //
-    Utils.app.loaded = async function ()
-    {
-        try
-        {
+    Utils.app.loaded = async function () {
+        try {
             console.log("AyMusic client registered : " + Utils.app.platform + ", version : " + Utils.app.versionName + " (" + Utils.app.versionId + ")");
-            if (Utils.app.platform == "Windows")
-            {
+            if (Utils.app.platform == "Windows") {
                 Window.setTopBarWindow();
                 Window.setDevToolLogger();
             }
@@ -45,13 +42,12 @@ async function main()
             Update.searchUpdate(loadPanel);
             await Utils.delay(2000);
             loadPanel.changeText("Connecting to your account...");
-            var logP = new LoginPanel(false);
+            var logP = new LoginPanel("");
             logP.style.width = logP.style.height = "100%";
             logP.style.position = "absolute";
             document.getElementById("main").appendChild(logP);
             loadPanel.hide();
-            logP.logged = async () =>
-            {
+            logP.logged = async () => {
                 loadPanel.changeText("Getting your musics...");
                 loadPanel.show();
                 await Utils.delay(1000);
@@ -68,8 +64,7 @@ async function main()
                 mainPanel.appendChild(new ListenWindow())
             };
         }
-        catch (e)
-        {
+        catch (e) {
             Utils.newError("Unable to reach the server :(", e);
         }
     };
