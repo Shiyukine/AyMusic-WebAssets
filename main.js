@@ -8,6 +8,7 @@ import ListenWindow from "./ui/windows/listen/listen.js";
 import SettingsWindow from "./ui/windows/settings/settings.js";
 import Translations from "./class/translations.js";
 import LibraryWindow from "./ui/windows/library/library.js";
+import SearchWindow from "./ui/windows/search/search.js";
 
 async function main() {
     window.app = Utils.app;
@@ -18,6 +19,7 @@ async function main() {
     customElements.define("listen-window", ListenWindow, { extends: "div" });
     customElements.define("settings-window", SettingsWindow, { extends: "div" });
     customElements.define("library-window", LibraryWindow, { extends: "div" });
+    customElements.define("search-window", SearchWindow, { extends: "div" });
     //
     Utils.app.loaded = async function () {
         try {

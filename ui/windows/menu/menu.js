@@ -2,6 +2,7 @@ import Utils from "../../../class/utils/utils.js";
 import Import from "../../../class/import.js";
 import SettingsWindow from "../settings/settings.js";
 import LibraryWindow from "../library/library.js";
+import SearchWindow from "../search/search.js";
 
 export default class MenuWindow extends HTMLDivElement {
     anWindow = null;
@@ -44,7 +45,7 @@ export default class MenuWindow extends HTMLDivElement {
         this.accountEl.src = Utils.actualAccount.avatarUrl;
     }
 
-    UserWindows = Object.freeze({ "Home": 1, "Library": 2, "Settings": 3 })
+    UserWindows = Object.freeze({ "Home": 1, "Search": 2, "Library": 3, "Settings": 4 })
     anwindow = { win: null, enum: null, menu: null }
 
     /**
@@ -62,6 +63,9 @@ export default class MenuWindow extends HTMLDivElement {
             }
             if (newWindow == this.UserWindows.Library) {
                 awindow = new LibraryWindow()
+            }
+            if (newWindow == this.UserWindows.Search) {
+                awindow = new SearchWindow()
             }
             if (newWindow == this.UserWindows.Settings) {
                 awindow = new SettingsWindow()

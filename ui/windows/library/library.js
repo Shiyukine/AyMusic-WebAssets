@@ -1,8 +1,5 @@
 import Import from "../../../class/import.js";
 import Translations from "../../../class/translations.js";
-import Utils from "../../../class/utils/utils.js";
-import InfoPanel from "../../components/infoPanel/infoPanel.js";
-import LoginPanel from "../../components/loginPanel/loginPanel.js";
 
 export default class LibraryWindow extends HTMLDivElement {
     selectedIndex = 0;
