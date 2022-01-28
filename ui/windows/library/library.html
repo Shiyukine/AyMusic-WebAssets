@@ -1,0 +1,47 @@
+<style type="text/css" id="cssImport">
+    @import url("/ui/windows/library/library.css");
+</style>
+<div class="library">
+    <p class="wintitle">{library}</p>
+    <div id="main">
+        <div id="menu">
+            <p class="selected">{lib.mylib}</p>
+            <!--Afficher Ma librarie où ça va afficher dans view chaque playlist avec Liked Songs + autre user playlists-->
+			<!--Puis faire la liste ici des autres playlists pour un meilleur accès-->
+			<!--PENSER A ENLEVER CLASS="SELECTED" idem dans view-->
+        </div>
+        <div id="view">
+            <div class="panel selected">
+                <p>{lib.mylib}</p>
+                <div class="sub">
+                    <div class="set">
+                        <p>{set.general.lang}</p>
+                        <div class="select-container">
+                            <select name="langs" id="gen_langs">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="set">
+                        <p>{set.general.theme}</p>
+                        <div class="select-container">
+                            <select name="langs" id="gen_theme">
+                                <option value="Dark">Dark</option>
+                                <option value="White">White</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="set">
+                        <p><span>{set.general.discordRPC}</span><br><span
+                                class="sinfo">{set.general.discordRPC.info}</span></p>
+                        <input type="range" min="0" max="1" value="1" class="slider" id="gen_discordRPC">
+                    </div>
+                    <div class="set last">
+                        <p>{set.general.logs}</p>
+                        <input type="range" min="0" max="1" value="1" class="slider" id="gen_logs">
+                    </div>
+                </div>
+            </div>
+			<!--suite des playlists ici, mais à chaque fois, penser à clear les items de la playlist pour éviter lag après avoir changé de playlist (view)-->
+        </div>
+    </div>
+</div>
