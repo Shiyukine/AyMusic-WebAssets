@@ -3,6 +3,7 @@ import Import from "../../../class/import.js";
 import SettingsWindow from "../settings/settings.js";
 import LibraryWindow from "../library/library.js";
 import SearchWindow from "../search/search.js";
+import Translations from "../../../class/translations.js";
 
 export default class MenuWindow extends HTMLDivElement {
     anWindow = null;
@@ -23,6 +24,7 @@ export default class MenuWindow extends HTMLDivElement {
                 this.style.position = "absolute";
                 this.style.opacity = "1"
             }
+            new Translations(shadow.children[1])
             this.accountEl = this.shadowRoot.getElementById("acc_pp");
             this.changeAccountAvatar();
             window.addEventListener("popstate", (e) => {

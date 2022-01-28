@@ -46,11 +46,11 @@ p {
 }
 
 #view {
-    margin-left: 25px;
+    margin-left: 15px;
     margin-top: 25px;
     border-radius: 15px;
     position: relative;
-    height: calc(100% - 146.6px);
+    height: calc(100% - 103px - 15px);
 }
 
 .panel {

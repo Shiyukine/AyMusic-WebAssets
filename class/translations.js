@@ -1,8 +1,7 @@
 import Import from "./import.js";
 import Utils from "./utils/utils.js";
 
-export default class Translations
-{
+export default class Translations {
     allTranslations = "";
 
     /**
@@ -13,8 +12,7 @@ export default class Translations
         this.rootElement = rootElement
         Import.getData("/resources/translation.json").then((trls) => {
             try {
-                if (trls)
-                {
+                if (trls) {
                     this.allTranslations = JSON.parse(trls)
                 }
                 else console.error("Unable to load translations file")
@@ -38,26 +36,31 @@ export default class Translations
         });
     }
 
-    translate(trl)
-    {
-        Array.from(this.rootElement.getElementsByTagName("*")).forEach(x =>
-        {
-            if (typeof x.dataset["translated"] == "undefined" || x.dataset["translated"] != x.innerText)
-            {
-                if (x.tagName == "P" || x.tagName == "SPAN" || x.tagName == "H1" || x.tagName == "H2" || x.tagName == "H3" || x.tagName == "H4" || x.tagName == "H5" || x.tagName == "BUTTON")
-                {
-                    if (trl[x.innerText])
-                    {
-                        x.innerText = trl[x.innerText]
-                        x.setAttribute("data-translated", x.innerText)
+    translate(trl) {
+        Array.from(this.rootElement.querySelectorAll("*")).forEach(x => {
+            let text = x.innerText
+            if (x.tagName == "title") text = x.innerHTML
+            if (typeof x.dataset["translated"] == "undefined" || typeof x.dataset["translated2"] == "undefined" ||
+                x.dataset["translated"] != text || x.dataset["translated2"] != x.title) {
+                if (x.tagName == "P" || x.tagName == "A" || x.tagName == "title" ||
+                    x.tagName == "SPAN" || x.tagName == "H1" || x.tagName == "H2" ||
+                    x.tagName == "H3" || x.tagName == "H4" || x.tagName == "H5" ||
+                    x.tagName == "BUTTON") {
+                    if (trl[text]) {
+                        x.innerText = trl[text]
+                        if (x.tagName == "title") x.innerHTML = trl[text]
+                        x.setAttribute("data-translated", text)
+                    }
+                    if (trl[x.title]) {
+                        x.title = trl[x.title]
+                        x.setAttribute("data-translated2", x.title)
                     }
                 }
             }
         })
     }
 
-    changeLang(trl)
-    {
+    changeLang(trl) {
         if (!trl) {
             Utils.newError("Translations in " + Utils.app.settings.gen_langs + " not found", "Language set to English.")
             trl = this.allTranslations["English"]
