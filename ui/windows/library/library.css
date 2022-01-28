@@ -24,7 +24,7 @@ p {
     height: calc(100% - 78px - 15px);
 }
 
-#menu p {
+#menu p, .sub .set.topbar p {
     border-radius: 15px;
     font-size: 20px;
     color: white;
@@ -36,12 +36,12 @@ p {
     cursor: pointer;
 }
 
-#menu .selected {
+#menu .selected, .sub .set.topbar .selected {
     background-color: rgb(110, 110, 110, 0.6);
     color: white;
 }
 
-#menu p:hover {
+#menu p:hover, .sub .set.topbar p:hover {
     background-color: rgba(99, 99, 99, 0.6);
 }
 
@@ -50,6 +50,7 @@ p {
     margin-top: 25px;
     border-radius: 15px;
     position: relative;
+    height: calc(100% - 146.6px);
 }
 
 .panel {
@@ -58,6 +59,7 @@ p {
     width: 100%;
     opacity: 0%;
     transition: opacity 0.4s;
+    height: 100%;
 }
 
 #view .selected {
@@ -78,6 +80,7 @@ p {
     margin-right: 25px;
     margin-top: 10px;
     padding-top: 10px;
+    height: 100%;
 }
 
 .sub .set {
@@ -285,4 +288,12 @@ button:disabled {
 .hidden {
     visibility: collapse;
     position: absolute;
+}
+
+.sub .set.topbar {
+    display: block;
+}
+
+.sub .set#mylib_list {
+    display: grid;
 }

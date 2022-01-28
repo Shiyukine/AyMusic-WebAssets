@@ -27,92 +27,7 @@ export default class LibraryWindow extends HTMLDivElement {
                     this.changeView(y)
                 }
             })
-            //
-            this.changeAccount();
             new Translations(shadow.children[1])
-            Import.getData("/resources/translation.json").then((trls) => {
-                try {
-                    var allTranslations = ""
-                    if (trls) {
-                        allTranslations = JSON.parse(trls)
-                    }
-                    else console.error("Unable to load translations file")
-                    for (var i in allTranslations["Available"]) {
-                        let trl = allTranslations["Available"][i]
-                        var opt = document.createElement("option")
-                        opt.value = trl
-                        opt.innerText = trl
-                        shadow.getElementById("gen_langs").appendChild(opt)
-                    }
-                }
-                catch (e) {
-                    Utils.newError("Unable to get translations", e)
-                }
-            });
-            shadow.querySelectorAll("*").forEach((x) => {
-                if (typeof Utils.app.settings[x.id] !== "undefined") {
-                    if (x.tagName == "INPUT" && x.max == "1") {
-                        x.value = Utils.app.getSetting(x.id) ? 1 : 0
-                        x.style.backgroundColor = x.value == "1" ? "" : "gray"
-                        x.oninput = () => {
-                            Utils.app.changeSetting(x.id, x.value == "1")
-                            x.style.backgroundColor = x.value == "1" ? "" : "gray"
-                            x.value = Utils.app.getSetting(x.id) ? 1 : 0
-                        }
-                    }
-                    if (x.tagName == "INPUT" && x.max != "1") {
-                        x.value = parseInt(Utils.app.getSetting(x.id))
-                        x.oninput = () => {
-                            Utils.app.changeSetting(x.id, x.value)
-                            //x.value = parseInt(Utils.app.getSetting(x.id))
-                        }
-                    }
-                    if (x.tagName == "SELECT") {
-                        x.value = Utils.app.getSetting(x.id)
-                        x.onchange = () => {
-                            Utils.app.changeSetting(x.id, x.value)
-                            x.value = Utils.app.getSetting(x.id)
-                        }
-                    }
-                }
-            })
-            /**
-             * @type {LoginPanel}
-             */
-            var lp = null;
-            shadow.getElementById("acc_change").onclick = () => {
-                window.history.pushState({ where: "settings", showLog: false }, "", "/index.html")
-                lp = new LoginPanel("modify")
-                document.getElementById("main").appendChild(lp)
-                window.history.pushState({ where: "settings", showLog: true }, "", "/index.html")
-            }
-            window.addEventListener("popstate", (e) => {
-                if (e.state.where == "settings") {
-                    if (e.state.showLog) {
-                        lp = new LoginPanel("modify")
-                        document.getElementById("main").appendChild(lp)
-                    }
-                    else {
-                        lp.close()
-                        lp = null;
-                    }
-                }
-            })
-            shadow.getElementById("acc_logout").onclick = () => {
-                var ip = new InfoPanel("Log-out", "Do you want to log-out now ?\nAyMusic will restart after you have logged out.", [{
-                    text: "Yes", isPositive: true, onclick: () => {
-                        var lp = new LoginPanel("logout")
-                        document.getElementById("main").appendChild(lp)
-                    }
-                }, {
-                    text: "No", isPositive: false, onclick: () => {
-                        ip.close()
-                    }
-                }])
-                document.body.appendChild(ip)
-                ip.show()
-            }
-            shadow.getElementById("about_ver").innerText += " " + Utils.app.versionName + " (" + Utils.app.versionId + ")"
             this.changeView(this.selectedIndex)
             this.style.opacity = "1"
         })
@@ -126,11 +41,5 @@ export default class LibraryWindow extends HTMLDivElement {
             this.shadowRoot.getElementById("view").children[newIndex].classList.add("selected")
         } catch { }
         this.selectedIndex = newIndex
-    }
-
-    changeAccount() {
-        this.shadowRoot.getElementById("acc_img").src = Utils.actualAccount.avatarUrl;
-        this.shadowRoot.getElementById("acc_name").innerText = Utils.actualAccount.name;
-        this.shadowRoot.getElementById("acc_email").innerText = Utils.actualAccount.email;
     }
 }

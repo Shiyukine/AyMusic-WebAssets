@@ -1,7 +1,6 @@
 import Import from "../../../class/import.js";
 
-export default class InfoPanel extends HTMLDivElement
-{
+export default class InfoPanel extends HTMLDivElement {
     /**
      * @type {HTMLElement}
      */
@@ -27,8 +26,7 @@ export default class InfoPanel extends HTMLDivElement
 
     textReturn = "";
 
-    constructor(text, subtext = null, buttons = null, isloading = false)
-    {
+    constructor(text, subtext = null, buttons = null, isloading = false) {
         super(text, subtext, buttons, isloading);
         var shadow = this.attachShadow({ mode: 'open' });
         this.style.opacity = "0%"
@@ -56,21 +54,18 @@ export default class InfoPanel extends HTMLDivElement
         })
     }
 
-    show()
-    {
+    show() {
         if (this.#loaded) this.shadowRoot.getElementById("cssImport").dispatchEvent(new CustomEvent("load"));
+        if (document.getElementById("menu_win"))
+            document.getElementById("menu_win").style.zIndex = "0"
     }
 
-    showDialog()
-    {
-        return new Promise(resolve =>
-        {
+    showDialog() {
+        return new Promise(resolve => {
             this.show();
             this.style.zIndex = "101";
-            setInterval(() =>
-            {
-                if (this.textReturn != "")
-                {
+            setInterval(() => {
+                if (this.textReturn != "") {
                     resolve(this.textReturn);
                     return;
                 }
@@ -78,52 +73,44 @@ export default class InfoPanel extends HTMLDivElement
         });
     }
 
-    changeText(text, subtext)
-    {
+    changeText(text, subtext) {
         if (text != null) this.#textEl.innerHTML = text;
         if (subtext != null) this.#subtextEl.innerHTML = subtext.toString().split("\n").join("<br>");
     }
 
-    changeloading(newLoading = false)
-    {
-        if (typeof newLoading === 'number')
-        {
+    changeloading(newLoading = false) {
+        if (typeof newLoading === 'number') {
             this.#progressBar.style.width = newLoading + "%";
             this.#svg.classList.remove("playSVG");
             this.#svg.parentElement.removeChild(this.#svg);
         }
-        else
-        {
-            if (!newLoading)
-            {
+        else {
+            if (!newLoading) {
                 this.#svg.classList.remove("playSVG");
                 this.#svg.parentElement.removeChild(this.#svg);
             }
-            else
-            {
+            else {
                 this.#svg.classList.add("playSVG");
                 this.shadowRoot.getElementById("panelInfo").insertBefore(this.shadowRoot.getElementById("panelInfo").firstChild, this.#svg);
             }
         }
     }
 
-    hide()
-    {
+    hide() {
         this.shadowRoot.getElementById("panelInfoBG").style.opacity = "0%";
+        if (document.getElementById("menu_win"))
+            document.getElementById("menu_win").style.zIndex = ""
     }
 
-    close()
-    {
-        this.shadowRoot.getElementById("panelInfoBG").ontransitionend = () =>
-        {
+    close() {
+        this.shadowRoot.getElementById("panelInfoBG").ontransitionend = () => {
             this.shadowRoot.getRootNode().host.parentElement.removeChild(this);
         }
-        this.shadowRoot.getElementById("panelInfoBG").style.opacity = "0%";
+        this.hide()
         //this.changeloading(false)
     }
 
-    addButton(text, isPositive = true, onclick)
-    {
+    addButton(text, isPositive = true, onclick) {
         let btn = document.createElement("button");
         btn.innerText = text;
         if (!isPositive) btn.classList.add("negative");

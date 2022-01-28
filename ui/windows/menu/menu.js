@@ -1,6 +1,7 @@
 import Utils from "../../../class/utils/utils.js";
 import Import from "../../../class/import.js";
 import SettingsWindow from "../settings/settings.js";
+import LibraryWindow from "../library/library.js";
 
 export default class MenuWindow extends HTMLDivElement {
     anWindow = null;
@@ -59,6 +60,9 @@ export default class MenuWindow extends HTMLDivElement {
                 awindow = document.createElement("div");
                 awindow.classList.add("home")
             }
+            if (newWindow == this.UserWindows.Library) {
+                awindow = new LibraryWindow()
+            }
             if (newWindow == this.UserWindows.Settings) {
                 awindow = new SettingsWindow()
             }
@@ -72,7 +76,7 @@ export default class MenuWindow extends HTMLDivElement {
                 thisW.style.opacity = "0%";
                 this.shadowRoot.getElementById(this.anWindow.menu).classList.remove("activated")
             }
-            document.getElementById("main").appendChild(awindow)
+            document.getElementById("main").insertBefore(awindow, document.getElementById("menu_win"))
             awindow.classList.add("loaded")
             menu.classList.add("activated")
             this.anWindow = { win: awindow, enum: newWindow, menu: menuId }
