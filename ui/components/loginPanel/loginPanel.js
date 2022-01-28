@@ -103,10 +103,10 @@ export default class LoginPanel extends HTMLDivElement {
         this.#eventEl.addEventListener("logged", callback)
     }
 
-    close() {
+    close(triggerEvent = true) {
         this.shadowRoot.getElementById("loginBG").ontransitionend = () => {
             this.shadowRoot.getRootNode().host.parentElement.removeChild(this)
-            this.#eventEl.dispatchEvent(new CustomEvent("logged"));
+            if (triggerEvent) this.#eventEl.dispatchEvent(new CustomEvent("logged"));
         };
         this.shadowRoot.getElementById("loginBG").style.opacity = "0%"
     }

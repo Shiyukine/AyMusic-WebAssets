@@ -93,7 +93,7 @@ export default class SettingsWindow extends HTMLDivElement {
                         document.getElementById("main").appendChild(lp)
                     }
                     else {
-                        lp.close()
+                        lp.close(false)
                         lp = null;
                     }
                 }
@@ -109,7 +109,7 @@ export default class SettingsWindow extends HTMLDivElement {
                         ip.close()
                     }
                 }])
-                document.body.appendChild(ip)
+                document.getElementById("main").appendChild(ip)
                 ip.show()
             }
             shadow.getElementById("about_ver").innerText += " " + Utils.app.versionName + " (" + Utils.app.versionId + ")"
