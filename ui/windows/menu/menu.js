@@ -35,7 +35,7 @@ export default class MenuWindow extends HTMLDivElement {
                     this.changeWindow(this.UserWindows[el.id], el.id)
                 }
             })
-            shadow.getElementById("acc_pp").onclick = () => {
+            shadow.getElementById("acc_link").onclick = () => {
                 let win = this.changeWindow(this.UserWindows.Settings, "Settings")
                 if (win) win.changeView(2)
             }
@@ -43,8 +43,41 @@ export default class MenuWindow extends HTMLDivElement {
         })
     }
 
+    freezeGif(i) {
+        var cnv = document.createElement("canvas")
+        for (let j = 0; j < i.attributes.length; j++) {
+            let attr = i.attributes[j];
+            cnv.setAttribute(attr.name, attr.value);
+        }
+        var ctx = cnv.getContext('2d')
+        cnv.height = i.height
+        cnv.width = i.width
+        ctx.drawImage(i, 0, 0, i.width, i.height)
+        cnv.onmouseenter = () => {
+            this.unfreezeGif(cnv)
+        }
+        i.parentNode.replaceChild(cnv, i);
+    }
+
+    unfreezeGif(i) {
+        var cnv = document.createElement("img")
+        cnv.height = i.height
+        cnv.width = i.width
+        for (let j = 0; j < i.attributes.length; j++) {
+            let attr = i.attributes[j];
+            cnv.setAttribute(attr.name, attr.value);
+        }
+        i.parentNode.replaceChild(cnv, i);
+        cnv.onmouseleave = () => {
+            this.freezeGif(cnv)
+        }
+    }
+
     changeAccountAvatar() {
         this.accountEl.src = Utils.actualAccount.avatarUrl;
+        this.shadowRoot.getElementById("acc_pp").onload = () => {
+            this.freezeGif(this.shadowRoot.getElementById("acc_pp"))
+        }
     }
 
     UserWindows = Object.freeze({ "Home": 1, "Search": 2, "Library": 3, "Settings": 4 })

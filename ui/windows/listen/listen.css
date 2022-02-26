@@ -22,7 +22,7 @@
     left: 0;
     right: 0;
     height: 80px;
-    background-color: rgb(63, 63, 63, 0.84);
+    background-color: rgba(31, 31, 31, 0.73);
     padding: 10px;
     padding-bottom: 0px;
     backdrop-filter: blur(10px);

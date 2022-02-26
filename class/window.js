@@ -1,9 +1,7 @@
 import Utils from "./utils/utils.js";
 
-export default class Window
-{
-    static async setTopBarWindow()
-    {
+export default class Window {
+    static async setTopBarWindow() {
         var topbar = document.createElement("div")
         var appName = document.createElement("p")
         appName.innerText = "AyMusic"
@@ -14,8 +12,7 @@ export default class Window
         icon.classList.add("left")
         topbar.appendChild(icon)
         var mvmt = document.createElement("div")
-        mvmt.addEventListener("mousedown", async function ()
-        {
+        mvmt.addEventListener("pointerdown", async function () {
             await Utils.app.remoteClient.beginMoveWindow()
         })
         mvmt.classList.add("mvmt")
@@ -26,15 +23,12 @@ export default class Window
         wclose.src = "/resources/wclose.png"
         var wchange = document.createElement("img")
         wchange.src = "/resources/wchange.png"
-        wchange.addEventListener("click", async () =>
-        {
+        wchange.addEventListener("click", async () => {
             var ws = await Utils.app.remoteClient.getWindowState()
-            if (ws == 0)
-            {
+            if (ws == 0) {
                 Utils.app.remoteClient.maxWindow()
             }
-            else
-            {
+            else {
                 Utils.app.remoteClient.normalWindow()
             }
         });
@@ -54,25 +48,20 @@ export default class Window
         document.getElementById("main").style.height = "calc(100% - 35px)"
     }
 
-    static setDevToolLogger()
-    {
+    static setDevToolLogger() {
         let debugK = []
-        window.addEventListener("keydown", async function (key)
-        {
+        window.addEventListener("keydown", async function (key) {
             debugK.push(key.code)
-            if ((debugK.includes("ControlLeft") || debugK.includes("ControlRight")) && (debugK.includes("ShiftLeft") || debugK.includes("ShiftRight")) && debugK.includes("KeyI"))
-            {
+            if ((debugK.includes("ControlLeft") || debugK.includes("ControlRight")) && (debugK.includes("ShiftLeft") || debugK.includes("ShiftRight")) && debugK.includes("KeyI")) {
                 await Utils.app.remoteClient.showDevTool()
                 debugK = []
             }
-            if ((debugK.includes("ControlLeft") || debugK.includes("ControlRight")) && debugK.includes("KeyR"))
-            {
+            if ((debugK.includes("ControlLeft") || debugK.includes("ControlRight")) && debugK.includes("KeyR")) {
                 await Utils.app.remoteClient.refreshApp()
             }
         })
 
-        window.addEventListener("keyup", function ()
-        {
+        window.addEventListener("keyup", function () {
             debugK = []
         })
     }
