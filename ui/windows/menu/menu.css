@@ -54,4 +54,14 @@
 
 #acc_pp {
     border-radius: 50%;
+    visibility: hidden;
+}
+
+#acc_ppstatic {
+    position: absolute;
+    /* float: left; */
+    /* right: 0; */
+    transform: translate(-50%, 0);
+    left: 50%;
+    border-radius: 50%;
 }

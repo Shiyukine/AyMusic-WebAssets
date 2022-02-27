@@ -14,12 +14,13 @@ export default class ListenWindow extends HTMLDivElement {
                 this.shadowRoot.getElementById("listen").style = ""
                 shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
                 shadow.getElementById("progressBar").style.position = "absolute"
-                this.changeValue(0)
+                this.changeValue(this.getValue())
                 this.style.opacity = "1"
             }
             //custom progressBar
-            window.addEventListener("resize", function () {
+            window.addEventListener("resize", () => {
                 shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
+                this.changeValue(this.getValue())
             })
             let mouseState = {
                 down: false,
@@ -81,6 +82,7 @@ export default class ListenWindow extends HTMLDivElement {
         let left = value / parseFloat(this.shadowRoot.getElementById("progressBar").dataset["max"]) * (this.shadowRoot.getElementById("pbInfo").clientWidth - 18)
         this.shadowRoot.getElementById("stateThumb").style.marginLeft = left + "px"
         this.shadowRoot.getElementById("state").style.width = left + "px"
+        this.shadowRoot.getElementById("progressBar").dataset["value"] = value.toString()
         if (updateMusic === true) {
             console.log("updating time music")
         }
@@ -88,5 +90,9 @@ export default class ListenWindow extends HTMLDivElement {
 
     changeMax(max) {
         this.shadowRoot.getElementById("progressBar").dataset["max"] = max.toString()
+    }
+
+    getValue() {
+        return parseFloat(this.shadowRoot.getElementById("progressBar").dataset["value"])
     }
 }

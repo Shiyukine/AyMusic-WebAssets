@@ -40,44 +40,27 @@ export default class MenuWindow extends HTMLDivElement {
                 if (win) win.changeView(2)
             }
             this.changeWindow(this.UserWindows.Home, "Home")
+            shadow.getElementById("acc_link").onmouseenter = () => {
+                shadow.getElementById("acc_pp").style.visibility = "visible"
+                shadow.getElementById("acc_ppstatic").style.visibility = "hidden"
+            }
+            shadow.getElementById("acc_link").onmouseleave = () => {
+                shadow.getElementById("acc_pp").style.visibility = "hidden"
+                shadow.getElementById("acc_ppstatic").style.visibility = "visible"
+            }
         })
     }
 
-    freezeGif(i) {
-        var cnv = document.createElement("canvas")
-        for (let j = 0; j < i.attributes.length; j++) {
-            let attr = i.attributes[j];
-            cnv.setAttribute(attr.name, attr.value);
-        }
-        var ctx = cnv.getContext('2d')
-        cnv.height = i.height
-        cnv.width = i.width
-        ctx.drawImage(i, 0, 0, i.width, i.height)
-        cnv.onmouseenter = () => {
-            this.unfreezeGif(cnv)
-        }
-        i.parentNode.replaceChild(cnv, i);
-    }
-
-    unfreezeGif(i) {
-        var cnv = document.createElement("img")
-        cnv.height = i.height
-        cnv.width = i.width
-        for (let j = 0; j < i.attributes.length; j++) {
-            let attr = i.attributes[j];
-            cnv.setAttribute(attr.name, attr.value);
-        }
-        i.parentNode.replaceChild(cnv, i);
-        cnv.onmouseleave = () => {
-            this.freezeGif(cnv)
-        }
-    }
-
     changeAccountAvatar() {
-        this.accountEl.src = Utils.actualAccount.avatarUrl;
         this.shadowRoot.getElementById("acc_pp").onload = () => {
-            this.freezeGif(this.shadowRoot.getElementById("acc_pp"))
+            let i = this.shadowRoot.getElementById("acc_pp")
+            var cnv = this.shadowRoot.getElementById("acc_ppstatic")
+            var ctx = cnv.getContext('2d')
+            cnv.height = i.height
+            cnv.width = i.width
+            ctx.drawImage(i, 0, 0, i.width, i.height)
         }
+        this.accountEl.src = Utils.actualAccount.avatarUrl;
     }
 
     UserWindows = Object.freeze({ "Home": 1, "Search": 2, "Library": 3, "Settings": 4 })
