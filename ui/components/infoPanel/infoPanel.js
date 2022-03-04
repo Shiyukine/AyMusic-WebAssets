@@ -104,7 +104,8 @@ export default class InfoPanel extends HTMLDivElement {
 
     close() {
         this.shadowRoot.getElementById("panelInfoBG").ontransitionend = () => {
-            this.shadowRoot.getRootNode().host.parentElement.removeChild(this);
+            if (this.shadowRoot.getRootNode().host.parentElement)
+                this.shadowRoot.getRootNode().host.parentElement.removeChild(this);
         }
         this.hide()
         //this.changeloading(false)

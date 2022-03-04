@@ -46,6 +46,8 @@ export default class LoginPanel extends HTMLDivElement {
             this.#svg = this.shadowRoot.getElementById("svg")
             this.shadowRoot.getElementById("cssImport").onload = () => {
                 this.shadowRoot.getElementById("loginBG").ontransitionend = () => { };
+                if (document.getElementById("menu_win"))
+                    document.getElementById("menu_win").style.zIndex = "0"
                 this.style.opacity = "1"
             }
             let loaded = false;
@@ -107,6 +109,8 @@ export default class LoginPanel extends HTMLDivElement {
         this.shadowRoot.getElementById("loginBG").ontransitionend = () => {
             this.shadowRoot.getRootNode().host.parentElement.removeChild(this)
             if (triggerEvent) this.#eventEl.dispatchEvent(new CustomEvent("logged"));
+            if (document.getElementById("menu_win"))
+                document.getElementById("menu_win").style.zIndex = ""
         };
         this.shadowRoot.getElementById("loginBG").style.opacity = "0%"
     }
