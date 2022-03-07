@@ -15,6 +15,14 @@ export default class Utils {
 
     static app = new AyMusic();
 
+    //à déplacer dans player ? ou playlistManager ?
+    static userLib = {
+        playlists: [],
+        curTime: 0,
+        curMusic: null,
+        lastState: false
+    }
+
     static delay(ms) {
         return new Promise(resolve => setTimeout(() => resolve(), ms))
     }
