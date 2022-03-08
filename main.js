@@ -52,9 +52,11 @@ async function main() {
             document.getElementById("main").appendChild(logP);
             loadPanel.hide();
             logP.logged = async () => {
-                loadPanel.changeText("Getting your musics...");
+                loadPanel.changeText("Getting your playling...");
                 loadPanel.show();
-                await Utils.delay(1000);
+                await Utils.libManager.refreshUserInfo()
+                console.log("uwu")
+                console.log(Utils.libManager.userInfo)
                 loadPanel.close();
                 let lp = document.getElementById("loadPanel");
                 lp.children[0].classList.add("pauseSVG");

@@ -72,8 +72,10 @@ export default class LoginPanel extends HTMLDivElement {
                             name: value(2),
                             id: value(3),
                             email: value(0),
+                            apiKey: value(7),
                             avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif?date=" + Date.now().toString()
                         }
+                        Utils.apiManager.refreshApiKey()
                         console.log("Welcome " + Utils.actualAccount.id + " to AyMusic !")
                         if (isForModification == "modify") {
                             document.getElementById("menu_win").changeAccountAvatar()

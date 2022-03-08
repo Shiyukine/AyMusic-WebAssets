@@ -1,6 +1,8 @@
 import Import from "../import.js";
 import infoPanel from "../../ui/components/infoPanel/infoPanel.js";
 import AyMusic from "../AyMusic.js";
+import ApiManager from "../apiManager.js";
+import LibraryManager from "../libraryManager.js";
 
 export default class Utils {
     static useLocalServer = true
@@ -10,18 +12,14 @@ export default class Utils {
             name: "Unknown",
             id: "Unknown",
             email: "Unknown",
-            avatarUrl: "/resources/noavatar.png"
+            avatarUrl: "/resources/noavatar.png",
+            apiKey: "",
         }
 
     static app = new AyMusic();
 
-    //à déplacer dans player ? ou playlistManager ?
-    static userLib = {
-        playlists: [],
-        curTime: 0,
-        curMusic: null,
-        lastState: false
-    }
+    static apiManager = new ApiManager();
+    static libManager = new LibraryManager();
 
     static delay(ms) {
         return new Promise(resolve => setTimeout(() => resolve(), ms))
