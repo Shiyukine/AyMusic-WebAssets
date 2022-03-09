@@ -10,12 +10,28 @@ export default class ApiManager {
     }
 
     async getAccountInfo() {
-        let result = await Utils.app.remoteClient.httpRequestPOST(Utils.servURL + "api/AyMusic/api.php", JSON.stringify({
-            apiKey: this.apiKey,
-            act: "getUserInfo"
-        }))
-        console.log(result)
-        if (typeof result["content"] !== "undefined") return JSON.parse(result["content"]);
-        else return JSON.parse(result)
+        return await this.doPostRequest({ act: "getUserInfo" })
+    }
+
+    async doPostRequest(content) {
+        console.log("-> POST request : SENDING")
+        let start = Date.now();
+        var newDico = {
+            apiKey: this.apiKey
+        }
+        for (let i in content) {
+            newDico[i] = content[i]
+        }
+        let result = await Utils.app.remoteClient.httpRequestPOST(Utils.servURL + "api/AyMusic/api.php", JSON.stringify(newDico))
+        try {
+            result = JSON.parse(result)["content"];
+            console.log("<- POST request : OK (" + (Date.now() - start) + "ms)")
+            return result;
+        }
+        catch (e) {
+            console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
+            console.error(result)
+            return result;
+        }
     }
 }

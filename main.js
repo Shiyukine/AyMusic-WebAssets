@@ -44,7 +44,7 @@ async function main() {
             console.log("Server URL : " + Utils.servURL);
             //
             Update.searchUpdate(loadPanel);
-            await Utils.delay(2000);
+            await Utils.delay(1000);
             loadPanel.changeText("Connecting to your account...");
             var logP = new LoginPanel("");
             logP.style.width = logP.style.height = "100%";
@@ -52,11 +52,9 @@ async function main() {
             document.getElementById("main").appendChild(logP);
             loadPanel.hide();
             logP.logged = async () => {
-                loadPanel.changeText("Getting your playling...");
+                loadPanel.changeText("Getting your playlists...");
                 loadPanel.show();
                 await Utils.libManager.refreshUserInfo()
-                console.log("uwu")
-                console.log(Utils.libManager.userInfo)
                 loadPanel.close();
                 let lp = document.getElementById("loadPanel");
                 lp.children[0].classList.add("pauseSVG");
