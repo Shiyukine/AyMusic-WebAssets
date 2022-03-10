@@ -1,7 +1,7 @@
 import Import from "../../../class/import.js";
 import Translations from "../../../class/translations.js";
 
-export default class SearchWindow extends HTMLDivElement {
+export default class MusicViewerWindow extends HTMLDivElement {
     selectedIndex = 0;
 
     constructor() {

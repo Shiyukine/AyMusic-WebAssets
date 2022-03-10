@@ -9,6 +9,8 @@ import SettingsWindow from "./ui/windows/settings/settings.js";
 import Translations from "./class/translations.js";
 import LibraryWindow from "./ui/windows/library/library.js";
 import SearchWindow from "./ui/windows/search/search.js";
+import MusicViewerWindow from "./ui/windows/musicViewer/musicViewer.js";
+import HomeWindow from "./ui/windows/home/home.js";
 
 async function main() {
     window.app = Utils.app;
@@ -20,6 +22,8 @@ async function main() {
     customElements.define("settings-window", SettingsWindow, { extends: "div" });
     customElements.define("library-window", LibraryWindow, { extends: "div" });
     customElements.define("search-window", SearchWindow, { extends: "div" });
+    customElements.define("musicview-window", MusicViewerWindow, { extends: "div" });
+    customElements.define("home-window", HomeWindow, { extends: "div" });
     //
     Utils.app.loaded = async function () {
         try {

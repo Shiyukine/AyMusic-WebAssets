@@ -14,7 +14,7 @@ export default class ApiManager {
     }
 
     async doPostRequest(content) {
-        console.log("-> POST request : SENDING")
+        console.log("-> POST request : SENDING. Action : " + content.act)
         let start = Date.now();
         var newDico = {
             apiKey: this.apiKey

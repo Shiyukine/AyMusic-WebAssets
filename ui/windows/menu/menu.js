@@ -4,6 +4,7 @@ import SettingsWindow from "../settings/settings.js";
 import LibraryWindow from "../library/library.js";
 import SearchWindow from "../search/search.js";
 import Translations from "../../../class/translations.js";
+import HomeWindow from "../home/home.js";
 
 export default class MenuWindow extends HTMLDivElement {
     anWindow = null;
@@ -76,7 +77,7 @@ export default class MenuWindow extends HTMLDivElement {
         if (!this.anWindow || newWindow != this.anWindow.enum) {
             let awindow;
             if (newWindow == this.UserWindows.Home) {
-                awindow = document.createElement("div");
+                awindow = new HomeWindow();
                 awindow.classList.add("home")
             }
             if (newWindow == this.UserWindows.Library) {
