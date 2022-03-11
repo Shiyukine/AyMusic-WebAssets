@@ -234,4 +234,5 @@ svg:hover, img:hover {
 .aWindow.home {
     background-color: rgba(32, 32, 32, 0.2); 
     backdrop-filter: blur(2px);
+    overflow: auto;
 }

@@ -1,5 +1,3 @@
-import Utils from "../../../class/utils/utils.js";
-
 export default class Playlist {
 
     id = ""
@@ -9,8 +7,9 @@ export default class Playlist {
     imgUrl = ""
     isPrivate = false
     rank = 0
+    dateAdded = 0
 
-    constructor(id, name, userID, desc, imgUrl, isPrivate, rank) {
+    constructor(id, name, userID, desc, imgUrl, isPrivate, rank, dateAdded = 0) {
         this.id = id;
         this.name = name;
         this.userID = userID;
@@ -18,6 +17,7 @@ export default class Playlist {
         this.imgUrl = imgUrl;
         this.isPrivate = isPrivate;
         this.rank = rank;
+        this.dateAdded = dateAdded;
         if (this.imgUrl === "")
             this.imgUrl = '/resources/icon.ico';
     }

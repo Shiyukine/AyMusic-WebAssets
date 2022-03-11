@@ -1,300 +1,47 @@
-p {
+p, h2 {
     font-family: "Quicksand";
     margin: 0px;
     color:white;
 }
 
 .home {
-    margin: 50px;
+    margin: 25px;
+    margin-left: 50px;
+    margin-right: 0px;
     width: calc(100% - 100px);
     border-radius: 15px;
-    height: calc(100% - 100px);
+    height: calc(100% - 50px);
 }
 
 #main {
-    display: contents;
-}
-
-#menu {
-    width: 220px;
-    background-color: rgba(65, 65, 65, 0.6);
-    border-radius: 15px;
-    padding: 10px;
-    margin-left: 15px;
-    float: left;
-    height: calc(100% - 78px - 15px);
-}
-
-#menu p, .sub .set.topbar p {
-    border-radius: 15px;
-    font-size: 20px;
-    color: white;
-    padding: 10px;
-    margin: 0px;
-    margin-bottom: 4px;
-    color: rgb(215, 215, 215);
-    transition: background 0.4s, color 0.4s;
-    cursor: pointer;
-}
-
-#menu .selected, .sub .set.topbar .selected {
-    background-color: rgb(110, 110, 110, 0.6);
-    color: white;
-}
-
-#menu p:hover, .sub .set.topbar p:hover {
-    background-color: rgba(99, 99, 99, 0.6);
-}
-
-#view {
-    margin-left: 272px;
-    margin-top: 25px;
-    border-radius: 15px;
-    position: relative;
-    height: calc(100% - 146.6px);
-}
-
-.panel {
-    position: absolute;
-    z-index: 0;
-    width: 100%;
-    opacity: 0%;
-    transition: opacity 0.4s;
-    height: 100%;
-}
-
-#view .selected {
-    z-index: 10;
-    opacity: 1;
-}
-
-.panel>p {
-    font-size: 25px;
-    color: rgb(0, 204, 255);
-    font-weight: bold;
-}
-
-.sub {
-    background-color: rgb(59, 59, 59, 0.6);
-    border-radius: 15px;
-    padding-bottom: 0px;
-    margin-right: 25px;
-    margin-top: 10px;
-    padding-top: 10px;
-    height: 100%;
-}
-
-.sub .set {
-    display: flex;
-    padding-right: 10px;
-    padding-left: 10px;
-    margin-bottom: 7px;
-    padding-bottom: 7px;
-    border-bottom: rgba(99, 99, 99, 0.6) solid 1px;
-    min-height: 33px;
-}
-
-.sub .last {
-    border-bottom: inherit;
-}
-
-.home .slider[max="1"] {
-  width: 35px !important;
-}
-
-.home .slider {
-  -webkit-appearance: none;
-  width: 150px;
-  height: 25px;
-  padding: 0 5px;
-  border-radius: 12.5px;
-  background: rgb(0, 162, 255);
-  outline: none;
-  float: right;
-  margin: auto 0;
-  transition: 0.4s;
-}
-
-.home .slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 19px;
-  height: 19px;
-  border-radius: 50%;
-  background: white;
-  cursor: pointer;
-}
-
-.home .slider::-moz-range-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 19px;
-  height: 19px;
-  border-radius: 50%;
-  background: white;
-  cursor: pointer;
-  border: none;
-  stroke: transparent;
-}
-
-.home .select-container {
-    float: right;
-    position: relative; 
-    background-color: rgb(80, 80, 80, 0.6);
-    border-radius: 15px;
-	overflow: hidden; 
-}
-
-.home select {
-	height: auto;
-	border: 0; 
-	margin: 0;
-    margin-right: 5px;
-	padding: 5px 11px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-    outline: none;
-    -webkit-appearance: none;
-    color: white;
-    background-color: rgba(0, 0, 0, 0);
-    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z' fill='white'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-    background-repeat: no-repeat;
-    background-position-x: 100%;
-    background-position-y: 5px;
-    font-family: "Quicksand";
-    font-size: 18px;
-    width: 150px;
-}
-
-.home select option {
-    background-color: rgb(56, 56, 56);
-    color: white;
-}
-
-.sub p {
-    float: left;
-    margin: auto;
-    margin-left: 0px;
-}
-
-.havesub {
-    padding-top: 1px;
-    padding-left: 15px !important;
-    display: block !important;
-}
-
-.havesub p {
-    float: none !important;
-}
-
-.setsub {
-    background-color: rgb(77, 77, 77, 0.6);
-    border-radius: 15px;
-    margin-top: 20px;
-    margin-bottom: 5px;
-    padding: 15px;
-}
-
-.setsub>p.title {
-    font-size: 20px;
-    color: rgb(0, 204, 255);
-    font-weight: bold;
-}
-
-.wintitle {
-    text-align: center;
-    font-size: 30px;
-    padding-top: 20px;
-}
-
-.account {
-    display: flow-root !important;
-}
-
-#acc_img {
-    border-radius: 50%;
-    width: 150px;
-    height: 150px;
-    right: 0;
-    float: right;
-}
-
-#acc_name, #acc_email {
-    float: left;
-    font-size: 20px;
-    padding-left: 20px;
-    color: rgb(215, 215, 215);
-}
-
-.account-1 {
-    float: left !important;
-}
-
-.account-2 {
-    float: right !important;
-}
-
-.big {
-    font-size: 22px;
-    padding-left: 10px;
-}
-
-button:focus {
-	background: #67b7fd radial-gradient(circle, transparent 1%, #67b7fd 1%) center/15000%;
-	color: black;
-	font-weight: normal;
-}
-
-button:hover {
-	background: #67b7fd radial-gradient(circle, transparent 1%, #67b7fd 1%) center/15000%;
-	color: black;
-	font-weight: normal;
-}
-
-button:active {
-	background-color: white;
-	color: black;
-	background-size: 100%;
-	transition: background 0s;
-	font-weight: normal;
-}
-
-button {
-	background-position: center;
-	transition: background 0.6s;
-	border-radius: 10px;
-	padding: 5px 10px;
-	font-size: 18px;
-	cursor: pointer;
-	color: #67b7fd;
-	background-color: transparent;
-	border: #67b7fd solid 2px;
-	outline: none;
-	font-family: "Quicksand";
-	box-shadow: 0px 0px 5px 1px #000000a1;
-	font-weight: normal;
-    margin-left: 5px;
-    margin-bottom: 5px;
-}
-
-button:disabled {
-	opacity: 0.6;
-	cursor: not-allowed;
-}
-
-.sinfo {
-    color: rgb(165, 165, 165);
-}
-
-.hidden {
-    visibility: collapse;
-    position: absolute;
-}
-
-.sub .set.topbar {
     display: block;
 }
 
-.sub .set#mylib_list {
-    display: grid;
+.plList {
+    border-radius: 15px;
+    background-color: rgb(45, 45, 45, 0.6);
+    margin: 10px;
+    /* width: 100%; */
+    display: flex;
+    padding: 20px;
+    padding-bottom: 0px;
+    /* padding-right: 0px; */
+    /* margin-right: 20px; */
+}
+
+*::-webkit-scrollbar {
+	width: 20px;
+    height: 20px;
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: gray;
+    border-radius: 10px;
+    border: 5px solid transparent;
+    background-clip: content-box;
+}
+
+*::-webkit-scrollbar-corner {
+    width: 0px;
+    height: 0px;
 }

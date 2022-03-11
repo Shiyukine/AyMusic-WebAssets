@@ -1,3 +1,4 @@
+import Playlist from "./music/playlist.js"
 import Utils from "./utils/utils.js"
 
 export default class LibraryManager {
@@ -16,11 +17,14 @@ export default class LibraryManager {
             this.userInfo.curMusic = info["curMusic"]
             this.userInfo.curTime = info["curTime"]
             this.userInfo.lastState = info["lastState"]
-            this.userPlaylists = info["playlists"]
+            for (let i = 0; i < info["playlists"].length; i++) {
+                let pl = info["playlists"][i]
+                this.userPlaylists.push(new Playlist(pl.id, pl.name, pl.userID, pl.desc, pl.imgUrl, pl.isPrivate, pl.rank))
+            }
             console.log("User info refreshed successfully")
         }
         catch (e) {
-            Utils.newError("Unable to get your account information", "Please retry later.")
+            Utils.newError("Unable to get your account information", e)
         }
     }
 
@@ -34,20 +38,11 @@ export default class LibraryManager {
                 imgUrl: imgUrl,
                 isPrivate: isPrivate
             })
-            this.userPlaylists.push({
-                id: info,
-                name: name,
-                userId: Utils.actualAccount.id,
-                desc: desc,
-                imgUrl: imgUrl,
-                isPrivate: isPrivate,
-                rank: 0
-            })
+            this.userPlaylists.push(new Playlist(info, name, Utils.actualAccount.id, desc, imgUrl, isPrivate, 0))
             console.log("Playlist added successfully")
         }
-        catch
-        {
-            Utils.newError("Unable to add this playlist.", "Please retry later.")
+        catch (e) {
+            Utils.newError("Unable to add this playlist.", e)
         }
     }
 
@@ -59,17 +54,16 @@ export default class LibraryManager {
                 playlistID: id
             })
             for (let i in this.userPlaylists) {
-                if (i.id == id) {
-                    let index = this.userPlaylists.indexOf(i)
-                    this.userPlaylists.splice(index)
+                let pl = this.userPlaylists[i]
+                if (pl.id == id) {
+                    this.userPlaylists.splice(i)
                     break;
                 }
             }
             console.log("Playlist removed successfully")
         }
-        catch
-        {
-            Utils.newError("Unable to remove this playlist.", "Please retry later.")
+        catch (e) {
+            Utils.newError("Unable to remove this playlist.", e)
         }
     }
 }
