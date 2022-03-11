@@ -1,11 +1,18 @@
 import Import from "../../../class/import.js";
+import Playlist from "../../../class/music/playlist.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
 
 export default class PlaylistGrid extends HTMLDivElement {
 
-    constructor() {
-        super();
+    /**
+     * @type {Playlist}
+     */
+    playlist = null;
+
+    constructor(playlist) {
+        super(playlist);
+        this.playlist = playlist
         var shadow = this.attachShadow({ mode: "open" })
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.7s"
@@ -14,5 +21,9 @@ export default class PlaylistGrid extends HTMLDivElement {
             new Translations(shadow.children[1])
             this.style.opacity = "1"
         })
+    }
+
+    createGrid() {
+
     }
 }
