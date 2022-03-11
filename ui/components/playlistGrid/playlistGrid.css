@@ -1,4 +1,4 @@
-.panel {
+.grid {
     background-color: rgb(30, 30, 30);
     border-radius: 15px;
     margin-right: 20px;
@@ -10,11 +10,11 @@
     cursor: pointer;
 }
 
-.panel .padding {
+.grid .padding {
     padding: 10px;
 }
 
-.panel h3 {
+.grid h3 {
     color: white !important;
     text-align: center;
     margin: auto;
@@ -24,7 +24,7 @@
     overflow: hidden;
 }
 
-.panel .thumb div {
+.grid .thumb div {
     height: 200px;
     width: 190px;
     background-position: center;

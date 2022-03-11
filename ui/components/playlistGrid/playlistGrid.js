@@ -10,6 +10,11 @@ export default class PlaylistGrid extends HTMLDivElement {
      */
     playlist = null;
 
+
+    /**
+     * 
+     * @param {Playlist} playlist 
+     */
     constructor(playlist) {
         super(playlist);
         this.playlist = playlist
@@ -20,10 +25,8 @@ export default class PlaylistGrid extends HTMLDivElement {
             shadow.innerHTML = html
             new Translations(shadow.children[1])
             this.style.opacity = "1"
+            this.shadowRoot.getElementById("title").innerText = playlist.name
+            this.shadowRoot.getElementById("img").style.backgroundImage = this.playlist.imgUrl
         })
-    }
-
-    createGrid() {
-
     }
 }

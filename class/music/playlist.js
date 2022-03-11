@@ -18,5 +18,7 @@ export default class Playlist {
         this.imgUrl = imgUrl;
         this.isPrivate = isPrivate;
         this.rank = rank;
+        if (this.imgUrl === "")
+            this.imgUrl = '/resources/icon.ico';
     }
 }
