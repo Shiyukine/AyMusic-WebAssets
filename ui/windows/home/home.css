@@ -4,10 +4,11 @@ p {
     color:white;
 }
 
-.library {
-    width: 100%;
+.home {
+    margin: 50px;
+    width: calc(100% - 100px);
     border-radius: 15px;
-    height: 100%;
+    height: calc(100% - 100px);
 }
 
 #main {
@@ -97,11 +98,11 @@ p {
     border-bottom: inherit;
 }
 
-.library .slider[max="1"] {
+.home .slider[max="1"] {
   width: 35px !important;
 }
 
-.library .slider {
+.home .slider {
   -webkit-appearance: none;
   width: 150px;
   height: 25px;
@@ -114,7 +115,7 @@ p {
   transition: 0.4s;
 }
 
-.library .slider::-webkit-slider-thumb {
+.home .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 19px;
@@ -124,7 +125,7 @@ p {
   cursor: pointer;
 }
 
-.library .slider::-moz-range-thumb {
+.home .slider::-moz-range-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 19px;
@@ -136,7 +137,7 @@ p {
   stroke: transparent;
 }
 
-.library .select-container {
+.home .select-container {
     float: right;
     position: relative; 
     background-color: rgb(80, 80, 80, 0.6);
@@ -144,7 +145,7 @@ p {
 	overflow: hidden; 
 }
 
-.library select {
+.home select {
 	height: auto;
 	border: 0; 
 	margin: 0;
@@ -165,7 +166,7 @@ p {
     width: 150px;
 }
 
-.library select option {
+.home select option {
     background-color: rgb(56, 56, 56);
     color: white;
 }
