@@ -26,9 +26,32 @@ export default class HomeWindow extends HTMLDivElement {
     async refreshHome() {
         console.log("Refreshing home")
         var pls = Utils.libManager.userPlaylists;
+        let date = new Date(Date.now())
+        let h = date.getHours()
         for (let pl in pls) {
-            if (pls[pl].name.includes("{") && pls[pl].name.includes("}"))
-                this.createSubList(pls[pl])
+            if (pls[pl].name.includes("{") && pls[pl].name.includes("}")) {
+                if (h > 6 && h < 13 && pls[pl].name.includes("morning")) {
+                    this.createSubList(pls[pl])
+                    break;
+                }
+                if (h >= 13 && h < 19 && pls[pl].name.includes("afternoon")) {
+                    this.createSubList(pls[pl])
+                    break;
+                }
+                if (h >= 19 && pls[pl].name.includes("evening")) {
+                    this.createSubList(pls[pl])
+                    break;
+                }
+            }
+        }
+        for (let pl in pls) {
+            if (pls[pl].name.includes("{") && pls[pl].name.includes("}")) {
+                if (!pls[pl].name.includes("evening")
+                    && !pls[pl].name.includes("morning")
+                    && !pls[pl].name.includes("afternoon")
+                    && !pls[pl].name.includes("liked"))
+                    this.createSubList(pls[pl])
+            }
         }
         console.log("Home refreshed")
     }
@@ -61,6 +84,7 @@ export default class HomeWindow extends HTMLDivElement {
         if (count == 0) {
             var noObj = document.createElement("p")
             noObj.innerText = "{pl.home.noSong}"
+            noObj.classList.add("noSong")
             list.appendChild(noObj)
         }
     }

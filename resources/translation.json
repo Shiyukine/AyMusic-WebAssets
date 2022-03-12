@@ -36,6 +36,19 @@
         "{albums}": "Albums",
         "{lib.addPlaylist}": "Create a playlist",
         "{loading}": "Loading...",
-        "{search}": "Search a song"
+        "{search}": "Search a song",
+        "{pl.mostly.repeated}": "Your repeated songs",
+        "{pl.recently.played}": "What you listened to not long ago",
+        "{pl.liked}": "Liked songs",
+        "{pl.morning.song}": "Good morning !",
+        "{pl.afternoon.song}": "Good afternoon !",
+        "{pl.evening.song}": "Good evening !",
+        "{pl.mostly.repeated.desc}": "Your repeated songs",
+        "{pl.recently.played.desc}": "What you listened to not long ago",
+        "{pl.liked.desc}": "Play your favorite music !",
+        "{pl.morning.song.desc}": "Good morning !",
+        "{pl.afternoon.song.desc}": "Good afternoon !",
+        "{pl.evening.song.desc}": "Good evening !",
+        "{pl.home.noSong}": "It seems that you haven't been listening any songs on AyMusic.\nSearch for a song and it'll probably be here !"
     }
 }

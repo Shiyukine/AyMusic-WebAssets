@@ -22,11 +22,16 @@ p, h2 {
     background-color: rgb(45, 45, 45, 0.6);
     margin: 10px;
     /* width: 100%; */
-    display: flex;
+    margin-bottom: 50px;
+    display: flow-root;
     padding: 20px;
     padding-bottom: 0px;
     /* padding-right: 0px; */
     /* margin-right: 20px; */
+}
+
+.noSong {
+    margin-bottom: 20px;
 }
 
 *::-webkit-scrollbar {
