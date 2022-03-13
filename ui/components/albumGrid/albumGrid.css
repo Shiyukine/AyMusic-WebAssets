@@ -6,7 +6,7 @@
     transition: 0.3s;
     display: table;
     float: left;
-    width: 180px;
+    width: 160px;
     overflow: hidden;
     font-family: "Quicksand";
     cursor: pointer;
@@ -31,7 +31,7 @@
 }
 
 .grid .thumb div {
-    height: 160px;
+    height: 140px;
     margin-top: 2px;
     background-position: center;
     background-size: contain;
