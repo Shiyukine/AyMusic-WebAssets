@@ -3,6 +3,7 @@ import Translations from "../../../class/translations.js";
 
 export default class LibraryWindow extends HTMLDivElement {
     selectedIndex = 0;
+    selectedIndexMyLib = 0;
 
     constructor() {
         super();
@@ -11,14 +12,19 @@ export default class LibraryWindow extends HTMLDivElement {
         this.style.transition = "opacity 0.7s"
         Import.getData("/ui/windows/library/library.html").then((html) => {
             shadow.innerHTML = html
-            shadow.getElementById("menu").onwheel = (ev) => {
+            /*shadow.getElementById("menu").onwheel = (ev) => {
                 let newIndex;
                 if (ev.deltaY > 0) newIndex = this.selectedIndex + 1
                 else newIndex = this.selectedIndex - 1
                 if (newIndex > shadow.getElementById("menu").children.length - 1) newIndex -= 1
                 if (newIndex < 0) newIndex += 1
                 this.changeView(newIndex)
-            };
+            };*/
+            Array.from(shadow.getElementById("menu").children).forEach((x, y) => {
+                x.onclick = () => {
+                    this.changeView(y)
+                }
+            })
             Array.from(shadow.getElementById("menu").children).forEach((x, y) => {
                 x.onclick = () => {
                     this.changeView(y)
@@ -26,6 +32,7 @@ export default class LibraryWindow extends HTMLDivElement {
             })
             new Translations(shadow.children[1])
             this.changeView(this.selectedIndex)
+            this.changeViewMyLib(this.selectedIndex)
             this.style.opacity = "1"
         })
     }
@@ -38,5 +45,13 @@ export default class LibraryWindow extends HTMLDivElement {
             this.shadowRoot.getElementById("view").children[newIndex].classList.add("selected")
         } catch { }
         this.selectedIndex = newIndex
+    }
+
+    changeViewMyLib(newIndex) {
+        try {
+            this.shadowRoot.getElementById("mylib_topbar").children[this.selectedIndexMyLib].classList.remove("selected")
+            this.shadowRoot.getElementById("mylib_topbar").children[newIndex].classList.add("selected")
+        } catch { }
+        this.selectedIndexMyLib = newIndex
     }
 }

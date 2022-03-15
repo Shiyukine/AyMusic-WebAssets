@@ -49,6 +49,7 @@
         "{pl.morning.song.desc}": "Good morning !",
         "{pl.afternoon.song.desc}": "Good afternoon !",
         "{pl.evening.song.desc}": "Good evening !",
-        "{pl.home.noSong}": "It seems that you haven't been listening any songs on AyMusic.\nSearch for a song and it'll probably be here !"
+        "{pl.home.noSong}": "It seems that you haven't been listening any songs on AyMusic.\nSearch for a song and it'll probably be here !",
+        "{home}": "Home"
     }
 }

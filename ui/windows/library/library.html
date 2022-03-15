@@ -7,21 +7,23 @@
         <div id="menu">
             <p class="selected">{lib.mylib}</p>
             <p>{lib.addPlaylist}</p>
-            <!--<p>{lib.loveSongs}</p> Cette playliste sera automatiquement ajouté par l'API-->
-            <!--Afficher Ma librarie où ça va afficher dans view chaque playlist avec Liked Songs + autre user playlists-->
-            <!--Puis faire la liste ici des autres playlists pour un meilleur accès-->
+            <!--Faire la liste ici des autres playlists pour un meilleur accès-->
             <!--PENSER A ENLEVER CLASS="SELECTED" idem dans view-->
         </div>
         <div id="view">
             <div class="panel selected">
                 <p>{lib.mylib}</p>
                 <div class="sub">
-                    <div class="set last topbar">
-                        <p class="selected">{playlists}</p>
+                    <div id="mylib_topbar" class="set last topbar">
+                        <p class="selected">{pl.liked}</p>
+                        <p>{playlists}</p>
                         <p>{artists}</p>
                         <p>{albums}</p>
+                        <!--Voici la liste ici de toutes les pl/songs/artists/albums suivis par l'user-->
                     </div>
-                    <div id="mylib_list" class="set last"></div>
+                    <div id="mylib_list" class="set last">
+                        <!--Show here some object (songs/pl etc) according to tab of topbar-->
+                    </div>
                 </div>
             </div>
             <div class="panel">
@@ -32,7 +34,14 @@
                     </div>
                 </div>
             </div>
-            <!--suite des playlists ici, mais à chaque fois, penser à clear les items de la playlist pour éviter lag après avoir changé de playlist (view)-->
+            <div class="panel">
+                <p id="playlist_name">{playlist.name}</p>
+                <div class="sub">
+                    <div class="set last" id="playlist_songs">
+                        <!--Show here all songs from a playlist-->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
