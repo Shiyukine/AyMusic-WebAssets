@@ -14,6 +14,7 @@ import HomeWindow from "./ui/windows/home/home.js";
 import PlaylistGrid from "./ui/components/playlistGrid/playlistGrid.js";
 import AlbumGrid from "./ui/components/albumGrid/albumGrid.js";
 import SingerGrid from "./ui/components/singerGrid/singerGrid.js";
+import SongGrid from "./ui/components/songGrid/songGrid.js";
 
 async function main() {
     window.app = Utils.app;
@@ -30,7 +31,7 @@ async function main() {
     customElements.define("playlist-grid", PlaylistGrid, { extends: "div" });
     customElements.define("album-grid", AlbumGrid, { extends: "div" });
     customElements.define("singer-grid", SingerGrid, { extends: "div" });
-    //customElements.define("song-grid", SongGrid, { extends: "div" });
+    customElements.define("song-grid", SongGrid, { extends: "div" });
     //
     Utils.app.loaded = async function () {
         try {

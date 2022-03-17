@@ -272,7 +272,12 @@ button:disabled {
 }
 
 .sub .set#mylib_list {
-    display: grid;
+    display: block;
+}
+
+.sub .set#mylib_list.obj {
+    padding-left: 15px;
+    padding-top: 7px;
 }
 
 #mylib_topbar>p {

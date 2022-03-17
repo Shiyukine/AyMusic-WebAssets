@@ -8,10 +8,11 @@ import Utils from "../../../class/utils/utils.js";
 import AlbumGrid from "../../components/albumGrid/albumGrid.js";
 import PlaylistGrid from "../../components/playlistGrid/playlistGrid.js";
 import SingerGrid from "../../components/singerGrid/singerGrid.js";
+import SongGrid from "../../components/songGrid/songGrid.js";
 
 export default class LibraryWindow extends HTMLDivElement {
     selectedIndex = 0;
-    selectedIndexMyLib = 0;
+    selectedIndexMyLib = -1;
     plLikedID = "";
 
     constructor() {
@@ -45,9 +46,8 @@ export default class LibraryWindow extends HTMLDivElement {
                     this.plLikedID = pl.id
                 }
             });
-            this.plLikedID =
-                this.changeView(this.selectedIndex)
-            this.changeViewMyLib(this.selectedIndex)
+            this.changeView(this.selectedIndex)
+            this.changeViewMyLib(0)
             this.style.opacity = "1"
         })
     }
@@ -64,54 +64,62 @@ export default class LibraryWindow extends HTMLDivElement {
 
     async changeViewMyLib(newIndex) {
         try {
-            this.shadowRoot.getElementById("mylib_topbar").children[this.selectedIndexMyLib].classList.remove("selected")
-            this.shadowRoot.getElementById("mylib_topbar").children[newIndex].classList.add("selected")
-            let objs = this.shadowRoot.getElementById("mylib_list")
-            if (newIndex == 0) {
-                let result = await Utils.apiManager.doPostRequest({
-                    act: "getPlaylistSongs",
-                    playlistID: this.plLikedID,
-                    orderByDesc: true,
-                    offset: 0
-                })
-                for (let i in result) {
-                    let obj = result[i]
-                    //TO-DO: faire songGrid
-                    //objs.appendChild(new SongGrid(new Song(obj.musicID, obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName)))
+            if (newIndex !== this.selectedIndexMyLib) {
+                if (this.selectedIndexMyLib != -1)
+                    this.shadowRoot.getElementById("mylib_topbar").children[this.selectedIndexMyLib].classList.remove("selected")
+                this.shadowRoot.getElementById("mylib_topbar").children[newIndex].classList.add("selected")
+                let objs = this.shadowRoot.getElementById("mylib_list")
+                while (objs.firstChild) {
+                    objs.removeChild(objs.lastChild);
                 }
-            }
-            else {
-                let result = await Utils.apiManager.doPostRequest({
-                    act: "getObjectsInPlaylist",
-                    playlistID: this.plLikedID,
-                    orderByDesc: true,
-                    offset: 0,
-                    size: 50
-                })
-                if (newIndex == 1) {
-                    for (let i in result) {
-                        let obj = result[i]
-                        if (obj.id.includes("pl_")) {
-                            let id = obj.id.replace("pl_", "")
-                            objs.appendChild(new PlaylistGrid(new Playlist(id, obj.name, obj.userID, obj.desc, obj.imgUrl, obj.isPrivate, obj.rank, obj.dateAdded)))
-                        }
+                if (newIndex == 0) {
+                    objs.classList.remove("obj")
+                    let result = await Utils.apiManager.doPostRequest({
+                        act: "getPlaylistSongs",
+                        playlistID: this.plLikedID,
+                        orderByDesc: true,
+                        offset: 0
+                    })
+                    let songs = result["songs"]
+                    for (let i in songs) {
+                        let obj = songs[i]
+                        objs.appendChild(new SongGrid(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName)))
                     }
                 }
-                else if (newIndex == 2) {
-                    for (let i in result) {
-                        let obj = result[i]
-                        if (obj.id.includes("si_")) {
-                            let id = obj.id.replace("si_", "")
-                            objs.appendChild(new SingerGrid(new Singer(id, obj.name, obj.imgUrl, obj.dateAdded)))
+                else {
+                    objs.classList.add("obj")
+                    let result = await Utils.apiManager.doPostRequest({
+                        act: "getObjectsInPlaylist",
+                        playlistID: this.plLikedID,
+                        orderByDesc: true,
+                        offset: 0,
+                        size: 50
+                    })
+                    if (newIndex == 1) {
+                        for (let i in result) {
+                            let obj = result[i]
+                            if (obj.id.includes("pl_")) {
+                                let id = obj.id.replace("pl_", "")
+                                objs.appendChild(new PlaylistGrid(new Playlist(id, obj.name, obj.userID, obj.desc, obj.imgUrl, obj.isPrivate, obj.rank, obj.dateAdded)))
+                            }
                         }
                     }
-                }
-                else if (newIndex == 3) {
-                    for (let i in result) {
-                        let obj = result[i]
-                        if (obj.id.includes("al_")) {
-                            let id = obj.id.replace("al_", "")
-                            objs.appendChild(new AlbumGrid(new Album(id, obj.name, obj.singerID, obj.type, obj.imgUrl, obj.dateAdded)))
+                    else if (newIndex == 2) {
+                        for (let i in result) {
+                            let obj = result[i]
+                            if (obj.id.includes("si_")) {
+                                let id = obj.id.replace("si_", "")
+                                objs.appendChild(new SingerGrid(new Singer(id, obj.name, obj.imgUrl, obj.dateAdded)))
+                            }
+                        }
+                    }
+                    else if (newIndex == 3) {
+                        for (let i in result) {
+                            let obj = result[i]
+                            if (obj.id.includes("al_")) {
+                                let id = obj.id.replace("al_", "")
+                                objs.appendChild(new AlbumGrid(new Album(id, obj.name, obj.singerID, obj.type, obj.imgUrl, obj.dateAdded)))
+                            }
                         }
                     }
                 }

@@ -10,7 +10,7 @@
         "{set.general.discordRPC}": "Enable Discord RPC",
         "{set.general.discordRPC.info}": "Enable you to see what you're listening on Discord",
         "{set.general.logs}": "Write logs in files",
-        "{set.music}": "Web",
+        "{set.music}": "Music",
         "{set.music.adblock}": "Use built-in adblock BETA",
         "{set.music.createMix}": "Create a mix automatically when a music is finished BETA",
         "{set.music.volume}": "Volume",
