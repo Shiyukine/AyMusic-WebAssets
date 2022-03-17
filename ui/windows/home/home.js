@@ -9,6 +9,7 @@ import Singer from "../../../class/music/singer.js";
 import Playlist from "../../../class/music/playlist.js";
 
 export default class HomeWindow extends HTMLDivElement {
+    isClosed = false;
 
     constructor() {
         super();
@@ -86,6 +87,13 @@ export default class HomeWindow extends HTMLDivElement {
             noObj.innerText = "{pl.home.noSong}"
             noObj.classList.add("noSong")
             list.appendChild(noObj)
+        }
+    }
+
+    close() {
+        this.isClosed = true
+        while (this.firstChild) {
+            this.removeChild(this.lastChild);
         }
     }
 }

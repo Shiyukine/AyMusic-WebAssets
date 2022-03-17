@@ -23,6 +23,8 @@ export default class InfoPanel extends HTMLDivElement {
     #progressBar = null;
 
     #loaded = false;
+    controller = new AbortController();
+    isClosed = false;
 
     textReturn = "";
 
@@ -106,6 +108,11 @@ export default class InfoPanel extends HTMLDivElement {
         this.shadowRoot.getElementById("panelInfoBG").ontransitionend = () => {
             if (this.shadowRoot.getRootNode().host.parentElement)
                 this.shadowRoot.getRootNode().host.parentElement.removeChild(this);
+            this.isClosed = true
+            while (this.firstChild) {
+                this.removeChild(this.lastChild);
+            }
+            this.controller.abort()
         }
         this.hide()
         //this.changeloading(false)

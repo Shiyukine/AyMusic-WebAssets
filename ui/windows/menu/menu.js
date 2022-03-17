@@ -94,6 +94,7 @@ export default class MenuWindow extends HTMLDivElement {
             if (this.anWindow) {
                 let thisW = this.anWindow.win
                 thisW.ontransitionend = () => {
+                    thisW.close()
                     document.getElementById("main").removeChild(thisW)
                 }
                 thisW.style.opacity = "0%";

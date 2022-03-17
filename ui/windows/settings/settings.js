@@ -6,6 +6,8 @@ import LoginPanel from "../../components/loginPanel/loginPanel.js";
 
 export default class SettingsWindow extends HTMLDivElement {
     selectedIndex = 0;
+    isClosed = false;
+    controller = new AbortController();
 
     constructor() {
         super();
@@ -81,23 +83,30 @@ export default class SettingsWindow extends HTMLDivElement {
              */
             var lp = null;
             shadow.getElementById("acc_change").onclick = () => {
-                window.history.pushState({ where: "settings", showLog: false }, "", "/index.html")
-                lp = new LoginPanel("modify")
-                document.getElementById("main").appendChild(lp)
-                window.history.pushState({ where: "settings", showLog: true }, "", "/index.html")
+                if (lp == null) {
+                    lp = new LoginPanel("modify")
+                    document.getElementById("main").appendChild(lp)
+                    window.history.pushState({ where: "settings", showLog: true }, "", "/index.html")
+                }
             }
             window.addEventListener("popstate", (e) => {
-                if (e.state.where == "settings") {
-                    if (e.state.showLog) {
-                        lp = new LoginPanel("modify")
-                        document.getElementById("main").appendChild(lp)
+                if (!this.isClosed) {
+                    if (e.state.where == "settings") {
+                        if (e.state.showLog) {
+                            if (lp == null) {
+                                lp = new LoginPanel("modify")
+                                document.getElementById("main").appendChild(lp)
+                            }
+                        }
                     }
-                    else {
-                        lp.close(false)
-                        lp = null;
+                    else if (e.state.where == "menu" && e.state.menu == "Settings") {
+                        if (lp != null) {
+                            lp.close(false)
+                            lp = null;
+                        }
                     }
                 }
-            })
+            }, { signal: this.controller })
             shadow.getElementById("acc_logout").onclick = () => {
                 var ip = new InfoPanel("Log-out", "Do you want to log-out now ?\nAyMusic will restart after you have logged out.", [{
                     text: "Yes", isPositive: true, onclick: () => {
@@ -132,5 +141,13 @@ export default class SettingsWindow extends HTMLDivElement {
         this.shadowRoot.getElementById("acc_img").src = Utils.actualAccount.avatarUrl;
         this.shadowRoot.getElementById("acc_name").innerText = Utils.actualAccount.name;
         this.shadowRoot.getElementById("acc_email").innerText = Utils.actualAccount.email;
+    }
+
+    close() {
+        this.isClosed = true
+        while (this.firstChild) {
+            this.removeChild(this.lastChild);
+        }
+        this.controller.abort()
     }
 }

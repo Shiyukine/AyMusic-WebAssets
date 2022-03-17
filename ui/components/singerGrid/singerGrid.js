@@ -20,7 +20,7 @@ export default class SingerGrid extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: "open" })
         Import.getData("/ui/components/singerGrid/singerGrid.html").then((html) => {
             shadow.innerHTML = html
-            new Translations(shadow.children[1])
+            //new Translations(shadow.children[1])
             this.shadowRoot.getElementById("title").innerText = this.singer.name
             this.shadowRoot.getElementById("img").style.backgroundImage = this.singer.imgUrl
             this.addEventListener("mouseover", function () {

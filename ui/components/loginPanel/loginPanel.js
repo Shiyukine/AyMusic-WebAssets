@@ -19,6 +19,9 @@ export default class LoginPanel extends HTMLDivElement {
     */
     #eventEl = null;
 
+    isClosed = false;
+    controller = new AbortController();
+
     #getIframeUrl = () => {
         return new Promise((resolve) => {
             this.#iframe.contentWindow.postMessage({ message: "getURL" }, Utils.servURL)
@@ -113,14 +116,18 @@ export default class LoginPanel extends HTMLDivElement {
             if (triggerEvent) this.#eventEl.dispatchEvent(new CustomEvent("logged"));
             if (document.getElementById("menu_win"))
                 document.getElementById("menu_win").style.zIndex = ""
+            this.isClosed = true
+            while (this.firstChild) {
+                this.removeChild(this.lastChild);
+            }
+            this.controller.abort()
         };
         this.shadowRoot.getElementById("loginBG").style.opacity = "0%"
     }
 
     addScript() {
         try {
-            Utils.app.remoteClient.registerIframeUrl(Utils.servURL, `//injected script by AyMusic app
-            addEventListener('message', (e) =>
+            Utils.app.remoteClient.registerIframeUrl(Utils.servURL, `addEventListener('message', (e) =>
             {
                 if(e.origin.includes('myapp://root'))
                 {

@@ -3,6 +3,8 @@ import Translations from "../../../class/translations.js";
 
 export default class MusicViewerWindow extends HTMLDivElement {
     selectedIndex = 0;
+    isClosed = false;
+    controller = new AbortController();
 
     constructor() {
         super();
@@ -14,5 +16,13 @@ export default class MusicViewerWindow extends HTMLDivElement {
             new Translations(shadow.children[1])
             this.style.opacity = "1"
         })
+    }
+
+    close() {
+        this.isClosed = true
+        while (this.firstChild) {
+            this.removeChild(this.lastChild);
+        }
+        this.controller.abort()
     }
 }

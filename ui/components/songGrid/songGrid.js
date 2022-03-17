@@ -20,7 +20,7 @@ export default class SongGrid extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: "open" })
         Import.getData("/ui/components/songGrid/songGrid.html").then((html) => {
             shadow.innerHTML = html
-            new Translations(shadow.children[1])
+            //new Translations(shadow.children[1])
             this.shadowRoot.getElementById("title").innerText = this.song.title
             this.shadowRoot.getElementById("artist").innerText = this.song.singerName
             this.shadowRoot.getElementById("img").style.backgroundImage = this.song.imgUrl

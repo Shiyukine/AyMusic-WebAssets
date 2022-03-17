@@ -14,6 +14,8 @@ export default class LibraryWindow extends HTMLDivElement {
     selectedIndex = 0;
     selectedIndexMyLib = -1;
     plLikedID = "";
+    isClosed = false;
+    controller = new AbortController();
 
     constructor() {
         super();
@@ -126,5 +128,13 @@ export default class LibraryWindow extends HTMLDivElement {
             }
         } catch { }
         this.selectedIndexMyLib = newIndex
+    }
+
+    close() {
+        this.isClosed = true
+        this.controller.abort()
+        while (this.firstChild) {
+            this.removeChild(this.lastChild);
+        }
     }
 }
