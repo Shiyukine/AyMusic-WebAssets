@@ -2,6 +2,9 @@ import Playlist from "./music/playlist.js"
 import Utils from "./utils/utils.js"
 
 export default class LibraryManager {
+    /**
+     * @type {[Playlist]}
+     */
     userPlaylists = []
 
     userInfo = {

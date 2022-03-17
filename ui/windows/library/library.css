@@ -210,29 +210,6 @@ p {
     display: flow-root !important;
 }
 
-#acc_img {
-    border-radius: 50%;
-    width: 150px;
-    height: 150px;
-    right: 0;
-    float: right;
-}
-
-#acc_name, #acc_email {
-    float: left;
-    font-size: 20px;
-    padding-left: 20px;
-    color: rgb(215, 215, 215);
-}
-
-.account-1 {
-    float: left !important;
-}
-
-.account-2 {
-    float: right !important;
-}
-
 .big {
     font-size: 22px;
     padding-left: 10px;
@@ -296,4 +273,8 @@ button:disabled {
 
 .sub .set#mylib_list {
     display: grid;
+}
+
+#mylib_topbar>p {
+    margin-right: 10px;
 }

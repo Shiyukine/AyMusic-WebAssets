@@ -12,8 +12,9 @@ export default class Song {
     cropEnd = -1
     singerID = ""
     singerName = ""
+    albumName = ""
 
-    constructor(id, url, positionOrDate, title, imgUrl, time, isExplicit, addedBy, cropStart, cropEnd, singerID, singerName) {
+    constructor(id, url, positionOrDate, title, imgUrl, time, isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName) {
         this.id = id;
         this.url = url;
         this.positionOrDate = positionOrDate;
@@ -26,6 +27,7 @@ export default class Song {
         this.cropEnd = cropEnd;
         this.singerID = singerID;
         this.singerName = singerName;
+        this.albumName = albumName;
         if (this.imgUrl === "")
             this.imgUrl = '/resources/icon.ico';
     }
