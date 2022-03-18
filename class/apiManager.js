@@ -3,7 +3,7 @@ import Utils from "./utils/utils.js";
 export default class ApiManager {
     userId = "";
     apiKey = "";
-    anDico = {}
+    #anDico = {}
 
     refreshApiKey() {
         this.userId = Utils.actualAccount.id
@@ -24,8 +24,8 @@ export default class ApiManager {
             newDico[i] = content[i]
         }
         console.log(this.anDico, newDico, this.anDico !== newDico)
-        if (this.anDico !== newDico) {
-            this.anDico = newDico
+        if (this.#anDico !== newDico) {
+            this.#anDico = newDico
             let result = await Utils.app.remoteClient.httpRequestPOST(Utils.servURL + "api/AyMusic/api.php", JSON.stringify(newDico))
             try {
                 result = JSON.parse(result)["content"];

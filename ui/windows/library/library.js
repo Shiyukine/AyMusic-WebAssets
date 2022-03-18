@@ -15,6 +15,12 @@ export default class LibraryWindow extends HTMLDivElement {
     selectedIndexMyLib = -1;
     plLikedID = "";
     isClosed = false;
+
+    /**
+     * @type {Playlist}
+     */
+    selectedPl = null;
+
     controller = new AbortController();
 
     constructor() {
@@ -22,7 +28,7 @@ export default class LibraryWindow extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: "open" })
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.7s"
-        Import.getData("/ui/windows/library/library.html").then((html) => {
+        Import.getData("/ui/windows/library/library.html").then(async (html) => {
             shadow.innerHTML = html
             /*shadow.getElementById("menu").onwheel = (ev) => {
                 let newIndex;
@@ -32,11 +38,6 @@ export default class LibraryWindow extends HTMLDivElement {
                 if (newIndex < 0) newIndex += 1
                 this.changeView(newIndex)
             };*/
-            Array.from(shadow.getElementById("menu").children).forEach((x, y) => {
-                x.onclick = () => {
-                    this.changeView(y)
-                }
-            })
             Array.from(shadow.getElementById("mylib_topbar").children).forEach((x, y) => {
                 x.onclick = () => {
                     this.changeViewMyLib(y)
@@ -51,6 +52,21 @@ export default class LibraryWindow extends HTMLDivElement {
             this.changeView(this.selectedIndex)
             this.changeViewMyLib(0)
             this.style.opacity = "1"
+            let pls = Utils.libManager.userPlaylists
+            for (let i in pls) {
+                let pl = pls[i]
+                if (!pl.name.includes("{") && !pl.name.includes("}")) {
+                    let paragraph = document.createElement("p")
+                    paragraph.innerText = pl.name
+                    paragraph.dataset["plId"] = pl.id
+                    this.shadowRoot.getElementById("menu").appendChild(paragraph)
+                }
+            }
+            Array.from(shadow.getElementById("menu").children).forEach((x, y) => {
+                x.onclick = () => {
+                    this.changeView(y)
+                }
+            })
         })
     }
 
@@ -60,6 +76,16 @@ export default class LibraryWindow extends HTMLDivElement {
             this.shadowRoot.getElementById("view").children[this.selectedIndex].classList.remove("selected")
             this.shadowRoot.getElementById("menu").children[newIndex].classList.add("selected")
             this.shadowRoot.getElementById("view").children[newIndex].classList.add("selected")
+            if (this.shadowRoot.getElementById("menu").children[newIndex].dataset["plId"] !== undefined) {
+                for (let i in Utils.libManager.userPlaylists) {
+                    let pl = Utils.libManager.userPlaylists[i]
+                    if (pl.id == this.shadowRoot.getElementById("menu").children[newIndex].dataset["plId"]) {
+                        this.selectedPl = pl
+                        this.shadowRoot.getElementById("playlist_name").innerText = pl.name
+                        //to-do refresh songs
+                    }
+                }
+            }
         } catch { }
         this.selectedIndex = newIndex
     }
