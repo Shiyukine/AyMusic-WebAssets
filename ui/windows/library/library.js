@@ -70,18 +70,19 @@ export default class LibraryWindow extends HTMLDivElement {
                 if (this.selectedIndexMyLib != -1)
                     this.shadowRoot.getElementById("mylib_topbar").children[this.selectedIndexMyLib].classList.remove("selected")
                 this.shadowRoot.getElementById("mylib_topbar").children[newIndex].classList.add("selected")
+                this.selectedIndexMyLib = newIndex
                 let objs = this.shadowRoot.getElementById("mylib_list")
-                while (objs.firstChild) {
-                    objs.removeChild(objs.lastChild);
-                }
                 if (newIndex == 0) {
-                    objs.classList.remove("obj")
                     let result = await Utils.apiManager.doPostRequest({
                         act: "getPlaylistSongs",
                         playlistID: this.plLikedID,
                         orderByDesc: true,
                         offset: 0
                     })
+                    objs.classList.remove("obj")
+                    while (objs.firstChild) {
+                        objs.removeChild(objs.lastChild);
+                    }
                     let songs = result["songs"]
                     for (let i in songs) {
                         let obj = songs[i]
@@ -89,7 +90,6 @@ export default class LibraryWindow extends HTMLDivElement {
                     }
                 }
                 else {
-                    objs.classList.add("obj")
                     let result = await Utils.apiManager.doPostRequest({
                         act: "getObjectsInPlaylist",
                         playlistID: this.plLikedID,
@@ -97,6 +97,10 @@ export default class LibraryWindow extends HTMLDivElement {
                         offset: 0,
                         size: 50
                     })
+                    objs.classList.add("obj")
+                    while (objs.firstChild) {
+                        objs.removeChild(objs.lastChild);
+                    }
                     if (newIndex == 1) {
                         for (let i in result) {
                             let obj = result[i]
@@ -127,7 +131,6 @@ export default class LibraryWindow extends HTMLDivElement {
                 }
             }
         } catch { }
-        this.selectedIndexMyLib = newIndex
     }
 
     close() {
