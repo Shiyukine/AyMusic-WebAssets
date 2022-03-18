@@ -23,7 +23,6 @@ export default class ApiManager {
         for (let i in content) {
             newDico[i] = content[i]
         }
-        console.log(this.anDico, newDico, this.anDico !== newDico)
         if (this.#anDico !== newDico) {
             this.#anDico = newDico
             let result = await Utils.app.remoteClient.httpRequestPOST(Utils.servURL + "api/AyMusic/api.php", JSON.stringify(newDico))

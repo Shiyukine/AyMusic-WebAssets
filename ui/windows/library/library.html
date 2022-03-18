@@ -7,8 +7,6 @@
         <div id="menu">
             <p class="selected">{lib.mylib}</p>
             <p>{lib.addPlaylist}</p>
-            <!--Faire la liste ici des autres playlists pour un meilleur accès-->
-            <!--PENSER A ENLEVER CLASS="SELECTED" idem dans view-->
         </div>
         <div id="view">
             <div class="panel selected">
@@ -19,7 +17,6 @@
                         <p>{playlists}</p>
                         <p>{artists}</p>
                         <p>{albums}</p>
-                        <!--Voici la liste ici de toutes les pl/songs/artists/albums suivis par l'user-->
                     </div>
                     <div id="mylib_list" class="set last">
                         <!--Show here some object (songs/pl etc) according to tab of topbar-->
@@ -34,8 +31,19 @@
                     </div>
                 </div>
             </div>
-            <div class="panel">
-                <p id="playlist_name">{playlist.name}</p>
+            <div class="panel havePanelInfo">
+                <div class="panelInfo">
+                    <p id="playlist_name">{playlist.name}</p>
+                    <svg id="plContextMenu" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z" />
+                    </svg>
+                    <svg id="plState" viewBox="0 0 24 24">
+                        <path
+                            d="M10,16.5V7.5L16,12M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
+                            fill="currentColor"></path>
+                    </svg>
+                </div>
                 <div class="sub">
                     <div class="set last" id="playlist_songs">
                         <!--Show here all songs from a playlist-->

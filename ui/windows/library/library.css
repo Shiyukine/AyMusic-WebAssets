@@ -22,6 +22,8 @@ p {
     margin-left: 15px;
     float: left;
     height: calc(100% - 78px - 15px);
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 #menu p, .sub .set.topbar p {
@@ -34,6 +36,8 @@ p {
     color: rgb(215, 215, 215);
     transition: background 0.4s, color 0.4s;
     cursor: pointer;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 #menu .selected, .sub .set.topbar .selected {
@@ -62,15 +66,46 @@ p {
     height: 100%;
 }
 
+.panel.havePanelInfo .sub {
+    margin-top: 0px;
+}
+
 #view .selected {
     z-index: 10;
     opacity: 1;
 }
 
-.panel>p {
+.panelInfo {
+    display: flow-root;
+    height: 46px;
+    margin-top: -5px;
+}
+
+.panelInfo>p, .panel>p {
     font-size: 25px;
     color: rgb(0, 204, 255);
     font-weight: bold;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.panelInfo>p {
+    padding-top: 5px;
+    float: left;
+}
+
+.panelInfo>svg {
+    overflow: hidden;
+    float: right;
+    color: white;
+    width: 46px;
+    margin-right: 35px;
+    height: 46px;
+    position: relative;
+}
+
+#plState {
+    margin-right: 5px;
 }
 
 .sub {
@@ -80,7 +115,7 @@ p {
     margin-right: 25px;
     margin-top: 10px;
     padding-top: 10px;
-    height: 100%;
+    height: calc(100% - 2px);
 }
 
 .sub .set {
@@ -276,6 +311,12 @@ button:disabled {
     overflow: auto;
     height: calc(100% - 56px - 10px);
     width: calc(100% - 20px - 10px);
+}
+
+.sub .set#playlist_songs {
+    display: block;
+    overflow: auto;
+    height: calc(100% - 7px - 10px);
 }
 
 .sub .set#mylib_list.obj {

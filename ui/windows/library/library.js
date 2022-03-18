@@ -30,14 +30,14 @@ export default class LibraryWindow extends HTMLDivElement {
         this.style.transition = "opacity 0.7s"
         Import.getData("/ui/windows/library/library.html").then(async (html) => {
             shadow.innerHTML = html
-            /*shadow.getElementById("menu").onwheel = (ev) => {
+            /*shadow.getElementById("menu").addEventListener("wheel", (ev) => {
                 let newIndex;
                 if (ev.deltaY > 0) newIndex = this.selectedIndex + 1
                 else newIndex = this.selectedIndex - 1
                 if (newIndex > shadow.getElementById("menu").children.length - 1) newIndex -= 1
                 if (newIndex < 0) newIndex += 1
                 this.changeView(newIndex)
-            };*/
+            }, { passive: true });*/
             Array.from(shadow.getElementById("mylib_topbar").children).forEach((x, y) => {
                 x.onclick = () => {
                     this.changeViewMyLib(y)
@@ -70,24 +70,40 @@ export default class LibraryWindow extends HTMLDivElement {
         })
     }
 
-    changeView(newIndex) {
+    async changeView(newIndex) {
         try {
-            this.shadowRoot.getElementById("menu").children[this.selectedIndex].classList.remove("selected")
-            this.shadowRoot.getElementById("view").children[this.selectedIndex].classList.remove("selected")
-            this.shadowRoot.getElementById("menu").children[newIndex].classList.add("selected")
-            this.shadowRoot.getElementById("view").children[newIndex].classList.add("selected")
-            if (this.shadowRoot.getElementById("menu").children[newIndex].dataset["plId"] !== undefined) {
-                for (let i in Utils.libManager.userPlaylists) {
-                    let pl = Utils.libManager.userPlaylists[i]
-                    if (pl.id == this.shadowRoot.getElementById("menu").children[newIndex].dataset["plId"]) {
-                        this.selectedPl = pl
-                        this.shadowRoot.getElementById("playlist_name").innerText = pl.name
-                        //to-do refresh songs
+            if (newIndex !== this.selectedIndex) {
+                this.shadowRoot.getElementById("menu").children[this.selectedIndex].classList.remove("selected")
+                this.shadowRoot.getElementById("view").children[this.selectedIndex > 2 ? 2 : this.selectedIndex].classList.remove("selected")
+                this.shadowRoot.getElementById("menu").children[newIndex].classList.add("selected")
+                this.shadowRoot.getElementById("view").children[newIndex > 2 ? 2 : newIndex].classList.add("selected")
+                if (this.shadowRoot.getElementById("menu").children[newIndex].dataset["plId"] !== undefined) {
+                    for (let i in Utils.libManager.userPlaylists) {
+                        let pl = Utils.libManager.userPlaylists[i]
+                        if (pl.id == this.shadowRoot.getElementById("menu").children[newIndex].dataset["plId"]) {
+                            this.selectedPl = pl
+                            this.shadowRoot.getElementById("playlist_name").innerText = pl.name
+                            let songsList = this.shadowRoot.getElementById("playlist_songs")
+                            let result = await Utils.apiManager.doPostRequest({
+                                act: "getPlaylistSongs",
+                                playlistID: pl.id,
+                                orderByDesc: false,
+                                offset: 0
+                            })
+                            while (songsList.firstChild) {
+                                songsList.removeChild(songsList.lastChild);
+                            }
+                            let songs = result["songs"]
+                            for (let i in songs) {
+                                let obj = songs[i]
+                                songsList.appendChild(new SongGrid(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName)))
+                            }
+                        }
                     }
                 }
+                this.selectedIndex = newIndex
             }
         } catch { }
-        this.selectedIndex = newIndex
     }
 
     async changeViewMyLib(newIndex) {
