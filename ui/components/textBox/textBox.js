@@ -1,0 +1,46 @@
+import Import from "../../../class/import.js";
+import Song from "../../../class/music/song.js";
+import Translations from "../../../class/translations.js";
+
+export default class TextBox extends HTMLDivElement {
+
+    label = ""
+    cssColor = "white"
+
+    constructor(label, cssColor) {
+        super();
+        this.label = label
+        var shadow = this.attachShadow({ mode: "open" })
+        Import.getData("/ui/components/textBox/textBox.html").then((html) => {
+            shadow.innerHTML = html
+            new Translations(shadow.children[1])
+            this.setLabel(label)
+            this.setColor(cssColor)
+        })
+    }
+
+    setLabel(label) {
+        this.shadowRoot.getElementById("lab").innerText = label
+    }
+
+    getLabel() {
+        return this.shadowRoot.getElementById("lab").innerText
+    }
+
+    setText(text) {
+        this.shadowRoot.getElementById("ipt").value = text
+    }
+
+    getText() {
+        return this.shadowRoot.getElementById("ipt").value
+    }
+
+    setColor(cssColor) {
+        this.shadowRoot.getElementById("lab").style.color = cssColor
+        this.shadowRoot.getElementById("ipt").style.color = this.shadowRoot.getElementById("ipt").style.borderBottomColor = cssColor
+    }
+
+    getColor() {
+        return this.cssColor
+    }
+}

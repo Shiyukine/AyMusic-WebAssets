@@ -1,0 +1,37 @@
+html {
+    background-color: black;
+}
+
+#main {
+    display: flex;
+    font-family: "QuickSand";
+    border-radius: 15px;
+}
+
+input {
+    border: 0px;
+    border-bottom: 1px white solid;
+    float: left;
+    position: relative;
+    outline: none;
+    height: 25px;
+    width: 100%;
+    color: white;
+    background-color: transparent;
+    font-family: "QuickSand";
+}
+
+label {
+    position: absolute;
+    float: left;
+    transform: translate(5px, 5px);
+    transition: 0.4s;
+    color: white;
+}
+
+/*input:hover + label,*/
+input:focus+label,
+input:not(:placeholder-shown)+label {
+    transform: translate(0px, -10px);
+    font-size: 12px;
+}
