@@ -25,15 +25,15 @@ export default class Utils {
         return new Promise(resolve => setTimeout(() => resolve(), ms))
     }
 
-    static createSVGPath(pathName, color, click, taille) {
+    static createSVGPath(pathName, color, click, size) {
         return new Promise((resolve) => {
             Import.getData("/resources/paths.json").then((data) => {
                 let paths = JSON.parse(data)
                 let path = paths[pathName]
                 let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
                 svg.setAttributeNS(null, "viewBox", "0 0 24 24")
-                svg.setAttributeNS(null, "width", taille)
-                svg.setAttributeNS(null, "height", taille)
+                svg.setAttributeNS(null, "width", size)
+                svg.setAttributeNS(null, "height", size)
                 let sp = document.createElementNS("http://www.w3.org/2000/svg", "path")
                 sp.setAttributeNS(null, "d", path)
                 sp.setAttributeNS(null, "fill", color)

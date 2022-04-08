@@ -12,6 +12,7 @@ import MenuWindow from "../ui/windows/menu/menu.js";
 import SearchWindow from "../ui/windows/search/search.js";
 import SettingsWindow from "../ui/windows/settings/settings.js";
 import MusicViewerWindow from "../ui/windows/musicViewer/musicViewer.js";
+import ContextMenu from "../ui/components/contextMenu/contextMenu.js";
 
 export default class Import {
     static loadCustomElements() {
@@ -28,7 +29,8 @@ export default class Import {
         customElements.define("album-grid", AlbumGrid, { extends: "div" });
         customElements.define("singer-grid", SingerGrid, { extends: "div" });
         customElements.define("song-grid", SongGrid, { extends: "div" });
-        customElements.define("text-box", TextBox, { extends: "div" })
+        customElements.define("text-box", TextBox, { extends: "div" });
+        customElements.define("context-menu", ContextMenu, { extends: "div" });
     }
 
     /**

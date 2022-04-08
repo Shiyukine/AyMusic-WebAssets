@@ -1,0 +1,48 @@
+p {
+    margin: 0px;
+    color: white;
+    float: left;
+    position: relative;
+    transform: translateY(-50%);
+    top: 50%;
+    height: 20px;
+    margin-right: 10px;
+    margin-left: 5px;
+}
+
+img,
+svg {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+    margin-left: 5px;
+    float: left;
+    position: relative;
+    transform: translateY(-50%);
+    top: 50%;
+}
+
+#main {
+    font-family: "QuickSand";
+    background-color: rgb(43, 43, 43);
+    border-radius: 10px;
+}
+
+#context {
+    margin: 10px;
+    padding-top: 5px;
+    display: grid;
+}
+
+#context>div {
+    display: inline-flex;
+    position: relative;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    height: 36px;
+    transition: background-color 0.4s;
+}
+
+#context>div:hover {
+    background-color: rgba(87, 87, 87, 0.445);
+}

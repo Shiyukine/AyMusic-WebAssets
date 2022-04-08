@@ -70,7 +70,8 @@ p {
 }
 
 .panel.havePanelInfo .sub {
-    margin-top: 0px;
+    margin-top: 5px;
+    height: calc(100% - 7px);
     position: relative;
 }
 
@@ -119,9 +120,9 @@ p {
     border-radius: 15px;
     padding-bottom: 0px;
     margin-right: 25px;
-    margin-top: 10px;
+    margin-top: 15px;
     padding-top: 10px;
-    height: calc(100% - 2px);
+    height: calc(100% - 7px);
 }
 
 .sub .set {
@@ -360,4 +361,13 @@ button:disabled {
     position: absolute;
     bottom: 15px;
     right: 20px;
+}
+
+.panelInfo>svg {
+    transition: background-color 0.4s;
+    border-radius: 10px;
+}
+
+.panelInfo>svg:hover {
+    background-color: rgba(141, 141, 141, 0.445);
 }

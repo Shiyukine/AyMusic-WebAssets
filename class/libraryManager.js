@@ -60,7 +60,7 @@ export default class LibraryManager {
             for (let i in this.userPlaylists) {
                 let pl = this.userPlaylists[i]
                 if (pl.id == id) {
-                    this.userPlaylists.splice(i)
+                    this.userPlaylists.splice(i, 1)
                     break;
                 }
             }

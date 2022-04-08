@@ -54,6 +54,11 @@
         "{plInfo.name}": "Name",
         "{plInfo.desc}": "Description",
         "{plInfo.imgUrl}": "Playlist's photo URL",
-        "{plInfo.isPriv}": "Make this playlist private"
+        "{plInfo.isPriv}": "Make this playlist private",
+        "{plInfo.notPrivate}": "Make not private",
+        "{plInfo.private}": "Make private",
+        "{plInfo.edit}": "Edit playlist",
+        "{plInfo.remove}": "Remove playlist",
+        "{wt.addQueue}": "Add to queue"
     }
 }

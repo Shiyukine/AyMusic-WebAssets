@@ -6,6 +6,8 @@ import Song from "../../../class/music/song.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
 import AlbumGrid from "../../components/albumGrid/albumGrid.js";
+import ContextMenu from "../../components/contextMenu/contextMenu.js";
+import InfoPanel from "../../components/infoPanel/infoPanel.js";
 import PlaylistGrid from "../../components/playlistGrid/playlistGrid.js";
 import SingerGrid from "../../components/singerGrid/singerGrid.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
@@ -75,11 +77,58 @@ export default class LibraryWindow extends HTMLDivElement {
                     await Utils.libManager.addPlaylist(name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === 1)
                     this.refreshUserPlaylists()
                     this.changeView(this.shadowRoot.getElementById("menu").children.length - 1)
+                    name.setText("")
+                    desc.setText("")
+                    imgUrl.setText("")
+                    isPriv.value = "1"
+                    isPriv.style.backgroundColor = isPriv.value == "1" ? "" : "gray"
                 }
                 else {
                     Utils.newError("Can't create a playlist", "Please put a name to this new playlist !")
                 }
             }
+            var cm = new ContextMenu()
+            shadow.getElementById("plContextMenu").onclick = (e) => {
+                cm.addElement("{wt.addQueue}", () => {
+                    Utils.newError("Not implemented", "Feature will be here soon !")
+                })
+                cm.addElement((this.selectedPl.isPrivate ? "{plInfo.notPrivate}" : "{plInfo.private}"), () => {
+                    Utils.newError("Not implemented", "Feature will be here soon !")
+                })
+                cm.addElement("{plInfo.edit}", () => {
+                    Utils.newError("Not implemented", "Feature will be here soon !")
+                })
+                cm.addElement("{plInfo.remove}", async () => {
+                    var confirm = new InfoPanel("Delete this playlist ?",
+                        "Are you sure to delete this playlist ?\nYou will not be able to retrieve this playlist !",
+                        [{
+                            text: "Yes", isPositive: true, onclick: async () => {
+                                await Utils.libManager.removePlaylist(this.selectedPl.id)
+                                confirm.close()
+                                this.changeView(0)
+                                this.refreshUserPlaylists()
+                            }
+                        }, {
+                            text: "No", isPositive: false, onclick: () => {
+                                confirm.close()
+                            }
+                        }], false)
+                    document.getElementById("main").appendChild(confirm)
+                    await confirm.showDialog()
+                })
+                cm.show(e)
+                cm.resetElements()
+            }
+            cm.hidden = () => {
+                cm.resetElements()
+            }
+            shadow.querySelectorAll("*").forEach((x) => {
+                if (x.tagName == "INPUT" && x.max == "1") {
+                    x.oninput = () => {
+                        x.style.backgroundColor = x.value == "1" ? "" : "gray"
+                    }
+                }
+            })
         })
     }
 
@@ -91,6 +140,9 @@ export default class LibraryWindow extends HTMLDivElement {
                 this.shadowRoot.getElementById("menu").children[newIndex].classList.add("selected")
                 this.shadowRoot.getElementById("view").children[newIndex > 2 ? 2 : newIndex].classList.add("selected")
                 if (this.shadowRoot.getElementById("menu").children[newIndex].dataset["plid"] !== undefined) {
+                    while (this.shadowRoot.getElementById("mylib_list").firstChild) {
+                        this.shadowRoot.getElementById("mylib_list").removeChild(this.shadowRoot.getElementById("mylib_list").lastChild)
+                    }
                     for (let i in Utils.libManager.userPlaylists) {
                         let pl = Utils.libManager.userPlaylists[i]
                         if (pl.id == this.shadowRoot.getElementById("menu").children[newIndex].dataset["plid"]) {
@@ -214,6 +266,7 @@ export default class LibraryWindow extends HTMLDivElement {
         }
         Array.from(this.shadowRoot.getElementById("menu").children).forEach((x, y) => {
             x.onclick = () => {
+                console.log("fdsfd")
                 this.changeView(y)
             }
         })
