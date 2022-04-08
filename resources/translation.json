@@ -50,6 +50,10 @@
         "{pl.afternoon.song.desc}": "Good afternoon !",
         "{pl.evening.song.desc}": "Good evening !",
         "{pl.home.noSong}": "It seems that you haven't been listening any songs on AyMusic.\nSearch for a song and it'll probably be here !",
-        "{home}": "Home"
+        "{home}": "Home",
+        "{plInfo.name}": "Name",
+        "{plInfo.desc}": "Description",
+        "{plInfo.imgUrl}": "Playlist's photo URL",
+        "{plInfo.isPriv}": "Make this playlist private"
     }
 }

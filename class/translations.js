@@ -45,7 +45,7 @@ export default class Translations {
                 if (x.tagName == "P" || x.tagName == "A" || x.tagName == "title" ||
                     x.tagName == "SPAN" || x.tagName == "H1" || x.tagName == "H2" ||
                     x.tagName == "H3" || x.tagName == "H4" || x.tagName == "H5" ||
-                    x.tagName == "BUTTON") {
+                    x.tagName == "BUTTON" || x.tagName == "LABEL") {
                     if (trl[text]) {
                         x.innerText = trl[text]
                         if (x.tagName == "title") x.innerHTML = trl[text]

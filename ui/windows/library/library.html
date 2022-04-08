@@ -9,7 +9,7 @@
             <p>{lib.addPlaylist}</p>
         </div>
         <div id="view">
-            <div class="panel">
+            <div class="panel selected">
                 <p>{lib.mylib}</p>
                 <div class="sub">
                     <div id="mylib_topbar" class="set last topbar">
@@ -23,12 +23,25 @@
                     </div>
                 </div>
             </div>
-            <div class="panel selected">
+            <div class="panel">
                 <p>{lib.addPlaylist}</p>
                 <div class="sub">
-                    <div class="set last">
-                        <p>Test</p>
+                    <div class="set">
+                        <div id="pl_name" is="text-box" label="{plInfo.name}"></div>
                     </div>
+                    <div class="set">
+                        <div id="pl_desc" is="text-box" label="{plInfo.desc}"></div>
+                    </div>
+                    <div class="set">
+                        <div id="pl_imgUrl" is="text-box" label="{plInfo.imgUrl}"></div>
+                        <button id="pl_imgUrlWeb">Web</button>
+                        <button id="pl_imgUrlLocal">Local</button>
+                    </div>
+                    <div class="set last">
+                        <p>{plInfo.isPriv}</p>
+                        <input type="range" min="0" max="1" value="1" class="slider" id="pl_isPriv">
+                    </div>
+                    <button id="pl_create">Create !</button>
                 </div>
             </div>
             <div class="panel havePanelInfo">

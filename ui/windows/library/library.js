@@ -9,6 +9,7 @@ import AlbumGrid from "../../components/albumGrid/albumGrid.js";
 import PlaylistGrid from "../../components/playlistGrid/playlistGrid.js";
 import SingerGrid from "../../components/singerGrid/singerGrid.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
+import TextBox from "../../components/textBox/textBox.js";
 
 export default class LibraryWindow extends HTMLDivElement {
     selectedIndex = 0;
@@ -52,21 +53,33 @@ export default class LibraryWindow extends HTMLDivElement {
             this.changeView(this.selectedIndex)
             this.changeViewMyLib(0)
             this.style.opacity = "1"
-            let pls = Utils.libManager.userPlaylists
-            for (let i in pls) {
-                let pl = pls[i]
-                if (!pl.name.includes("{") && !pl.name.includes("}")) {
-                    let paragraph = document.createElement("p")
-                    paragraph.innerText = pl.name
-                    paragraph.dataset["plId"] = pl.id
-                    this.shadowRoot.getElementById("menu").appendChild(paragraph)
+            this.refreshUserPlaylists()
+            shadow.getElementById("pl_create").onclick = async () => {
+                /**
+                 * @type {TextBox}
+                 */
+                let name = shadow.getElementById("pl_name")
+                /**
+                 * @type {TextBox}
+                 */
+                let desc = shadow.getElementById("pl_desc")
+                /**
+                 * @type {TextBox}
+                 */
+                let imgUrl = shadow.getElementById("pl_imgUrl")
+                /**
+                 * @type {HTMLInputElement}
+                 */
+                let isPriv = shadow.getElementById("pl_isPriv")
+                if (name.getText() != "") {
+                    await Utils.libManager.addPlaylist(name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === 1)
+                    this.refreshUserPlaylists()
+                    this.changeView(this.shadowRoot.getElementById("menu").children.length - 1)
+                }
+                else {
+                    Utils.newError("Can't create a playlist", "Please put a name to this new playlist !")
                 }
             }
-            Array.from(shadow.getElementById("menu").children).forEach((x, y) => {
-                x.onclick = () => {
-                    this.changeView(y)
-                }
-            })
         })
     }
 
@@ -77,10 +90,10 @@ export default class LibraryWindow extends HTMLDivElement {
                 this.shadowRoot.getElementById("view").children[this.selectedIndex > 2 ? 2 : this.selectedIndex].classList.remove("selected")
                 this.shadowRoot.getElementById("menu").children[newIndex].classList.add("selected")
                 this.shadowRoot.getElementById("view").children[newIndex > 2 ? 2 : newIndex].classList.add("selected")
-                if (this.shadowRoot.getElementById("menu").children[newIndex].dataset["plId"] !== undefined) {
+                if (this.shadowRoot.getElementById("menu").children[newIndex].dataset["plid"] !== undefined) {
                     for (let i in Utils.libManager.userPlaylists) {
                         let pl = Utils.libManager.userPlaylists[i]
-                        if (pl.id == this.shadowRoot.getElementById("menu").children[newIndex].dataset["plId"]) {
+                        if (pl.id == this.shadowRoot.getElementById("menu").children[newIndex].dataset["plid"]) {
                             this.selectedPl = pl
                             this.shadowRoot.getElementById("playlist_name").innerText = pl.name
                             let songsList = this.shadowRoot.getElementById("playlist_songs")
@@ -181,5 +194,28 @@ export default class LibraryWindow extends HTMLDivElement {
         while (this.firstChild) {
             this.removeChild(this.lastChild);
         }
+    }
+
+    refreshUserPlaylists() {
+        while (this.shadowRoot.getElementById("menu").lastChild.dataset &&
+            this.shadowRoot.getElementById("menu").lastChild.dataset["plid"]) {
+            var el = this.shadowRoot.getElementById("menu").lastChild
+            this.shadowRoot.getElementById("menu").removeChild(el);
+        }
+        let pls = Utils.libManager.userPlaylists
+        for (let i in pls) {
+            let pl = pls[i]
+            if (!pl.name.includes("{") && !pl.name.includes("}")) {
+                let paragraph = document.createElement("p")
+                paragraph.innerText = pl.name
+                paragraph.setAttribute("data-plid", pl.id)
+                this.shadowRoot.getElementById("menu").appendChild(paragraph)
+            }
+        }
+        Array.from(this.shadowRoot.getElementById("menu").children).forEach((x, y) => {
+            x.onclick = () => {
+                this.changeView(y)
+            }
+        })
     }
 }

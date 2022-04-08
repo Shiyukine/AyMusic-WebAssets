@@ -5,33 +5,13 @@ import InfoPanel from "./ui/components/infoPanel/infoPanel.js";
 import LoginPanel from "./ui/components/loginPanel/loginPanel.js";
 import MenuWindow from "./ui/windows/menu/menu.js";
 import ListenWindow from "./ui/windows/listen/listen.js";
-import SettingsWindow from "./ui/windows/settings/settings.js";
 import Translations from "./class/translations.js";
-import LibraryWindow from "./ui/windows/library/library.js";
-import SearchWindow from "./ui/windows/search/search.js";
-import MusicViewerWindow from "./ui/windows/musicViewer/musicViewer.js";
-import HomeWindow from "./ui/windows/home/home.js";
-import PlaylistGrid from "./ui/components/playlistGrid/playlistGrid.js";
-import AlbumGrid from "./ui/components/albumGrid/albumGrid.js";
-import SingerGrid from "./ui/components/singerGrid/singerGrid.js";
-import SongGrid from "./ui/components/songGrid/songGrid.js";
+import Import from "./class/import.js";
 
 async function main() {
     window.app = Utils.app;
     document.body.ondragstart = () => { return false; };
-    customElements.define('info-panel', InfoPanel, { extends: "div" });
-    customElements.define('login-panel', LoginPanel, { extends: "div" });
-    customElements.define("left-menu", MenuWindow, { extends: "div" });
-    customElements.define("listen-window", ListenWindow, { extends: "div" });
-    customElements.define("settings-window", SettingsWindow, { extends: "div" });
-    customElements.define("library-window", LibraryWindow, { extends: "div" });
-    customElements.define("search-window", SearchWindow, { extends: "div" });
-    customElements.define("musicview-window", MusicViewerWindow, { extends: "div" });
-    customElements.define("home-window", HomeWindow, { extends: "div" });
-    customElements.define("playlist-grid", PlaylistGrid, { extends: "div" });
-    customElements.define("album-grid", AlbumGrid, { extends: "div" });
-    customElements.define("singer-grid", SingerGrid, { extends: "div" });
-    customElements.define("song-grid", SongGrid, { extends: "div" });
+    Import.loadCustomElements()
     //
     Utils.app.loaded = async function () {
         try {

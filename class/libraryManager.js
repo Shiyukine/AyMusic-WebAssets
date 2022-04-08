@@ -16,6 +16,7 @@ export default class LibraryManager {
     async refreshUserInfo() {
         try {
             console.log("Refreshing user info")
+            this.userPlaylists = []
             let info = await Utils.apiManager.getAccountInfo()
             this.userInfo.curMusic = info["curMusic"]
             this.userInfo.curTime = info["curTime"]
