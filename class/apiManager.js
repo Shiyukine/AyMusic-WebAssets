@@ -23,22 +23,29 @@ export default class ApiManager {
         for (let i in content) {
             newDico[i] = content[i]
         }
-        if (this.#anDico !== newDico) {
-            this.#anDico = newDico
-            let result = await Utils.app.remoteClient.httpRequestPOST(Utils.servURL + "api/AyMusic/api.php", JSON.stringify(newDico))
-            try {
-                result = JSON.parse(result)["content"];
-                console.log("<- POST request : OK (" + (Date.now() - start) + "ms)")
-                return result;
+        try {
+            if (this.#anDico !== newDico) {
+                this.#anDico = newDico
+                let result = await Utils.app.remoteClient.httpRequestPOST(Utils.servURL + "api/AyMusic/api.php", JSON.stringify(newDico))
+                try {
+                    result = JSON.parse(result)["content"];
+                    console.log("<- POST request : OK (" + (Date.now() - start) + "ms)")
+                    return result;
+                }
+                catch (e) {
+                    console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
+                    console.error(result)
+                    return result;
+                }
             }
-            catch (e) {
-                console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
-                console.error(result)
-                return result;
+            else return {
+                content: "You're being rate limited"
             }
         }
-        else return {
-            content: "You're being rate limited"
+        catch (e) {
+            console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
+            Utils.newError("Can't connect to the serveur", "The server is offline or maybe there is a maintenance.\nPlease wait.")
+            return e;
         }
     }
 }
