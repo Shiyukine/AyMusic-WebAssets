@@ -7,10 +7,16 @@ export default class LibraryManager {
      */
     userPlaylists = []
 
+    /**
+     * @type {[String]}
+     */
+    userLikedSongs = []
+
     userInfo = {
         curTime: 0,
         curMusic: null,
-        lastState: false
+        lastState: false,
+        likedSongsPlId: ""
     }
 
     async refreshUserInfo() {
@@ -25,6 +31,8 @@ export default class LibraryManager {
                 let pl = info["playlists"][i]
                 this.userPlaylists.push(new Playlist(pl.id, pl.name, pl.userID, pl.desc, pl.imgUrl, pl.isPrivate, pl.rank))
             }
+            this.userLikedSongs = info["likedSongs"]
+            this.userInfo.likedSongsPlId = info["likedSongsPlId"]
             console.log("User info refreshed successfully")
         }
         catch (e) {
@@ -93,6 +101,50 @@ export default class LibraryManager {
         }
         catch (e) {
             Utils.newError("Unable to remove this playlist.", e)
+        }
+    }
+
+    async addSongToAPlaylist(plId, objId) {
+        console.log("Adding song in playlist")
+        let info = await Utils.apiManager.doPostRequest({
+            act: "addSongInUserPlaylist",
+            playlistID: plId,
+            objectID: objId,
+        })
+        console.log("Song added in playlist successfully")
+    }
+
+    async removeSongFromAPlaylist(plId, objId) {
+        console.log("Removing song from playlist")
+        let info = await Utils.apiManager.doPostRequest({
+            act: "removeSongInUserPlaylist",
+            playlistID: plId,
+            objectID: objId,
+        })
+        console.log("Song removed from playlist successfully")
+    }
+
+    /**
+     * 
+     * @param {String} objId 
+     */
+    async addObjToLikedSongs(objId) {
+        await this.addSongToAPlaylist(this.userInfo.likedSongsPlId, objId)
+        this.userLikedSongs.push(objId.replace("so_", ""))
+    }
+
+    /**
+     * 
+     * @param {String} objId 
+     */
+    async removeObjFromLikedSongs(objId) {
+        await this.removeObjFromLikedSongs(this.userInfo.likedSongsPlId, objId)
+        for (let i in this.userLikedSongs) {
+            let id = this.userLikedSongs[i]
+            if (id === objId.replace("so_", "")) {
+                this.userLikedSongs.splice(i, 1)
+                break;
+            }
         }
     }
 }

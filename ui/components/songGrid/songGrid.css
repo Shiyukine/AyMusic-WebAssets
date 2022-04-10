@@ -27,7 +27,7 @@
     box-shadow: 0px 0px 0px black;
 }
 
-.panel_ep svg {
+.panel_ep #svg {
     color: red;
     width: 36px;
     height: 36px;
@@ -45,6 +45,7 @@
     width: 48px;
     height: 48px;
     margin-top: calc((64.5px - 16px - 48px)/2);
+    margin-bottom: 8px;
     margin-left: 5px;
     float: left;
     background-image: url("/resources/icon.ico");
@@ -57,14 +58,39 @@
     float: left;
 }
 
-.panel_ep .pB{
-    height: 1px;
-    width: 100%;
-    float: left;
-    margin-top: 5px;
+.panel_ep .stats {
+    float: right;
+    position: relative;
+    display: flex;
 }
 
-.panel_ep .progressBar{
+.panel_ep #context {
+    width: 30px;
+    height: 30px;
+    padding: 2px;
+    margin-right: 15px;
+    cursor: pointer;
+    float: left;
+    position: relative;
+    margin-top: 6px;
+    border-radius: 10px;
+    transition: background-color 0.4s;
+}
+
+.panel_ep #context:hover {
+    background-color: rgba(139, 139, 139, 0.4);
+}
+
+.panel_ep #time {
+    float: left;
+    color: white;
+    height: 20px;
+    margin-right: 30px;
+    margin-bottom: 0px;
+    margin-top: 13px;
+}
+
+.panel_ep .progressBar {
     background-color: red;
     width: 50%;
     float: left;
@@ -88,5 +114,5 @@ p {
     transition: 0.3s;
     border-radius: 50%;
     opacity: 0;
-    background-color: rgb(0,0,0,0.4);
+    background-color: rgb(0, 0, 0, 0.4);
 }

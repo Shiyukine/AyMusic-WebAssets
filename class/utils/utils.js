@@ -61,4 +61,17 @@ export default class Utils {
         document.getElementById("main").appendChild(errPanel)
         await errPanel.showDialog()
     }
+
+    static msToTime(duration) {
+        var milliseconds = Math.floor((duration % 1000) / 100),
+            seconds = Math.floor((duration / 1000) % 60),
+            minutes = Math.floor((duration / (1000 * 60)) % 60),
+            hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+        hours = hours > 0 ? hours + ":" : "";
+        minutes = (hours > 0 && minutes < 10 ? "0" + minutes : minutes) + ":";
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        return hours + minutes + seconds/* + "." + milliseconds*/;
+    }
 }

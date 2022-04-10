@@ -16,7 +16,6 @@ import TextBox from "../../components/textBox/textBox.js";
 export default class LibraryWindow extends HTMLDivElement {
     selectedIndex = 0;
     selectedIndexMyLib = -1;
-    plLikedID = "";
     isClosed = false;
     modifyingPl = false;
 
@@ -48,11 +47,6 @@ export default class LibraryWindow extends HTMLDivElement {
                 }
             })
             new Translations(shadow.children[1])
-            Utils.libManager.userPlaylists.forEach(pl => {
-                if (pl.name === "{pl.liked}" && pl.desc === "{pl.liked.desc}") {
-                    this.plLikedID = pl.id
-                }
-            });
             this.changeView(this.selectedIndex)
             this.changeViewMyLib(0)
             this.style.opacity = "1"
@@ -197,7 +191,7 @@ export default class LibraryWindow extends HTMLDivElement {
                 if (newIndex == 0) {
                     let result = await Utils.apiManager.doPostRequest({
                         act: "getPlaylistSongs",
-                        playlistID: this.plLikedID,
+                        playlistID: Utils.libManager.userInfo.likedSongsPlId,
                         orderByDesc: true,
                         offset: 0
                     })
@@ -214,7 +208,7 @@ export default class LibraryWindow extends HTMLDivElement {
                 else {
                     let result = await Utils.apiManager.doPostRequest({
                         act: "getObjectsInPlaylist",
-                        playlistID: this.plLikedID,
+                        playlistID: Utils.libManager.userInfo.likedSongsPlId,
                         orderByDesc: true,
                         offset: 0,
                         size: 50

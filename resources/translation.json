@@ -62,6 +62,11 @@
         "{plInfo.private}": "Make private",
         "{plInfo.edit}": "Edit playlist",
         "{plInfo.remove}": "Remove playlist",
-        "{wt.addQueue}": "Add to queue"
+        "{wt.addQueue}": "Add to queue",
+        "{lib.goArtist}": "Go to artist",
+        "{lib.goAlbum}": "Go to album",
+        "{lib.removeLikedSong}": "Remove from liked songs",
+        "{lib.addLikedSong}": "Add to liked songs",
+        "{lib.addToPl}": "Add to a playlist"
     }
 }
