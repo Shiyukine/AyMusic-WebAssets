@@ -22,7 +22,7 @@ export default class AlbumGrid extends HTMLDivElement {
             shadow.innerHTML = html
             //new Translations(shadow.children[1])
             this.shadowRoot.getElementById("title").innerText = this.album.name
-            this.shadowRoot.getElementById("img").style.backgroundImage = this.album.imgUrl
+            this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + this.album.imgUrl + "')"
             this.addEventListener("mouseover", function () {
                 this.shadowRoot.getElementById("img").style.transform = "scale(1.1)"
             });

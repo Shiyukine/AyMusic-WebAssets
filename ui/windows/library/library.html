@@ -6,11 +6,18 @@
     <div id="main">
         <div id="menu">
             <p class="selected">{lib.mylib}</p>
-            <p>{lib.addPlaylist}</p>
+            <p class="minimized">{lib.addPlaylist}</p>
         </div>
         <div id="view">
-            <div class="panel selected">
-                <p>{lib.mylib}</p>
+            <div class="panel havePanelInfo selected">
+                <div class="panelInfo">
+                    <p>{lib.mylib}</p>
+                    <svg id="addPl" viewBox="0 0 24 24">
+                        <title>{lib.addPlaylist}</title>
+                        <path fill="currentColor"
+                            d="M2,16H10V14H2M18,14V10H16V14H12V16H16V20H18V16H22V14M14,6H2V8H14M14,10H2V12H14V10Z" />
+                    </svg>
+                </div>
                 <div class="sub">
                     <div id="mylib_topbar" class="set last topbar">
                         <p class="selected">{pl.liked}</p>
@@ -24,7 +31,7 @@
                 </div>
             </div>
             <div class="panel">
-                <p>{lib.addPlaylist}</p>
+                <p id="pl_modifcreate">{lib.addPlaylist}</p>
                 <div class="sub">
                     <div class="set">
                         <div id="pl_name" is="text-box" label="{plInfo.name}"></div>
@@ -34,7 +41,6 @@
                     </div>
                     <div class="set">
                         <div id="pl_imgUrl" is="text-box" label="{plInfo.imgUrl}"></div>
-                        <button id="pl_imgUrlWeb">Web</button>
                         <button id="pl_imgUrlLocal">Local</button>
                     </div>
                     <div class="set last">

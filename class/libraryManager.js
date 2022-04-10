@@ -50,6 +50,31 @@ export default class LibraryManager {
         }
     }
 
+    async updatePlaylist(id, name, desc, imgUrl, isPrivate, rank) {
+        try {
+            console.log("Updating playlist")
+            let info = await Utils.apiManager.doPostRequest({
+                act: "updatePlaylist",
+                id: id,
+                name: name,
+                desc: desc,
+                imgUrl: imgUrl,
+                isPrivate: isPrivate,
+                rank: rank
+            })
+            for (var i in this.userPlaylists) {
+                var pl = this.userPlaylists[i]
+                if (pl.id === id) {
+                    this.userPlaylists[i] = new Playlist(id, name, Utils.actualAccount.id, desc, imgUrl, isPrivate, rank)
+                }
+            }
+            console.log("Playlist updated successfully")
+        }
+        catch (e) {
+            Utils.newError("Unable to add this playlist.", e)
+        }
+    }
+
     async removePlaylist(id) {
         try {
             console.log("Removing playlist")

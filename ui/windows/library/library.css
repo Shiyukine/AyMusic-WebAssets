@@ -366,8 +366,16 @@ button:disabled {
 .panelInfo>svg {
     transition: background-color 0.4s;
     border-radius: 10px;
+    cursor: pointer;
 }
 
 .panelInfo>svg:hover {
     background-color: rgba(141, 141, 141, 0.445);
+}
+
+#menu p.minimized {
+    height: 0px;
+    visibility: hidden;
+    margin: 0px;
+    padding: 0px;
 }

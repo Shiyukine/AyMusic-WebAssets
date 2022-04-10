@@ -18,6 +18,7 @@ export default class LibraryWindow extends HTMLDivElement {
     selectedIndexMyLib = -1;
     plLikedID = "";
     isClosed = false;
+    modifyingPl = false;
 
     /**
      * @type {Playlist}
@@ -56,6 +57,9 @@ export default class LibraryWindow extends HTMLDivElement {
             this.changeViewMyLib(0)
             this.style.opacity = "1"
             this.refreshUserPlaylists()
+            shadow.getElementById("addPl").onclick = async () => {
+                this.changeView(1)
+            }
             shadow.getElementById("pl_create").onclick = async () => {
                 /**
                  * @type {TextBox}
@@ -74,14 +78,14 @@ export default class LibraryWindow extends HTMLDivElement {
                  */
                 let isPriv = shadow.getElementById("pl_isPriv")
                 if (name.getText() != "") {
-                    await Utils.libManager.addPlaylist(name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === 1)
+                    if (!this.modifyingPl) {
+                        await Utils.libManager.addPlaylist(name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === "1")
+                    }
+                    else {
+                        await Utils.libManager.updatePlaylist(this.selectedPl.id, name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === "1", 0)
+                    }
                     this.refreshUserPlaylists()
                     this.changeView(this.shadowRoot.getElementById("menu").children.length - 1)
-                    name.setText("")
-                    desc.setText("")
-                    imgUrl.setText("")
-                    isPriv.value = "1"
-                    isPriv.style.backgroundColor = isPriv.value == "1" ? "" : "gray"
                 }
                 else {
                     Utils.newError("Can't create a playlist", "Please put a name to this new playlist !")
@@ -92,11 +96,9 @@ export default class LibraryWindow extends HTMLDivElement {
                 cm.addElement("{wt.addQueue}", () => {
                     Utils.newError("Not implemented", "Feature will be here soon !")
                 })
-                cm.addElement((this.selectedPl.isPrivate ? "{plInfo.notPrivate}" : "{plInfo.private}"), () => {
-                    Utils.newError("Not implemented", "Feature will be here soon !")
-                })
                 cm.addElement("{plInfo.edit}", () => {
-                    Utils.newError("Not implemented", "Feature will be here soon !")
+                    this.changeView(1)
+                    this.prepareCreateModifPanel(true)
                 })
                 cm.addElement("{plInfo.remove}", async () => {
                     var confirm = new InfoPanel("Delete this playlist ?",
@@ -132,6 +134,8 @@ export default class LibraryWindow extends HTMLDivElement {
         })
     }
 
+    anIndexMyLib = -1
+
     async changeView(newIndex) {
         try {
             if (newIndex !== this.selectedIndex) {
@@ -139,6 +143,17 @@ export default class LibraryWindow extends HTMLDivElement {
                 this.shadowRoot.getElementById("view").children[this.selectedIndex > 2 ? 2 : this.selectedIndex].classList.remove("selected")
                 this.shadowRoot.getElementById("menu").children[newIndex].classList.add("selected")
                 this.shadowRoot.getElementById("view").children[newIndex > 2 ? 2 : newIndex].classList.add("selected")
+                if (newIndex === 0) {
+                    this.changeViewMyLib(this.anIndexMyLib)
+                }
+                else {
+                    if (this.selectedIndexMyLib > -1)
+                        this.anIndexMyLib = this.selectedIndexMyLib
+                    this.changeViewMyLib(-1)
+                }
+                if (newIndex === 1) {
+                    this.prepareCreateModifPanel(false)
+                }
                 if (this.shadowRoot.getElementById("menu").children[newIndex].dataset["plid"] !== undefined) {
                     while (this.shadowRoot.getElementById("mylib_list").firstChild) {
                         this.shadowRoot.getElementById("mylib_list").removeChild(this.shadowRoot.getElementById("mylib_list").lastChild)
@@ -174,10 +189,10 @@ export default class LibraryWindow extends HTMLDivElement {
     async changeViewMyLib(newIndex) {
         try {
             if (newIndex !== this.selectedIndexMyLib) {
-                if (this.selectedIndexMyLib != -1)
+                if (this.selectedIndexMyLib > -1)
                     this.shadowRoot.getElementById("mylib_topbar").children[this.selectedIndexMyLib].classList.remove("selected")
-                this.shadowRoot.getElementById("mylib_topbar").children[newIndex].classList.add("selected")
-                this.selectedIndexMyLib = newIndex
+                if (newIndex > -1)
+                    this.shadowRoot.getElementById("mylib_topbar").children[newIndex].classList.add("selected")
                 let objs = this.shadowRoot.getElementById("mylib_list")
                 if (newIndex == 0) {
                     let result = await Utils.apiManager.doPostRequest({
@@ -209,6 +224,11 @@ export default class LibraryWindow extends HTMLDivElement {
                         objs.removeChild(objs.lastChild);
                     }
                     if (newIndex == 1) {
+                        for (let i in Utils.libManager.userPlaylists) {
+                            let pl = Utils.libManager.userPlaylists[i]
+                            if (!pl.name.includes("}") && !pl.name.includes("{"))
+                                objs.appendChild(new PlaylistGrid(pl))
+                        }
                         for (let i in result) {
                             let obj = result[i]
                             if (obj.id.includes("pl_")) {
@@ -237,6 +257,7 @@ export default class LibraryWindow extends HTMLDivElement {
                     }
                 }
             }
+            this.selectedIndexMyLib = newIndex
         } catch { }
     }
 
@@ -266,9 +287,30 @@ export default class LibraryWindow extends HTMLDivElement {
         }
         Array.from(this.shadowRoot.getElementById("menu").children).forEach((x, y) => {
             x.onclick = () => {
-                console.log("fdsfd")
                 this.changeView(y)
             }
         })
+    }
+
+    prepareCreateModifPanel(isForModification) {
+        if (isForModification) {
+            this.shadowRoot.getElementById("pl_modifcreate").innerText = "{lib.modifyPlaylist}"
+            this.shadowRoot.getElementById("pl_name").setText(this.selectedPl.name)
+            this.shadowRoot.getElementById("pl_desc").setText(this.selectedPl.desc)
+            this.shadowRoot.getElementById("pl_imgUrl").setText(this.selectedPl.imgUrl != "/resources/icon.ico" ? this.selectedPl.imgUrl : "")
+            this.shadowRoot.getElementById("pl_isPriv").value = this.selectedPl.isPrivate ? "1" : "0"
+            this.shadowRoot.getElementById("pl_isPriv").style.backgroundColor = this.shadowRoot.getElementById("pl_isPriv").value == "1" ? "" : "gray"
+            this.shadowRoot.getElementById("pl_create").innerText = "{lib.modifyBtn}"
+        }
+        else {
+            this.shadowRoot.getElementById("pl_modifcreate").innerText = "{lib.addPlaylist}"
+            this.shadowRoot.getElementById("pl_name").setText("")
+            this.shadowRoot.getElementById("pl_desc").setText("")
+            this.shadowRoot.getElementById("pl_imgUrl").setText("")
+            this.shadowRoot.getElementById("pl_isPriv").value = "1"
+            this.shadowRoot.getElementById("pl_create").innerText = "{lib.createBtn}"
+            this.shadowRoot.getElementById("pl_isPriv").style.backgroundColor = this.shadowRoot.getElementById("pl_isPriv").value == "1" ? "" : "gray"
+        }
+        this.modifyingPl = isForModification
     }
 }

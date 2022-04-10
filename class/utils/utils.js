@@ -3,6 +3,7 @@ import infoPanel from "../../ui/components/infoPanel/infoPanel.js";
 import AyMusic from "../AyMusic.js";
 import ApiManager from "../apiManager.js";
 import LibraryManager from "../libraryManager.js";
+import MenuWindow from "../../ui/windows/menu/menu.js";
 
 export default class Utils {
     static useLocalServer = true
@@ -20,6 +21,11 @@ export default class Utils {
 
     static apiManager = new ApiManager();
     static libManager = new LibraryManager();
+
+    /**
+     * @type {MenuWindow}
+     */
+    static menu = null;
 
     static delay(ms) {
         return new Promise(resolve => setTimeout(() => resolve(), ms))

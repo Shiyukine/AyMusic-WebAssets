@@ -7,16 +7,14 @@ p {
     top: 50%;
     height: 20px;
     margin-right: 10px;
-    margin-left: 5px;
+    margin-left: 10px;
 }
 
 img,
 svg {
     width: 24px;
     height: 24px;
-    margin-right: 5px;
-    margin-left: 5px;
-    float: left;
+    margin-left: 10px;
     position: relative;
     transform: translateY(-50%);
     top: 50%;
@@ -26,21 +24,23 @@ svg {
     font-family: "QuickSand";
     background-color: rgb(43, 43, 43);
     border-radius: 10px;
+    display: flex;
 }
 
 #context {
-    margin: 10px;
+    margin: 5px 10px;
     padding-top: 5px;
     display: grid;
 }
 
 #context>div {
-    display: inline-flex;
+    display: -webkit-box;
     position: relative;
     border-radius: 10px;
     margin-bottom: 5px;
     height: 36px;
     transition: background-color 0.4s;
+    cursor: pointer;
 }
 
 #context>div:hover {

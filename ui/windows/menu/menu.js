@@ -7,7 +7,6 @@ import Translations from "../../../class/translations.js";
 import HomeWindow from "../home/home.js";
 
 export default class MenuWindow extends HTMLDivElement {
-    anWindow = null;
 
     constructor() {
         super();

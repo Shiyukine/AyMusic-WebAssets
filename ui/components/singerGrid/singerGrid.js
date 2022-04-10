@@ -22,7 +22,7 @@ export default class SingerGrid extends HTMLDivElement {
             shadow.innerHTML = html
             //new Translations(shadow.children[1])
             this.shadowRoot.getElementById("title").innerText = this.singer.name
-            this.shadowRoot.getElementById("img").style.backgroundImage = this.singer.imgUrl
+            this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + this.singer.imgUrl + "')"
             this.addEventListener("mouseover", function () {
                 this.shadowRoot.getElementById("img").style.transform = "scale(1.1)"
             });

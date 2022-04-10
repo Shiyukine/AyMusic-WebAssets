@@ -56,6 +56,7 @@ async function main() {
                 mainPanel.removeChild(lp);
                 document.body.classList.remove("loading");
                 let menuWin = new MenuWindow()
+                Utils.menu = menuWin
                 mainPanel.appendChild(menuWin);
                 mainPanel.appendChild(new ListenWindow())
             };
