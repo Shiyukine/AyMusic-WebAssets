@@ -33,6 +33,34 @@ export default class Import {
         customElements.define("context-menu", ContextMenu, { extends: "div" });
     }
 
+    static cache = [[], []]
+
+    /**
+     * @param {String|URL} filePath filepath
+    */
+    static getData(filePath) {
+        return new Promise((resolve) => {
+            if (filePath in Import.cache[0]) {
+                resolve(Import.cache[Import.cache[0].indexOf(filePath)])
+            }
+            else {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', filePath, true);
+                xhr.onreadystatechange = function () {
+                    if (this.readyState !== 4) return;
+                    if (this.status !== 200) return; // or whatever error handling you want
+                    else {
+                        var data = xhr.responseText
+                        Import.cache[0].push(filePath)
+                        Import.cache[1].push(data)
+                        resolve(data)
+                    }
+                };
+                xhr.send();
+            }
+        })
+    }
+
     /**
      * @param {String|URL} filePath filepath
     */
@@ -73,20 +101,4 @@ export default class Import {
         xhr.send();
         return xhr.responseText
     }*/
-
-    /**
-     * @param {String|URL} filePath filepath
-    */
-    static getData(filePath) {
-        return new Promise((resolve) => {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', filePath, true);
-            xhr.onreadystatechange = function () {
-                if (this.readyState !== 4) return;
-                if (this.status !== 200) return; // or whatever error handling you want
-                else resolve(xhr.responseText)
-            };
-            xhr.send();
-        })
-    }
 }

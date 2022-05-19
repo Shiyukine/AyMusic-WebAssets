@@ -8,6 +8,7 @@ p {
     height: 20px;
     margin-right: 10px;
     margin-left: 10px;
+    display: table;
 }
 
 img,
@@ -16,6 +17,7 @@ svg {
     height: 24px;
     margin-left: 10px;
     position: relative;
+    float: left;
     transform: translateY(-50%);
     top: 50%;
 }
@@ -31,11 +33,11 @@ svg {
 #context {
     margin: 5px 10px;
     padding-top: 5px;
-    display: grid;
+    display: block;
 }
 
 #context>div {
-    display: -webkit-box;
+    display: grid;
     position: relative;
     border-radius: 10px;
     margin-bottom: 5px;

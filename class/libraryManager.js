@@ -61,7 +61,7 @@ export default class LibraryManager {
     async updatePlaylist(id, name, desc, imgUrl, isPrivate, rank) {
         try {
             console.log("Updating playlist")
-            let info = await Utils.apiManager.doPostRequest({
+            await Utils.apiManager.doPostRequest({
                 act: "updatePlaylist",
                 id: id,
                 name: name,
@@ -106,7 +106,7 @@ export default class LibraryManager {
 
     async addSongToAPlaylist(plId, objId) {
         console.log("Adding song in playlist")
-        let info = await Utils.apiManager.doPostRequest({
+        await Utils.apiManager.doPostRequest({
             act: "addSongInUserPlaylist",
             playlistID: plId,
             objectID: objId,
@@ -116,7 +116,7 @@ export default class LibraryManager {
 
     async removeSongFromAPlaylist(plId, objId) {
         console.log("Removing song from playlist")
-        let info = await Utils.apiManager.doPostRequest({
+        await Utils.apiManager.doPostRequest({
             act: "removeSongInUserPlaylist",
             playlistID: plId,
             objectID: objId,
