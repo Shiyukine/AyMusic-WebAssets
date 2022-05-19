@@ -1,4 +1,5 @@
 import Import from "../../../class/import.js";
+import Playlist from "../../../class/music/playlist.js";
 import Song from "../../../class/music/song.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
@@ -14,9 +15,10 @@ export default class SongGrid extends HTMLDivElement {
 
     /**
      * 
-     * @param {song} song 
+     * @param {Song} song 
+     * @param {Playlist} playlist
      */
-    constructor(song) {
+    constructor(song, playlist = null) {
         super();
         this.song = song
         var shadow = this.attachShadow({ mode: "open" })
@@ -39,7 +41,7 @@ export default class SongGrid extends HTMLDivElement {
                 console.log("clicked")
             });
             var cm = new ContextMenu()
-            this.shadowRoot.getElementById("context").onclick = (e) => {
+            this.shadowRoot.getElementById("context").onclick = async (e) => {
                 cm.addElement("{wt.addQueue}", () => {
                     Utils.newError("Can't do this", "This feature will be added soon :)")
                 })
@@ -49,12 +51,38 @@ export default class SongGrid extends HTMLDivElement {
                 cm.addElement("{lib.goAlbum}", () => {
                     Utils.newError("Can't do this", "This feature will be added soon :)")
                 })
+                if (playlist != null && playlist.id != Utils.libManager.userInfo.likedSongsPlId && Utils.libManager.userPlaylists.includes(playlist)) {
+                    let result = await Utils.apiManager.doPostRequest({
+                        act: "getIdSongsInPlaylist",
+                        playlistID: playlist.id,
+                        orderByDesc: false
+                    })
+                    if (result.includes(song.id)) {
+                        cm.addElement("{lib.removeFromPl}", () => {
+                            Utils.libManager.removeSongFromAPlaylist(playlist.id, "so_" + song.id)
+                            this.parentElement.removeChild(this)
+                        })
+                    }
+                }
                 cm.addElement(Utils.libManager.userLikedSongs.includes(this.song.id) ? "{lib.removeLikedSong}" : "{lib.addLikedSong}", () => {
-                    Utils.newError("Can't do this", "This feature will be added soon :)")
+                    if (Utils.libManager.userLikedSongs.includes(this.song.id)) {
+                        Utils.libManager.removeObjFromLikedSongs("so_" + song.id)
+                        if (playlist.id == Utils.libManager.userInfo.likedSongsPlId)
+                            this.parentElement.removeChild(this)
+                    }
+                    else {
+                        Utils.libManager.addObjToLikedSongs("so_" + song.id)
+                    }
                 })
-                cm.addElement("{lib.addToPl}", () => {
-                    Utils.newError("Can't do this", "This feature will be added soon :)")
-                })
+                var cm2 = new ContextMenu()
+                for (let pl of Utils.libManager.userPlaylists) {
+                    if (!pl.name.includes("{") && !pl.name.includes("}")) {
+                        cm2.addElement(pl.name, () => {
+                            Utils.libManager.addSongToAPlaylist(pl.id, "so_" + song.id)
+                        })
+                    }
+                }
+                cm.addSubContextMenu("{lib.addToPl}", cm2)
                 cm.show(e)
                 cm.resetElements()
             }

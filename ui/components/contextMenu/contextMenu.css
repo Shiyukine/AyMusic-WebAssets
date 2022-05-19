@@ -37,7 +37,6 @@ svg {
 }
 
 #context>div {
-    display: grid;
     position: relative;
     border-radius: 10px;
     margin-bottom: 3px;

@@ -106,12 +106,15 @@ export default class LibraryManager {
 
     async addSongToAPlaylist(plId, objId) {
         console.log("Adding song in playlist")
-        await Utils.apiManager.doPostRequest({
+        let result = await Utils.apiManager.doPostRequest({
             act: "addSongInUserPlaylist",
             playlistID: plId,
             objectID: objId,
         })
-        console.log("Song added in playlist successfully")
+        if (result == "OK")
+            console.log("Song added in playlist successfully")
+        else
+            Utils.newError("Can't add song to this playlist", "This song is already added or there is an internal error.")
     }
 
     async removeSongFromAPlaylist(plId, objId) {
@@ -138,7 +141,7 @@ export default class LibraryManager {
      * @param {String} objId 
      */
     async removeObjFromLikedSongs(objId) {
-        await this.removeObjFromLikedSongs(this.userInfo.likedSongsPlId, objId)
+        await this.removeSongFromAPlaylist(this.userInfo.likedSongsPlId, objId)
         for (let i in this.userLikedSongs) {
             let id = this.userLikedSongs[i]
             if (id === objId.replace("so_", "")) {

@@ -170,7 +170,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             let songs = result["songs"]
                             for (let i in songs) {
                                 let obj = songs[i]
-                                songsList.appendChild(new SongGrid(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName)))
+                                songsList.appendChild(new SongGrid(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName), pl))
                             }
                         }
                     }
@@ -202,7 +202,7 @@ export default class LibraryWindow extends HTMLDivElement {
                     let songs = result["songs"]
                     for (let i in songs) {
                         let obj = songs[i]
-                        objs.appendChild(new SongGrid(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName)))
+                        objs.appendChild(new SongGrid(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName), Utils.libManager.userInfo.likedSongsPlId))
                     }
                 }
                 else {

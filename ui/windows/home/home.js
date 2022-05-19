@@ -31,7 +31,7 @@ export default class HomeWindow extends HTMLDivElement {
         let h = date.getHours()
         for (let pl in pls) {
             if (pls[pl].name.includes("{") && pls[pl].name.includes("}")) {
-                if (h > 6 && h < 13 && pls[pl].name.includes("morning")) {
+                if (h > 5 && h < 13 && pls[pl].name.includes("morning")) {
                     this.createSubList(pls[pl])
                     break;
                 }
@@ -39,7 +39,7 @@ export default class HomeWindow extends HTMLDivElement {
                     this.createSubList(pls[pl])
                     break;
                 }
-                if (h >= 19 && pls[pl].name.includes("evening")) {
+                if ((h >= 19 || h <= 5) && pls[pl].name.includes("evening")) {
                     this.createSubList(pls[pl])
                     break;
                 }

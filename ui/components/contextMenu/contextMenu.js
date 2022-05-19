@@ -7,6 +7,7 @@ export default class ContextMenu extends HTMLDivElement {
     #eventEl = document.createElement("event");
     isHidded = true;
     loaded = false;
+    isSub = false;
 
     constructor() {
         super();
@@ -25,7 +26,14 @@ export default class ContextMenu extends HTMLDivElement {
     }
 
     addElement(text, onclick, icon = null) {
-        var el = { text: text, onclick: onclick, icon: icon }
+        var el = { isSub: false, text: text, onclick: onclick, icon: icon }
+        if (!this.elements.includes(el))
+            this.elements.push(el)
+    }
+
+    addSubContextMenu(text, contextMenu) {
+        contextMenu.isSub = true;
+        var el = { isSub: true, text: text, contextMenu: contextMenu }
         if (!this.elements.includes(el))
             this.elements.push(el)
     }
@@ -44,9 +52,38 @@ export default class ContextMenu extends HTMLDivElement {
         for (let i in this.elements) {
             var el = this.elements[i]
             var div = document.createElement("div")
-            div.onclick = el.onclick
-            if (el.icon) {
-                var icon = this.createSVGPath(el.icon, "white", null, 24)
+            if (!el.isSub) {
+                div.onclick = el.onclick
+                if (el.icon) {
+                    let icon = this.createSVGPath(el.icon, "white", null, 24)
+                    div.appendChild(icon)
+                }
+            }
+            else {
+                /**
+                 * @type {ContextMenu}
+                 */
+                var context = el.contextMenu
+                div.onmouseenter = () => {
+                    context.show(new MouseEvent("contextmenu", {
+                        clientX: parseInt(this.style.left.replace("px", "")),
+                        clientY: 34 + parseInt(this.style.top.replace("px", "")) + 39 * i,
+                        button: 0,
+                        ctrlKey: false,
+                        altKey: false,
+                        shiftKey: false,
+                        metaKey: false,
+                        bubbles: true,
+                        cancelable: true
+                    }))
+                }
+                div.onmouseleave = () => {
+                    if (this.shadowRoot.getElementById("context").matches(':hover'))
+                        context.hide()
+                }
+                //left M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z
+                //right M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z
+                let icon = this.createSVGPath("M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z", "white", null, 24)
                 div.appendChild(icon)
             }
             var para = document.createElement("p")
@@ -86,6 +123,12 @@ export default class ContextMenu extends HTMLDivElement {
             this.isHidded = true;
         };
         this.style.opacity = "0%"
+        for (let i in this.elements) {
+            var el = this.elements[i]
+            if (el.isSub) {
+                el.contextMenu.hide()
+            }
+        }
     }
 
     resetElements() {
@@ -111,19 +154,20 @@ export default class ContextMenu extends HTMLDivElement {
         this.style.position = "absolute"
         this.loaded = true
         this.isHidded = false
-        var testx = event.x + this.clientWidth < document.body.clientWidth
-        var testy = event.y + this.clientHeight < document.body.clientHeight
-        var x = testx
+        let testx = event.x + this.clientWidth < document.body.clientWidth
+        let testy = event.y + this.clientHeight < document.body.clientHeight
+        let x = testx
             ? event.x
             : document.body.clientWidth - this.clientWidth - 10
-        var y = testy
+        if (this.isSub) x -= this.clientWidth
+        let y = testy
             ? event.y
             : document.body.clientHeight - this.clientHeight - 10
         if (!testx)
             this.style.right = "10px"
         if (!testy)
             this.style.bottom = "10px"
-        this.style.position = "inherit"
+        if (!this.isSub) this.style.position = "inherit"
         this.style.left = x + "px"
         this.style.top = (y - 34) + "px"
     }

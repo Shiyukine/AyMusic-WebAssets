@@ -67,6 +67,7 @@
         "{lib.goAlbum}": "Go to album",
         "{lib.removeLikedSong}": "Remove from liked songs",
         "{lib.addLikedSong}": "Add to liked songs",
-        "{lib.addToPl}": "Add to a playlist"
+        "{lib.addToPl}": "Add to a playlist",
+        "{lib.removeFromPl}": "Remove from this playlist"
     }
 }

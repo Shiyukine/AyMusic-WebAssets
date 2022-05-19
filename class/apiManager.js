@@ -28,9 +28,16 @@ export default class ApiManager {
                 this.#anDico = newDico
                 let result = await Utils.app.remoteClient.httpRequestPOST(Utils.servURL + "api/AyMusic/api.php", JSON.stringify(newDico))
                 try {
-                    result = JSON.parse(result)["content"];
-                    console.log("<- POST request : OK (" + (Date.now() - start) + "ms)")
-                    return result;
+                    result = JSON.parse(result);
+                    if (result["success"]) {
+                        console.log("<- POST request : OK (" + (Date.now() - start) + "ms)")
+                        return result["content"];
+                    }
+                    else {
+                        console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
+                        console.error(result)
+                        return result;
+                    }
                 }
                 catch (e) {
                     console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
