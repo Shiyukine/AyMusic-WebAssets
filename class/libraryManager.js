@@ -12,6 +12,11 @@ export default class LibraryManager {
      */
     userLikedSongs = []
 
+    /**
+     * @type {Playlist}
+     */
+    userLikedPl = null;
+
     userInfo = {
         curTime: 0,
         curMusic: null,
@@ -29,7 +34,10 @@ export default class LibraryManager {
             this.userInfo.lastState = info["lastState"]
             for (let i = 0; i < info["playlists"].length; i++) {
                 let pl = info["playlists"][i]
-                this.userPlaylists.push(new Playlist(pl.id, pl.name, pl.userID, pl.desc, pl.imgUrl, pl.isPrivate, pl.rank))
+                let npl = new Playlist(pl.id, pl.name, pl.userID, pl.desc, pl.imgUrl, pl.isPrivate, pl.rank)
+                this.userPlaylists.push(npl)
+                if (pl.id == info["likedSongsPlId"])
+                    this.userLikedPl = npl
             }
             this.userLikedSongs = info["likedSongs"]
             this.userInfo.likedSongsPlId = info["likedSongsPlId"]
