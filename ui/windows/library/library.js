@@ -72,17 +72,22 @@ export default class LibraryWindow extends HTMLDivElement {
                  */
                 let isPriv = shadow.getElementById("pl_isPriv")
                 if (name.getText() != "") {
-                    if (!this.modifyingPl) {
-                        await Utils.libManager.addPlaylist(name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === "1")
+                    if (!name.getText().includes("{") && !name.getText().includes("}")) {
+                        if (!this.modifyingPl) {
+                            await Utils.libManager.addPlaylist(name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === "1")
+                        }
+                        else {
+                            await Utils.libManager.updatePlaylist(this.selectedPl.id, name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === "1", 0)
+                        }
+                        this.refreshUserPlaylists()
+                        this.changeView(this.shadowRoot.getElementById("menu").children.length - 1)
                     }
                     else {
-                        await Utils.libManager.updatePlaylist(this.selectedPl.id, name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === "1", 0)
+                        Utils.newError("Can't create a playlist", "Please don't put \"{\" or \"}\" in the name of this playlist.")
                     }
-                    this.refreshUserPlaylists()
-                    this.changeView(this.shadowRoot.getElementById("menu").children.length - 1)
                 }
                 else {
-                    Utils.newError("Can't create a playlist", "Please put a name to this new playlist !")
+                    Utils.newError("Can't create a playlist", "Please put a name to this playlist !")
                 }
             }
             var cm = new ContextMenu()
