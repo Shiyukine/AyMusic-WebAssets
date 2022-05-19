@@ -40,8 +40,8 @@ export default class Import {
     */
     static getData(filePath) {
         return new Promise((resolve) => {
-            if (filePath in Import.cache[0]) {
-                resolve(Import.cache[Import.cache[0].indexOf(filePath)])
+            if (Import.cache[0].includes(filePath)) {
+                resolve(Import.cache[1][Import.cache[0].indexOf(filePath)])
             }
             else {
                 var xhr = new XMLHttpRequest();
