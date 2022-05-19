@@ -12,8 +12,8 @@ export default class ContextMenu extends HTMLDivElement {
         super();
         var shadow = this.attachShadow({ mode: "open" })
         this.style.opacity = "0%"
-        this.style.position = "absolute"
         this.style.transition = "opacity 0.4s"
+        this.style.display = "flex"
         Import.getData("/ui/components/contextMenu/contextMenu.html").then((html) => {
             shadow.innerHTML = html
             new Translations(shadow.children[1])
@@ -40,7 +40,7 @@ export default class ContextMenu extends HTMLDivElement {
         while (this.shadowRoot.getElementById("context").firstChild) {
             this.shadowRoot.getElementById("context").removeChild(this.shadowRoot.getElementById("context").lastChild)
         }
-        this.shadowRoot.getElementById("context").innerHTML = ""
+        //this.shadowRoot.getElementById("context").innerHTML = ""
         for (let i in this.elements) {
             var el = this.elements[i]
             var div = document.createElement("div")
@@ -63,7 +63,7 @@ export default class ContextMenu extends HTMLDivElement {
         }
         else {
             document.getElementById("main").appendChild(this)
-            document.getElementById("main").clientWidth //wait load
+            this.clientWidth //wait load
             this.#showLoaded(event)
             //TEST
             //this.isHidded = false
@@ -81,11 +81,7 @@ export default class ContextMenu extends HTMLDivElement {
 
     hide() {
         this.ontransitionend = () => {
-            this.style.top = ""
-            this.style.left = ""
             document.getElementById("main").removeChild(this)
-            this.style.top = ""
-            this.style.left = ""
             this.#eventEl.dispatchEvent(new CustomEvent("hidden"));
             this.isHidded = true;
         };
@@ -112,16 +108,23 @@ export default class ContextMenu extends HTMLDivElement {
 
     #showLoaded = (event) => {
         this.style.opacity = "1"
-        document.getElementById("main").clientWidth //wait load
+        this.style.position = "absolute"
         this.loaded = true
         this.isHidded = false
-        var x = event.x + this.clientWidth < document.body.clientWidth
+        var testx = event.x + this.clientWidth < document.body.clientWidth
+        var testy = event.y + this.clientHeight < document.body.clientHeight
+        var x = testx
             ? event.x
             : document.body.clientWidth - this.clientWidth - 10
-        var y = event.y + this.clientHeight < document.body.clientHeight
+        var y = testy
             ? event.y
             : document.body.clientHeight - this.clientHeight - 10
+        if (!testx)
+            this.style.right = "10px"
+        if (!testy)
+            this.style.bottom = "10px"
+        this.style.position = "inherit"
         this.style.left = x + "px"
-        this.style.top = (y - 36) + "px"
+        this.style.top = (y - 34) + "px"
     }
 }
