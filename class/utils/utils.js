@@ -1,9 +1,9 @@
 import Import from "../import.js";
 import infoPanel from "../../ui/components/infoPanel/infoPanel.js";
-import AyMusic from "../AyMusic.js";
 import ApiManager from "../apiManager.js";
 import LibraryManager from "../libraryManager.js";
 import MenuWindow from "../../ui/windows/menu/menu.js";
+import App from "../app.js";
 
 export default class Utils {
     static useLocalServer = true
@@ -17,7 +17,7 @@ export default class Utils {
             apiKey: "",
         }
 
-    static app = new AyMusic();
+    static app = new App();
 
     static apiManager = new ApiManager();
     static libManager = new LibraryManager();
@@ -73,5 +73,24 @@ export default class Utils {
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
         return hours + minutes + seconds/* + "." + milliseconds*/;
+    }
+
+    static findIndexOfLike(node) {
+        var children = Array.prototype.filter.call(node.parentNode.children, function (child) {
+            return node.tagName === child.tagName;
+        });
+        return children.indexOf(node);
+
+    }
+
+    static createIndexedPathTo(node) {
+        var path = [],
+            current = node;
+        while (current.tagName.toLowerCase() !== 'body') {
+            path.push(current.tagName.toLowerCase() + '[' + Utils.findIndexOfLike(current) + ']');
+            current = current.parentNode;
+        }
+        path.push('body[0]');
+        return path.reverse().join('.');
     }
 }

@@ -46,6 +46,9 @@ export default class Window {
         topbar.appendChild(forward)
         document.body.insertBefore(topbar, document.body.firstChild)
         document.getElementById("main").style.height = "calc(100% - 35px)"
+        Utils.app.addForwardTouch(icon, async function () {
+            await Utils.app.remoteClient.beginMoveWindow()
+        })
     }
 
     static setDevToolLogger() {
