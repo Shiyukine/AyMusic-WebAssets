@@ -1,3 +1,4 @@
+import GestureHandler from "../../../class/gestureHandler.js";
 import Import from "../../../class/import.js";
 import Album from "../../../class/music/album.js";
 import Playlist from "../../../class/music/playlist.js";
@@ -128,6 +129,19 @@ export default class LibraryWindow extends HTMLDivElement {
                     x.oninput = () => {
                         x.style.backgroundColor = x.value == "1" ? "" : "gray"
                     }
+                }
+            })
+            var gest = new GestureHandler(shadow.getElementById("mylib_list"))
+            gest.addEventListener("right", () => {
+                if (this.selectedIndexMyLib + 1 < this.shadowRoot.getElementById("mylib_topbar").children.length) {
+                    gest.acceptGesture()
+                    this.changeViewMyLib(this.selectedIndexMyLib + 1)
+                }
+            })
+            gest.addEventListener("left", () => {
+                if (this.selectedIndexMyLib - 1 > -1) {
+                    gest.acceptGesture()
+                    this.changeViewMyLib(this.selectedIndexMyLib - 1)
                 }
             })
         })
