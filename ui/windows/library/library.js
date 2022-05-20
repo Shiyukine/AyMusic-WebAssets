@@ -48,7 +48,7 @@ export default class LibraryWindow extends HTMLDivElement {
                 }
             })
             new Translations(shadow.children[1])
-            this.changeView(this.selectedIndex)
+            this.changeView(this.selectedIndex, false)
             this.changeViewMyLib(0)
             this.style.opacity = "1"
             this.refreshUserPlaylists()
@@ -144,12 +144,16 @@ export default class LibraryWindow extends HTMLDivElement {
                     this.changeViewMyLib(this.selectedIndexMyLib - 1)
                 }
             })
+            window.addEventListener("popstate", (e) => {
+                if (e.state.where == "library") this.changeView(e.state.index, false)
+                if (e.state.where == "menu" && e.state.menu == "Library") this.changeView(0, false)
+            })
         })
     }
 
     anIndexMyLib = -1
 
-    async changeView(newIndex) {
+    async changeView(newIndex, updateHistory = true) {
         try {
             if (newIndex !== this.selectedIndex) {
                 this.shadowRoot.getElementById("menu").children[this.selectedIndex].classList.remove("selected")
@@ -194,6 +198,7 @@ export default class LibraryWindow extends HTMLDivElement {
                         }
                     }
                 }
+                if (updateHistory) window.history.pushState({ where: "library", index: newIndex }, "", "/index.html")
                 this.selectedIndex = newIndex
             }
         } catch { }

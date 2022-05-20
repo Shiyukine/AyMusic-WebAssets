@@ -67,8 +67,6 @@ export default class SongGrid extends HTMLDivElement {
                 cm.addElement(Utils.libManager.userLikedSongs.includes(this.song.id) ? "{lib.removeLikedSong}" : "{lib.addLikedSong}", () => {
                     if (Utils.libManager.userLikedSongs.includes(this.song.id)) {
                         Utils.libManager.removeObjFromLikedSongs("so_" + song.id)
-                        console.log(playlist.id)
-                        console.log(Utils.libManager.userInfo.likedSongsPlId)
                         if (playlist.id == Utils.libManager.userInfo.likedSongsPlId)
                             this.parentElement.removeChild(this)
                     }

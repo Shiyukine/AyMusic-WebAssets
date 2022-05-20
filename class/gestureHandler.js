@@ -1,3 +1,5 @@
+import Utils from "./utils/utils.js";
+
 export default class GestureHandler {
     /**
      * @type {HTMLElement}
@@ -5,6 +7,7 @@ export default class GestureHandler {
     element = null;
     #eventEl = document.createElement("event");
     noTransition = false;
+    movedOk = false;
     curOverflowStyle = "";
 
     /**
@@ -24,7 +27,7 @@ export default class GestureHandler {
             element.style.transition = ""
             element.ontransitionend = () => { };
             isDown = true;
-            console.log(mv)
+            this.movedOk = false;
         })
         var callbackMove = (e) => {
             element.parentElement.style.overflow = "hidden"
@@ -33,13 +36,19 @@ export default class GestureHandler {
                 var currentX = e.touches ? e.touches[0].pageX : e.pageX;
                 if (!isTopDown) {
                     let diff = mv.x - currentX
-                    element.style.marginLeft = (diff * -1) + "px"
-                    element.style.marginRight = diff + "px"
+                    if (diff > 4 || diff < -4) {
+                        element.style.marginLeft = (diff * -1) + "px"
+                        element.style.marginRight = diff + "px"
+                        this.movedOk = true;
+                    }
                 }
                 else {
                     let diff = mv.y - currentY
-                    element.style.marginTop = (diff * -1) + "px"
-                    element.style.marginBottom = diff + "px"
+                    if (diff > 4 || diff < -4) {
+                        element.style.marginTop = (diff * -1) + "px"
+                        element.style.marginBottom = diff + "px"
+                        this.movedOk = true;
+                    }
                 }
             }
         }
@@ -81,7 +90,7 @@ export default class GestureHandler {
                     }
                     count += 1
                 }
-                if (this.noTransition) this.element.style.transition = "margin 0.01s"
+                if (this.noTransition) this.element.style.transition = "margin 0.0000001s"
                 element.style.marginRight = element.style.marginLeft = element.style.marginTop = element.style.marginBottom = ""
                 this.noTransition = false
             }
@@ -102,10 +111,14 @@ export default class GestureHandler {
                 element.style.marginTop = (diff * -1) + "px"
                 element.style.marginBottom = diff + "px"
             }
+            if (this.movedOk) {
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+            }
         }
-        window.addEventListener("mouseup", callbackStop)
-        window.addEventListener("touchend", callbackStop)
-        element.addEventListener("mouseleave", callbackStop)
+        element.addEventListener("click", callbackStop, true)
+        element.addEventListener("touchend", callbackStop, true)
+        element.addEventListener("mouseleave", callbackStop, true)
     }
 
     addEventListener(event, callback) {
