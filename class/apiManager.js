@@ -51,7 +51,7 @@ export default class ApiManager {
         }
         catch (e) {
             console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
-            Utils.newError("Can't connect to the serveur", "The server is offline or maybe there is a maintenance.\nPlease wait.")
+            Utils.newError("Can't connect to the server", "The server is offline or maybe there is a maintenance.\nPlease wait.")
             return e;
         }
     }
