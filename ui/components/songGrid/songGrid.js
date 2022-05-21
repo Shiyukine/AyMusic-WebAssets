@@ -11,7 +11,10 @@ export default class SongGrid extends HTMLDivElement {
      * @type {Song}
      */
     song = null;
-
+    /**
+     * @type {Playlist}
+     */
+    playlist = null;
 
     /**
      * 
@@ -20,11 +23,19 @@ export default class SongGrid extends HTMLDivElement {
      */
     constructor(song, playlist = null) {
         super();
-        this.song = song
+        this.playlist = playlist;
         var shadow = this.attachShadow({ mode: "open" })
         Import.getData("/ui/components/songGrid/songGrid.html").then((html) => {
             shadow.innerHTML = html
             //new Translations(shadow.children[1])
+            if (song !== null) this.changeSong(song)
+            this.song = song
+        })
+    }
+
+    changeSong(song) {
+        if (this.song === null) {
+            this.song = song;
             this.shadowRoot.getElementById("title").innerText = this.song.title
             this.shadowRoot.getElementById("artist").innerText = this.song.singerName
             this.shadowRoot.getElementById("time").innerText = Utils.msToTime(this.song.time)
@@ -51,15 +62,15 @@ export default class SongGrid extends HTMLDivElement {
                 cm.addElement("{lib.goAlbum}", () => {
                     Utils.newError("Can't do this", "This feature will be added soon :)")
                 })
-                if (playlist != null && playlist.id != Utils.libManager.userInfo.likedSongsPlId && Utils.libManager.userPlaylists.includes(playlist)) {
+                if (this.playlist != null && this.playlist.id != Utils.libManager.userInfo.likedSongsPlId && Utils.libManager.userPlaylists.includes(this.playlist)) {
                     let result = await Utils.apiManager.doPostRequest({
                         act: "getIdSongsInPlaylist",
-                        playlistID: playlist.id,
+                        playlistID: this.playlist.id,
                         orderByDesc: false
                     })
                     if (result.includes(song.id)) {
                         cm.addElement("{lib.removeFromPl}", () => {
-                            Utils.libManager.removeSongFromAPlaylist(playlist.id, "so_" + song.id)
+                            Utils.libManager.removeSongFromAPlaylist(this.playlist.id, "so_" + song.id)
                             this.parentElement.removeChild(this)
                         })
                     }
@@ -67,7 +78,7 @@ export default class SongGrid extends HTMLDivElement {
                 cm.addElement(Utils.libManager.userLikedSongs.includes(this.song.id) ? "{lib.removeLikedSong}" : "{lib.addLikedSong}", () => {
                     if (Utils.libManager.userLikedSongs.includes(this.song.id)) {
                         Utils.libManager.removeObjFromLikedSongs("so_" + song.id)
-                        if (playlist.id == Utils.libManager.userInfo.likedSongsPlId)
+                        if (this.playlist.id == Utils.libManager.userInfo.likedSongsPlId)
                             this.parentElement.removeChild(this)
                     }
                     else {
@@ -89,6 +100,6 @@ export default class SongGrid extends HTMLDivElement {
             cm.hidden = () => {
                 cm.resetElements()
             }
-        })
+        }
     }
 }

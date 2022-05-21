@@ -148,6 +148,8 @@ export default class LibraryWindow extends HTMLDivElement {
                 if (e.state.where == "library") this.changeView(e.state.index, false)
                 if (e.state.where == "menu" && e.state.menu == "Library") this.changeView(0, false)
             })
+            this.addScrollEventForList("playlist_songs")
+            this.addScrollEventForList("mylib_list")
         })
     }
 
@@ -195,6 +197,10 @@ export default class LibraryWindow extends HTMLDivElement {
                                 let obj = songs[i]
                                 songsList.appendChild(new SongGrid(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName), pl))
                             }
+                            let total = parseInt(result["total"])
+                            while (songsList.children.length < total) {
+                                songsList.appendChild(new SongGrid(null, pl))
+                            }
                         }
                     }
                 }
@@ -228,6 +234,10 @@ export default class LibraryWindow extends HTMLDivElement {
                         let obj = songs[i]
                         objs.appendChild(new SongGrid(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName), Utils.libManager.userLikedPl))
                     }
+                    let total = parseInt(result["total"])
+                    while (objs.children.length < total) {
+                        objs.appendChild(new SongGrid(null, Utils.libManager.userLikedPl))
+                    }
                 }
                 else {
                     let result = await Utils.apiManager.doPostRequest({
@@ -235,7 +245,7 @@ export default class LibraryWindow extends HTMLDivElement {
                         playlistID: Utils.libManager.userInfo.likedSongsPlId,
                         orderByDesc: true,
                         offset: 0,
-                        size: 50
+                        size: -1
                     })
                     objs.classList.add("obj")
                     while (objs.firstChild) {
@@ -330,5 +340,34 @@ export default class LibraryWindow extends HTMLDivElement {
             this.shadowRoot.getElementById("pl_isPriv").style.backgroundColor = this.shadowRoot.getElementById("pl_isPriv").value == "1" ? "" : "gray"
         }
         this.modifyingPl = isForModification
+    }
+
+    addScrollEventForList(listId) {
+        this.shadowRoot.getElementById(listId).addEventListener("scroll", async (e) => {
+            let offset = parseInt(this.shadowRoot.getElementById(listId).children.length / 50)
+            if (this.shadowRoot.getElementById(listId).scrollTop > 3200 * offset) {
+                /**
+                 * @type {SongGrid}
+                 */
+                let el = this.shadowRoot.getElementById(listId).children[offset * 50]
+                if (typeof el.changeSong === "function" && el.song === null) {
+                    let result = await Utils.apiManager.doPostRequest({
+                        act: "getPlaylistSongs",
+                        playlistID: this.selectedPl.id,
+                        orderByDesc: false,
+                        offset: offset
+                    })
+                    let i = 0;
+                    for (let obj of result["songs"]) {
+                        /**
+                         * @type {SongGrid}
+                         */
+                        let grid = this.shadowRoot.getElementById(listId).children[offset * 50 + i]
+                        grid.changeSong(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName))
+                        i++;
+                    }
+                }
+            }
+        })
     }
 }

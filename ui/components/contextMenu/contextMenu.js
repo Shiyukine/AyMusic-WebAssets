@@ -19,7 +19,7 @@ export default class ContextMenu extends HTMLDivElement {
             shadow.innerHTML = html
             new Translations(shadow.children[1])
             window.addEventListener("pointerdown", (e) => {
-                if (!this.isHidded)
+                if (!this.isHidded && !this.shadowRoot.getElementById("context").matches(":hover") && !this.isSub)
                     this.hide()
             })
         })
@@ -49,11 +49,14 @@ export default class ContextMenu extends HTMLDivElement {
             this.shadowRoot.getElementById("context").removeChild(this.shadowRoot.getElementById("context").lastChild)
         }
         //this.shadowRoot.getElementById("context").innerHTML = ""
-        for (let i in this.elements) {
-            var el = this.elements[i]
+        for (let el of this.elements) {
             var div = document.createElement("div")
             if (!el.isSub) {
-                div.onclick = el.onclick
+                div.onclick = (e) => {
+                    if (typeof el.onclick === "function")
+                        el.onclick(e)
+                    this.hide();
+                }
                 if (el.icon) {
                     let icon = this.createSVGPath(el.icon, "white", null, 24)
                     div.appendChild(icon)
@@ -67,7 +70,7 @@ export default class ContextMenu extends HTMLDivElement {
                 div.onmouseenter = () => {
                     context.show(new MouseEvent("contextmenu", {
                         clientX: parseInt(this.style.left.replace("px", "")),
-                        clientY: 34 + parseInt(this.style.top.replace("px", "")) + 39 * i,
+                        clientY: 34 + parseInt(this.style.top.replace("px", "")) + 39 * Array.from(this.shadowRoot.getElementById("context").children).indexOf(div),
                         button: 0,
                         ctrlKey: false,
                         altKey: false,
