@@ -1,5 +1,3 @@
-import Utils from "./utils/utils.js";
-
 export default class GestureHandler {
     /**
      * @type {HTMLElement}
