@@ -21,7 +21,7 @@ async function main() {
                 Window.setDevToolLogger();
             }
             new Translations(document.body)
-            document.getElementById("version_name").innerText = "Version - " + Utils.app.versionName + " (" + Utils.app.versionId + ")"
+            document.getElementById("version_name").innerText = Utils.app.versionName + " (" + Utils.app.versionId + ")"
             var loadPanel = new InfoPanel("Searching for updates...", "Please wait...", null, true);
             document.getElementById("main").appendChild(loadPanel);
             loadPanel.style.width = loadPanel.style.height = "100%";

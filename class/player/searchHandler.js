@@ -7,7 +7,7 @@ export default class SearchHandler {
 
     static async searchMusic(criteria, platform) {
         var platSet = await PlatformHandler.getPlatformSettings(platform)
-        if (platSet["RequireUserLoggedOnPlatform"]) {
+        if (platSet["RequireUserLoggedOnPlatform"] && platSet["LastRestoredSession"] == 0) {
             let panel = new InfoPanel("Login to " + platform + "...", "Checking if you're connected on " + platform, null, true)
             document.getElementById("main").appendChild(panel)
             panel.show()
@@ -19,15 +19,15 @@ export default class SearchHandler {
             panel.show()
             //to-do
         }
-        var searchUrl = PlatformHandler.getPlatformUrl(platform, "SearchUrl")
-        var scriptUrl = PlatformHandler.getPlatformUrl(platform, "ScriptUrl")
+        var searchUrl = await PlatformHandler.getPlatformUrl(platform, "SearchUrl")
+        var scriptUrl = await PlatformHandler.getPlatformUrl(platform, "ScriptUrl")
         await Utils.app.remoteClient.addWebTask(searchUrl, scriptUrl, false, true, false, (result) => {
             //to-do
         })
     }
 
     static async searchMusicEverywhere(criteria) {
-        for (var platform in await PlatformHandler.getAvailablePlatforms()) {
+        for (var platform of await PlatformHandler.getAvailablePlatforms()) {
             this.searchMusic(criteria, platform)
         }
     }

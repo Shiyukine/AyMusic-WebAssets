@@ -47,7 +47,7 @@ export default class PlatformHandler {
         else return this.getPlatformPath(platform) + u
     }
 
-    static async getPlatformPath(platform) {
+    static getPlatformPath(platform) {
         return Utils.servURL + "/dl/AyMusic/scripts/" + platform + "/"
     }
 }

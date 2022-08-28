@@ -113,7 +113,6 @@ export default class LoginPanel extends HTMLDivElement {
     close(triggerEvent = true) {
         this.shadowRoot.getElementById("loginBG").ontransitionend = () => {
             this.shadowRoot.getRootNode().host.parentElement.removeChild(this)
-            if (triggerEvent) this.#eventEl.dispatchEvent(new CustomEvent("logged"));
             if (document.getElementById("menu_win"))
                 document.getElementById("menu_win").style.zIndex = ""
             this.isClosed = true
@@ -122,6 +121,7 @@ export default class LoginPanel extends HTMLDivElement {
             }
             this.controller.abort()
         };
+        if (triggerEvent) this.#eventEl.dispatchEvent(new CustomEvent("logged"));
         this.shadowRoot.getElementById("loginBG").style.opacity = "0%"
     }
 
