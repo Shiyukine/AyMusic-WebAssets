@@ -24,10 +24,11 @@ svg {
 
 #main {
     font-family: "QuickSand";
-    background-color: rgb(43, 43, 43);
+    background-color: rgba(43, 43, 43, 0.3);
+    backdrop-filter: blur(20px);
     border-radius: 10px;
     display: flex;
-    box-shadow: 0px 0px 5px 1px black;
+    box-shadow: 0px 0px 3px 1px black;
 }
 
 #context {

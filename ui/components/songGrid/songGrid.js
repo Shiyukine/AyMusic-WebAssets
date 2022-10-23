@@ -53,6 +53,14 @@ export default class SongGrid extends HTMLDivElement {
             });
             var cm = new ContextMenu()
             this.shadowRoot.getElementById("context").onclick = async (e) => {
+                cm.show(e)
+            }
+            this.addEventListener("pointerup", async (e) => {
+                if (e.button == 2) {
+                    cm.show(e)
+                }
+            });
+            cm.beforeShow = async () => {
                 cm.addElement("{wt.addQueue}", () => {
                     Utils.newError("Can't do this", "This feature will be added soon :)")
                 })
@@ -86,19 +94,16 @@ export default class SongGrid extends HTMLDivElement {
                     }
                 })
                 var cm2 = new ContextMenu()
-                for (let pl of Utils.libManager.userPlaylists) {
-                    if (!pl.name.includes("{") && !pl.name.includes("}")) {
-                        cm2.addElement(pl.name, () => {
-                            Utils.libManager.addSongToAPlaylist(pl.id, "so_" + song.id)
-                        })
+                cm2.beforeShow = () => {
+                    for (let pl of Utils.libManager.userPlaylists) {
+                        if (!pl.name.includes("{") && !pl.name.includes("}")) {
+                            cm2.addElement(pl.name, () => {
+                                Utils.libManager.addSongToAPlaylist(pl.id, "so_" + song.id)
+                            })
+                        }
                     }
                 }
                 cm.addSubContextMenu("{lib.addToPl}", cm2)
-                cm.show(e)
-                cm.resetElements()
-            }
-            cm.hidden = () => {
-                cm.resetElements()
             }
         }
     }

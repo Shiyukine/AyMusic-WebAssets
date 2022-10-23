@@ -21,11 +21,13 @@ export default class GestureHandler {
          */
         var mv = null;
         element.addEventListener("pointerdown", (e) => {
-            mv = e;
-            element.style.transition = ""
-            element.ontransitionend = () => { };
-            isDown = true;
-            this.movedOk = false;
+            if (e.button == 0) {
+                mv = e;
+                element.style.transition = ""
+                element.ontransitionend = () => { };
+                isDown = true;
+                this.movedOk = false;
+            }
         })
         var callbackMove = (e) => {
             element.parentElement.style.overflow = "hidden"
