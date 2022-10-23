@@ -12,8 +12,11 @@ export default class Window {
         icon.classList.add("left")
         topbar.appendChild(icon)
         var mvmt = document.createElement("div")
-        mvmt.addEventListener("pointerdown", async function () {
-            await Utils.app.remoteClient.beginMoveWindow()
+        mvmt.addEventListener("pointerdown", async function (e) {
+            if (e.button == 0) await Utils.app.remoteClient.beginMoveWindow()
+        })
+        mvmt.addEventListener("pointerup", async function (e) {
+            if (e.button == 2) await Utils.app.remoteClient.rightClickWindow()
         })
         mvmt.classList.add("mvmt")
         topbar.appendChild(mvmt)
@@ -48,6 +51,8 @@ export default class Window {
         document.getElementById("main").style.height = "calc(100% - 35px)"
         Utils.app.addForwardTouch(icon, async function () {
             await Utils.app.remoteClient.beginMoveWindow()
+        }, null, null, async function () {
+            await Utils.app.remoteClient.rightClickWindow()
         })
     }
 

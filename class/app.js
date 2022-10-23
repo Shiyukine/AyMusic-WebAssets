@@ -80,7 +80,7 @@ export default class App {
      * Forward touch events to the main window
      * @param {HTMLElement} element 
      */
-    async addForwardTouch(element, mousedownEvent) {
+    async addForwardTouch(element, leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, rightMouseUpEvent) {
         var id = Utils.createIndexedPathTo(element)
         console.log("adding ignore touch to " + id)
         var rect = element.getBoundingClientRect();
@@ -112,6 +112,6 @@ export default class App {
                 }
             }
         }, 10);
-        await this.remoteClient.addIgnoreTouch(id, x, y, width, height, isVisible, mousedownEvent);
+        await this.remoteClient.addIgnoreTouch(id, x, y, width, height, isVisible, leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, rightMouseUpEvent);
     }
 }
