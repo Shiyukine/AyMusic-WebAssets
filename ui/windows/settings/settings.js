@@ -106,7 +106,7 @@ export default class SettingsWindow extends HTMLDivElement {
                         }
                     }
                 }
-            }, { signal: this.controller })
+            }, { signal: this.controller.signal })
             shadow.getElementById("acc_logout").onclick = () => {
                 var ip = new InfoPanel("Log-out", "Do you want to log-out now ?\nAyMusic will restart after you have logged out.", [{
                     text: "Yes", isPositive: true, onclick: () => {

@@ -31,7 +31,7 @@ async function main() {
             if (!Utils.useLocalServer)
                 Utils.servURL = (await Utils.app.remoteClient.httpRequestGET("https://raw.githubusercontent.com/Shiyukine/Shiyukine/main/serv.txt")).replace("\n", "");
             else
-                Utils.servURL = "http://192.168.0.33/";
+                Utils.servURL = "https://192.168.0.33/";
             await Utils.app.remoteClient.changeServURL(Utils.servURL)
             console.log("Server URL : " + Utils.servURL);
             //

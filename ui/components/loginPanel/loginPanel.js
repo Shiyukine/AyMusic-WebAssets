@@ -129,15 +129,15 @@ export default class LoginPanel extends HTMLDivElement {
         try {
             Utils.app.remoteClient.registerIframeUrl(Utils.servURL, `addEventListener('message', (e) =>
             {
-                if(e.origin.includes('myapp://root'))
+                if(e.origin.includes('https://myapp'))
                 {
                     if(e.data.message == 'getURL')
                     {
-                        parent.postMessage({message: 'callbackURL', data: document.location.toString()}, 'myapp://root')
+                        parent.postMessage({message: 'callbackURL', data: document.location.toString()}, 'https://myapp')
                     }
                     if(e.data.message == 'html')
                     {
-                        parent.postMessage({message: 'callbackHTML', data: document.body.innerHTML}, 'myapp://root')
+                        parent.postMessage({message: 'callbackHTML', data: document.body.innerHTML}, 'https://myapp')
                     }
                 }
             })`)
