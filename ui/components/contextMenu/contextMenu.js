@@ -8,6 +8,7 @@ export default class ContextMenu extends HTMLDivElement {
     isHidded = true;
     loaded = false;
     isSub = false;
+    beforeShow = null;
 
     constructor() {
         super();
@@ -49,13 +50,13 @@ export default class ContextMenu extends HTMLDivElement {
      * 
      * @param {MouseEvent} event 
      */
-    show(event) {
+    async show(event) {
         this.ontransitionend = () => { };
         this.resetElements()
         while (this.shadowRoot.getElementById("context").firstChild) {
             this.shadowRoot.getElementById("context").removeChild(this.shadowRoot.getElementById("context").lastChild)
         }
-        this.#eventEl.dispatchEvent(new CustomEvent("beforeShow"));
+        if(this.beforeShow) await this.beforeShow()
         //this.shadowRoot.getElementById("context").innerHTML = ""
         for (let el of this.elements) {
             let div = document.createElement("div")
@@ -79,7 +80,7 @@ export default class ContextMenu extends HTMLDivElement {
                     if (!this.isHidded) {
                         let rect = this.getBoundingClientRect();
                         context.show(new MouseEvent("contextmenu", {
-                            clientX: rect.left,
+                            clientX: rect.left - 45,
                             clientY: rect.top - 1 + 39 * Array.from(this.shadowRoot.getElementById("context").children).indexOf(div),
                             button: 0,
                             ctrlKey: false,
@@ -110,10 +111,6 @@ export default class ContextMenu extends HTMLDivElement {
         this.clientWidth //wait load
         this.#showLoaded(event)
         this.isHidded = false
-    }
-
-    set beforeShow(callback) {
-        this.#eventEl.addEventListener("beforeShow", callback)
     }
 
     set hidden(callback) {

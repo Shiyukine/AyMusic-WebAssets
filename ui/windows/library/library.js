@@ -92,7 +92,8 @@ export default class LibraryWindow extends HTMLDivElement {
                 }
             }
             var cm = new ContextMenu()
-            shadow.getElementById("plContextMenu").onclick = (e) => {
+            cm.beforeShow = () =>
+            {
                 cm.addElement("{wt.addQueue}", () => {
                     Utils.newError("Not implemented", "Feature will be here soon !")
                 })
@@ -118,11 +119,9 @@ export default class LibraryWindow extends HTMLDivElement {
                     document.getElementById("main").appendChild(confirm)
                     await confirm.showDialog()
                 })
-                cm.show(e)
-                cm.resetElements()
             }
-            cm.hidden = () => {
-                cm.resetElements()
+            shadow.getElementById("plContextMenu").onclick = (e) => {
+                cm.show(e)
             }
             shadow.querySelectorAll("*").forEach((x) => {
                 if (x.tagName == "INPUT" && x.max == "1") {
