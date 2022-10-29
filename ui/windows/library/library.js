@@ -5,6 +5,7 @@ import Playlist from "../../../class/music/playlist.js";
 import Singer from "../../../class/music/singer.js";
 import Song from "../../../class/music/song.js";
 import Translations from "../../../class/translations.js";
+import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
 import Utils from "../../../class/utils/utils.js";
 import AlbumGrid from "../../components/albumGrid/albumGrid.js";
 import ContextMenu from "../../components/contextMenu/contextMenu.js";
@@ -229,11 +230,12 @@ export default class LibraryWindow extends HTMLDivElement {
                         objs.removeChild(objs.lastChild);
                     }
                     let songs = result["songs"]
+                    songs.concat(LocalMusicHandler.getMusics())
                     for (let i in songs) {
                         let obj = songs[i]
                         objs.appendChild(new SongGrid(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName), Utils.libManager.userLikedPl))
                     }
-                    let total = parseInt(result["total"])
+                    let total = parseInt(result["total"] + LocalMusicHandler.getMusics().length)
                     while (objs.children.length < total) {
                         objs.appendChild(new SongGrid(null, Utils.libManager.userLikedPl))
                     }

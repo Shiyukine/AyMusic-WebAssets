@@ -7,6 +7,7 @@ import MenuWindow from "./ui/windows/menu/menu.js";
 import ListenWindow from "./ui/windows/listen/listen.js";
 import Translations from "./class/translations.js";
 import Import from "./class/import.js";
+import LocalMusicHandler from "./class/utils/localMusicHandler.js";
 
 async function main() {
     window.app = Utils.app;
@@ -47,6 +48,8 @@ async function main() {
                 loadPanel.changeText("Getting your playlists...");
                 loadPanel.show();
                 await Utils.libManager.refreshUserInfo()
+                LocalMusicHandler.init()
+                await LocalMusicHandler.getLocalLibrary()
                 loadPanel.close();
                 let lp = document.getElementById("loadPanel");
                 lp.children[0].classList.add("pauseSVG");

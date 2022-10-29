@@ -1,5 +1,6 @@
 import Import from "../../../class/import.js";
 import Translations from "../../../class/translations.js";
+import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
 import Utils from "../../../class/utils/utils.js";
 import InfoPanel from "../../components/infoPanel/infoPanel.js";
 import LoginPanel from "../../components/loginPanel/loginPanel.js";
@@ -88,6 +89,9 @@ export default class SettingsWindow extends HTMLDivElement {
                     document.getElementById("main").appendChild(lp)
                     window.history.pushState({ where: "settings", showLog: true }, "", "/index.html")
                 }
+            }
+            shadow.getElementById("music_add").onclick = () => {
+                LocalMusicHandler.addMusic()
             }
             window.addEventListener("popstate", (e) => {
                 if (!this.isClosed) {
