@@ -93,8 +93,7 @@ export default class LibraryWindow extends HTMLDivElement {
                 }
             }
             var cm = new ContextMenu()
-            cm.beforeShow = () =>
-            {
+            cm.beforeShow = () => {
                 cm.addElement("{wt.addQueue}", () => {
                     Utils.newError("Not implemented", "Feature will be here soon !")
                 })
@@ -230,12 +229,15 @@ export default class LibraryWindow extends HTMLDivElement {
                         objs.removeChild(objs.lastChild);
                     }
                     let songs = result["songs"]
+                    let counterSongNotLoaded = 0
                     for (let i in songs) {
                         let obj = songs[i]
-                        objs.appendChild(new SongGrid(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID), Utils.libManager.userLikedPl))
+                        let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID)
+                        if (sng.canBeLoaded) objs.appendChild(new SongGrid(sng, Utils.libManager.userLikedPl))
+                        else counterSongNotLoaded++
                     }
                     let total = parseInt(result["total"])
-                    while (objs.children.length < total) {
+                    while (objs.children.length < total - counterSongNotLoaded) {
                         objs.appendChild(new SongGrid(null, Utils.libManager.userLikedPl))
                     }
                 }

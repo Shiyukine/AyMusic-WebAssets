@@ -18,6 +18,7 @@ export default class Song {
     albumName = ""
     img = null
     albumID = ""
+    canBeLoaded = true
 
     constructor(id, url, positionOrDate, title, imgUrl, time, isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID) {
         this.id = id;
@@ -36,14 +37,19 @@ export default class Song {
         this.albumID = albumID;
         if (this.imgUrl === "")
             this.imgUrl = '/resources/icon.ico';
-        if(this.imgUrl === "localImg") 
-        {
-            var si = LocalMusicHandler.getArtistByMusicID(id)
-            var al = LocalMusicHandler.getAlbumByMusicID(id)
-            this.singerName = si.name
-            this.albumName = al.name
-            this.albumID = al.id
-            this.singerID = si.id
+        if (this.imgUrl === "localImg") {
+            try {
+                var si = LocalMusicHandler.getArtistByMusicID(id)
+                var al = LocalMusicHandler.getAlbumByMusicID(id)
+                this.singerName = si.name
+                this.albumName = al.name
+                this.albumID = al.id
+                this.singerID = si.id
+            }
+            catch (e) {
+                console.error("Unable to get local data for a song.")
+                this.canBeLoaded = false
+            }
         }
     }
 }
