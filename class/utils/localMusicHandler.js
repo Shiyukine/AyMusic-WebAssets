@@ -5,6 +5,7 @@ import Singer from "../music/singer.js";
 import Album from "../music/album.js";
 import LibraryManager from "../libraryManager.js";
 import Playlist from "../music/playlist.js";
+import InfoPanel from "../../ui/components/infoPanel/infoPanel.js";
 
 export default class LocalMusicHandler {
     
@@ -12,29 +13,14 @@ export default class LocalMusicHandler {
     //obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName
     static localMusicTemplate = {
         musicID: "",
-        url: "",
-        dateAdded: 0,
-        title: "",
-        imgUrl: "",
-        time: 0,
-        isExplicit: false,
-        addedBy: "",
-        cropStart: 0,
-        cropEnd: -1,
-        singerID: "",
-        singerName: "",
-        albumeName: ""
+        albumID: "",
+        singerID: ""
     }
 
     /**
      * @type {[localMusicTemplate]}
      */
     static musics = []
-
-    /**
-     * @type {[{musicId, playlistId}]}
-     */
-    static musicsInPlaylists = []
 
     /**
      * @type {[Singer]}
@@ -50,13 +36,14 @@ export default class LocalMusicHandler {
 
     static init()
     {
-        this.singers.push(new Singer(this.singerUnknownID, "Unknown artist", null, Date.now()))
-        this.albums.push(new Album(this.albumUnknownID, "Unknown album", this.singerUnknownID, "Album", null, Date.now()))
+        this.singers.push(new Singer(this.singerUnknownID, "Unknown artist", "", Date.now()))
+        this.albums.push(new Album(this.albumUnknownID, "Unknown album", this.singerUnknownID, "Album", "", Date.now()))
     }
 
     static addMusicToPlaylist(playlistId, musicId)
     {
         this.musicsInPlaylists.push({musicId: musicId, playlistId: playlistId})
+        this.setLocalLibrary()
     }
 
     static getMusicsInPlaylist(plId)
@@ -85,7 +72,7 @@ export default class LocalMusicHandler {
         var id = this.generateId();
         var filt = this.singers.filter(sing => sing.name == name);
         if(filt.length == 0) {
-            var sing = new Singer(id, name, null, Date.now())
+            var sing = new Singer(id, name, "", Date.now())
             this.singers.push(sing)
             return sing
         }
@@ -97,7 +84,7 @@ export default class LocalMusicHandler {
         var id = this.generateId()
         var filt = this.albums.filter(al => al.name == name)
         if(filt.length == 0) {
-            var al = new Album(id, name, this.addLocalSinger(singerName).id, "Album", null, Date.now())
+            var al = new Album(id, name, this.addLocalSinger(singerName).id, "Album", "", Date.now())
             this.albums.push(al)
             return al
         }
@@ -106,59 +93,130 @@ export default class LocalMusicHandler {
 
     static async getLocalLibrary()
     {
-        var result = await Utils.app.remoteClient.getMusicsFile()
+        var result = await Utils.app.remoteClient.getUserSettingsFile("UserMusics.json")
         if(result) LocalMusicHandler.musics = JSON.parse(result);
-        var result2 = await Utils.app.remoteClient.getPlaylistsFile()
-        if(result2) LocalMusicHandler.musicsInPlaylists = JSON.parse(result2);
+        var result3 = await Utils.app.remoteClient.getUserSettingsFile("UserAlbums.json")
+        if(result3) LocalMusicHandler.albums = JSON.parse(result3);
+        var result4 = await Utils.app.remoteClient.getUserSettingsFile("UserArtists.json")
+        if(result4) LocalMusicHandler.singers = JSON.parse(result4);
         console.log("Local library refreshed")
     }
 
     static async setLocalLibrary()
     {
-        await Utils.app.remoteClient.changeMusicsFile(JSON.stringify(LocalMusicHandler.musics))
-        await Utils.app.remoteClient.changePlaylistsFile(JSON.stringify(LocalMusicHandler.musicsInPlaylists))
+        await Utils.app.remoteClient.changeUserSettingsFile("UserMusics.json", JSON.stringify(LocalMusicHandler.musics))
+        await Utils.app.remoteClient.changeUserSettingsFile("UserAlbums.json", JSON.stringify(LocalMusicHandler.albums))
+        await Utils.app.remoteClient.changeUserSettingsFile("UserArtists.json", JSON.stringify(LocalMusicHandler.singers))
         console.log("User's local library files updated")
     }
 
     static async addMusic()
     {
         console.log("Adding song to liked song... Waiting user choose")
-        var input = document.createElement('input');
-        input.type = 'file';
-        input.onchange = e => { 
-            var file = e.target.files[0];
-            id3.fromFile(file).then((tags) => {
-                var audio = new Audio()
-                audio.onloadedmetadata = () =>
-                {
-                    var artist = this.addLocalSinger(tags.artist)
-                    console.log("Added new local artist : " + artist.id)
-                    var album = this.addLocalAlbum(tags.album, tags.artist)
-                    console.log("Added new local album : " + album.id + ", artist : " + album.singerID)
-                    LocalMusicHandler.musics.push({
-                        musicID: this.generateId(),
-                        url: URL.createObjectURL(file),
-                        dateAdded: Date.now(),
-                        title: tags.title,
-                        imgUrl: tags.images[0].data,
-                        time: audio.duration,
-                        isExplicit: false,
-                        addedBy: "You",
-                        cropStart: 0,
-                        cropEnd: -1,
-                        singerID: artist.id,
-                        singerName: artist.name,
-                        albumeName: album.name
-                    })
-                    //LocalMusicHandler.musics.push(new Song("so_" + LocalMusicHandler.generateId(), URL.createObjectURL(file), Date.now(), tags.title, tags.images[0].data, audio.duration, false, "You", 0, -1, artist.id, artist.name, album.name))
-                    LocalMusicHandler.setLocalLibrary()
-                    console.log("Song added to liked song !")
-                }
-                audio.src = URL.createObjectURL(file);
-            });
+        var allMusics = []
+        var urls = await Utils.app.remoteClient.pickUpMusic()
+        let isOk = true;
+        for(let i in urls)
+        {
+            let nurl = urls[i]
+            let result = "https://mymusic/" + nurl
+            let request = new XMLHttpRequest();
+            request.open('GET', result, true);
+            request.responseType = 'blob';
+            request.onload = function() {
+                let reader = new FileReader();
+                reader.readAsArrayBuffer(request.response);
+                reader.onload =  function(e){
+                    id3.fromFile(new File([e.target.result], result.split("\\")[result.split("\\") - 1])).then((tags) => {
+                        let audio = new Audio()
+                        audio.onloadedmetadata = async () =>
+                        {
+                            let artist = LocalMusicHandler.addLocalSinger(tags.artist)
+                            console.log("Added new local artist : " + artist.id.replace("si_", ""))
+                            let album = LocalMusicHandler.addLocalAlbum(tags.album, tags.artist)
+                            console.log("Added new local album : " + album.id.replace("al_", "") + ", artist : " + album.singerID.replace("si_", ""))
+                            allMusics.push([result, tags.title, "localImg", audio.duration * 1000])
+                            if(i == urls.length - 1) {
+                                let apiResult = await Utils.apiManager.doPostRequest({
+                                    act: "addMultipleSongsLocal",
+                                    songs: allMusics
+                                })
+                                if(apiResult["success"] !== false) {
+                                    for(let musicID of apiResult) {
+                                        LocalMusicHandler.musics.push({
+                                            musicID: musicID,
+                                            albumID: album.id,
+                                            singerID: artist.id
+                                        })
+                                        isOk = isOk && await Utils.libManager.addObjToLikedSongs("so_" + musicID)
+                                        //avoid small ddos
+                                        await Utils.delay(100);
+                                    }
+                                    if(isOk) {
+                                        LocalMusicHandler.setLocalLibrary()
+                                        let ip = new InfoPanel("Success", "Song added to liked songs !", [{
+                                            text: "OK", isPositive: true, onclick: () => {
+                                                ip.close()
+                                            }
+                                        }])
+                                        document.getElementById("main").appendChild(ip)
+                                        ip.show()
+                                    }
+                                }
+                                else
+                                {
+                                    let ip = new InfoPanel("Error", "We can't add this music to your liked songs.\nConcerned song : " + nurl + "\nPlease verify your file.", [{
+                                        text: "OK", isPositive: true, onclick: () => {
+                                            ip.close()
+                                        }
+                                    }])
+                                    document.getElementById("main").appendChild(ip)
+                                    ip.show()
+                                }
+                            }
+                        }
+                        audio.src = result;
+                    });
+                };
+            };
+            request.send();
         }
-        input.click();
     }
+
+    static getAlbumByMusicID(musicID) {
+        for(let music of LocalMusicHandler.musics)
+        {
+            if(music.musicID == musicID) 
+            {
+                for(let album of LocalMusicHandler.albums) 
+                {
+                    if(album.id == music.albumID)
+                    {
+                        return album
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    static getArtistByMusicID(musicID) {
+        for(let music of LocalMusicHandler.musics)
+        {
+            if(music.musicID == musicID) 
+            {
+                for(let artist of LocalMusicHandler.singers) 
+                {
+                    if(artist.id == music.singerID)
+                    {
+                        return artist
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 
     static generateId()
     {
@@ -201,6 +259,15 @@ export default class LocalMusicHandler {
         {
             if(music.url == url) return music;
         }
+    }
+
+    static isMusicInLocalLibrary(id)
+    {
+        for(let music of LocalMusicHandler.musics)
+        {
+            if(music.musicID == id) return true;
+        }
+        return false;
     }
 
     static getMusicsByTitle(title)

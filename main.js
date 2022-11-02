@@ -36,6 +36,9 @@ async function main() {
             await Utils.app.remoteClient.changeServURL(Utils.servURL)
             console.log("Server URL : " + Utils.servURL);
             //
+            LocalMusicHandler.init()
+            await LocalMusicHandler.getLocalLibrary()
+            //
             Update.searchUpdate(loadPanel);
             await Utils.delay(1000);
             loadPanel.changeText("Connecting to your account...");
@@ -48,8 +51,6 @@ async function main() {
                 loadPanel.changeText("Getting your playlists...");
                 loadPanel.show();
                 await Utils.libManager.refreshUserInfo()
-                LocalMusicHandler.init()
-                await LocalMusicHandler.getLocalLibrary()
                 loadPanel.close();
                 let lp = document.getElementById("loadPanel");
                 lp.children[0].classList.add("pauseSVG");

@@ -6,9 +6,10 @@
     transition: 0.3s;
     display: table;
     float: left;
-    width: 210px;
+    height: 60px;
     cursor: pointer;
     font-family: "Quicksand";
+    position: relative;
 }
 
 @font-face {
@@ -44,31 +45,42 @@
 .panel_ep .songImg {
     width: 48px;
     height: 48px;
-    margin-top: calc((64.5px - 16px - 48px)/2);
-    margin-bottom: 8px;
-    margin-left: 5px;
+    top: 50%;
+    left: 8px;
+    transform: translate(0, -50%);
     float: left;
-    background-image: url("/resources/icon.ico");
+    /*background-image: url("/resources/icon.ico");*/
     background-size: 48px;
     border-radius: 5px;
+    position: absolute;
 }
 
 .panel_ep .epName {
-    margin-left: 13px;
-    float: left;
+    top: 50%;
+    left: 70px;
+    transform: translate(0, -50%);
+    position: absolute;
+    width: 65%;
+}
+
+.panel_ep .epName>p {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .panel_ep .stats {
-    float: right;
-    position: relative;
+    position: absolute;
     display: flex;
+    top: 44%;
+    right: 30px;
+    transform: translate(0, -50%);
 }
 
 .panel_ep #context {
     width: 30px;
     height: 30px;
     padding: 2px;
-    margin-right: 15px;
     cursor: pointer;
     float: left;
     position: relative;

@@ -123,6 +123,7 @@ export default class LibraryManager {
             console.log("Song added in playlist successfully")
         else
             Utils.newError("Can't add song to this playlist", "This song is already added or there is an internal error.")
+        return result == "OK"
     }
 
     async removeSongFromAPlaylist(plId, objId) {
@@ -140,8 +141,9 @@ export default class LibraryManager {
      * @param {String} objId 
      */
     async addObjToLikedSongs(objId) {
-        await this.addSongToAPlaylist(this.userInfo.likedSongsPlId, objId)
-        this.userLikedSongs.push(objId.replace("so_", ""))
+        var result = await this.addSongToAPlaylist(this.userInfo.likedSongsPlId, objId)
+        if(result) this.userLikedSongs.push(objId.replace("so_", ""))
+        return result
     }
 
     /**

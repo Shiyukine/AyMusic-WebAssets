@@ -1,3 +1,6 @@
+import LocalMusicHandler from "../utils/localMusicHandler.js"
+import * as id3 from "../../plugins/id3/id3.js"
+
 export default class Song {
 
     id = ""
@@ -13,8 +16,10 @@ export default class Song {
     singerID = ""
     singerName = ""
     albumName = ""
+    img = null
+    albumID = ""
 
-    constructor(id, url, positionOrDate, title, imgUrl, time, isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName) {
+    constructor(id, url, positionOrDate, title, imgUrl, time, isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID) {
         this.id = id;
         this.url = url;
         this.positionOrDate = positionOrDate;
@@ -28,7 +33,17 @@ export default class Song {
         this.singerID = singerID;
         this.singerName = singerName;
         this.albumName = albumName;
+        this.albumID = albumID;
         if (this.imgUrl === "")
             this.imgUrl = '/resources/icon.ico';
+        if(this.imgUrl === "localImg") 
+        {
+            var si = LocalMusicHandler.getArtistByMusicID(id)
+            var al = LocalMusicHandler.getAlbumByMusicID(id)
+            this.singerName = si.name
+            this.albumName = al.name
+            this.albumID = al.id
+            this.singerID = si.id
+        }
     }
 }
