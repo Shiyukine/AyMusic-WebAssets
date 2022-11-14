@@ -27,8 +27,9 @@ export default class ListenWindow extends HTMLDivElement {
                 let pbVol = shadow.getElementById("pbVol");
                 this.shadowRoot.getElementById("listen").ontransitionend = () => { };
                 this.shadowRoot.getElementById("listen").style = ""
-                //get user info
-                Utils.player.onSongChange(() => {
+                let firstS = true;
+                Utils.player.onSongChange(async () => {
+                    this.clearUrls()
                     shadow.getElementById("music_title").innerText = Utils.queueManager.currentSong.title
                     shadow.getElementById("music_artist").innerText = Utils.queueManager.currentSong.singerName
                     shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isSongIsInLikedSongs(Utils.queueManager.currentSong) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
@@ -36,6 +37,8 @@ export default class ListenWindow extends HTMLDivElement {
                         if (Utils.queueManager.currentSong.canBeLoaded) {
                             var request = new XMLHttpRequest();
                             var imge = this.shadowRoot.getElementById("music_img");
+                            var aUrl = this.createObjURL
+                            var urlsC = this.urlsCreated
                             request.open('GET', Utils.queueManager.currentSong.url, true);
                             request.responseType = 'blob';
                             request.onload = function () {
@@ -46,13 +49,27 @@ export default class ListenWindow extends HTMLDivElement {
                                         if (tags != null && tags.images != null) {
                                             var blob = new Blob([tags.images[0].data])
                                             var uu = URL.createObjectURL(blob)
+                                            urlsC.push(uu)
                                             imge.src = uu
-                                            setTimeout(() => {
-                                                URL.revokeObjectURL(uu)
-                                            }, 10000)
+                                            navigator.mediaSession.metadata = new MediaMetadata({
+                                                title: Utils.queueManager.currentSong.title,
+                                                artist: Utils.queueManager.currentSong.singerName,
+                                                album: Utils.queueManager.currentSong.albumName,
+                                                artwork: [
+                                                    { src: uu, sizes: '512x512', type: 'image/png' },
+                                                ]
+                                            });
                                         }
                                         else {
                                             imge.src = "/resources/icon.ico"
+                                            navigator.mediaSession.metadata = new MediaMetadata({
+                                                title: Utils.queueManager.currentSong.title,
+                                                artist: Utils.queueManager.currentSong.singerName,
+                                                album: Utils.queueManager.currentSong.albumName,
+                                                artwork: [
+                                                    { src: "/resources/icon.ico", sizes: '512x512', type: 'image/png' },
+                                                ]
+                                            });
                                         }
                                     });
                                 };
@@ -61,13 +78,46 @@ export default class ListenWindow extends HTMLDivElement {
                         }
                         else {
                             this.shadowRoot.getElementById("music_img").src = "/resources/icon.ico"
+                            navigator.mediaSession.metadata = new MediaMetadata({
+                                title: Utils.queueManager.currentSong.title,
+                                artist: Utils.queueManager.currentSong.singerName,
+                                album: Utils.queueManager.currentSong.albumName,
+                                artwork: [
+                                    { src: "/resources/icon.ico", sizes: '512x512', type: 'image/png' },
+                                ]
+                            });
                         }
                     }
                     else {
-                        this.shadowRoot.getElementById("music_img").src = this.song.imgUrl
+                        this.shadowRoot.getElementById("music_img").src = Utils.queueManager.currentSong.imgUrl
+                        navigator.mediaSession.metadata = new MediaMetadata({
+                            title: Utils.queueManager.currentSong.title,
+                            artist: Utils.queueManager.currentSong.singerName,
+                            album: Utils.queueManager.currentSong.albumName,
+                            artwork: [
+                                { src: Utils.queueManager.currentSong.imgUrl, sizes: '512x512', type: 'image/png' },
+                            ]
+                        });
                     }
                     shadow.getElementById("next").style.color = Utils.queueManager.canNext() ? "white" : "gray"
                     shadow.getElementById("previous").style.color = Utils.queueManager.canPrevious() ? "white" : "gray"
+                    navigator.mediaSession.setActionHandler('previoustrack', Utils.queueManager.canPrevious() ? () => {
+                        Utils.player.previous()
+                    } : null);
+                    navigator.mediaSession.setActionHandler("nexttrack", Utils.queueManager.canNext() ? () => {
+                        Utils.player.next()
+                    } : null);
+                    Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
+                    Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
+                    if (!firstS) {
+                        await Utils.apiManager.doPostRequest({
+                            act: "updateUserInfo",
+                            curTime: 0,
+                            curMusic: Utils.libManager.userInfo.curMusic,
+                            curObject: Utils.libManager.userInfo.curObject
+                        })
+                    }
+                    firstS = false
                 })
                 Utils.player.onLoadedMetadata(() => {
                     pb.changeValue(0)
@@ -78,7 +128,34 @@ export default class ListenWindow extends HTMLDivElement {
                 Utils.player.onTimeUpdate(() => {
                     if (!mouseDownPb) pb.changeValue(Utils.player.getCurrentTime())
                     shadow.getElementById("curTime").innerText = Utils.msToTime(Utils.player.getCurrentTime())
+                    if (Utils.player.getDuration()) {
+                        navigator.mediaSession.setPositionState({
+                            duration: Utils.player.getDuration(),
+                            playbackRate: 1,
+                            position: Utils.player.getCurrentTime()
+                        });
+                    }
                 })
+                navigator.mediaSession.setActionHandler('play', () => { Utils.player.play() });
+                navigator.mediaSession.setActionHandler('pause', () => { Utils.player.pause() });
+                //navigator.mediaSession.setActionHandler('stop', () => { /* Code excerpted. */ });
+                //navigator.mediaSession.setActionHandler('seekbackward', () => { /* Code excerpted. */ });
+                //navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
+                navigator.mediaSession.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime) });
+                let lastTime = Utils.player.getCurrentTime();
+                setInterval(async () => {
+                    if (Utils.player.getCurrentTime() != lastTime && Utils.player.getDuration()) {
+                        Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
+                        Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
+                        await Utils.apiManager.doPostRequest({
+                            act: "updateUserInfo",
+                            curTime: Utils.player.getCurrentTime(),
+                            curMusic: Utils.libManager.userInfo.curMusic,
+                            curObject: Utils.libManager.userInfo.curObject
+                        })
+                        lastTime = Utils.player.getCurrentTime()
+                    }
+                }, 15000)
                 let mouseDownPb = false;
                 pb.onChanging(() => {
                     mouseDownPb = true;
@@ -96,6 +173,12 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                     shadow.getElementById("next").style.color = Utils.queueManager.canNext() ? "white" : "gray"
                     shadow.getElementById("previous").style.color = Utils.queueManager.canPrevious() ? "white" : "gray"
+                    navigator.mediaSession.setActionHandler('previoustrack', Utils.queueManager.canPrevious() ? () => {
+                        Utils.player.previous()
+                    } : null);
+                    navigator.mediaSession.setActionHandler("nexttrack", Utils.queueManager.canNext() ? () => {
+                        Utils.player.next()
+                    } : null);
                     Utils.app.changeSetting("shuffle", Utils.queueManager.shuffle)
                 })
                 Utils.player.onRepeatChange(() => {
@@ -113,6 +196,12 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                     shadow.getElementById("next").style.color = Utils.queueManager.canNext() ? "white" : "gray"
                     shadow.getElementById("previous").style.color = Utils.queueManager.canPrevious() ? "white" : "gray"
+                    navigator.mediaSession.setActionHandler('previoustrack', Utils.queueManager.canPrevious() ? () => {
+                        Utils.player.previous()
+                    } : null);
+                    navigator.mediaSession.setActionHandler("nexttrack", Utils.queueManager.canNext() ? () => {
+                        Utils.player.next()
+                    } : null);
                     Utils.app.changeSetting("repeat", Utils.queueManager.repeat)
                 })
                 Utils.player.onPlay(() => {
@@ -145,7 +234,6 @@ export default class ListenWindow extends HTMLDivElement {
                         shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeHigh"])
                     }
                 })
-                pbVol.changeValue(parseInt(Utils.app.getSetting("music_vol")))
                 Utils.player.changeRepeat(parseInt(Utils.app.getSetting("repeat")))
                 Utils.player.changeShuffle(Utils.app.getSetting("shuffle"))
                 Utils.player.onEnded(() => {
@@ -200,7 +288,7 @@ export default class ListenWindow extends HTMLDivElement {
                             act: "getSongInfo",
                             id: Utils.libManager.userInfo.curMusic
                         })
-                        await Utils.queueManager.changeQueue(new Song(obj.songID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID))
+                        await Utils.queueManager.changeQueue(new Song(obj.songID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID), "", false)
                     }
                     else if (Utils.libManager.userInfo.curObject.startsWith("pl_")) {
                         let result = null;
@@ -209,7 +297,7 @@ export default class ListenWindow extends HTMLDivElement {
                                 result = pl;
                             }
                         }
-                        await Utils.queueManager.changeQueue(result, Utils.libManager.userInfo.curMusic)
+                        await Utils.queueManager.changeQueue(result, Utils.libManager.userInfo.curMusic, false)
                     }
                     else if (Utils.libManager.userInfo.curObject.startsWith("al_")) {
                         let result = await Utils.apiManager.doPostRequest({
@@ -218,13 +306,27 @@ export default class ListenWindow extends HTMLDivElement {
                             offset: 0
                         })
                         let al = result["albumInfo"]
-                        await Utils.queueManager.changeQueue(new Album(al.id, al.name, al.singerID, al.type, al.imgUrl), Utils.libManager.userInfo.curMusic)
+                        await Utils.queueManager.changeQueue(new Album(al.id, al.name, al.singerID, al.type, al.imgUrl), Utils.libManager.userInfo.curMusic, false)
                     }
                     Utils.player.seek(Utils.libManager.userInfo.curTime)
                 }
+                pbVol.changeValue(parseInt(Utils.app.getSetting("music_vol")))
                 this.style.opacity = "1"
             }
             new Translations(shadow.children[1])
         })
+    }
+
+    urlsCreated = []
+
+    createObjURL(blob) {
+        let u = URL.createObjectURL(blob)
+        this.urlsCreated.push(u)
+    }
+
+    clearUrls() {
+        for (let url of this.urlsCreated) {
+            URL.revokeObjectURL(url)
+        }
     }
 }

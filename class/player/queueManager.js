@@ -57,7 +57,7 @@ export default class QueueManager {
             if (idSong != "") {
                 for (let i in this.allSongs) {
                     let sng = this.allSongs[i]
-                    if (sng.song.id == idSong) {
+                    if (sng.song.id == idSong.replace("so_", "")) {
                         this.currentIndex = parseInt(i)
                         this.currentSong = sng.song
                         this.currentObject = sng.obj

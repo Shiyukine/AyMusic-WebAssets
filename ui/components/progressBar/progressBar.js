@@ -82,11 +82,16 @@ export default class ProgressBar extends HTMLDivElement {
     }
 
     changeValue(value) {
-        let left = value / parseFloat(this.max) * (this.shadowRoot.getElementById("pbInfo").clientWidth - 18)
-        this.shadowRoot.getElementById("stateThumb").style.marginLeft = left + "px"
-        this.shadowRoot.getElementById("state").style.width = left + "px"
-        this.value = value
-        this.#eventEl.dispatchEvent(new CustomEvent("valuechange"));
+        try {
+            let left = value / parseFloat(this.max) * (this.shadowRoot.getElementById("pbInfo").clientWidth - 18)
+            this.shadowRoot.getElementById("stateThumb").style.marginLeft = left + "px"
+            this.shadowRoot.getElementById("state").style.width = left + "px"
+            this.value = value
+            this.#eventEl.dispatchEvent(new CustomEvent("valuechange"));
+        }
+        catch (e) {
+            console.error("Can't change value, progressBar not initialized !")
+        }
     }
 
     changeMax(max) {
