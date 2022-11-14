@@ -194,7 +194,7 @@ export function parseLegacy(buffer) {
         image.type = imageTypes[dv.getUint8(11)] || 'other';
         const variableStart = 11;
         let variableLength = 0;
-        for (let i = variableStart;; i++) {
+        for (let i = variableStart; ; i++) {
             if (dv.getUint8(i) === 0x00) {
                 variableLength = i - variableStart;
                 break;
@@ -268,7 +268,7 @@ export function parse(buffer, major, minor) {
     else if (header.id === 'PRIV') {
         const variableStart = 10;
         let variableLength = 0;
-        for (let i = 0;; i++) {
+        for (let i = 0; ; i++) {
             if (dv.getUint8(i) === 0x00) {
                 variableLength = i - variableStart;
                 break;
@@ -290,7 +290,7 @@ export function parse(buffer, major, minor) {
         /*
          * Skip the comment description and retrieve only the comment its self
          */
-        for (let i = variableStart;; i++) {
+        for (let i = variableStart; ; i++) {
             if (encoding === 1 || encoding === 2) {
                 if (dv.getUint16(i) === 0x0000) {
                     variableStart = i + 2;
@@ -325,7 +325,7 @@ export function parse(buffer, major, minor) {
         };
         let variableStart = 11;
         let variableLength = 0;
-        for (let i = variableStart;; i++) {
+        for (let i = variableStart; ; i++) {
             if (dv.getUint8(i) === 0x00) {
                 variableLength = i - variableStart;
                 break;
@@ -336,7 +336,7 @@ export function parse(buffer, major, minor) {
             imageTypes[dv.getUint8(variableStart + variableLength + 1)] || 'other';
         variableStart += variableLength + 2;
         variableLength = 0;
-        for (let i = variableStart;; i++) {
+        for (let i = variableStart; ; i++) {
             if (dv.getUint8(i) === 0x00) {
                 variableLength = i - variableStart;
                 break;

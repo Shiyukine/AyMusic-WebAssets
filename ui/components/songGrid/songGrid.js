@@ -1,7 +1,6 @@
 import Import from "../../../class/import.js";
 import Playlist from "../../../class/music/playlist.js";
 import Song from "../../../class/music/song.js";
-import Translations from "../../../class/translations.js";
 import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
 import Utils from "../../../class/utils/utils.js";
 import ContextMenu from "../contextMenu/contextMenu.js";
@@ -30,10 +29,46 @@ export default class SongGrid extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: "open" })
         Import.getData("/ui/components/songGrid/songGrid.html").then((html) => {
             shadow.innerHTML = html
-            //new Translations(shadow.children[1])
-            if (song !== null) this.changeSong(song)
-            this.song = song
+            this.shadowRoot.getElementById("cssImport").onload = async () => {
+                //new Translations(shadow.children[1])
+                if (song !== null) this.changeSong(song)
+                Utils.player.onSongChange(() => {
+                    if (this.isMySong()) {
+                        this.shadowRoot.getElementById("title").style.color = "#00ccff"
+                        if (Utils.player.getState()) this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Pause"])
+                        this.shadowRoot.getElementById("svg").style.opacity = "1"
+                        this.shadowRoot.getElementById("cache").style.opacity = "1"
+                    }
+                    else {
+                        this.shadowRoot.getElementById("title").style.color = "white"
+                        this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Play"])
+                        this.shadowRoot.getElementById("svg").style.opacity = "0"
+                        this.shadowRoot.getElementById("cache").style.opacity = "0"
+                    }
+                })
+                Utils.player.onPlay(() => {
+                    if (this.isMySong()) {
+                        this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Pause"])
+                    }
+                })
+                Utils.player.onPause(() => {
+                    if (this.isMySong()) {
+                        this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Play"])
+                    }
+                })
+                Utils.libManager.onRemoveSongFromPlaylist((e) => {
+                    if (e.detail.objId == "so_" + song.id && e.detail.playlistId == playlist.id && this.parentElement) {
+                        this.parentElement.removeChild(this)
+                    }
+                });
+                this.song = song
+            }
         })
+    }
+
+    isMySong() {
+        return Utils.queueManager.currentSong != null && Utils.queueManager.currentSong.id == this.song.id &&
+            (this.playlist == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "pl_" + this.playlist.id.replace("pl_", "")))
     }
 
     changeSong(song) {
@@ -81,11 +116,22 @@ export default class SongGrid extends HTMLDivElement {
                 this.shadowRoot.getElementById("cache").style.opacity = "1"
             });
             this.addEventListener("mouseout", function () {
-                this.shadowRoot.getElementById("svg").style.opacity = "0"
-                this.shadowRoot.getElementById("cache").style.opacity = "0"
+                if (!this.isMySong()) {
+                    this.shadowRoot.getElementById("svg").style.opacity = "0"
+                    this.shadowRoot.getElementById("cache").style.opacity = "0"
+                }
             });
-            this.shadowRoot.getElementById("svg").addEventListener("click", function () {
-                console.log("clicked")
+            let pl = this.playlist;
+            let curThis = this;
+            this.shadowRoot.getElementById("svg").addEventListener("click", async function () {
+                if (curThis.isMySong()) {
+                    if (Utils.player.getState()) Utils.player.pause()
+                    else Utils.player.play()
+                }
+                else {
+                    if (pl != null) await Utils.queueManager.changeQueue(pl, curThis.song.id)
+                    else await Utils.queueManager.changeQueue(curThis.song)
+                }
             });
             var cm = new ContextMenu()
             this.shadowRoot.getElementById("context").onclick = async (e) => {
@@ -98,7 +144,8 @@ export default class SongGrid extends HTMLDivElement {
             });
             cm.beforeShow = async () => {
                 cm.addElement("{wt.addQueue}", () => {
-                    Utils.newError("Can't do this", "This feature will be added soon :)")
+                    //Utils.newError("Can't do this", "This feature will be added soon :)")
+                    Utils.queueManager.addToQueue(song)
                 })
                 cm.addElement("{lib.goArtist}", () => {
                     Utils.newError("Can't do this", "This feature will be added soon :)")
@@ -114,56 +161,37 @@ export default class SongGrid extends HTMLDivElement {
                     })
                     if (result.includes(song.id)) {
                         cm.addElement("{lib.removeFromPl}", () => {
-                            if (LocalMusicHandler.isMusicInLocalLibrary(this.song)) {
-                                LocalMusicHandler.removeMusicInPlaylist(this.playlist.id, "so_" + song.id)
-                            }
-                            else {
-                                Utils.libManager.removeSongFromAPlaylist(this.playlist.id, "so_" + song.id)
-                            }
-                            this.parentElement.removeChild(this)
+                            Utils.libManager.removeSongFromAPlaylist(this.playlist.id, "so_" + song.id)
+                            //this.parentElement.removeChild(this)
                         })
                     }
                 }
-                cm.addElement(Utils.libManager.userLikedSongs.includes(this.song.id) && LocalMusicHandler.isMusicInLocalLibrary(this.song.id) ? "{lib.removeLikedSong}" : "{lib.addLikedSong}", () => {
-                    if (Utils.libManager.userLikedSongs.includes(this.song.id)) {
-                        Utils.libManager.removeObjFromLikedSongs("so_" + song.id)
-                        if (this.playlist.id == Utils.libManager.userInfo.likedSongsPlId)
-                            this.parentElement.removeChild(this)
-                    }
-                    else if (LocalMusicHandler.isMusicInLocalLibrary(this.song)) {
-                        var ip = new InfoPanel("Confirmation", "Do you want to remove this song ?", [{
-                            text: "Yes", isPositive: true, onclick: () => {
-                                LocalMusicHandler.removeMusic(this.song.id)
-                                ip.close()
-                                if (this.playlist.id == Utils.libManager.userInfo.likedSongsPlId)
-                                    this.parentElement.removeChild(this)
-                            }
-                        }, {
-                            text: "No", isPositive: false, onclick: () => {
-                                ip.close()
-                            }
-                        }])
-                        document.getElementById("main").appendChild(ip)
-                        ip.show()
-                    }
-                    else {
-                        Utils.libManager.addObjToLikedSongs("so_" + song.id)
-                    }
+                cm.addElement(Utils.libManager.isSongIsInLikedSongs(song) ? "{lib.removeLikedSong}" : "{lib.addLikedSong}", () => {
+                    Utils.libManager.addOrRemoveSongLikedSongs(song)
                 })
                 var cm2 = new ContextMenu()
                 cm2.beforeShow = () => {
                     for (let pl of Utils.libManager.userPlaylists) {
                         if (!pl.name.includes("{") && !pl.name.includes("}")) {
                             cm2.addElement(pl.name, () => {
-                                if (LocalMusicHandler.isMusicInLocalLibrary(this.song)) {
-                                    LocalMusicHandler.addMusicToPlaylist(pl.id, "so_" + song.id)
-                                }
-                                else Utils.libManager.addSongToAPlaylist(pl.id, "so_" + song.id)
+                                Utils.libManager.addSongToAPlaylist(pl.id, "so_" + song.id)
                             })
                         }
                     }
                 }
                 cm.addSubContextMenu("{lib.addToPl}", cm2)
+            }
+            if (this.isMySong()) {
+                this.shadowRoot.getElementById("title").style.color = "#00ccff"
+                if (Utils.player.getState()) this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Pause"])
+                this.shadowRoot.getElementById("svg").style.opacity = "1"
+                this.shadowRoot.getElementById("cache").style.opacity = "1"
+            }
+            else {
+                this.shadowRoot.getElementById("title").style.color = "white"
+                this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Play"])
+                this.shadowRoot.getElementById("svg").style.opacity = "0"
+                this.shadowRoot.getElementById("cache").style.opacity = "0"
             }
         }
     }

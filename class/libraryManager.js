@@ -1,4 +1,7 @@
+import InfoPanel from "../ui/components/infoPanel/infoPanel.js";
 import Playlist from "./music/playlist.js"
+import Song from "./music/song.js";
+import LocalMusicHandler from "./utils/localMusicHandler.js";
 import Utils from "./utils/utils.js"
 
 export default class LibraryManager {
@@ -20,9 +23,11 @@ export default class LibraryManager {
     userInfo = {
         curTime: 0,
         curMusic: null,
-        lastState: false,
+        curObject: null,
         likedSongsPlId: ""
     }
+
+    #eventEl = document.createElement("event");
 
     async refreshUserInfo() {
         try {
@@ -31,7 +36,7 @@ export default class LibraryManager {
             let info = await Utils.apiManager.getAccountInfo()
             this.userInfo.curMusic = info["curMusic"]
             this.userInfo.curTime = info["curTime"]
-            this.userInfo.lastState = info["lastState"]
+            this.userInfo.curObject = info["curObject"]
             for (let i = 0; i < info["playlists"].length; i++) {
                 let pl = info["playlists"][i]
                 let npl = new Playlist(pl.id, pl.name, pl.userID, pl.desc, pl.imgUrl, pl.isPrivate, pl.rank)
@@ -119,8 +124,15 @@ export default class LibraryManager {
             playlistID: plId,
             objectID: objId,
         })
-        if (result == "OK")
+        if (result == "OK") {
+            this.#eventEl.dispatchEvent(new CustomEvent("addsongtoplaylist", {
+                detail: {
+                    playlistId: plId,
+                    objId: objId
+                }
+            }));
             console.log("Song added in playlist successfully")
+        }
         else
             Utils.newError("Can't add song to this playlist", "This song is already added or there is an internal error.")
         return result == "OK"
@@ -134,6 +146,28 @@ export default class LibraryManager {
             objectID: objId,
         })
         console.log("Song removed from playlist successfully")
+        this.#eventEl.dispatchEvent(new CustomEvent("removesongfromplaylist", {
+            detail: {
+                playlistId: plId,
+                objId: objId
+            }
+        }));
+    }
+
+    onAddSongToPlaylist(callback) {
+        this.#eventEl.addEventListener("addsongtoplaylist", callback)
+    }
+
+    onRemoveSongFromPlaylist(callback) {
+        this.#eventEl.addEventListener("removesongfromplaylist", callback)
+    }
+
+    onAddSongToLikedSongs(callback) {
+        this.#eventEl.addEventListener("addsongtolikedsongs", callback)
+    }
+
+    onRemoveSongFromLikedSongs(callback) {
+        this.#eventEl.addEventListener("removesongfromlikedsongs", callback)
     }
 
     /**
@@ -142,7 +176,14 @@ export default class LibraryManager {
      */
     async addObjToLikedSongs(objId) {
         var result = await this.addSongToAPlaylist(this.userInfo.likedSongsPlId, objId)
-        if(result) this.userLikedSongs.push(objId.replace("so_", ""))
+        if (result) {
+            this.userLikedSongs.push(objId.replace("so_", ""))
+            this.#eventEl.dispatchEvent(new CustomEvent("addsongtolikedsongs", {
+                detail: {
+                    objId: objId
+                }
+            }));
+        }
         return result
     }
 
@@ -156,8 +197,53 @@ export default class LibraryManager {
             let id = this.userLikedSongs[i]
             if (id === objId.replace("so_", "")) {
                 this.userLikedSongs.splice(i, 1)
+                this.#eventEl.dispatchEvent(new CustomEvent("removesongfromlikedsongs", {
+                    detail: {
+                        objId: objId
+                    }
+                }));
                 break;
             }
         }
+    }
+
+    /**
+     * 
+     * @param {Song} song 
+     */
+    async addOrRemoveSongLikedSongs(song) {
+        if (LocalMusicHandler.isMusicInLocalLibrary(song.id)) {
+            var ip = new InfoPanel("Confirmation", "Do you want to remove this song ?", [{
+                text: "Yes", isPositive: true, onclick: async () => {
+                    await LocalMusicHandler.removeMusic(song.id)
+                    await Utils.libManager.removeObjFromLikedSongs("so_" + song.id)
+                    console.log("removed song")
+                    ip.close()
+                }
+            }, {
+                text: "No", isPositive: false, onclick: () => {
+                    ip.close()
+                }
+            }])
+            document.getElementById("main").appendChild(ip)
+            ip.show()
+        }
+        else if (Utils.libManager.userLikedSongs.includes(song.id)) {
+            await Utils.libManager.removeObjFromLikedSongs("so_" + song.id)
+            console.log("removed song")
+        }
+        else {
+            if (song.imgUrl != "localImg") {
+                await Utils.libManager.addObjToLikedSongs("so_" + song.id)
+                console.log("added song")
+            }
+            else {
+                Utils.newError("Unable to add this music !", "Please import this local music to continue.");
+            }
+        }
+    }
+
+    isSongIsInLikedSongs(song) {
+        return LocalMusicHandler.isMusicInLocalLibrary(song.id) || Utils.libManager.userLikedSongs.includes(song.id)
     }
 }

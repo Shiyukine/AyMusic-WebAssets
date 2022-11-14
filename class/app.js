@@ -11,7 +11,9 @@ export default class App {
         music_adblock: true,
         music_createMix: false,
         music_vol: 66,
-        music_skipS: false
+        music_skipS: false,
+        shuffle: false,
+        repeat: 0
     }
 
     constructor() {

@@ -1,24 +1,16 @@
 import Utils from "../utils/utils.js";
-import * as id3 from "../../plugins/id3/id3.js"
-import Song from "../music/song.js";
+import * as id3 from "../../plugins/id3/id3.js";
 import Singer from "../music/singer.js";
 import Album from "../music/album.js";
-import LibraryManager from "../libraryManager.js";
-import Playlist from "../music/playlist.js";
 import InfoPanel from "../../ui/components/infoPanel/infoPanel.js";
 
 export default class LocalMusicHandler {
 
     //obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, 
     //obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName
-    static localMusicTemplate = {
-        musicID: "",
-        albumID: "",
-        singerID: ""
-    }
 
     /**
-     * @type {[localMusicTemplate]}
+     * @type {[{musicID:String, albumID:String, singerID:String}]}
      */
     static musics = []
 
@@ -37,28 +29,6 @@ export default class LocalMusicHandler {
     static init() {
         this.singers.push(new Singer(this.singerUnknownID, "Unknown artist", "", Date.now()))
         this.albums.push(new Album(this.albumUnknownID, "Unknown album", this.singerUnknownID, "Album", "", Date.now()))
-    }
-
-    static addMusicToPlaylist(playlistId, musicId) {
-        this.musicsInPlaylists.push({ musicId: musicId, playlistId: playlistId })
-        this.setLocalLibrary()
-    }
-
-    static getMusicsInPlaylist(plId) {
-        var list = []
-        for (let obj of this.musicsInPlaylists) {
-            if (obj.playlistId == plId) list.push(obj.musicId)
-        }
-        return list
-    }
-
-    static removeMusicInPlaylist(playlistId, musicId) {
-        for (let i of LocalMusicHandler.musicsInPlaylists) {
-            let obj = LocalMusicHandler.musicsInPlaylists[i]
-            if (obj.playlistId == playlistId && obj.musicId == musicId) LocalMusicHandler.musicsInPlaylists.splice(i, 1)
-            return;
-        }
-        this.setLocalLibrary()
     }
 
     static addLocalSinger(name) {
@@ -207,13 +177,15 @@ export default class LocalMusicHandler {
         return result;
     }
 
-    static removeMusic(id) {
+    static async removeMusic(id) {
         for (let i in LocalMusicHandler.musics) {
             let music = LocalMusicHandler.musics[i]
-            if (music.id == id) LocalMusicHandler.musics.splice(i, 1)
-            return;
+            if (music.musicID == id) {
+                LocalMusicHandler.musics.splice(i, 1)
+                await this.setLocalLibrary()
+                return;
+            }
         }
-        this.setLocalLibrary()
     }
 
     static getMusics() {
@@ -222,14 +194,9 @@ export default class LocalMusicHandler {
 
     static getMusicById(id) {
         for (let music of LocalMusicHandler.musics) {
-            if (music.id == id) return music;
+            if (music.musicID == id) return music;
         }
-    }
-
-    static getMusicByUrl(url) {
-        for (let music of LocalMusicHandler.musics) {
-            if (music.url == url) return music;
-        }
+        return null;
     }
 
     static isMusicInLocalLibrary(id) {
@@ -239,26 +206,18 @@ export default class LocalMusicHandler {
         return false;
     }
 
-    static getMusicsByTitle(title) {
+    static getMusicsByAlbum(albumID) {
         var mus = [];
         for (let music of LocalMusicHandler.musics) {
-            if (music.title == title) mus.push(music)
+            if (music.albumID == albumID) mus.push(music)
         }
         return mus;
     }
 
-    static getMusicsByAlbum(album) {
+    static getMusicsByArtist(artistID) {
         var mus = [];
         for (let music of LocalMusicHandler.musics) {
-            if (music.album == album) mus.push(music)
-        }
-        return mus;
-    }
-
-    static getMusicsByArtist(artist) {
-        var mus = [];
-        for (let music of LocalMusicHandler.musics) {
-            if (music.artist == artist) mus.push(music)
+            if (music.artistID == artistID) mus.push(music)
         }
         return mus;
     }

@@ -1,0 +1,120 @@
+import Import from "../../../class/import.js";
+import Translations from "../../../class/translations.js";
+import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
+import Utils from "../../../class/utils/utils.js";
+import * as id3 from "../../../plugins/id3/id3.js";
+import InfoPanel from "../../components/infoPanel/infoPanel.js";
+
+export default class ProgressBar extends HTMLDivElement {
+    #eventEl = document.createElement("event");
+    max = 100.0;
+    value = 0.0;
+
+    constructor() {
+        super();
+        var shadow = this.attachShadow({ mode: "open" })
+        Import.getData("/ui/components/progressBar/progressBar.html").then((html) => {
+            shadow.innerHTML = html
+            this.shadowRoot.getElementById("cssImport").onload = async () => {
+                shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
+                shadow.getElementById("progressBar").style.position = "absolute"
+                this.changeMax(this.getAttribute("max") ? this.getAttribute("max") : this.getMax())
+                this.changeValue(this.getAttribute("value") ? this.getAttribute("value") : this.getValue())
+            }
+            window.addEventListener("resize", () => {
+                shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
+                this.changeValue(this.getValue())
+            })
+            let mouseState = {
+                down: false,
+                hover: false,
+                x: 0
+            }
+            this.shadowRoot.getElementById("pbInfo").onmousedown = (e) => {
+                this.#eventEl.dispatchEvent(new CustomEvent("changing"));
+                mouseState.down = true
+                mouseState.x = e.x - this.shadowRoot.getElementById("stateThumb").getClientRects()[0].x
+                let left = e.x - this.shadowRoot.getElementById("pbInfo").getClientRects()[0].x - this.shadowRoot.getElementById("stateThumb").clientWidth / 2
+                left = left / (this.shadowRoot.getElementById("pbInfo").clientWidth - 18) * parseFloat(this.max)
+                this.changeValue(left)
+            }
+            window.addEventListener("mousemove", (e) => {
+                if (mouseState.down) {
+                    let left = e.x - this.shadowRoot.getElementById("pbInfo").getClientRects()[0].x - this.shadowRoot.getElementById("stateThumb").clientWidth / 2
+                    if (left < 0)
+                        left = 0
+                    if (left > this.shadowRoot.getElementById("pbInfo").clientWidth - 18)
+                        left = this.shadowRoot.getElementById("pbInfo").clientWidth - 18
+                    left = left / (this.shadowRoot.getElementById("pbInfo").clientWidth - 18) * parseFloat(this.max)
+                    this.changeValue(left)
+                }
+            })
+            window.addEventListener("mouseup", (e) => {
+                if (mouseState.down) {
+                    let left = e.x - this.shadowRoot.getElementById("pbInfo").getClientRects()[0].x - this.shadowRoot.getElementById("stateThumb").clientWidth / 2
+                    if (left < 0)
+                        left = 0
+                    if (left > this.shadowRoot.getElementById("pbInfo").clientWidth - 18)
+                        left = this.shadowRoot.getElementById("pbInfo").clientWidth - 18
+                    left = left / (this.shadowRoot.getElementById("pbInfo").clientWidth - 18) * parseFloat(this.max)
+                    if (!mouseState.hover) {
+                        shadow.getElementById("stateThumb").style.visibility = "hidden"
+                        shadow.getElementById("state").style.backgroundColor = "white"
+                    }
+                    this.changeValue(left)
+                    this.#eventEl.dispatchEvent(new CustomEvent("release"));
+                    mouseState.down = false
+                }
+            })
+            this.shadowRoot.getElementById("pbInfo").onmouseenter = function () {
+                mouseState.hover = true
+                shadow.getElementById("stateThumb").style.visibility = "visible"
+                shadow.getElementById("state").style.backgroundColor = "#10a2e6"
+            }
+            this.shadowRoot.getElementById("pbInfo").onmouseleave = function () {
+                mouseState.hover = false
+                if (!mouseState.down) {
+                    shadow.getElementById("stateThumb").style.visibility = "hidden"
+                    shadow.getElementById("state").style.backgroundColor = "white"
+                }
+            }
+        })
+    }
+
+    changeValue(value) {
+        let left = value / parseFloat(this.max) * (this.shadowRoot.getElementById("pbInfo").clientWidth - 18)
+        this.shadowRoot.getElementById("stateThumb").style.marginLeft = left + "px"
+        this.shadowRoot.getElementById("state").style.width = left + "px"
+        this.value = value
+        this.#eventEl.dispatchEvent(new CustomEvent("valuechange"));
+    }
+
+    changeMax(max) {
+        this.max = max;
+        this.#eventEl.dispatchEvent(new CustomEvent("maxchange"));
+    }
+
+    getMax() {
+        return this.max
+    }
+
+    getValue() {
+        return this.value
+    }
+
+    onChanging(callback) {
+        this.#eventEl.addEventListener("changing", callback)
+    }
+
+    onRelease(callback) {
+        this.#eventEl.addEventListener("release", callback)
+    }
+
+    onValueChange(callback) {
+        this.#eventEl.addEventListener("valuechange", callback)
+    }
+
+    onMaxChange(callback) {
+        this.#eventEl.addEventListener("maxchange", callback)
+    }
+}

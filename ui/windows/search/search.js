@@ -13,8 +13,10 @@ export default class SearchWindow extends HTMLDivElement {
         this.style.transition = "opacity 0.7s"
         Import.getData("/ui/windows/search/search.html").then((html) => {
             shadow.innerHTML = html
-            new Translations(shadow.children[1])
-            this.style.opacity = "1"
+            this.shadowRoot.getElementById("cssImport").onload = async () => {
+                new Translations(shadow.children[1])
+                this.style.opacity = "1"
+            }
         })
     }
 

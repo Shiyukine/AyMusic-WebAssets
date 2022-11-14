@@ -28,7 +28,7 @@ export function getString(view, length, offset = 0, raw) {
     if (raw) {
         return str;
     }
-    return decodeURIComponent(escape(str));
+    return decodeURIComponent(encodeURIComponent(str));
 }
 /**
  * Retrieves a UTF16 string from a specific offset of a data view
@@ -60,9 +60,14 @@ export function getStringUtf16(view, length, offset = 0, bom) {
     const limit = offset + len;
     for (let i = offset; i < limit; i += 2) {
         let ch = view.getUint16(i, littleEndian);
-        if (i < limit - 1 &&
-            ch === 0 &&
-            view.getUint16(i + 1, littleEndian) === 0) {
+        try {
+            if (i < limit - 1 &&
+                ch === 0 &&
+                view.getUint16(i + 1, littleEndian) === 0) {
+                break;
+            }
+        }
+        catch (e) {
             break;
         }
         if ((ch >= 0 && ch <= 0xd7ff) || (ch >= 0xe000 && ch <= 0xffff)) {

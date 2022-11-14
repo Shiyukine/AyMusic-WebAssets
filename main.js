@@ -13,6 +13,7 @@ async function main() {
     window.app = Utils.app;
     document.body.ondragstart = () => { return false; };
     Import.loadCustomElements()
+    Utils.pathsData = JSON.parse(await Import.getData("/resources/paths.json"))
     //
     Utils.app.loaded = async function () {
         try {

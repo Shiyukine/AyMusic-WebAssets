@@ -35,120 +35,143 @@ export default class LibraryWindow extends HTMLDivElement {
         this.style.transition = "opacity 0.7s"
         Import.getData("/ui/windows/library/library.html").then(async (html) => {
             shadow.innerHTML = html
-            /*shadow.getElementById("menu").addEventListener("wheel", (ev) => {
-                let newIndex;
-                if (ev.deltaY > 0) newIndex = this.selectedIndex + 1
-                else newIndex = this.selectedIndex - 1
-                if (newIndex > shadow.getElementById("menu").children.length - 1) newIndex -= 1
-                if (newIndex < 0) newIndex += 1
-                this.changeView(newIndex)
-            }, { passive: true });*/
-            Array.from(shadow.getElementById("mylib_topbar").children).forEach((x, y) => {
-                x.onclick = () => {
-                    this.changeViewMyLib(y)
+            this.shadowRoot.getElementById("cssImport").onload = async () => {
+                /*shadow.getElementById("menu").addEventListener("wheel", (ev) => {
+                    let newIndex;
+                    if (ev.deltaY > 0) newIndex = this.selectedIndex + 1
+                    else newIndex = this.selectedIndex - 1
+                    if (newIndex > shadow.getElementById("menu").children.length - 1) newIndex -= 1
+                    if (newIndex < 0) newIndex += 1
+                    this.changeView(newIndex)
+                }, { passive: true });*/
+                Array.from(shadow.getElementById("mylib_topbar").children).forEach((x, y) => {
+                    x.onclick = () => {
+                        this.changeViewMyLib(y)
+                    }
+                })
+                new Translations(shadow.children[1])
+                this.changeView(this.selectedIndex, false)
+                this.changeViewMyLib(0)
+                this.style.opacity = "1"
+                this.refreshUserPlaylists()
+                shadow.getElementById("addPl").onclick = async () => {
+                    this.changeView(1)
                 }
-            })
-            new Translations(shadow.children[1])
-            this.changeView(this.selectedIndex, false)
-            this.changeViewMyLib(0)
-            this.style.opacity = "1"
-            this.refreshUserPlaylists()
-            shadow.getElementById("addPl").onclick = async () => {
-                this.changeView(1)
-            }
-            shadow.getElementById("pl_create").onclick = async () => {
-                /**
-                 * @type {TextBox}
-                 */
-                let name = shadow.getElementById("pl_name")
-                /**
-                 * @type {TextBox}
-                 */
-                let desc = shadow.getElementById("pl_desc")
-                /**
-                 * @type {TextBox}
-                 */
-                let imgUrl = shadow.getElementById("pl_imgUrl")
-                /**
-                 * @type {HTMLInputElement}
-                 */
-                let isPriv = shadow.getElementById("pl_isPriv")
-                if (name.getText() != "") {
-                    if (!name.getText().includes("{") && !name.getText().includes("}")) {
-                        if (!this.modifyingPl) {
-                            await Utils.libManager.addPlaylist(name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === "1")
+                shadow.getElementById("pl_create").onclick = async () => {
+                    /**
+                     * @type {TextBox}
+                     */
+                    let name = shadow.getElementById("pl_name")
+                    /**
+                     * @type {TextBox}
+                     */
+                    let desc = shadow.getElementById("pl_desc")
+                    /**
+                     * @type {TextBox}
+                     */
+                    let imgUrl = shadow.getElementById("pl_imgUrl")
+                    /**
+                     * @type {HTMLInputElement}
+                     */
+                    let isPriv = shadow.getElementById("pl_isPriv")
+                    if (name.getText() != "") {
+                        if (!name.getText().includes("{") && !name.getText().includes("}")) {
+                            if (!this.modifyingPl) {
+                                await Utils.libManager.addPlaylist(name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === "1")
+                            }
+                            else {
+                                await Utils.libManager.updatePlaylist(this.selectedPl.id, name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === "1", 0)
+                            }
+                            this.refreshUserPlaylists()
+                            this.changeView(this.shadowRoot.getElementById("menu").children.length - 1)
                         }
                         else {
-                            await Utils.libManager.updatePlaylist(this.selectedPl.id, name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === "1", 0)
+                            Utils.newError("Can't create a playlist", "Please don't put \"{\" or \"}\" in the name of this playlist.")
                         }
-                        this.refreshUserPlaylists()
-                        this.changeView(this.shadowRoot.getElementById("menu").children.length - 1)
                     }
                     else {
-                        Utils.newError("Can't create a playlist", "Please don't put \"{\" or \"}\" in the name of this playlist.")
+                        Utils.newError("Can't create a playlist", "Please put a name to this playlist !")
                     }
                 }
-                else {
-                    Utils.newError("Can't create a playlist", "Please put a name to this playlist !")
+                var cm = new ContextMenu()
+                cm.beforeShow = () => {
+                    cm.addElement("{wt.addQueue}", () => {
+                        Utils.newError("Not implemented", "Feature will be here soon !")
+                    })
+                    cm.addElement("{plInfo.edit}", () => {
+                        this.changeView(1)
+                        this.prepareCreateModifPanel(true)
+                    })
+                    cm.addElement("{plInfo.remove}", async () => {
+                        var confirm = new InfoPanel("Delete this playlist ?",
+                            "Are you sure to delete this playlist ?\nYou will not be able to retrieve this playlist !",
+                            [{
+                                text: "Yes", isPositive: true, onclick: async () => {
+                                    await Utils.libManager.removePlaylist(this.selectedPl.id)
+                                    confirm.close()
+                                    this.changeView(0)
+                                    this.refreshUserPlaylists()
+                                }
+                            }, {
+                                text: "No", isPositive: false, onclick: () => {
+                                    confirm.close()
+                                }
+                            }], false)
+                        document.getElementById("main").appendChild(confirm)
+                        await confirm.showDialog()
+                    })
                 }
-            }
-            var cm = new ContextMenu()
-            cm.beforeShow = () => {
-                cm.addElement("{wt.addQueue}", () => {
-                    Utils.newError("Not implemented", "Feature will be here soon !")
+                shadow.getElementById("plContextMenu").onclick = (e) => {
+                    cm.show(e)
+                }
+                shadow.querySelectorAll("*").forEach((x) => {
+                    if (x.tagName == "INPUT" && x.max == "1") {
+                        x.oninput = () => {
+                            x.style.backgroundColor = x.value == "1" ? "" : "gray"
+                        }
+                    }
                 })
-                cm.addElement("{plInfo.edit}", () => {
-                    this.changeView(1)
-                    this.prepareCreateModifPanel(true)
+                var gest = new GestureHandler(shadow.getElementById("mylib_list"))
+                gest.addEventListener("right", () => {
+                    if (this.selectedIndexMyLib + 1 < this.shadowRoot.getElementById("mylib_topbar").children.length) {
+                        gest.acceptGesture()
+                        this.changeViewMyLib(this.selectedIndexMyLib + 1)
+                    }
                 })
-                cm.addElement("{plInfo.remove}", async () => {
-                    var confirm = new InfoPanel("Delete this playlist ?",
-                        "Are you sure to delete this playlist ?\nYou will not be able to retrieve this playlist !",
-                        [{
-                            text: "Yes", isPositive: true, onclick: async () => {
-                                await Utils.libManager.removePlaylist(this.selectedPl.id)
-                                confirm.close()
-                                this.changeView(0)
-                                this.refreshUserPlaylists()
-                            }
-                        }, {
-                            text: "No", isPositive: false, onclick: () => {
-                                confirm.close()
-                            }
-                        }], false)
-                    document.getElementById("main").appendChild(confirm)
-                    await confirm.showDialog()
+                gest.addEventListener("left", () => {
+                    if (this.selectedIndexMyLib - 1 > -1) {
+                        gest.acceptGesture()
+                        this.changeViewMyLib(this.selectedIndexMyLib - 1)
+                    }
                 })
-            }
-            shadow.getElementById("plContextMenu").onclick = (e) => {
-                cm.show(e)
-            }
-            shadow.querySelectorAll("*").forEach((x) => {
-                if (x.tagName == "INPUT" && x.max == "1") {
-                    x.oninput = () => {
-                        x.style.backgroundColor = x.value == "1" ? "" : "gray"
+                window.addEventListener("popstate", (e) => {
+                    if (e.state.where == "library") this.changeView(e.state.index, false)
+                    if (e.state.where == "menu" && e.state.menu == "Library") this.changeView(0, false)
+                })
+                this.addScrollEventForList("playlist_songs")
+                this.addScrollEventForList("mylib_list")
+                Utils.player.onSongChange(() => {
+                    let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && Utils.player.getState()
+                    shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
+                })
+                Utils.player.onPlay(() => {
+                    let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && Utils.player.getState()
+                    shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
+                })
+                Utils.player.onPause(() => {
+                    let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && Utils.player.getState()
+                    shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
+                })
+                shadow.getElementById("plState").onclick = () => {
+                    if (Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id) {
+                        if (Utils.player.getState()) Utils.player.pause()
+                        else Utils.player.play()
+                    }
+                    else {
+                        Utils.queueManager.changeQueue(this.selectedPl)
                     }
                 }
-            })
-            var gest = new GestureHandler(shadow.getElementById("mylib_list"))
-            gest.addEventListener("right", () => {
-                if (this.selectedIndexMyLib + 1 < this.shadowRoot.getElementById("mylib_topbar").children.length) {
-                    gest.acceptGesture()
-                    this.changeViewMyLib(this.selectedIndexMyLib + 1)
-                }
-            })
-            gest.addEventListener("left", () => {
-                if (this.selectedIndexMyLib - 1 > -1) {
-                    gest.acceptGesture()
-                    this.changeViewMyLib(this.selectedIndexMyLib - 1)
-                }
-            })
-            window.addEventListener("popstate", (e) => {
-                if (e.state.where == "library") this.changeView(e.state.index, false)
-                if (e.state.where == "menu" && e.state.menu == "Library") this.changeView(0, false)
-            })
-            this.addScrollEventForList("playlist_songs")
-            this.addScrollEventForList("mylib_list")
+            }
         })
     }
 
@@ -180,6 +203,8 @@ export default class LibraryWindow extends HTMLDivElement {
                         let pl = Utils.libManager.userPlaylists[i]
                         if (pl.id == this.shadowRoot.getElementById("menu").children[newIndex].dataset["plid"]) {
                             this.selectedPl = pl
+                            let isPlay = Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && Utils.player.getState()
+                            this.shadowRoot.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                             this.shadowRoot.getElementById("playlist_name").innerText = pl.name
                             let songsList = this.shadowRoot.getElementById("playlist_songs")
                             let result = await Utils.apiManager.doPostRequest({

@@ -1,0 +1,205 @@
+import Album from "../music/album.js";
+import Playlist from "../music/playlist.js";
+import Song from "../music/song.js";
+import Utils from "../utils/utils.js";
+
+export default class QueueManager {
+
+    /**
+     * @type {[{song:Song,obj:Song|Playlist|Album}]}
+     */
+    allSongs = [];
+    /**
+     * @type {[{song:String,obj:String}]}
+     */
+    allSongsIds = [];
+    currentIndex = 0;
+    currentObject = null;
+    /**
+     * @type {Song}
+     */
+    currentSong = null;
+    shuffle = false;
+    //0 = no repeat, 1 = repeat pl/al, 2 = repeat song
+    repeat = 0;
+
+    async changeQueue(obj, idSong = "", play = true) {
+        //this.currentObject = obj
+        this.currentSong = null;
+        this.allSongs = []
+        this.allSongsIds = []
+        if (obj.constructor === Song) {
+            this.allSongs.push({ song: obj, obj: null })
+            this.allSongsIds.push(obj.id)
+            this.currentIndex = 0
+            this.currentSong = this.allSongs[0].song
+            this.currentObject = this.allSongs[0].obj
+            Utils.player.playSong({ song: this.currentSong.id, obj: null })
+            return;
+        }
+        if (obj.constructor === Playlist) {
+            let result = await Utils.apiManager.doPostRequest({
+                act: "getPlaylistSongs",
+                playlistID: obj.id,
+                orderByDesc: obj.id == Utils.libManager.userInfo.likedSongsPlId ? true : false,
+                offset: -1
+            })
+            let songs = result["songs"]
+            for (let i in songs) {
+                let objs = songs[i]
+                let sng = new Song(objs.musicID.replace("so_", ""), objs.url, objs.dateAdded, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID)
+                if (sng.canBeLoaded) {
+                    this.allSongs.push({ song: sng, obj: obj })
+                    this.allSongsIds.push({ song: sng.id, obj: obj.id })
+                }
+            }
+            if (this.shuffle) this.allSongs = this.shuffleArray(this.allSongs)
+            if (idSong != "") {
+                for (let i in this.allSongs) {
+                    let sng = this.allSongs[i]
+                    if (sng.song.id == idSong) {
+                        this.currentIndex = parseInt(i)
+                        this.currentSong = sng.song
+                        this.currentObject = sng.obj
+                    }
+                }
+            }
+            else {
+                this.currentIndex = 0
+                this.currentSong = this.allSongs[0].song
+                this.currentObject = this.allSongs[0].obj
+            }
+            this.currentObject = Object.assign(new Playlist(), this.currentObject)
+            if (!this.currentObject.id.startsWith("pl_")) this.currentObject.id = "pl_" + this.currentObject.id
+            Utils.player.playSong(this.currentSong, play)
+            return;
+        }
+        if (obj.constructor === Album) {
+            let result = await Utils.apiManager.doPostRequest({
+                act: "getAlbumInfo",
+                playlistID: obj.id,
+                /*A MODIFIER*/
+                orderByDesc: true,
+                //
+                offset: -1
+            })
+            let songs = result["songs"]["songs"]
+            for (let i in songs) {
+                let objs = songs[i]
+                let sng = new Song(objs.musicID.replace("so_", ""), objs.url, objs.dateAdded, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID)
+                if (sng.canBeLoaded) {
+                    this.allSongs.push({ song: sng, obj: obj })
+                    this.allSongsIds.push({ song: sng.id, obj: obj.id })
+                }
+            }
+            if (this.shuffle) this.allSongs = this.shuffleArray(this.allSongs)
+            if (idSong != "") {
+                for (let i in this.allSongs) {
+                    let sng = this.allSongs[i]
+                    if (sng.id == idSong) {
+                        this.currentIndex = parseInt(i)
+                        this.currentSong = sng.song
+                        this.currentObject = sng.obj
+                    }
+                }
+            }
+            else {
+                this.currentIndex = 0
+                this.currentSong = this.allSongs[0].song
+                this.currentObject = this.allSongs[0].obj
+            }
+            this.currentObject = Object.assign(new Album(), this.currentObject)
+            if (!this.currentObject.id.startsWith("al_")) this.currentObject.id = "al_" + this.currentObject.id
+            Utils.player.playSong(this.currentSong, play)
+            return;
+        }
+    }
+
+    /**
+     * 
+     * @param {Song} song 
+     */
+    addToQueue(song) {
+        this.allSongs.splice(this.currentIndex + 1, 0, { song: song, obj: null });
+    }
+
+    async nextSong() {
+        let song = null;
+        if (this.currentIndex + 1 < this.allSongs.length) {
+            this.currentIndex++;
+            song = this.allSongs[this.currentIndex];
+        }
+        else {
+            if (this.repeat > 0) {
+                this.currentIndex = 0;
+                song = this.allSongs[this.currentIndex]
+            }
+        }
+        this.currentSong = song.song;
+        this.currentObject = song.obj;
+        if (song.obj != null) {
+            if (song.obj.constructor === Playlist) {
+                this.currentObject = Object.assign(new Playlist(), this.currentObject)
+                if (!this.currentObject.id.startsWith("pl_")) this.currentObject.id = "pl_" + this.currentObject.id
+            }
+            if (song.obj.constructor === Album) {
+                this.currentObject = Object.assign(new Album(), this.currentObject)
+                if (!this.currentObject.id.startsWith("al_")) this.currentObject.id = "al_" + this.currentObject.id
+            }
+        }
+        return song.song;
+    }
+
+    canNext() {
+        return this.currentIndex + 1 < this.allSongs.length || this.repeat == 1 || this.repeat == 2
+    }
+
+    shuffleArray(array) {
+        let currentIndex = array.length, randomIndex;
+
+        // While there remain elements to shuffle.
+        while (currentIndex != 0) {
+
+            // Pick a remaining element.
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex], array[currentIndex]];
+        }
+
+        return array;
+    }
+
+    async previousSong() {
+        let song = null;
+        if (this.currentIndex - 1 > -1) {
+            this.currentIndex--;
+            song = this.allSongs[this.currentIndex];
+        }
+        else {
+            if (this.repeat > 0) {
+                this.currentIndex = this.allSongs.length - 1;
+                song = this.allSongs[this.currentIndex]
+            }
+        }
+        this.currentSong = song.song;
+        this.currentObject = song.obj;
+        if (song.obj != null) {
+            if (song.obj.constructor === Playlist) {
+                this.currentObject = Object.assign(new Playlist(), this.currentObject)
+                if (!this.currentObject.id.startsWith("pl_")) this.currentObject.id = "pl_" + this.currentObject.id
+            }
+            if (song.obj.constructor === Album) {
+                this.currentObject = Object.assign(new Album(), this.currentObject)
+                if (!this.currentObject.id.startsWith("al_")) this.currentObject.id = "al_" + this.currentObject.id
+            }
+        }
+        return song.song;
+    }
+
+    canPrevious() {
+        return this.currentIndex - 1 > -1 || this.repeat == 1 || this.repeat == 2
+    }
+}

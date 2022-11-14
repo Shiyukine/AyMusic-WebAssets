@@ -13,6 +13,7 @@ import SearchWindow from "../ui/windows/search/search.js";
 import SettingsWindow from "../ui/windows/settings/settings.js";
 import MusicViewerWindow from "../ui/windows/musicViewer/musicViewer.js";
 import ContextMenu from "../ui/components/contextMenu/contextMenu.js";
+import ProgressBar from "../ui/components/progressBar/progressBar.js";
 
 export default class Import {
     static loadCustomElements() {
@@ -30,6 +31,7 @@ export default class Import {
         customElements.define("singer-grid", SingerGrid, { extends: "div" });
         customElements.define("song-grid", SongGrid, { extends: "div" });
         customElements.define("text-box", TextBox, { extends: "div" });
+        customElements.define("progress-bar", ProgressBar, { extends: "div" });
         customElements.define("context-menu", ContextMenu, { extends: "div" });
     }
 

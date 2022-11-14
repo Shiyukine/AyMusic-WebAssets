@@ -4,6 +4,8 @@ import ApiManager from "../apiManager.js";
 import LibraryManager from "../libraryManager.js";
 import MenuWindow from "../../ui/windows/menu/menu.js";
 import App from "../app.js";
+import QueueManager from "../player/queueManager.js";
+import Player from "../player/player.js";
 
 export default class Utils {
     static useLocalServer = true
@@ -21,6 +23,9 @@ export default class Utils {
 
     static apiManager = new ApiManager();
     static libManager = new LibraryManager();
+    static queueManager = new QueueManager();
+    static player = new Player();
+    static pathsData = []
 
     /**
      * @type {MenuWindow}
