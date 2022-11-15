@@ -69,9 +69,14 @@ export default class QueueManager {
                 this.currentSong = this.allSongs[0].song
                 this.currentObject = this.allSongs[0].obj
             }
-            this.currentObject = Object.assign(new Playlist(), this.currentObject)
-            if (!this.currentObject.id.startsWith("pl_")) this.currentObject.id = "pl_" + this.currentObject.id
-            Utils.player.playSong(this.currentSong, play)
+            if (this.currentObject != null && this.currentSong != null) {
+                this.currentObject = Object.assign(new Playlist(), this.currentObject)
+                if (!this.currentObject.id.startsWith("pl_")) this.currentObject.id = "pl_" + this.currentObject.id
+                Utils.player.playSong(this.currentSong, play)
+            }
+            else {
+                console.error("Playing a song that cannot be played! Resetting player.")
+            }
             return;
         }
         if (obj.constructor === Album) {
