@@ -28,7 +28,13 @@ export function getString(view, length, offset = 0, raw) {
     if (raw) {
         return str;
     }
-    return decodeURIComponent(encodeURIComponent(str));
+    try {
+        return decodeURIComponent(decodeURIComponent(encodeURIComponent(escape(str))));
+    }
+    catch (e) {
+        console.warn("Unable to decode " + str);
+        return decodeURIComponent(encodeURIComponent(str));
+    }
 }
 /**
  * Retrieves a UTF16 string from a specific offset of a data view
