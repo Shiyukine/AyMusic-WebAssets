@@ -91,7 +91,7 @@ export default class LoginPanel extends HTMLDivElement {
             setTimeout(() => {
                 if (!loaded) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
             }, 21500)
-            if (isForModification == "") {
+            if (isForModification == "" || isForModification == "refresh") {
                 this.#iframe.src = Utils.servURL + "login/?inapp=1&date=" + Date.now().toString()
             }
             if (isForModification == "modify") {

@@ -1,4 +1,5 @@
 import Utils from "./utils/utils.js";
+import LoginPanel from "../ui/components/loginPanel/loginPanel.js"
 
 export default class ApiManager {
     userId = "";
@@ -36,7 +37,16 @@ export default class ApiManager {
                     else {
                         console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
                         console.error(result)
-                        return result;
+                        if (result["reason"].includes("API")) {
+                            return new Promise((resolve) => {
+                                var logP = new LoginPanel("refresh");
+                                logP.style.display = "none"
+                                document.getElementById("main").appendChild(logP);
+                                logP.logged = async () => {
+                                    resolve(this.doPostRequest(content))
+                                };
+                            })
+                        }
                     }
                 }
                 catch (e) {

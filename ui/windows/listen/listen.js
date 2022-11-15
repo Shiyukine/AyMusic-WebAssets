@@ -2,10 +2,8 @@ import Import from "../../../class/import.js";
 import Album from "../../../class/music/album.js";
 import Song from "../../../class/music/song.js";
 import Translations from "../../../class/translations.js";
-import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
 import Utils from "../../../class/utils/utils.js";
 import * as id3 from "../../../plugins/id3/id3.js";
-import InfoPanel from "../../components/infoPanel/infoPanel.js";
 import ProgressBar from "../../components/progressBar/progressBar.js";
 
 export default class ListenWindow extends HTMLDivElement {
@@ -37,7 +35,6 @@ export default class ListenWindow extends HTMLDivElement {
                         if (Utils.queueManager.currentSong.canBeLoaded) {
                             var request = new XMLHttpRequest();
                             var imge = this.shadowRoot.getElementById("music_img");
-                            var aUrl = this.createObjURL
                             var urlsC = this.urlsCreated
                             request.open('GET', Utils.queueManager.currentSong.url, true);
                             request.responseType = 'blob';
@@ -51,7 +48,7 @@ export default class ListenWindow extends HTMLDivElement {
                                             var uu = URL.createObjectURL(blob)
                                             urlsC.push(uu)
                                             imge.src = uu
-                                            navigator.mediaSession.metadata = new MediaMetadata({
+                                            navigator.mediaSession.metadata = new window.MediaMetadata({
                                                 title: Utils.queueManager.currentSong.title,
                                                 artist: Utils.queueManager.currentSong.singerName,
                                                 album: Utils.queueManager.currentSong.albumName,
@@ -62,7 +59,7 @@ export default class ListenWindow extends HTMLDivElement {
                                         }
                                         else {
                                             imge.src = "/resources/icon.ico"
-                                            navigator.mediaSession.metadata = new MediaMetadata({
+                                            navigator.mediaSession.metadata = new window.MediaMetadata({
                                                 title: Utils.queueManager.currentSong.title,
                                                 artist: Utils.queueManager.currentSong.singerName,
                                                 album: Utils.queueManager.currentSong.albumName,
@@ -78,7 +75,7 @@ export default class ListenWindow extends HTMLDivElement {
                         }
                         else {
                             this.shadowRoot.getElementById("music_img").src = "/resources/icon.ico"
-                            navigator.mediaSession.metadata = new MediaMetadata({
+                            navigator.mediaSession.metadata = new window.MediaMetadata({
                                 title: Utils.queueManager.currentSong.title,
                                 artist: Utils.queueManager.currentSong.singerName,
                                 album: Utils.queueManager.currentSong.albumName,
@@ -90,7 +87,7 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                     else {
                         this.shadowRoot.getElementById("music_img").src = Utils.queueManager.currentSong.imgUrl
-                        navigator.mediaSession.metadata = new MediaMetadata({
+                        navigator.mediaSession.metadata = new window.MediaMetadata({
                             title: Utils.queueManager.currentSong.title,
                             artist: Utils.queueManager.currentSong.singerName,
                             album: Utils.queueManager.currentSong.albumName,
