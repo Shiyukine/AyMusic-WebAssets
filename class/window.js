@@ -61,11 +61,11 @@ export default class Window {
         window.addEventListener("keydown", async function (key) {
             debugK.push(key.code)
             if ((debugK.includes("ControlLeft") || debugK.includes("ControlRight")) && (debugK.includes("ShiftLeft") || debugK.includes("ShiftRight")) && debugK.includes("KeyI")) {
-                //await Utils.app.remoteClient.showDevTool()
+                await Utils.app.remoteClient.showDevTool()
                 debugK = []
             }
             if ((debugK.includes("ControlLeft") || debugK.includes("ControlRight")) && debugK.includes("KeyR")) {
-                //await Utils.app.remoteClient.refreshApp()
+                await Utils.app.remoteClient.refreshApp()
             }
         })
 
