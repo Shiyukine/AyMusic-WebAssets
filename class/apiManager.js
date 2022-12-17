@@ -16,7 +16,7 @@ export default class ApiManager {
     }
 
     async doPostRequest(content) {
-        console.log("-> POST request : SENDING. Action : " + content.act)
+        //console.log("-> POST request : SENDING. Action : " + content.act)
         let start = Date.now();
         var newDico = {
             apiKey: this.apiKey
@@ -27,15 +27,23 @@ export default class ApiManager {
         try {
             if (this.#anDico !== newDico) {
                 this.#anDico = newDico
-                let result = await Utils.app.remoteClient.httpRequestPOST(Utils.servURL + "api/AyMusic/api.php", JSON.stringify(newDico))
+                //let result = await Utils.app.remoteClient.httpRequestPOST(Utils.servURL + "api/AyMusic/api.php", JSON.stringify(newDico))
+                const rawResponse = await fetch(Utils.servURL + "api/AyMusic/api.php", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newDico)
+                });
+                var result = await rawResponse.json();
                 try {
-                    result = JSON.parse(result);
                     if (result["success"]) {
-                        console.log("<- POST request : OK (" + (Date.now() - start) + "ms)")
+                        //console.log("<- POST request : OK (" + (Date.now() - start) + "ms)")
                         return result["content"];
                     }
                     else {
-                        console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
+                        //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
                         console.error(result)
                         if (result["reason"].includes("API")) {
                             return new Promise((resolve) => {
@@ -50,7 +58,7 @@ export default class ApiManager {
                     }
                 }
                 catch (e) {
-                    console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
+                    //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
                     console.error(result)
                     return result;
                 }
@@ -60,7 +68,7 @@ export default class ApiManager {
             }
         }
         catch (e) {
-            console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
+            //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
             Utils.newError("Can't connect to the server", "The server is offline or maybe there is a maintenance.\nPlease wait.")
             return e;
         }

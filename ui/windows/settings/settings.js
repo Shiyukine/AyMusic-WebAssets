@@ -17,117 +17,119 @@ export default class SettingsWindow extends HTMLDivElement {
         this.style.transition = "opacity 0.7s"
         Import.getData("/ui/windows/settings/settings.html").then((html) => {
             shadow.innerHTML = html
-            shadow.getElementById("menu").onwheel = (ev) => {
-                let newIndex;
-                if (ev.deltaY > 0) newIndex = this.selectedIndex + 1
-                else newIndex = this.selectedIndex - 1
-                if (newIndex > shadow.getElementById("menu").children.length - 1) newIndex -= 1
-                if (newIndex < 0) newIndex += 1
-                this.changeView(newIndex)
-            };
-            Array.from(shadow.getElementById("menu").children).forEach((x, y) => {
-                x.onclick = () => {
-                    this.changeView(y)
-                }
-            })
-            //
-            this.changeAccount();
-            new Translations(shadow.children[1])
-            Import.getData("/resources/translation.json").then((trls) => {
-                try {
-                    var allTranslations = ""
-                    if (trls) {
-                        allTranslations = JSON.parse(trls)
+            this.shadowRoot.getElementById("cssImport").onload = async () => {
+                shadow.getElementById("menu").onwheel = (ev) => {
+                    let newIndex;
+                    if (ev.deltaY > 0) newIndex = this.selectedIndex + 1
+                    else newIndex = this.selectedIndex - 1
+                    if (newIndex > shadow.getElementById("menu").children.length - 1) newIndex -= 1
+                    if (newIndex < 0) newIndex += 1
+                    this.changeView(newIndex)
+                };
+                Array.from(shadow.getElementById("menu").children).forEach((x, y) => {
+                    x.onclick = () => {
+                        this.changeView(y)
                     }
-                    else console.error("Unable to load translations file")
-                    for (var i in allTranslations["Available"]) {
-                        let trl = allTranslations["Available"][i]
-                        var opt = document.createElement("option")
-                        opt.value = trl
-                        opt.innerText = trl
-                        shadow.getElementById("gen_langs").appendChild(opt)
+                })
+                //
+                this.changeAccount();
+                new Translations(shadow.children[1])
+                Import.getData("/resources/translation.json").then((trls) => {
+                    try {
+                        var allTranslations = ""
+                        if (trls) {
+                            allTranslations = JSON.parse(trls)
+                        }
+                        else console.error("Unable to load translations file")
+                        for (var i in allTranslations["Available"]) {
+                            let trl = allTranslations["Available"][i]
+                            var opt = document.createElement("option")
+                            opt.value = trl
+                            opt.innerText = trl
+                            shadow.getElementById("gen_langs").appendChild(opt)
+                        }
                     }
-                }
-                catch (e) {
-                    Utils.newError("Unable to get translations", e)
-                }
-            });
-            shadow.querySelectorAll("*").forEach((x) => {
-                if (typeof Utils.app.settings[x.id] !== "undefined") {
-                    if (x.tagName == "INPUT" && x.max == "1") {
-                        x.value = Utils.app.getSetting(x.id) ? 1 : 0
-                        x.style.backgroundColor = x.value == "1" ? "" : "gray"
-                        x.oninput = () => {
-                            Utils.app.changeSetting(x.id, x.value == "1")
-                            x.style.backgroundColor = x.value == "1" ? "" : "gray"
+                    catch (e) {
+                        Utils.newError("Unable to get translations", e)
+                    }
+                });
+                shadow.querySelectorAll("*").forEach((x) => {
+                    if (typeof Utils.app.settings[x.id] !== "undefined") {
+                        if (x.tagName == "INPUT" && x.max == "1") {
                             x.value = Utils.app.getSetting(x.id) ? 1 : 0
+                            x.style.backgroundColor = x.value == "1" ? "" : "gray"
+                            x.oninput = () => {
+                                Utils.app.changeSetting(x.id, x.value == "1")
+                                x.style.backgroundColor = x.value == "1" ? "" : "gray"
+                                x.value = Utils.app.getSetting(x.id) ? 1 : 0
+                            }
                         }
-                    }
-                    if (x.tagName == "INPUT" && x.max != "1") {
-                        x.value = parseInt(Utils.app.getSetting(x.id))
-                        x.oninput = () => {
-                            Utils.app.changeSetting(x.id, x.value)
-                            //x.value = parseInt(Utils.app.getSetting(x.id))
+                        if (x.tagName == "INPUT" && x.max != "1") {
+                            x.value = parseInt(Utils.app.getSetting(x.id))
+                            x.oninput = () => {
+                                Utils.app.changeSetting(x.id, x.value)
+                                //x.value = parseInt(Utils.app.getSetting(x.id))
+                            }
                         }
-                    }
-                    if (x.tagName == "SELECT") {
-                        x.value = Utils.app.getSetting(x.id)
-                        x.onchange = () => {
-                            Utils.app.changeSetting(x.id, x.value)
+                        if (x.tagName == "SELECT") {
                             x.value = Utils.app.getSetting(x.id)
-                        }
-                    }
-                }
-            })
-            /**
-             * @type {LoginPanel}
-             */
-            var lp = null;
-            shadow.getElementById("acc_change").onclick = () => {
-                if (lp == null) {
-                    lp = new LoginPanel("modify")
-                    document.getElementById("main").appendChild(lp)
-                    window.history.pushState({ where: "settings", showLog: true }, "", "/index.html")
-                }
-            }
-            shadow.getElementById("music_add").onclick = () => {
-                LocalMusicHandler.addMusic()
-            }
-            window.addEventListener("popstate", (e) => {
-                if (!this.isClosed) {
-                    if (e.state.where == "settings") {
-                        if (e.state.showLog) {
-                            if (lp == null) {
-                                lp = new LoginPanel("modify")
-                                document.getElementById("main").appendChild(lp)
+                            x.onchange = () => {
+                                Utils.app.changeSetting(x.id, x.value)
+                                x.value = Utils.app.getSetting(x.id)
                             }
                         }
                     }
-                    else if (e.state.where == "menu" && e.state.menu == "Settings") {
-                        if (lp != null) {
-                            lp.close(false)
-                            lp = null;
-                        }
+                })
+                /**
+                 * @type {LoginPanel}
+                 */
+                var lp = null;
+                shadow.getElementById("acc_change").onclick = () => {
+                    if (lp == null) {
+                        lp = new LoginPanel("modify")
+                        document.getElementById("main").appendChild(lp)
+                        window.history.pushState({ where: "settings", showLog: true }, "", "/index.html")
                     }
                 }
-            }, { signal: this.controller.signal })
-            shadow.getElementById("acc_logout").onclick = () => {
-                var ip = new InfoPanel("Log-out", "Do you want to log-out now ?\nAyMusic will restart after you have logged out.", [{
-                    text: "Yes", isPositive: true, onclick: () => {
-                        var lp = new LoginPanel("logout")
-                        document.getElementById("main").appendChild(lp)
+                shadow.getElementById("music_add").onclick = () => {
+                    LocalMusicHandler.addMusic()
+                }
+                window.addEventListener("popstate", (e) => {
+                    if (!this.isClosed) {
+                        if (e.state.where == "settings") {
+                            if (e.state.showLog) {
+                                if (lp == null) {
+                                    lp = new LoginPanel("modify")
+                                    document.getElementById("main").appendChild(lp)
+                                }
+                            }
+                        }
+                        else if (e.state.where == "menu" && e.state.menu == "Settings") {
+                            if (lp != null) {
+                                lp.close(false)
+                                lp = null;
+                            }
+                        }
                     }
-                }, {
-                    text: "No", isPositive: false, onclick: () => {
-                        ip.close()
-                    }
-                }])
-                document.getElementById("main").appendChild(ip)
-                ip.show()
+                }, { signal: this.controller.signal })
+                shadow.getElementById("acc_logout").onclick = () => {
+                    var ip = new InfoPanel("Log-out", "Do you want to log-out now ?\nAyMusic will restart after you have logged out.", [{
+                        text: "Yes", isPositive: true, onclick: () => {
+                            var lp = new LoginPanel("logout")
+                            document.getElementById("main").appendChild(lp)
+                        }
+                    }, {
+                        text: "No", isPositive: false, onclick: () => {
+                            ip.close()
+                        }
+                    }])
+                    document.getElementById("main").appendChild(ip)
+                    ip.show()
+                }
+                shadow.getElementById("about_ver").innerText += " " + Utils.app.versionName + " (" + Utils.app.versionId + ")"
+                this.changeView(this.selectedIndex)
+                this.style.opacity = "1"
             }
-            shadow.getElementById("about_ver").innerText += " " + Utils.app.versionName + " (" + Utils.app.versionId + ")"
-            this.changeView(this.selectedIndex)
-            this.style.opacity = "1"
         })
     }
 

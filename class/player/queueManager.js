@@ -23,6 +23,8 @@ export default class QueueManager {
     //0 = no repeat, 1 = repeat pl/al, 2 = repeat song
     repeat = 0;
 
+    #eventEl = document.createElement("event");
+
     async changeQueue(obj, idSong = "", play = true) {
         //this.currentObject = obj
         this.currentSong = null;
@@ -126,6 +128,7 @@ export default class QueueManager {
      */
     addToQueue(song) {
         this.allSongs.splice(this.currentIndex + 1, 0, { song: song, obj: null });
+        this.#eventEl.dispatchEvent(new CustomEvent("queuechange"));
     }
 
     async nextSong() {
@@ -178,6 +181,9 @@ export default class QueueManager {
     }
 
     async previousSong() {
+        if (Utils.player.getCurrentTime() < 5) {
+            return this.currentSong
+        }
         let song = null;
         if (this.currentIndex - 1 > -1) {
             this.currentIndex--;
@@ -206,5 +212,9 @@ export default class QueueManager {
 
     canPrevious() {
         return this.currentIndex - 1 > -1 || this.repeat == 1 || this.repeat == 2
+    }
+
+    onQueueChanged(callback) {
+        this.#eventEl.addEventListener("queuechange", callback)
     }
 }
