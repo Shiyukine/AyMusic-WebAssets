@@ -1,0 +1,76 @@
+p,
+h3 {
+    font-family: "Quicksand";
+    margin: 10px;
+    color: white;
+}
+
+#main {
+    display: block;
+    backdrop-filter: blur(20px);
+    background-color: rgba(0, 0, 0, 0.5);
+    margin-right: 0px;
+    width: calc(100% - 100px);
+    border-radius: 15px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.padding {
+    padding: 20px;
+    padding-top: 40px;
+    height: calc(100% - 40px);
+    padding-right: 0px;
+}
+
+#scroll {
+    height: 100%;
+    overflow: auto;
+}
+
+#cur,
+#next {
+    border-radius: 15px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 8px;
+    display: grid;
+}
+
+#close {
+    height: 20px;
+    width: 120px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    position: absolute;
+    margin-top: 15px;
+    background-color: transparent;
+    cursor: grab;
+}
+
+#close>div {
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.5);
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 6px;
+}
+
+*::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: gray;
+    border-radius: 10px;
+    border: 5px solid transparent;
+    background-clip: content-box;
+}
+
+*::-webkit-scrollbar-corner {
+    width: 0px;
+    height: 0px;
+}

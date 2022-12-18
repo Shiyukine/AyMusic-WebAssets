@@ -12,6 +12,7 @@ import MenuWindow from "../ui/windows/menu/menu.js";
 import SearchWindow from "../ui/windows/search/search.js";
 import SettingsWindow from "../ui/windows/settings/settings.js";
 import MusicViewerWindow from "../ui/windows/musicViewer/musicViewer.js";
+import QueueViewerWindow from "../ui/windows/queueViewer/queueViewer.js";
 import ContextMenu from "../ui/components/contextMenu/contextMenu.js";
 import ProgressBar from "../ui/components/progressBar/progressBar.js";
 
@@ -33,6 +34,7 @@ export default class Import {
         customElements.define("text-box", TextBox, { extends: "div" });
         customElements.define("progress-bar", ProgressBar, { extends: "div" });
         customElements.define("context-menu", ContextMenu, { extends: "div" });
+        customElements.define("queue-viewer", QueueViewerWindow, { extends: "div" })
     }
 
     static cache = [[], []]

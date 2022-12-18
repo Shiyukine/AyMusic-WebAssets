@@ -5,6 +5,7 @@ import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
 import * as id3 from "../../../plugins/id3/id3.js";
 import ProgressBar from "../../components/progressBar/progressBar.js";
+import QueueViewerWindow from "../queueViewer/queueViewer.js";
 
 export default class ListenWindow extends HTMLDivElement {
     constructor() {
@@ -252,6 +253,16 @@ export default class ListenWindow extends HTMLDivElement {
                         shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isSongIsInLikedSongs(Utils.queueManager.currentSong) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
                     }
                 });
+                let queueViewer = new QueueViewerWindow()
+                //document.getElementById("main").appendChild(queueViewer)
+                shadow.getElementById("queue").onclick = () => {
+                    if (queueViewer.isClosed) {
+                        queueViewer.show()
+                    }
+                    else {
+                        queueViewer.hide()
+                    }
+                }
                 shadow.getElementById("changeState").onclick = () => {
                     if (Utils.player.getState()) {
                         Utils.player.pause()

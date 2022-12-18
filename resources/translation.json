@@ -70,6 +70,8 @@
         "{lib.removeLikedSong}": "Remove from liked songs",
         "{lib.addLikedSong}": "Add to liked songs",
         "{lib.addToPl}": "Add to a playlist",
-        "{lib.removeFromPl}": "Remove from this playlist"
+        "{lib.removeFromPl}": "Remove from this playlist",
+        "{qv.curPlaying}": "Current song",
+        "{qv.next}": "Next songs"
     }
 }
