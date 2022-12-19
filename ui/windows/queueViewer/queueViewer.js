@@ -63,8 +63,10 @@ export default class QueueViewerWindow extends HTMLDivElement {
                 let mouseHover = false
                 this.addEventListener("mouseenter", () => mouseHover = true)
                 this.addEventListener("mouseleave", () => mouseHover = false)
-                window.addEventListener("mousedown", () => {
-                    if (!this.isClosed && !mouseHover) {
+                window.addEventListener("mousedown", (e) => {
+                    var rect = e.target.getBoundingClientRect();
+                    var y = rect.bottom - e.clientY
+                    if (!this.isClosed && !mouseHover && y >= 0) {
                         this.hide()
                     }
                 })
@@ -86,7 +88,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
                 if (i == curI) {
                     this.shadowRoot.getElementById("cur").appendChild(new SongGrid(song, pl))
                 }
-                if (i > curI) {
+                if (i > curI && i - curI < 50) {
                     this.shadowRoot.getElementById("next").appendChild(new SongGrid(song, pl))
                 }
             }
