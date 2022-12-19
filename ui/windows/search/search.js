@@ -2,7 +2,7 @@ import Import from "../../../class/import.js";
 import Translations from "../../../class/translations.js";
 
 export default class SearchWindow extends HTMLDivElement {
-    selectedIndex = 0;
+    selectedServer = "icon";
     isClosed = false;
     controller = new AbortController();
 
@@ -16,6 +16,16 @@ export default class SearchWindow extends HTMLDivElement {
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 new Translations(shadow.children[1])
                 this.style.opacity = "1"
+                shadow.getElementById("serv_picker").addEventListener("change", () => {
+                    //icon = all
+                    this.selectedServer = shadow.getElementById("serv_picker").value
+                    shadow.getElementById("serv_ico").src = "/resources/" + shadow.getElementById("serv_picker").value + ".ico"
+                })
+                shadow.getElementById("tb_search").addEventListener("keydown", (e) => {
+                    if (e.key == "Enter") {
+                        console.log("aaaa")
+                    }
+                })
             }
         })
     }

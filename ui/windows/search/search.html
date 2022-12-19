@@ -7,15 +7,31 @@
         <div id="view">
             <div class="panel selected">
                 <div class="sub">
-                    <div class="set last">
-                        <p class="selected">{playlists}</p>
-                        <p>{artists}</p>
-                        <p>{albums}</p>
+                    <div id="top" class="set last">
+                        <div id="picker">
+                            <img src="/resources/icon.ico" id="serv_ico">
+                            <select name="serv" id="serv_picker">
+                                <option value="icon">All</option>
+                                <option value="spotify">Spotify</option>
+                                <option value="youtube">Youtube</option>
+                                <option value="deezer">Deezer</option>
+                                <option value="soundcloud">Soundcloud</option>
+                            </select>
+                        </div>
+                        <input type="text" name="search" id="tb_search">
                     </div>
-                    <div id="mylib_list" class="set last"></div>
+                    <div id="bottom" class="set last">
+                        <h3>{songs}</h3>
+                        <div id="songs" class="lists"></div>
+                        <h3>{playlists}</h3>
+                        <div id="h3laylists" class="lists"></div>
+                        <h3>{artists}</h3>
+                        <div id="artists" class="lists"></div>
+                        <h3>{albums}</h3>
+                        <div id="albums" class="lists"></div>
+                    </div>
                 </div>
             </div>
-            <!--suite des playlists ici, mais à chaque fois, penser à clear les items de la playlist pour éviter lag après avoir changé de playlist (view)-->
         </div>
     </div>
 </div>
