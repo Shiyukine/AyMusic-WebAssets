@@ -94,6 +94,9 @@ export default class SettingsWindow extends HTMLDivElement {
                 shadow.getElementById("music_add").onclick = () => {
                     LocalMusicHandler.addMusic()
                 }
+                shadow.getElementById("experimental_popout").onclick = async () => {
+                    await Utils.app.remoteClient.popoutChrome()
+                }
                 window.addEventListener("popstate", (e) => {
                     if (!this.isClosed) {
                         if (e.state.where == "settings") {
