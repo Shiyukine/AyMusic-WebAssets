@@ -273,3 +273,40 @@ img:hover {
     backdrop-filter: initial;
     overflow: auto;
 }
+
+.resizeBar {
+    position: absolute;
+    background-color: transparent;
+    z-index: 1000;
+}
+
+#bar0 {
+    height: 100%;
+    top: 0;
+    width: 5px;
+    left: 0;
+}
+
+#bar1 {
+    height: 100%;
+    top: 0;
+    width: 5px;
+    right: 0;
+}
+
+#bar2 {
+    width: 100%;
+    height: 5px;
+    top: 0;
+}
+
+#bar3 {
+    width: 100%;
+    height: 5px;
+    bottom: 0;
+}
+
+.barMaximized {
+    width: 0% !important;
+    height: 0% !important;
+}

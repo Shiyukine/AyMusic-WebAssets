@@ -54,6 +54,86 @@ export default class Window {
         }, null, null, async function () {
             await Utils.app.remoteClient.rightClickWindow()
         })
+        this.setResizeBarsWindow()
+    }
+
+    static setResizeBarsWindow() {
+        let height = Math.max(document.body.scrollHeight, document.body.offsetHeight,
+            document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        let width = Math.max(document.body.scrollWidth, document.body.offsetWidth,
+            document.documentElement.clientWidth, document.documentElement.scrollWidth, document.documentElement.offsetWidth);
+        let b = (height + 2 == screen.height && width == screen.width) ||
+            (height == screen.height && width + 2 == screen.width)
+        let resizeDir = -1
+        for (let i = 0; i < 4; i++) {
+            let div = document.createElement("div")
+            div.classList.add("resizeBar")
+            div.id = "bar" + i
+            document.body.appendChild(div)
+            const MAX_SIZE = 5
+            div.onpointermove = (e) => {
+                if (i == 0) {
+                    if (e.y <= MAX_SIZE)
+                        resizeDir = 13;
+                    else if (e.y >= div.offsetHeight - MAX_SIZE) resizeDir = 16;
+                    else resizeDir = 10;
+                }
+                if (i == 1) {
+                    if (e.y <= MAX_SIZE)
+                        resizeDir = 14;
+                    else if (e.y >= div.offsetHeight - MAX_SIZE) resizeDir = 17;
+                    else resizeDir = 11;
+                }
+                if (i == 2) {
+                    if (e.x <= MAX_SIZE)
+                        resizeDir = 13;
+                    else if (e.x >= div.offsetWidth - MAX_SIZE) resizeDir = 14;
+                    else resizeDir = 12;
+                }
+                if (i == 3) {
+                    if (e.x <= MAX_SIZE)
+                        resizeDir = 16;
+                    else if (e.x >= div.offsetWidth - MAX_SIZE) resizeDir = 17;
+                    else resizeDir = 15;
+                }
+                div.style.cursor = this.getCur(resizeDir);
+            }
+            div.onpointerdown = async () => {
+                await Utils.app.remoteClient.beginResizeWindow(resizeDir)
+            }
+            if (b) div.classList.add("barMaximized")
+        }
+        window.addEventListener("resize", () => {
+            let height = Math.max(document.body.scrollHeight, document.body.offsetHeight,
+                document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+            let width = Math.max(document.body.scrollWidth, document.body.offsetWidth,
+                document.documentElement.clientWidth, document.documentElement.scrollWidth, document.documentElement.offsetWidth);
+            let b = (height + 2 == screen.height && width == screen.width) ||
+                (height == screen.height && width + 2 == screen.width)
+            if (b) {
+                document.getElementById("bar0").classList.add("barMaximized")
+                document.getElementById("bar1").classList.add("barMaximized")
+                document.getElementById("bar2").classList.add("barMaximized")
+                document.getElementById("bar3").classList.add("barMaximized")
+            }
+            else {
+                document.getElementById("bar0").classList.remove("barMaximized")
+                document.getElementById("bar1").classList.remove("barMaximized")
+                document.getElementById("bar2").classList.remove("barMaximized")
+                document.getElementById("bar3").classList.remove("barMaximized")
+            }
+        })
+    }
+
+    static getCur(resizeDir) {
+        if (resizeDir == 10) return "ew-resize"
+        if (resizeDir == 11) return "ew-resize"
+        if (resizeDir == 12) return "ns-resize"
+        if (resizeDir == 13) return "nwse-resize"
+        if (resizeDir == 14) return "nesw-resize"
+        if (resizeDir == 15) return "ns-resize"
+        if (resizeDir == 16) return "nesw-resize"
+        if (resizeDir == 17) return "nwse-resize"
     }
 
     static setDevToolLogger() {
