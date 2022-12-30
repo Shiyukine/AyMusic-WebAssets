@@ -21,20 +21,20 @@ h3 {
 
 #serv_picker {
     border-radius: 15px;
-    margin: 3px;
     margin-left: 0px;
     float: left;
 }
 
 #serv_ico {
-    margin: 10px;
+    margin: 7px;
     margin-right: 0px;
+    margin-left: 12px;
     float: left;
     height: 25px;
 }
 
 #tb_search {
-    margin: 15px;
+    margin: 11px;
     margin-left: 5px;
     border: 0px;
     float: right;
@@ -130,45 +130,6 @@ h3 {
 
 .sub .last {
     border-bottom: inherit;
-}
-
-.search .slider[max="1"] {
-    width: 35px !important;
-}
-
-.search .slider {
-    -webkit-appearance: none;
-    width: 150px;
-    height: 25px;
-    padding: 0 5px;
-    border-radius: 12.5px;
-    background: rgb(0, 162, 255);
-    outline: none;
-    float: right;
-    margin: auto 0;
-    transition: 0.4s;
-}
-
-.search .slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 19px;
-    height: 19px;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
-}
-
-.search .slider::-moz-range-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 19px;
-    height: 19px;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
-    border: none;
-    stroke: transparent;
 }
 
 .search .select-container {

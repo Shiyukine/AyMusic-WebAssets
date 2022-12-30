@@ -250,6 +250,10 @@ img:hover {
     background-color: rgb(221, 221, 221, 0.5);
 }
 
+.nohover:hover {
+    background-color: initial !important;
+}
+
 .aWindow {
     background-color: rgba(12, 12, 12, 0.4);
     backdrop-filter: blur(10px);

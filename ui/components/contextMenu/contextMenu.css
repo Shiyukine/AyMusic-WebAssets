@@ -23,13 +23,13 @@ svg {
 }
 
 #main {
+    z-index: 9;
     font-family: "QuickSand";
     background-color: rgba(43, 43, 43, 0.3);
     backdrop-filter: blur(20px);
     border-radius: 10px;
     display: flex;
     box-shadow: 0px 0px 3px 1px black;
-    z-index: 9;
 }
 
 #context {
