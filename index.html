@@ -9,10 +9,7 @@
     <link rel="stylesheet" href="/main.css">
     <script>
         var app = null;
-        //pour JS module, utiliser Utils.newError(info, subtext)
-        function newError(info, subText) {
-            console.error(info, "\n", subText)
-        }
+        var newError = () => { };
     </script>
     <script src="/main.js" type="module"></script>
 </head>

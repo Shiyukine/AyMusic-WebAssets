@@ -11,6 +11,7 @@ import LocalMusicHandler from "./class/utils/localMusicHandler.js";
 
 async function main() {
     window.app = Utils.app;
+    window.newError = Utils.newError;
     document.body.ondragstart = () => { return false; };
     Import.loadCustomElements()
     Utils.pathsData = JSON.parse(await Import.getData("/resources/paths.json"))
