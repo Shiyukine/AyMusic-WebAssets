@@ -18,6 +18,7 @@ async function main() {
     //
     Utils.app.loaded = async function () {
         try {
+            window.loaded = true;
             console.log("AyMusic client registered : " + Utils.app.platform + ", version : " + Utils.app.versionName + " (" + Utils.app.versionId + ")");
             if (Utils.app.platform == "Windows") {
                 Window.setTopBarWindow();
@@ -48,7 +49,9 @@ async function main() {
             logP.style.width = logP.style.height = "100%";
             logP.style.position = "absolute";
             document.getElementById("main").appendChild(logP);
-            loadPanel.hide();
+            logP.notConnected = () => {
+                loadPanel.hide();
+            }
             logP.logged = async () => {
                 loadPanel.changeText("Getting your playlists...");
                 loadPanel.show();

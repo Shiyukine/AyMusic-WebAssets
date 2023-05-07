@@ -32,7 +32,7 @@ export default class InfoPanel extends HTMLDivElement {
         super(text, subtext, buttons, isloading);
         var shadow = this.attachShadow({ mode: 'open' });
         this.style.opacity = "0%"
-        this.style.transition = "opacity 0.7s"
+        this.style.transition = "opacity 0.3s"
         Import.getData("/ui/components/infoPanel/infoPanel.html").then((html) => {
             shadow.innerHTML = html
             this.#textEl = shadow.getElementById("text");

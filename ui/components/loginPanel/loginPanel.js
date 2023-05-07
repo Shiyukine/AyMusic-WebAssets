@@ -17,16 +17,18 @@ export default class LoginPanel extends HTMLDivElement {
     /**
     * @type {HTMLElement}
     */
-    #eventEl = null;
+    #eventEl = document.createElement("event");
 
     isClosed = false;
     controller = new AbortController();
 
+    messID = "log_" + Date.now()
+
     #getIframeUrl = () => {
         return new Promise((resolve) => {
-            this.#iframe.contentWindow.postMessage({ message: "getURL" }, Utils.servURL)
+            this.#iframe.contentWindow.postMessage({ message: "getURL", id: this.messID }, Utils.servURL)
             window.addEventListener("message", (e) => {
-                if (e.origin == Utils.servURL.slice(0, -1)) {
+                if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == this.messID) {
                     if (e.data.message == "callbackURL") {
                         resolve(e.data.data)
                     }
@@ -38,10 +40,9 @@ export default class LoginPanel extends HTMLDivElement {
     constructor(isForModification) {
         super(isForModification);
         var shadow = this.attachShadow({ mode: "open" })
-        this.logged = function () { }
         this.isForModification = isForModification;
         this.style.opacity = "0%"
-        this.style.transition = "opacity 0.7s"
+        this.style.transition = "opacity 0.3s"
         Import.getData("/ui/components/loginPanel/loginPanel.html").then((html) => {
             shadow.innerHTML = html
             this.#iframe = this.shadowRoot.getElementById("iframe")
@@ -51,7 +52,6 @@ export default class LoginPanel extends HTMLDivElement {
                 this.shadowRoot.getElementById("loginBG").ontransitionend = () => { };
                 if (document.getElementById("menu_win"))
                     document.getElementById("menu_win").style.zIndex = "0"
-                this.style.opacity = "1"
             }
             let loaded = false;
             this.addScript()
@@ -59,14 +59,18 @@ export default class LoginPanel extends HTMLDivElement {
                 let url = await this.#getIframeUrl();
                 loaded = true;
                 if (url.includes("islogged.php")) {
-                    this.#iframe.contentWindow.postMessage({ message: "html" }, Utils.servURL)
+                    this.#iframe.contentWindow.postMessage({ message: "html", id: this.messID }, Utils.servURL)
                 }
                 if (url.includes("/login/index.php") && isForModification == "logout") {
                     Utils.app.remoteClient.refreshApp()
                 }
+                if (url.includes("login/?inapp=1") && isForModification == "") {
+                    this.#eventEl.dispatchEvent(new CustomEvent("notconnected"));
+                    this.style.opacity = "1"
+                }
             }
             window.addEventListener("message", (e) => {
-                if (e.origin == Utils.servURL.slice(0, -1)) {
+                if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == this.messID) {
                     if (e.data.message == "callbackHTML") {
                         let text = e.data.data.split("<br>").join("\n");
                         let params = text.split("\n")
@@ -101,13 +105,15 @@ export default class LoginPanel extends HTMLDivElement {
             if (isForModification == "logout") {
                 this.#iframe.src = Utils.servURL + "login/logout.php?inapp=1&date=" + Date.now().toString()
             }
-            this.style.opacity = "1"
         })
     }
 
     set logged(callback) {
-        this.#eventEl = document.createElement("event")
         this.#eventEl.addEventListener("logged", callback)
+    }
+
+    set notConnected(callback) {
+        this.#eventEl.addEventListener("notconnected", callback)
     }
 
     close(triggerEvent = true) {
@@ -133,11 +139,11 @@ export default class LoginPanel extends HTMLDivElement {
                 {
                     if(e.data.message == 'getURL')
                     {
-                        parent.postMessage({message: 'callbackURL', data: document.location.toString()}, 'https://myapp')
+                        parent.postMessage({message: 'callbackURL', data: document.location.toString(), id: e.data.id}, 'https://myapp')
                     }
                     if(e.data.message == 'html')
                     {
-                        parent.postMessage({message: 'callbackHTML', data: document.body.innerHTML}, 'https://myapp')
+                        parent.postMessage({message: 'callbackHTML', data: document.body.innerHTML, id: e.data.id}, 'https://myapp')
                     }
                 }
             })`)
