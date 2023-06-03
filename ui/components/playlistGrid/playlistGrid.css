@@ -34,7 +34,7 @@
 .grid .thumb div {
     height: 140px;
     background-position: center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     -webkit-transition-duration: 0.4s;
     transition-duration: 0.4s;
