@@ -3,7 +3,6 @@ import Album from "../../../class/music/album.js";
 import Song from "../../../class/music/song.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
-import * as id3 from "../../../plugins/id3/id3.js";
 import ProgressBar from "../../components/progressBar/progressBar.js";
 import QueueViewerWindow from "../queueViewer/queueViewer.js";
 
@@ -37,24 +36,18 @@ export default class ListenWindow extends HTMLDivElement {
                             var imge = this.shadowRoot.getElementById("music_img");
                             imge.onerror = () => {
                                 imge.src = "/resources/icon.ico"
+                            }
+                            imge.onload = () => {
                                 navigator.mediaSession.metadata = new window.MediaMetadata({
                                     title: Utils.queueManager.currentSong.title,
                                     artist: Utils.queueManager.currentSong.singerName,
                                     album: Utils.queueManager.currentSong.albumName,
                                     artwork: [
-                                        { src: "/resources/icon.ico", sizes: '512x512', type: 'image/png' },
+                                        { src: imge.src, sizes: '512x512', type: 'image/png' },
                                     ]
                                 });
                             }
                             imge.src = "https://mycache/Image/" + Utils.queueManager.currentSong.id + ".png"
-                            navigator.mediaSession.metadata = new window.MediaMetadata({
-                                title: Utils.queueManager.currentSong.title,
-                                artist: Utils.queueManager.currentSong.singerName,
-                                album: Utils.queueManager.currentSong.albumName,
-                                artwork: [
-                                    { src: "https://mycache/Image/" + Utils.queueManager.currentSong.id + ".png", sizes: '512x512', type: 'image/png' },
-                                ]
-                            });
                         }
                         else {
                             this.shadowRoot.getElementById("music_img").src = "/resources/icon.ico"

@@ -1,8 +1,8 @@
 import Utils from "../utils/utils.js";
-import * as id3 from "../../plugins/id3/id3.js";
 import Singer from "../music/singer.js";
 import Album from "../music/album.js";
 import InfoPanel from "../../ui/components/infoPanel/infoPanel.js";
+import GetMusicTag from "./getMusicTag.js";
 
 export default class LocalMusicHandler {
 
@@ -80,83 +80,70 @@ export default class LocalMusicHandler {
         for (let i in urls) {
             let nurl = urls[i]
             let result = "https://mymusic/" + nurl
-            let request = new XMLHttpRequest();
-            request.open('GET', result, true);
-            request.responseType = 'blob';
-            request.onload = function () {
-                let reader = new FileReader();
-                reader.readAsArrayBuffer(request.response);
-                reader.onload = function (e) {
-                    id3.fromFile(new File([e.target.result], nurl.split("\\")[nurl.split("\\").length - 1])).then((tags) => {
-                        let audio = new Audio()
-                        audio.onloadedmetadata = async () => {
-                            let artist = LocalMusicHandler.addLocalSinger(tags != null && tags.artist != null ? tags.artist : "Unknown artist")
-                            console.log("Added new local artist : " + artist.id.replace("si_", ""))
-                            let album = LocalMusicHandler.addLocalAlbum(tags != null && tags.album != null ? tags.album : "Unknown album", tags != null && tags.artist != null ? tags.artist : "Unknown artist")
-                            console.log("Added new local album : " + album.id.replace("al_", "") + ", artist : " + album.singerID.replace("si_", ""))
-                            let titleFile = nurl.split("\\")[nurl.split("\\").length - 1].split(".")[0]
-                            allMusics.push([result, tags != null && tags.title != null ? tags.title : titleFile, "localImg", audio.duration * 1000])
-                            if (tags != null && tags.images != null) {
-                                var bytes = new Uint8Array(tags.images[0].data);
-                                var uwu = []
-                                for (let i = 0; i < bytes.byteLength; i++) {
-                                    uwu.push(bytes[i])
-                                }
-                                musicInfo.push([artist.id, album.id, uwu])
+            var gmt = new GetMusicTag(result)
+            gmt.getTags().then(async (tags) => {
+                let artist = LocalMusicHandler.addLocalSinger(tags != null && tags.artist != null ? tags.artist : "Unknown artist")
+                console.log("Added new local artist : " + artist.id.replace("si_", ""))
+                let album = LocalMusicHandler.addLocalAlbum(tags != null && tags.album != null ? tags.album : "Unknown album", tags != null && tags.artist != null ? tags.artist : "Unknown artist")
+                console.log("Added new local album : " + album.id.replace("al_", "") + ", artist : " + album.singerID.replace("si_", ""))
+                let titleFile = nurl.split("\\")[nurl.split("\\").length - 1].split(".")[0]
+                allMusics.push([result, tags != null && tags.title != null ? tags.title : titleFile, "localImg", tags.duration])
+                if (tags != null && tags.image != null) {
+                    var bytes = new Uint8Array(tags.image);
+                    var uwu = []
+                    for (let i = 0; i < bytes.byteLength; i++) {
+                        uwu.push(bytes[i])
+                    }
+                    musicInfo.push([artist.id, album.id, uwu])
+                }
+                else musicInfo.push([artist.id, album.id, null])
+                counter++
+                if (counter == urls.length) {
+                    let apiResult = await Utils.apiManager.doPostRequest({
+                        act: "addMultipleSongsLocal",
+                        songs: allMusics
+                    })
+                    if (apiResult["success"] !== false) {
+                        for (let j in apiResult) {
+                            let musicID = apiResult[j]
+                            let mi = musicInfo[j]
+                            LocalMusicHandler.musics.push({
+                                musicID: musicID,
+                                albumID: mi[1],
+                                singerID: mi[0]
+                            })
+                            try {
+                                await Utils.app.remoteClient.saveCache("Image/" + musicID + ".png", mi[2])
                             }
-                            else musicInfo.push([artist.id, album.id, null])
-                            counter++
-                            if (counter == urls.length) {
-                                let apiResult = await Utils.apiManager.doPostRequest({
-                                    act: "addMultipleSongsLocal",
-                                    songs: allMusics
-                                })
-                                if (apiResult["success"] !== false) {
-                                    for (let j in apiResult) {
-                                        let musicID = apiResult[j]
-                                        let mi = musicInfo[j]
-                                        LocalMusicHandler.musics.push({
-                                            musicID: musicID,
-                                            albumID: mi[1],
-                                            singerID: mi[0]
-                                        })
-                                        try {
-                                            await Utils.app.remoteClient.saveCache("Image/" + musicID + ".png", mi[2])
-                                        }
-                                        catch (e) {
+                            catch (e) {
 
-                                        }
-                                        isOk = isOk && await Utils.libManager.addObjToLikedSongs("so_" + musicID)
-                                        //avoid small ddos
-                                        await Utils.delay(100);
-                                    }
-                                    if (isOk) {
-                                        LocalMusicHandler.setLocalLibrary()
-                                        let ip = new InfoPanel("Success", "Song added to liked songs !", [{
-                                            text: "OK", isPositive: true, onclick: () => {
-                                                ip.close()
-                                            }
-                                        }])
-                                        document.getElementById("main").appendChild(ip)
-                                        ip.show()
-                                    }
-                                }
-                                else {
-                                    let ip = new InfoPanel("Error", "We can't add this music to your liked songs.\nConcerned song : " + nurl + "\nPlease verify your file.", [{
-                                        text: "OK", isPositive: true, onclick: () => {
-                                            ip.close()
-                                        }
-                                    }])
-                                    document.getElementById("main").appendChild(ip)
-                                    ip.show()
-                                }
                             }
+                            isOk = isOk && await Utils.libManager.addObjToLikedSongs("so_" + musicID)
+                            //avoid small ddos
+                            await Utils.delay(100);
                         }
-                        audio.src = result;
-                    });
-                };
-            };
-            request.send();
+                        if (isOk) {
+                            LocalMusicHandler.setLocalLibrary()
+                            let ip = new InfoPanel("Success", "Song added to liked songs !", [{
+                                text: "OK", isPositive: true, onclick: () => {
+                                    ip.close()
+                                }
+                            }])
+                            document.getElementById("main").appendChild(ip)
+                            ip.show()
+                        }
+                    }
+                    else {
+                        let ip = new InfoPanel("Error", "We can't add this music to your liked songs.\nConcerned song : " + nurl + "\nPlease verify your file.", [{
+                            text: "OK", isPositive: true, onclick: () => {
+                                ip.close()
+                            }
+                        }])
+                        document.getElementById("main").appendChild(ip)
+                        ip.show()
+                    }
+                }
+            })
         }
     }
 
