@@ -73,8 +73,10 @@ export default class LocalMusicHandler {
     static async addMusic() {
         console.log("Adding song to liked song... Waiting user choose")
         var allMusics = []
+        var musicInfo = []
         var urls = await Utils.app.remoteClient.pickUpMusic()
         let isOk = true;
+        let counter = 0;
         for (let i in urls) {
             let nurl = urls[i]
             let result = "https://mymusic/" + nurl
@@ -94,18 +96,36 @@ export default class LocalMusicHandler {
                             console.log("Added new local album : " + album.id.replace("al_", "") + ", artist : " + album.singerID.replace("si_", ""))
                             let titleFile = nurl.split("\\")[nurl.split("\\").length - 1].split(".")[0]
                             allMusics.push([result, tags != null && tags.title != null ? tags.title : titleFile, "localImg", audio.duration * 1000])
-                            if (i == urls.length - 1) {
+                            if (tags != null && tags.images != null) {
+                                var bytes = new Uint8Array(tags.images[0].data);
+                                var uwu = []
+                                for (let i = 0; i < bytes.byteLength; i++) {
+                                    uwu.push(bytes[i])
+                                }
+                                musicInfo.push([artist.id, album.id, uwu])
+                            }
+                            else musicInfo.push([artist.id, album.id, null])
+                            counter++
+                            if (counter == urls.length) {
                                 let apiResult = await Utils.apiManager.doPostRequest({
                                     act: "addMultipleSongsLocal",
                                     songs: allMusics
                                 })
                                 if (apiResult["success"] !== false) {
-                                    for (let musicID of apiResult) {
+                                    for (let j in apiResult) {
+                                        let musicID = apiResult[j]
+                                        let mi = musicInfo[j]
                                         LocalMusicHandler.musics.push({
                                             musicID: musicID,
-                                            albumID: album.id,
-                                            singerID: artist.id
+                                            albumID: mi[1],
+                                            singerID: mi[0]
                                         })
+                                        try {
+                                            await Utils.app.remoteClient.saveCache("Image/" + musicID + ".png", mi[2])
+                                        }
+                                        catch (e) {
+
+                                        }
                                         isOk = isOk && await Utils.libManager.addObjToLikedSongs("so_" + musicID)
                                         //avoid small ddos
                                         await Utils.delay(100);
@@ -190,6 +210,14 @@ export default class LocalMusicHandler {
 
     static getMusics() {
         return LocalMusicHandler.musics
+    }
+
+    static getAlbums() {
+        return LocalMusicHandler.albums
+    }
+
+    static getArtists() {
+        return LocalMusicHandler.singers
     }
 
     static getMusicById(id) {

@@ -293,21 +293,49 @@ export default class LibraryWindow extends HTMLDivElement {
                         }
                     }
                     else if (newIndex == 2) {
+                        let list = []
                         for (let i in result) {
                             let obj = result[i]
                             if (obj.id.includes("si_")) {
                                 let id = obj.id.replace("si_", "")
-                                objs.appendChild(new SingerGrid(new Singer(id, obj.name, obj.imgUrl, obj.dateAdded)))
+                                list.push(new Singer(id, obj.name, obj.imgUrl, obj.dateAdded))
                             }
+                        }
+                        for (let i of LocalMusicHandler.getArtists()) {
+                            list.push(i)
+                        }
+                        list.sort((a, b) => {
+                            if (a.name > b.name)
+                                return 1;
+                            if (a.name < b.name)
+                                return -1;
+                            return 0;
+                        });
+                        for (let i of list) {
+                            objs.appendChild(new SingerGrid(i))
                         }
                     }
                     else if (newIndex == 3) {
+                        let list = []
                         for (let i in result) {
                             let obj = result[i]
                             if (obj.id.includes("al_")) {
                                 let id = obj.id.replace("al_", "")
-                                objs.appendChild(new AlbumGrid(new Album(id, obj.name, obj.singerID, obj.type, obj.imgUrl, obj.dateAdded)))
+                                list.push(new Album(id, obj.name, obj.singerID, obj.type, obj.imgUrl, obj.dateAdded))
                             }
+                        }
+                        for (let i of LocalMusicHandler.getAlbums()) {
+                            list.push(i)
+                        }
+                        list.sort((a, b) => {
+                            if (a.name > b.name)
+                                return 1;
+                            if (a.name < b.name)
+                                return -1;
+                            return 0;
+                        });
+                        for (let i of list) {
+                            objs.appendChild(new AlbumGrid(i))
                         }
                     }
                 }

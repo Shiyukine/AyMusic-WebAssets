@@ -13,7 +13,8 @@ export default class App {
         music_vol: 66,
         music_skipS: false,
         shuffle: false,
-        repeat: 0
+        repeat: 0,
+        mute: false
     }
 
     constructor() {
@@ -27,30 +28,32 @@ export default class App {
     * @param {Object} remoteClient Object to send information on the client
     */
     async registerClient(platform, versionName, versionId, remoteClient) {
-        try {
-            this.platform = platform;
-            this.versionName = versionName;
-            this.versionId = versionId;
-            this.remoteClient = remoteClient;
-            let newS = await this.remoteClient.getSettingFile()
-            if (newS) {
-                newS = JSON.parse(newS)
-                for (var x in this.settings) {
-                    if (typeof newS[x] === "undefined") {
-                        console.warn("Adding settings which didn't exists : " + x)
-                        newS[x] = this.settings[x]
+        if (!window.loaded) {
+            try {
+                this.platform = platform;
+                this.versionName = versionName;
+                this.versionId = versionId;
+                this.remoteClient = remoteClient;
+                let newS = await this.remoteClient.getSettingFile()
+                if (newS) {
+                    newS = JSON.parse(newS)
+                    for (var x in this.settings) {
+                        if (typeof newS[x] === "undefined") {
+                            console.warn("Adding settings which didn't exists : " + x)
+                            newS[x] = this.settings[x]
+                        }
                     }
+                    this.settings = newS
                 }
-                this.settings = newS
+                else {
+                    console.warn("No settings imported. Creating new setting file")
+                }
+                this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
+                this.#eventEl.dispatchEvent(new CustomEvent("loaded"));
             }
-            else {
-                console.warn("No settings imported. Creating new setting file")
+            catch (e) {
+                console.error(e)
             }
-            this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
-            this.#eventEl.dispatchEvent(new CustomEvent("loaded"));
-        }
-        catch (e) {
-            console.error(e)
         }
     }
 

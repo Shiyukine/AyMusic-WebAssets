@@ -71,7 +71,7 @@ export default class SongGrid extends HTMLDivElement {
             (this.playlist == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "pl_" + this.playlist.id.replace("pl_", "")))
     }
 
-    changeSong(song) {
+    async changeSong(song) {
         if (this.song === null) {
             this.song = song;
             this.shadowRoot.getElementById("title").innerText = this.song.title
@@ -79,30 +79,8 @@ export default class SongGrid extends HTMLDivElement {
             this.shadowRoot.getElementById("time").innerText = Utils.msToTime(this.song.time)
             if (this.song.imgUrl === "localImg") {
                 if (this.song.canBeLoaded) {
-                    var request = new XMLHttpRequest();
                     var imge = this.shadowRoot.getElementById("img");
-                    request.open('GET', this.song.url, true);
-                    request.responseType = 'blob';
-                    request.onload = function () {
-                        var reader = new FileReader();
-                        reader.readAsArrayBuffer(request.response);
-                        reader.onload = function (e) {
-                            id3.fromFile(new File([e.target.result], song.url.split("\\")[song.url.split("\\") - 1])).then((tags) => {
-                                if (tags != null && tags.images != null) {
-                                    var blob = new Blob([tags.images[0].data])
-                                    var uu = URL.createObjectURL(blob)
-                                    imge.style.backgroundImage = "url('" + uu + "')"
-                                    setTimeout(() => {
-                                        URL.revokeObjectURL(uu)
-                                    }, 10000)
-                                }
-                                else {
-                                    imge.style.backgroundImage = "url('/resources/icon.ico')"
-                                }
-                            });
-                        };
-                    };
-                    request.send();
+                    imge.style.backgroundImage = "url('https://mycache/Image/" + this.song.id + ".png'), url('/resources/icon.ico')"
                 }
                 else {
                     this.shadowRoot.getElementById("img").style.backgroundImage = "url('/resources/icon.ico')"

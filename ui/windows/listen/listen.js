@@ -34,45 +34,27 @@ export default class ListenWindow extends HTMLDivElement {
                     shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isSongIsInLikedSongs(Utils.queueManager.currentSong) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
                     if (Utils.player.isLocalMusic) {
                         if (Utils.queueManager.currentSong.canBeLoaded) {
-                            var request = new XMLHttpRequest();
                             var imge = this.shadowRoot.getElementById("music_img");
-                            var urlsC = this.urlsCreated
-                            request.open('GET', Utils.queueManager.currentSong.url, true);
-                            request.responseType = 'blob';
-                            request.onload = function () {
-                                var reader = new FileReader();
-                                reader.readAsArrayBuffer(request.response);
-                                reader.onload = function (e) {
-                                    id3.fromFile(new File([e.target.result], Utils.queueManager.currentSong.url.split("\\")[Utils.queueManager.currentSong.url.split("\\") - 1])).then((tags) => {
-                                        if (tags != null && tags.images != null) {
-                                            var blob = new Blob([tags.images[0].data])
-                                            var uu = URL.createObjectURL(blob)
-                                            urlsC.push(uu)
-                                            imge.src = uu
-                                            navigator.mediaSession.metadata = new window.MediaMetadata({
-                                                title: Utils.queueManager.currentSong.title,
-                                                artist: Utils.queueManager.currentSong.singerName,
-                                                album: Utils.queueManager.currentSong.albumName,
-                                                artwork: [
-                                                    { src: uu, sizes: '512x512', type: 'image/png' },
-                                                ]
-                                            });
-                                        }
-                                        else {
-                                            imge.src = "/resources/icon.ico"
-                                            navigator.mediaSession.metadata = new window.MediaMetadata({
-                                                title: Utils.queueManager.currentSong.title,
-                                                artist: Utils.queueManager.currentSong.singerName,
-                                                album: Utils.queueManager.currentSong.albumName,
-                                                artwork: [
-                                                    { src: "/resources/icon.ico", sizes: '512x512', type: 'image/png' },
-                                                ]
-                                            });
-                                        }
-                                    });
-                                };
-                            };
-                            request.send();
+                            imge.onerror = () => {
+                                imge.src = "/resources/icon.ico"
+                                navigator.mediaSession.metadata = new window.MediaMetadata({
+                                    title: Utils.queueManager.currentSong.title,
+                                    artist: Utils.queueManager.currentSong.singerName,
+                                    album: Utils.queueManager.currentSong.albumName,
+                                    artwork: [
+                                        { src: "/resources/icon.ico", sizes: '512x512', type: 'image/png' },
+                                    ]
+                                });
+                            }
+                            imge.src = "https://mycache/Image/" + Utils.queueManager.currentSong.id + ".png"
+                            navigator.mediaSession.metadata = new window.MediaMetadata({
+                                title: Utils.queueManager.currentSong.title,
+                                artist: Utils.queueManager.currentSong.singerName,
+                                album: Utils.queueManager.currentSong.albumName,
+                                artwork: [
+                                    { src: "https://mycache/Image/" + Utils.queueManager.currentSong.id + ".png", sizes: '512x512', type: 'image/png' },
+                                ]
+                            });
                         }
                         else {
                             this.shadowRoot.getElementById("music_img").src = "/resources/icon.ico"

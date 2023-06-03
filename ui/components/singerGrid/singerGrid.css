@@ -25,7 +25,8 @@
     text-align: center;
     margin: auto;
     white-space: nowrap;
-    max-width: 190px;
+    max-width: 140px;
+    line-height: 24px;
     text-overflow: ellipsis;
     overflow: hidden;
 }
