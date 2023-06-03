@@ -29,6 +29,7 @@ export default class App {
     */
     async registerClient(platform, versionName, versionId, remoteClient) {
         if (!window.loaded) {
+            window.loaded = true;
             try {
                 this.platform = platform;
                 this.versionName = versionName;

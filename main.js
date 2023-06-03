@@ -18,7 +18,6 @@ async function main() {
     //
     Utils.app.loaded = async function () {
         try {
-            window.loaded = true;
             console.log("AyMusic client registered : " + Utils.app.platform + ", version : " + Utils.app.versionName + " (" + Utils.app.versionId + ")");
             if (Utils.app.platform == "Windows") {
                 Window.setTopBarWindow();
