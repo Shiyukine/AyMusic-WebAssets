@@ -100,7 +100,7 @@ export default class LoginPanel extends HTMLDivElement {
             }
             if (isForModification == "modify") {
                 this.#iframe.src = Utils.servURL + "account/?inapp=1&date=" + Date.now().toString()
-                this.shadowRoot.getElementById("loginBG").style.zIndex = "inherit"
+                this.style.opacity = "1"
             }
             if (isForModification == "logout") {
                 this.#iframe.src = Utils.servURL + "login/logout.php?inapp=1&date=" + Date.now().toString()

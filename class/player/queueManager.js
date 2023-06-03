@@ -52,7 +52,7 @@ export default class QueueManager {
                 let sng = new Song(objs.musicID.replace("so_", ""), objs.url, objs.dateAdded, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID)
                 if (sng.canBeLoaded) {
                     this.allSongs.push({ song: sng, obj: obj })
-                    this.allSongsIds.push({ song: sng.id, obj: obj.id })
+                    this.allSongsIds.push({ song: sng.id, obj: "pl_" + obj.id })
                 }
             }
             if (this.shuffle) this.allSongs = this.shuffleArray(this.allSongs)
@@ -96,7 +96,7 @@ export default class QueueManager {
                 let sng = new Song(objs.musicID.replace("so_", ""), objs.url, objs.dateAdded, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID)
                 if (sng.canBeLoaded) {
                     this.allSongs.push({ song: sng, obj: obj })
-                    this.allSongsIds.push({ song: sng.id, obj: obj.id })
+                    this.allSongsIds.push({ song: sng.id, obj: "al_" + obj.id })
                 }
             }
             if (this.shuffle) this.allSongs = this.shuffleArray(this.allSongs)

@@ -12,6 +12,10 @@ export default class ListenWindow extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: "open" })
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.7s"
+        this.style.position = "absolute"
+        this.style.bottom = "0"
+        this.style.left = "0"
+        this.style.right = "0"
         Import.getData("/ui/windows/listen/listen.html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
@@ -189,12 +193,17 @@ export default class ListenWindow extends HTMLDivElement {
                     if (Utils.player.getVolume() > 0) anVol = Utils.player.getVolume()
                     Utils.app.changeSetting("music_vol", Utils.player.getVolume())
                 })
+                Utils.player.onMuted(() => {
+                    if (Utils.player.isMuted) shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeOff"])
+                    else pbVol.changeValue(pbVol.getValue())
+                    Utils.app.changeSetting("mute", Utils.player.isMuted)
+                })
                 /*pbVol.onRelease(() => {
                     Utils.player.changeVolume(pbVol.getValue());
                 })*/
                 pbVol.onValueChange(() => {
                     Utils.player.changeVolume(pbVol.getValue());
-                    if (pbVol.getValue() == 0) {
+                    if (pbVol.getValue() == 0 || Utils.player.isMuted) {
                         shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeOff"])
                     }
                     else if (pbVol.getValue() < 34) {
@@ -262,8 +271,7 @@ export default class ListenWindow extends HTMLDivElement {
                     Utils.libManager.addOrRemoveSongLikedSongs(Utils.queueManager.currentSong)
                 }
                 shadow.getElementById("volSvg").onclick = () => {
-                    if (Utils.player.getVolume() > 0) Utils.player.changeVolume(0)
-                    else Utils.player.changeVolume(anVol)
+                    Utils.player.setMute(!Utils.player.isMuted)
                 }
                 if (Utils.libManager.userInfo.curMusic != null) {
                     if (Utils.libManager.userInfo.curObject == null) {
@@ -294,6 +302,7 @@ export default class ListenWindow extends HTMLDivElement {
                     Utils.player.seek(Utils.libManager.userInfo.curTime)
                 }
                 pbVol.changeValue(parseInt(Utils.app.getSetting("music_vol")))
+                if (Utils.app.getSetting("mute")) Utils.player.setMute(true)
                 this.style.opacity = "1"
             }
             new Translations(shadow.children[1])

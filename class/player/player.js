@@ -11,6 +11,7 @@ export default class Player {
     #eventEl = document.createElement("event");
     isLocalMusic = false;
     volume = 100;
+    isMuted = false;
 
     /**
      * 
@@ -95,6 +96,10 @@ export default class Player {
         this.#eventEl.addEventListener("songchange", callback)
     }
 
+    onMuted(callback) {
+        this.#eventEl.addEventListener("muted", callback)
+    }
+
     play() {
         if (this.isLocalMusic) {
             this.audioElement.play()
@@ -126,29 +131,25 @@ export default class Player {
         console.log("changing shuffle")
         Utils.queueManager.shuffle = activate
         if (Utils.queueManager.shuffle) {
-            for (let y = 0; y < Utils.queueManager.allSongs.length; y++) {
-                if (Utils.queueManager.allSongs[y].song.id == Utils.queueManager.currentSong.id
-                    && Utils.queueManager.allSongs[y].obj.id == Utils.queueManager.currentObject.id) {
-                    Utils.queueManager.currentIndex = y;
-                }
-            }
             Utils.queueManager.allSongs = Utils.queueManager.shuffleArray(Utils.queueManager.allSongs)
         }
         else {
             for (let i = 0; i < Utils.queueManager.allSongsIds.length; i++) {
                 let id = Utils.queueManager.allSongsIds[i].song
-                let id2 = Utils.queueManager.allSongsIds[i].obj
+                let id2 = Utils.queueManager.allSongsIds[i].obj.split("_")[1]
                 for (let y = 0; y < Utils.queueManager.allSongs.length; y++) {
                     if (Utils.queueManager.allSongs[y].song.id == id && Utils.queueManager.allSongs[y].obj.id == id2) {
                         let temp = Utils.queueManager.allSongs[i]
                         Utils.queueManager.allSongs[i] = Utils.queueManager.allSongs[y]
                         Utils.queueManager.allSongs[y] = temp
-                        if (Utils.queueManager.allSongs[y].song.id == Utils.queueManager.currentSong.id
-                            && Utils.queueManager.allSongs[y].obj.id == Utils.queueManager.currentObject.id) {
-                            Utils.queueManager.currentIndex = y;
-                        }
                     }
                 }
+            }
+        }
+        for (let y = 0; y < Utils.queueManager.allSongs.length; y++) {
+            if (Utils.queueManager.allSongs[y].song.id == Utils.queueManager.currentSong.id
+                && Utils.queueManager.allSongsIds[y].obj == Utils.queueManager.currentObject.id) {
+                Utils.queueManager.currentIndex = y;
             }
         }
         this.#eventEl.dispatchEvent(new CustomEvent("shufflechange"));
@@ -165,6 +166,14 @@ export default class Player {
         if (this.isLocalMusic) {
             this.audioElement.volume = volume / 100
         }
+    }
+
+    setMute(mute) {
+        this.isMuted = mute
+        if (this.isLocalMusic) {
+            this.audioElement.muted = mute
+        }
+        this.#eventEl.dispatchEvent(new CustomEvent("muted"));
     }
 
     getCurrentTime() {
