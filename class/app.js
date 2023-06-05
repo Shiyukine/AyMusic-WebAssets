@@ -29,7 +29,6 @@ export default class App {
     */
     async registerClient(platform, versionName, versionId, remoteClient) {
         if (!window.loaded) {
-            window.loaded = true;
             try {
                 this.platform = platform;
                 this.versionName = versionName;
@@ -50,6 +49,7 @@ export default class App {
                     console.warn("No settings imported. Creating new setting file")
                 }
                 this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
+                window.loaded = true;
                 this.#eventEl.dispatchEvent(new CustomEvent("loaded"));
             }
             catch (e) {
