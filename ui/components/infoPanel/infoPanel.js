@@ -52,6 +52,7 @@ export default class InfoPanel extends HTMLDivElement {
                 this.shadowRoot.getElementById("panelInfoBG").style = "";
                 this.#loaded = true;
             }
+            this.shadowRoot.getElementById("panelInfoBG").style.zIndex = "100"
             this.style.opacity = "1"
         })
     }
@@ -100,6 +101,7 @@ export default class InfoPanel extends HTMLDivElement {
 
     hide() {
         this.shadowRoot.getElementById("panelInfoBG").style.opacity = "0%";
+        this.shadowRoot.getElementById("panelInfoBG").style.zIndex = "0"
         if (document.getElementById("menu_win"))
             document.getElementById("menu_win").style.zIndex = ""
     }

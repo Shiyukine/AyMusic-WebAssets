@@ -43,7 +43,7 @@ export default class LoginPanel extends HTMLDivElement {
         this.isForModification = isForModification;
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.3s"
-        this.style.zIndex = "101"
+        //this.style.zIndex = "101"
         Import.getData("/ui/components/loginPanel/loginPanel.html").then((html) => {
             shadow.innerHTML = html
             this.#iframe = this.shadowRoot.getElementById("iframe")
@@ -119,17 +119,22 @@ export default class LoginPanel extends HTMLDivElement {
 
     close(triggerEvent = true) {
         this.shadowRoot.getElementById("loginBG").ontransitionend = () => {
-            this.shadowRoot.getRootNode().host.parentElement.removeChild(this)
-            if (document.getElementById("menu_win"))
-                document.getElementById("menu_win").style.zIndex = ""
-            this.isClosed = true
-            while (this.firstChild) {
-                this.removeChild(this.lastChild);
-            }
-            this.controller.abort()
+            this.#endLogin();
         };
         if (triggerEvent) this.#eventEl.dispatchEvent(new CustomEvent("logged"));
-        this.shadowRoot.getElementById("loginBG").style.opacity = "0%"
+        if (this.isForModification == "refresh") this.#endLogin()
+        else this.shadowRoot.getElementById("loginBG").style.opacity = "0%"
+    }
+
+    #endLogin() {
+        this.shadowRoot.getRootNode().host.parentElement.removeChild(this)
+        if (document.getElementById("menu_win"))
+            document.getElementById("menu_win").style.zIndex = ""
+        this.isClosed = true
+        while (this.firstChild) {
+            this.removeChild(this.lastChild);
+        }
+        this.controller.abort()
     }
 
     addScript() {
