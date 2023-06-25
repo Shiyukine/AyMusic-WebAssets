@@ -1,4 +1,5 @@
 import Import from "../../../class/import.js";
+import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
 import Utils from "../../../class/utils/utils.js";
@@ -20,6 +21,7 @@ export default class ProgressBar extends HTMLDivElement {
                 shadow.getElementById("progressBar").style.position = "absolute"
                 this.changeMax(this.getAttribute("max") ? this.getAttribute("max") : this.getMax())
                 this.changeValue(this.getAttribute("value") ? this.getAttribute("value") : this.getValue())
+                new ThemeColor(shadow.children[1])
             }
             window.addEventListener("resize", () => {
                 shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"

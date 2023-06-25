@@ -1,4 +1,5 @@
 import Import from "../../../class/import.js";
+import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
 import Utils from "../../../class/utils/utils.js";
@@ -34,6 +35,7 @@ export default class SettingsWindow extends HTMLDivElement {
                 //
                 this.changeAccount();
                 new Translations(shadow.children[1])
+                new ThemeColor(shadow.children[1])
                 Import.getData("/resources/translation.json").then((trls) => {
                     try {
                         var allTranslations = ""
@@ -73,12 +75,18 @@ export default class SettingsWindow extends HTMLDivElement {
                         }
                         if (x.tagName == "SELECT") {
                             x.value = Utils.app.getSetting(x.id)
-                            x.onchange = () => {
+                            x.addEventListener("change", () => {
                                 Utils.app.changeSetting(x.id, x.value)
                                 x.value = Utils.app.getSetting(x.id)
-                            }
+                            })
                         }
                     }
+                })
+                shadow.getElementById("gen_langs").addEventListener("change", () => {
+                    Utils.app.changeLanguage(Utils.app.getSetting("gen_langs"))
+                })
+                shadow.getElementById("gen_theme").addEventListener("change", () => {
+                    Utils.app.changeTheme(Utils.app.getSetting("gen_theme"))
                 })
                 /**
                  * @type {LoginPanel}

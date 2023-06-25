@@ -4,6 +4,7 @@ import Album from "../../../class/music/album.js";
 import Playlist from "../../../class/music/playlist.js";
 import Singer from "../../../class/music/singer.js";
 import Song from "../../../class/music/song.js";
+import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
 import Utils from "../../../class/utils/utils.js";
@@ -50,6 +51,7 @@ export default class LibraryWindow extends HTMLDivElement {
                     }
                 })
                 new Translations(shadow.children[1])
+                new ThemeColor(shadow.children[1])
                 this.changeView(this.selectedIndex, false)
                 this.changeViewMyLib(0)
                 this.style.opacity = "1"

@@ -1,4 +1,5 @@
 import Import from "../../../class/import.js";
+import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 
 export default class TextBox extends HTMLDivElement {
@@ -13,6 +14,7 @@ export default class TextBox extends HTMLDivElement {
         Import.getData("/ui/components/textBox/textBox.html").then((html) => {
             shadow.innerHTML = html
             new Translations(shadow.children[1])
+            new ThemeColor(shadow.children[1])
             this.setLabel(this.getAttribute("label") ? this.getAttribute("label") : label)
             this.setColor(this.getAttribute("cssColor") ? this.getAttribute("cssColor") : cssColor)
             this.shadowRoot.getElementById("lab").onclick = () => {

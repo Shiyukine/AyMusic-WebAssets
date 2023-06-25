@@ -5,6 +5,7 @@ import LibraryWindow from "../library/library.js";
 import SearchWindow from "../search/search.js";
 import Translations from "../../../class/translations.js";
 import HomeWindow from "../home/home.js";
+import ThemeColor from "../../../class/themeColor.js";
 
 export default class MenuWindow extends HTMLDivElement {
 
@@ -23,30 +24,31 @@ export default class MenuWindow extends HTMLDivElement {
                 this.style.height = "100%";
                 this.style.position = "absolute";
                 this.style.opacity = "1"
-            }
-            new Translations(shadow.children[1])
-            this.accountEl = this.shadowRoot.getElementById("acc_pp");
-            this.changeAccountAvatar();
-            window.addEventListener("popstate", (e) => {
-                if (e.state.where == "menu") this.changeWindow(e.state.window, e.state.menu, false)
-            })
-            Array.from(shadow.getElementById("main").getElementsByTagName("svg")).forEach((el) => {
-                el.onclick = () => {
-                    this.changeWindow(this.UserWindows[el.id], el.id)
+                this.accountEl = this.shadowRoot.getElementById("acc_pp");
+                this.changeAccountAvatar();
+                window.addEventListener("popstate", (e) => {
+                    if (e.state.where == "menu") this.changeWindow(e.state.window, e.state.menu, false)
+                })
+                Array.from(shadow.getElementById("main").getElementsByTagName("svg")).forEach((el) => {
+                    el.onclick = () => {
+                        this.changeWindow(this.UserWindows[el.id], el.id)
+                    }
+                })
+                shadow.getElementById("acc_link").onclick = () => {
+                    let win = this.changeWindow(this.UserWindows.Settings, "Settings")
+                    if (win) win.changeView(2)
                 }
-            })
-            shadow.getElementById("acc_link").onclick = () => {
-                let win = this.changeWindow(this.UserWindows.Settings, "Settings")
-                if (win) win.changeView(2)
-            }
-            this.changeWindow(this.UserWindows.Home, "Home")
-            shadow.getElementById("acc_link").onmouseenter = () => {
-                shadow.getElementById("acc_pp").style.visibility = "visible"
-                shadow.getElementById("acc_ppstatic").style.visibility = "hidden"
-            }
-            shadow.getElementById("acc_link").onmouseleave = () => {
-                shadow.getElementById("acc_pp").style.visibility = "hidden"
-                shadow.getElementById("acc_ppstatic").style.visibility = "visible"
+                this.changeWindow(this.UserWindows.Home, "Home")
+                shadow.getElementById("acc_link").onmouseenter = () => {
+                    shadow.getElementById("acc_pp").style.visibility = "visible"
+                    shadow.getElementById("acc_ppstatic").style.visibility = "hidden"
+                }
+                shadow.getElementById("acc_link").onmouseleave = () => {
+                    shadow.getElementById("acc_pp").style.visibility = "hidden"
+                    shadow.getElementById("acc_ppstatic").style.visibility = "visible"
+                }
+                new Translations(shadow.children[1])
+                new ThemeColor(shadow.children[1])
             }
         })
     }

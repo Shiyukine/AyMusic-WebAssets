@@ -8,6 +8,7 @@ import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
 import Playlist from "../../../class/music/playlist.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
+import ThemeColor from "../../../class/themeColor.js";
 
 export default class QueueViewerWindow extends HTMLDivElement {
     isClosed = true;
@@ -24,6 +25,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 new Translations(shadow.children[1])
+                new ThemeColor(shadow.children[1])
                 Utils.queueManager.onQueueChanged(() => {
                     this.refresh()
                 })

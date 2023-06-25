@@ -1,6 +1,7 @@
 import Import from "../../../class/import.js";
 import Album from "../../../class/music/album.js";
 import Song from "../../../class/music/song.js";
+import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
 import ProgressBar from "../../components/progressBar/progressBar.js";
@@ -303,9 +304,10 @@ export default class ListenWindow extends HTMLDivElement {
                 }
                 pbVol.changeValue(parseInt(Utils.app.getSetting("music_vol")))
                 if (Utils.app.getSetting("mute")) Utils.player.setMute(true)
+                new Translations(shadow.children[1])
+                new ThemeColor(shadow.children[1])
                 this.style.opacity = "1"
             }
-            new Translations(shadow.children[1])
         })
     }
 

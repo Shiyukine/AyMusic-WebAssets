@@ -1,3 +1,4 @@
+import ThemeColor from "./themeColor.js";
 import Utils from "./utils/utils.js";
 
 export default class Window {
@@ -55,6 +56,7 @@ export default class Window {
             await Utils.app.remoteClient.rightClickWindow()
         })
         this.setResizeBarsWindow()
+        new ThemeColor(topbar)
     }
 
     static setResizeBarsWindow() {

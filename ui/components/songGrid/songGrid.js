@@ -6,6 +6,7 @@ import Utils from "../../../class/utils/utils.js";
 import ContextMenu from "../contextMenu/contextMenu.js";
 import * as id3 from "../../../plugins/id3/id3.js"
 import InfoPanel from "../infoPanel/infoPanel.js";
+import ThemeColor from "../../../class/themeColor.js";
 
 export default class SongGrid extends HTMLDivElement {
 
@@ -62,6 +63,7 @@ export default class SongGrid extends HTMLDivElement {
                     }
                 });
                 this.song = song
+                new ThemeColor(shadow.children[1])
             }
         })
     }

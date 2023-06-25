@@ -8,6 +8,7 @@ import ListenWindow from "./ui/windows/listen/listen.js";
 import Translations from "./class/translations.js";
 import Import from "./class/import.js";
 import LocalMusicHandler from "./class/utils/localMusicHandler.js";
+import ThemeColor from "./class/themeColor.js";
 
 async function main() {
     window.app = Utils.app;
@@ -24,6 +25,7 @@ async function main() {
                 Window.setDevToolLogger();
             }
             new Translations(document.body)
+            new ThemeColor(document.body)
             document.getElementById("version_name").innerText = Utils.app.versionName + " (" + Utils.app.versionId + ")"
             var loadPanel = new InfoPanel("Searching for updates...", "Please wait...", null, true);
             document.getElementById("main").appendChild(loadPanel);

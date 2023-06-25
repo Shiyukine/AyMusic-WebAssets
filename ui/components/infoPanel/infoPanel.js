@@ -1,4 +1,6 @@
 import Import from "../../../class/import.js";
+import ThemeColor from "../../../class/themeColor.js";
+import Translations from "../../../class/translations.js";
 
 export default class InfoPanel extends HTMLDivElement {
     /**
@@ -51,6 +53,8 @@ export default class InfoPanel extends HTMLDivElement {
                 this.shadowRoot.getElementById("panelInfoBG").ontransitionend = () => { };
                 this.shadowRoot.getElementById("panelInfoBG").style = "";
                 this.#loaded = true;
+                new Translations(this.shadowRoot.children[1])
+                new ThemeColor(this.shadowRoot.children[1])
             }
             this.shadowRoot.getElementById("panelInfoBG").style.zIndex = "100"
             this.style.opacity = "1"

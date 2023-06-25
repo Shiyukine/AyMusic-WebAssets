@@ -1,4 +1,5 @@
 import Import from "../../../class/import.js";
+import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 
 export default class SearchWindow extends HTMLDivElement {
@@ -15,6 +16,7 @@ export default class SearchWindow extends HTMLDivElement {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 new Translations(shadow.children[1])
+                new ThemeColor(shadow.children[1])
                 this.style.opacity = "1"
                 shadow.getElementById("serv_picker").addEventListener("change", () => {
                     //icon = all

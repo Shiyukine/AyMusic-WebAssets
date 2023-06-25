@@ -1,4 +1,5 @@
 import Import from "../../../class/import.js";
+import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 
 export default class MusicViewerWindow extends HTMLDivElement {
@@ -14,6 +15,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
         Import.getData("/ui/windows/musicViewer/musicViewer.html").then((html) => {
             shadow.innerHTML = html
             new Translations(shadow.children[1])
+            new ThemeColor(shadow.children[1])
             this.style.opacity = "1"
         })
     }

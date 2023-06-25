@@ -7,6 +7,7 @@ import SingerGrid from "../../components/singerGrid/singerGrid.js"
 import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
 import Playlist from "../../../class/music/playlist.js";
+import ThemeColor from "../../../class/themeColor.js";
 
 export default class HomeWindow extends HTMLDivElement {
     isClosed = false;
@@ -20,6 +21,7 @@ export default class HomeWindow extends HTMLDivElement {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 new Translations(shadow.children[1])
+                new ThemeColor(shadow.children[1])
                 this.style.opacity = "1"
                 this.refreshHome()
             }

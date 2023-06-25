@@ -74,8 +74,11 @@ export default class App {
     }
 
     changeLanguage(language) {
-        this.changeSetting("lang", language)
         this.#eventEl.dispatchEvent(new CustomEvent("langchanged"));
+    }
+
+    changeTheme(theme) {
+        this.#eventEl.dispatchEvent(new CustomEvent("themechanged"));
     }
 
     addEventListener(event, callback) {

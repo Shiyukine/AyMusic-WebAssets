@@ -1,5 +1,7 @@
 import Utils from "../../../class/utils/utils.js";
 import Import from "../../../class/import.js";
+import Translations from "../../../class/translations.js";
+import ThemeColor from "../../../class/themeColor.js";
 
 export default class LoginPanel extends HTMLDivElement {
     /**
@@ -53,6 +55,8 @@ export default class LoginPanel extends HTMLDivElement {
                 this.shadowRoot.getElementById("loginBG").ontransitionend = () => { };
                 if (document.getElementById("menu_win"))
                     document.getElementById("menu_win").style.zIndex = "0"
+                new Translations(shadow.children[1])
+                new ThemeColor(shadow.children[1])
             }
             let loaded = false;
             this.addScript()

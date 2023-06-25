@@ -1,4 +1,5 @@
 import Import from "../../../class/import.js";
+import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 
 export default class ContextMenu extends HTMLDivElement {
@@ -18,18 +19,21 @@ export default class ContextMenu extends HTMLDivElement {
         this.style.display = "flex"
         Import.getData("/ui/components/contextMenu/contextMenu.html").then((html) => {
             shadow.innerHTML = html
-            new Translations(shadow.children[1])
-            window.addEventListener("pointerdown", (e) => {
-                if (!this.isHidded && !this.shadowRoot.getElementById("context").matches(":hover") && !this.isSub)
-                    this.hide()
-            })
-            this.addEventListener("mouseleave", (e) => {
-                for (let el of this.elements) {
-                    if (el.isSub && !el.contextMenu.matches(":hover") && !el.contextMenu.isHidded) {
-                        el.contextMenu.hide()
+            this.shadowRoot.getElementById("cssImport").onload = async () => {
+                window.addEventListener("pointerdown", (e) => {
+                    if (!this.isHidded && !this.shadowRoot.getElementById("context").matches(":hover") && !this.isSub)
+                        this.hide()
+                })
+                this.addEventListener("mouseleave", (e) => {
+                    for (let el of this.elements) {
+                        if (el.isSub && !el.contextMenu.matches(":hover") && !el.contextMenu.isHidded) {
+                            el.contextMenu.hide()
+                        }
                     }
-                }
-            })
+                })
+                new Translations(shadow.children[1])
+                new ThemeColor(shadow.children[1])
+            }
         })
     }
 
@@ -56,7 +60,7 @@ export default class ContextMenu extends HTMLDivElement {
         while (this.shadowRoot.getElementById("context").firstChild) {
             this.shadowRoot.getElementById("context").removeChild(this.shadowRoot.getElementById("context").lastChild)
         }
-        if(this.beforeShow) await this.beforeShow()
+        if (this.beforeShow) await this.beforeShow()
         //this.shadowRoot.getElementById("context").innerHTML = ""
         for (let el of this.elements) {
             let div = document.createElement("div")
