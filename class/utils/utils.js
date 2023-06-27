@@ -38,7 +38,7 @@ export default class Utils {
 
     static createSVGPath(pathName, color, click, size) {
         return new Promise((resolve) => {
-            Import.getData("/resources/paths.json").then((data) => {
+            Import.getData("./resources/paths.json").then((data) => {
                 let paths = JSON.parse(data)
                 let path = paths[pathName]
                 let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")

@@ -3,6 +3,11 @@ html {
     width: 100%;
     height: 100%;
     user-select: none;
+    -webkit-app-region: no-drag;
+}
+
+html * {
+    -webkit-app-region: no-drag;
 }
 
 body {
@@ -34,7 +39,7 @@ p {
 
 @font-face {
     font-family: "Quicksand";
-    src: url("/resources/quicksand.ttf");
+    src: url("./resources/quicksand.ttf");
 }
 
 #loadPanel {
@@ -207,7 +212,8 @@ svg.rotate:hover {
     z-index: 999;
     height: 35px;
     margin: 0;
-    -webkit-app-region: drag;
+    /*-webkit-app-region: drag;
+    -webkit-user-select: none;*/
 }
 
 .windowTopBar img,
@@ -218,6 +224,7 @@ svg.rotate:hover {
     height: 29px;
     border-radius: 25%;
     position: relative;
+    /*-webkit-app-region: no-drag;*/
 }
 
 .windowTopBar img.left,
@@ -231,12 +238,16 @@ svg.rotate:hover {
     margin: 0;
     float: left;
     color: white;
+    /*-webkit-app-region: drag;
+    -webkit-user-select: none;*/
 }
 
 .windowTopBar>.mvmt {
     position: absolute;
     width: 100%;
     height: 35px;
+    -webkit-app-region: drag;
+    -webkit-user-select: none;
 }
 
 svg,

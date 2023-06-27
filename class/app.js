@@ -28,33 +28,30 @@ export default class App {
     * @param {Object} remoteClient Object to send information on the client
     */
     async registerClient(platform, versionName, versionId, remoteClient) {
-        if (!window.loaded) {
-            try {
-                this.platform = platform;
-                this.versionName = versionName;
-                this.versionId = versionId;
-                this.remoteClient = remoteClient;
-                let newS = await this.remoteClient.getSettingFile()
-                if (newS) {
-                    newS = JSON.parse(newS)
-                    for (var x in this.settings) {
-                        if (typeof newS[x] === "undefined") {
-                            console.warn("Adding settings which didn't exists : " + x)
-                            newS[x] = this.settings[x]
-                        }
+        try {
+            this.platform = platform;
+            this.versionName = versionName;
+            this.versionId = versionId;
+            this.remoteClient = remoteClient;
+            let newS = await this.remoteClient.getSettingFile()
+            if (newS) {
+                newS = JSON.parse(newS)
+                for (var x in this.settings) {
+                    if (typeof newS[x] === "undefined") {
+                        console.warn("Adding settings which didn't exists : " + x)
+                        newS[x] = this.settings[x]
                     }
-                    this.settings = newS
                 }
-                else {
-                    console.warn("No settings imported. Creating new setting file")
-                }
-                this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
-                window.loaded = true;
-                this.#eventEl.dispatchEvent(new CustomEvent("loaded"));
+                this.settings = newS
             }
-            catch (e) {
-                console.error(e)
+            else {
+                console.warn("No settings imported. Creating new setting file")
             }
+            this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
+            this.#eventEl.dispatchEvent(new CustomEvent("loaded"));
+        }
+        catch (e) {
+            console.error(e)
         }
     }
 
@@ -90,8 +87,8 @@ export default class App {
      * @param {HTMLElement} element 
      */
     async addForwardTouch(element, leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, rightMouseUpEvent) {
-        var id = Utils.createIndexedPathTo(element)
-        console.log("adding ignore touch to " + id)
+        //var id = Utils.createIndexedPathTo(element)
+        console.log("adding ignore touch to ", element)
         var rect = element.getBoundingClientRect();
         var x = rect.left;
         var y = rect.top;
@@ -100,7 +97,7 @@ export default class App {
         var style = window.getComputedStyle(element);
         var isVisible = style.display !== "none";
         let self = this;
-        setInterval(async () => {
+        /*setInterval(async () => {
             var nrect = element.getBoundingClientRect();
             if (x != nrect.left || y != nrect.top ||
                 width != nrect.right - nrect.left || height != nrect.bottom - nrect.top) {
@@ -120,7 +117,7 @@ export default class App {
                     console.log("removed ignore touch of " + id)
                 }
             }
-        }, 10);
-        await this.remoteClient.addIgnoreTouch(id, x, y, width, height, isVisible, leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, rightMouseUpEvent);
+        }, 10);*/
+        await this.remoteClient.addIgnoreTouch(element);
     }
 }

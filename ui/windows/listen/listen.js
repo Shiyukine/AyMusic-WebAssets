@@ -42,17 +42,23 @@ export default class ListenWindow extends HTMLDivElement {
                             imge.onerror = () => {
                                 imge.src = "/resources/icon.ico"
                             }
-                            imge.onload = () => {
+                            imge.onload = async () => {
+                                let blob = await (await fetch(imge.src)).blob();
+                                let dataUrl = await new Promise(resolve => {
+                                    let reader = new FileReader();
+                                    reader.onload = () => resolve(reader.result);
+                                    reader.readAsDataURL(blob);
+                                });
                                 navigator.mediaSession.metadata = new window.MediaMetadata({
                                     title: Utils.queueManager.currentSong.title,
                                     artist: Utils.queueManager.currentSong.singerName,
                                     album: Utils.queueManager.currentSong.albumName,
                                     artwork: [
-                                        { src: imge.src, sizes: '512x512', type: 'image/png' },
+                                        { src: dataUrl, sizes: '512x512', type: 'image/png' },
                                     ]
                                 });
                             }
-                            imge.src = "https://mycache/Image/" + Utils.queueManager.currentSong.id + ".png"
+                            imge.src = "app://cache/Image/" + Utils.queueManager.currentSong.id + ".png"
                         }
                         else {
                             this.shadowRoot.getElementById("music_img").src = "/resources/icon.ico"

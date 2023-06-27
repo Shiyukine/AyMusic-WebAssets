@@ -13,12 +13,12 @@ export default class Window {
         icon.classList.add("left")
         topbar.appendChild(icon)
         var mvmt = document.createElement("div")
-        mvmt.addEventListener("pointerdown", async function (e) {
+        /*mvmt.addEventListener("pointerdown", async function (e) {
             if (e.button == 0) await Utils.app.remoteClient.beginMoveWindow()
         })
         mvmt.addEventListener("pointerup", async function (e) {
             if (e.button == 2) await Utils.app.remoteClient.rightClickWindow()
-        })
+        })*/
         mvmt.classList.add("mvmt")
         topbar.appendChild(mvmt)
         topbar.classList.add("windowTopBar")
@@ -55,7 +55,7 @@ export default class Window {
         }, null, null, async function () {
             await Utils.app.remoteClient.rightClickWindow()
         })
-        this.setResizeBarsWindow()
+        //this.setResizeBarsWindow()
         new ThemeColor(topbar)
     }
 
@@ -143,11 +143,11 @@ export default class Window {
         window.addEventListener("keydown", async function (key) {
             debugK.push(key.code)
             if ((debugK.includes("ControlLeft") || debugK.includes("ControlRight")) && (debugK.includes("ShiftLeft") || debugK.includes("ShiftRight")) && debugK.includes("KeyI")) {
-                await Utils.app.remoteClient.showDevTool()
+                //await Utils.app.remoteClient.showDevTool()
                 debugK = []
             }
             if ((debugK.includes("ControlLeft") || debugK.includes("ControlRight")) && debugK.includes("KeyR")) {
-                await Utils.app.remoteClient.refreshApp()
+                //await Utils.app.remoteClient.refreshApp()
             }
         })
 

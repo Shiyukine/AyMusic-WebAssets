@@ -13,66 +13,69 @@ import ThemeColor from "./class/themeColor.js";
 async function main() {
     window.app = Utils.app;
     window.newError = Utils.newError;
-    document.body.ondragstart = () => { return false; };
+    document.getElementById("main").ondragstart = () => { return false; };
     Import.loadCustomElements()
-    Utils.pathsData = JSON.parse(await Import.getData("/resources/paths.json"))
+    Utils.pathsData = JSON.parse(await Import.getData("./resources/paths.json"))
     //
     Utils.app.loaded = async function () {
-        try {
-            console.log("AyMusic client registered : " + Utils.app.platform + ", version : " + Utils.app.versionName + " (" + Utils.app.versionId + ")");
-            if (Utils.app.platform == "Windows") {
-                Window.setTopBarWindow();
-                Window.setDevToolLogger();
-            }
-            new Translations(document.body)
-            new ThemeColor(document.body)
-            document.getElementById("version_name").innerText = Utils.app.versionName + " (" + Utils.app.versionId + ")"
-            var loadPanel = new InfoPanel("Searching for updates...", "Please wait...", null, true);
-            document.getElementById("main").appendChild(loadPanel);
-            loadPanel.style.width = loadPanel.style.height = "100%";
-            loadPanel.style.position = "absolute";
-            loadPanel.show();
-            console.log("Getting server URL");
-            if (!Utils.useLocalServer)
-                Utils.servURL = (await Utils.app.remoteClient.httpRequestGET("https://raw.githubusercontent.com/Shiyukine/Shiyukine/main/serv.txt")).replace("\n", "");
-            else
-                Utils.servURL = "https://192.168.0.33/";
-            await Utils.app.remoteClient.changeServURL(Utils.servURL)
-            console.log("Server URL : " + Utils.servURL);
-            //
-            LocalMusicHandler.init()
-            await LocalMusicHandler.getLocalLibrary()
-            //
-            Update.searchUpdate(loadPanel);
-            await Utils.delay(1000);
-            loadPanel.changeText("Connecting to your account...");
-            var logP = new LoginPanel("");
-            logP.style.width = logP.style.height = "100%";
-            logP.style.position = "absolute";
-            document.getElementById("main").appendChild(logP);
-            logP.notConnected = () => {
-                loadPanel.hide();
-            }
-            logP.logged = async () => {
-                loadPanel.changeText("Getting your playlists...");
+        if (!window.loaded) {
+            window.loaded = true;
+            try {
+                console.log("AyMusic client registered : " + Utils.app.platform + ", version : " + Utils.app.versionName + " (" + Utils.app.versionId + ")");
+                if (Utils.app.platform == "Windows") {
+                    Window.setTopBarWindow();
+                    Window.setDevToolLogger();
+                }
+                new Translations(document.body)
+                new ThemeColor(document.body)
+                document.getElementById("version_name").innerText = Utils.app.versionName + " (" + Utils.app.versionId + ")"
+                var loadPanel = new InfoPanel("Searching for updates...", "Please wait...", null, true);
+                document.getElementById("main").appendChild(loadPanel);
+                loadPanel.style.width = loadPanel.style.height = "100%";
+                loadPanel.style.position = "absolute";
                 loadPanel.show();
-                await Utils.libManager.refreshUserInfo()
-                loadPanel.close();
-                let lp = document.getElementById("loadPanel");
-                lp.children[0].classList.add("pauseSVG");
-                let mainPanel = document.getElementById("main");
-                document.body.style.backgroundImage = "url(/resources/background.jpg)"
-                document.getElementsByClassName("windowTopBar")[0].classList.add("loaded")
-                mainPanel.removeChild(lp);
-                document.body.classList.remove("loading");
-                let menuWin = new MenuWindow()
-                Utils.menu = menuWin
-                mainPanel.appendChild(menuWin);
-                mainPanel.appendChild(new ListenWindow())
-            };
-        }
-        catch (e) {
-            Utils.newError("Unable to reach the server :(", e);
+                console.log("Getting server URL");
+                if (!Utils.useLocalServer)
+                    Utils.servURL = (await Utils.app.remoteClient.httpRequestGET("https://raw.githubusercontent.com/Shiyukine/Shiyukine/main/serv.txt")).replace("\n", "");
+                else
+                    Utils.servURL = "https://192.168.0.33/";
+                await Utils.app.remoteClient.changeServURL(Utils.servURL)
+                console.log("Server URL : " + Utils.servURL);
+                //
+                LocalMusicHandler.init()
+                await LocalMusicHandler.getLocalLibrary()
+                //
+                Update.searchUpdate(loadPanel);
+                await Utils.delay(1000);
+                loadPanel.changeText("Connecting to your account...");
+                var logP = new LoginPanel("");
+                logP.style.width = logP.style.height = "100%";
+                logP.style.position = "absolute";
+                document.getElementById("main").appendChild(logP);
+                logP.notConnected = () => {
+                    loadPanel.hide();
+                }
+                logP.logged = async () => {
+                    loadPanel.changeText("Getting your playlists...");
+                    loadPanel.show();
+                    await Utils.libManager.refreshUserInfo()
+                    loadPanel.close();
+                    let lp = document.getElementById("loadPanel");
+                    lp.children[0].classList.add("pauseSVG");
+                    let mainPanel = document.getElementById("main");
+                    document.body.style.backgroundImage = "url(/resources/background.jpg)"
+                    document.getElementsByClassName("windowTopBar")[0].classList.add("loaded")
+                    mainPanel.removeChild(lp);
+                    document.body.classList.remove("loading");
+                    let menuWin = new MenuWindow()
+                    Utils.menu = menuWin
+                    mainPanel.appendChild(menuWin);
+                    mainPanel.appendChild(new ListenWindow())
+                };
+            }
+            catch (e) {
+                Utils.newError("Unable to reach the server :(", e);
+            }
         }
     };
 }

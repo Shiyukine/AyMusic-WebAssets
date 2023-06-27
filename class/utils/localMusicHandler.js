@@ -79,7 +79,7 @@ export default class LocalMusicHandler {
         let counter = 0;
         for (let i in urls) {
             let nurl = urls[i]
-            let result = "https://mymusic/" + nurl
+            let result = "app://localfiles/" + nurl
             var gmt = new GetMusicTag(result)
             gmt.getTags().then(async (tags) => {
                 let artist = LocalMusicHandler.addLocalSinger(tags != null && tags.artist != null ? tags.artist : "Unknown artist")
@@ -94,7 +94,7 @@ export default class LocalMusicHandler {
                     for (let i = 0; i < bytes.byteLength; i++) {
                         uwu.push(bytes[i])
                     }
-                    musicInfo.push([artist.id, album.id, uwu])
+                    musicInfo.push([artist.id, album.id, tags.image])
                 }
                 else musicInfo.push([artist.id, album.id, null])
                 counter++
