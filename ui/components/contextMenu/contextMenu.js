@@ -84,7 +84,7 @@ export default class ContextMenu extends HTMLDivElement {
                     if (!this.isHidded) {
                         let rect = this.getBoundingClientRect();
                         context.show(new MouseEvent("contextmenu", {
-                            clientX: rect.left - 45,
+                            clientX: rect.left,
                             clientY: rect.top - 1 + 39 * Array.from(this.shadowRoot.getElementById("context").children).indexOf(div),
                             button: 0,
                             ctrlKey: false,
