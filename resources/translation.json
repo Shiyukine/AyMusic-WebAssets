@@ -20,6 +20,8 @@
         "{set.music.skipSilences}": "Skip silences BETA",
         "{set.music.addMusic}": "Import some local songs to your liked songs",
         "{set.music.local}": "Import",
+        "{set.music.addAccount}": "Add",
+        "{set.music.rmAccount}": "Remove",
         "{set.account.name}": "Username",
         "{set.account.email}": "E-mail",
         "{set.account}": "Account",

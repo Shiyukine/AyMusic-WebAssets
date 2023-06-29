@@ -1,4 +1,5 @@
 import Import from "../../../class/import.js";
+import PlatformHandler from "../../../class/player/platformHandler.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
@@ -101,6 +102,10 @@ export default class SettingsWindow extends HTMLDivElement {
                 }
                 shadow.getElementById("music_add").onclick = () => {
                     LocalMusicHandler.addMusic()
+                }
+                shadow.getElementById("acc_spotify").onclick = async () => {
+                    await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl("Spotify", "LoginUrl"),
+                        await PlatformHandler.getPlatformUrl("Spotify", "BaseUrl"))
                 }
                 shadow.getElementById("experimental_popout").onclick = async () => {
                     await Utils.app.remoteClient.popoutChrome()

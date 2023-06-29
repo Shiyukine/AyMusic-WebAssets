@@ -1,5 +1,7 @@
 import Song from "../music/song.js";
+import TaskHandler from "../taskHandler.js";
 import Utils from "../utils/utils.js";
+import PlatformHandler from "./platformHandler.js";
 
 export default class Player {
 
@@ -17,7 +19,7 @@ export default class Player {
      * 
      * @param {Song} song 
      */
-    playSong(song, play = true) {
+    async playSong(song, play = true) {
         console.log("begin to play song " + song.url)
         console.log("Resetting ancient song elements")
         if (this.audioElement != null) {
@@ -25,7 +27,6 @@ export default class Player {
             this.audioElement = null;
         }
         console.log("Resetted. Creating new audio element")
-        //local music
         if (song.imgUrl == "localImg") {
             this.isLocalMusic = true;
             this.audioElement = new Audio()
@@ -39,7 +40,6 @@ export default class Player {
                 this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
             }
             this.audioElement.onloadedmetadata = () => {
-                console.log("audio element OK")
                 this.#eventEl.dispatchEvent(new CustomEvent("loadedmetadata"));
                 this.audioElement.volume = this.volume / 100;
                 if (play) this.play()
@@ -55,6 +55,14 @@ export default class Player {
         }
         else {
             this.isLocalMusic = false;
+            var platform = await PlatformHandler.getPlatformBySongUrl(song.url)
+            console.log("Platform: " + platform)
+            if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform &&
+                Date.now() - (await PlatformHandler.getPlatformSettings(platform)).LastRestoredSession > (await PlatformHandler.getPlatformSettings(platform)).RestoreSession) {
+                console.log("Platform need refresh token")
+                await PlatformHandler.refreshTokenForPlatform(platform)
+                console.log("Platform token refreshed")
+            }
         }
         this.#eventEl.dispatchEvent(new CustomEvent("songchange"));
         console.log("audio element created")

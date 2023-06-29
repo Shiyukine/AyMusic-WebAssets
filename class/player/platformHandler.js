@@ -1,14 +1,17 @@
+import TaskHandler from "../taskHandler.js";
 import Utils from "../utils/utils.js";
 
 export default class PlatformHandler {
 
-    platforms = null;
+    static platforms = null;
 
     static searchPlatforms() {
         return new Promise((resolve) => {
             if (!this.platforms) {
-                var result = Utils.app.remoteClient.httpRequestGET(Utils.servURL + "dl/AyMusic/scripts/servers.json")
-                resolve(JSON.parse(result))
+                Utils.app.remoteClient.httpRequestGET(Utils.servURL + "dl/AyMusic/scripts/servers.json").then((result) => {
+                    this.platforms = JSON.parse(result)
+                    resolve(this.platforms)
+                })
             }
             else {
                 resolve(this.platforms)
@@ -23,11 +26,12 @@ export default class PlatformHandler {
 
     static async getPlatformSettings(platform) {
         var settings = {
-            CacheInUserStorage: false,
+            CacheInUserStorage: true,
             RequireVisitBaseUrl: false,
-            RequireUserLoggedOnPlatform: true,
+            RequireUserLoggedOnPlatform: false,
             RestoreSession: 0,
-            LastRestoredSession: 0
+            LastRestoredSession: 0,
+            Token: ""
         }
         var platforms = await this.searchPlatforms()
         var settingsOverrided = platforms["Servers"][platform]["OverrideSettings"]
@@ -35,6 +39,11 @@ export default class PlatformHandler {
             settings[set] = settingsOverrided[set]
         }
         return settings
+    }
+
+    static async setPlatformSetting(platform, setting, value) {
+        var platforms = await this.searchPlatforms()
+        this.platforms["Servers"][platform]["OverrideSettings"][setting] = value
     }
 
     static async getPlatformUrl(platform, url) {
@@ -49,5 +58,30 @@ export default class PlatformHandler {
 
     static getPlatformPath(platform) {
         return Utils.servURL + "/dl/AyMusic/scripts/" + platform + "/"
+    }
+
+    static async getPlatformBySongUrl(url) {
+        for (let platform of await this.searchPlatforms()) {
+            if (url.includes(await PlatformHandler.getPlatformUrl(platform, "ListenUrl"))) {
+                return platform
+            }
+        }
+    }
+
+    static async refreshTokenForPlatform(platform) {
+        return new Promise((resolve) => {
+            PlatformHandler.getPlatformUrl(platform, "BaseUrl").then((url) => {
+                TaskHandler.addTask(url, "", true, true, false, () => {
+                    var intv = setInterval(async () => {
+                        if (Utils.app.remoteClient.getClientToken(platform)) {
+                            await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
+                            await PlatformHandler.setPlatformSetting(platform, "LastRestoredSession", Date.now())
+                            clearInterval(intv)
+                            resolve()
+                        }
+                    }, 1000)
+                })
+            })
+        })
     }
 }
