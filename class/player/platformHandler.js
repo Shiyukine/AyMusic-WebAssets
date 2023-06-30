@@ -29,9 +29,10 @@ export default class PlatformHandler {
             CacheInUserStorage: true,
             RequireVisitBaseUrl: false,
             RequireUserLoggedOnPlatform: false,
-            RestoreSession: 0,
-            LastRestoredSession: 0,
-            Token: ""
+            UseListenUrl: true,
+            ReplaceInSongUrl: null,
+            Token: "",
+            FilterSearch: ""
         }
         var platforms = await this.searchPlatforms()
         var settingsOverrided = platforms["Servers"][platform]["OverrideSettings"]
@@ -61,8 +62,9 @@ export default class PlatformHandler {
     }
 
     static async getPlatformBySongUrl(url) {
-        for (let platform of await this.searchPlatforms()) {
-            if (url.includes(await PlatformHandler.getPlatformUrl(platform, "ListenUrl"))) {
+        let platforms = await this.searchPlatforms()
+        for (let platform of platforms["AvailableServers"]) {
+            if (url.includes(await PlatformHandler.getPlatformUrl(platform, "ListenUrl")) || url.includes(await PlatformHandler.getPlatformUrl(platform, "BaseSongUrl"))) {
                 return platform
             }
         }
@@ -71,12 +73,12 @@ export default class PlatformHandler {
     static async refreshTokenForPlatform(platform) {
         return new Promise((resolve) => {
             PlatformHandler.getPlatformUrl(platform, "BaseUrl").then((url) => {
-                TaskHandler.addTask(url, "", true, true, false, () => {
+                TaskHandler.addTask(url, "", false, true, true, () => {
                     var intv = setInterval(async () => {
                         if (Utils.app.remoteClient.getClientToken(platform)) {
                             await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
-                            await PlatformHandler.setPlatformSetting(platform, "LastRestoredSession", Date.now())
                             clearInterval(intv)
+                            TaskHandler.stopWebTaskManually(url, true)
                             resolve()
                         }
                     }, 1000)

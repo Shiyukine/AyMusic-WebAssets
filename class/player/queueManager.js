@@ -31,12 +31,12 @@ export default class QueueManager {
         this.allSongs = []
         this.allSongsIds = []
         if (obj.constructor === Song) {
-            this.allSongs.push({ song: obj, obj: null })
+            this.allSongs.push({ song: obj, obj: obj })
             this.allSongsIds.push(obj.id)
             this.currentIndex = 0
             this.currentSong = this.allSongs[0].song
             this.currentObject = this.allSongs[0].obj
-            Utils.player.playSong({ song: this.currentSong.id, obj: null })
+            Utils.player.playSong(this.currentSong, play)
             return;
         }
         if (obj.constructor === Playlist) {

@@ -33,7 +33,8 @@ export default class TaskHandler {
 
     static async createTask(wt) {
         var iframe = document.createElement("iframe");
-        iframe.width = iframe.height = 200;
+        iframe.width = 1280;
+        iframe.height = 720;
         var adblockcount = 0;
         var iscf = false;
         Utils.app.remoteClient.registerIframeUrl(wt.url, `addEventListener('message', (e) =>

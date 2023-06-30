@@ -22,7 +22,7 @@ async function main() {
             window.loaded = true;
             try {
                 console.log("AyMusic client registered : " + Utils.app.platform + ", version : " + Utils.app.versionName + " (" + Utils.app.versionId + ")");
-                if (Utils.app.platform == "Windows") {
+                if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS") {
                     Window.setTopBarWindow();
                     Window.setDevToolLogger();
                 }
@@ -64,7 +64,8 @@ async function main() {
                     lp.children[0].classList.add("pauseSVG");
                     let mainPanel = document.getElementById("main");
                     document.body.style.backgroundImage = "url(/resources/background.jpg)"
-                    document.getElementsByClassName("windowTopBar")[0].classList.add("loaded")
+                    if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS")
+                        document.getElementsByClassName("windowTopBar")[0].classList.add("loaded")
                     mainPanel.removeChild(lp);
                     document.body.classList.remove("loading");
                     let menuWin = new MenuWindow()

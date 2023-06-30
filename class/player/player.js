@@ -58,10 +58,22 @@ export default class Player {
             var platform = await PlatformHandler.getPlatformBySongUrl(song.url)
             console.log("Platform: " + platform)
             if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform &&
-                Date.now() - (await PlatformHandler.getPlatformSettings(platform)).LastRestoredSession > (await PlatformHandler.getPlatformSettings(platform)).RestoreSession) {
+                (await PlatformHandler.getPlatformSettings(platform)).Token == "") {
                 console.log("Platform need refresh token")
                 await PlatformHandler.refreshTokenForPlatform(platform)
                 console.log("Platform token refreshed")
+            }
+            let url = song.url
+            if((await PlatformHandler.getPlatformSettings(platform)).UseListenUrl) {
+                let urlsplit = (await PlatformHandler.getPlatformUrl(platform, "BaseSongUrl")).split("%id%")
+                let url2split = (await PlatformHandler.getPlatformUrl(platform, "ListenUrl")).split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
+                    .split("%id%")
+                for(let spl in urlsplit) {
+                    url = url.replace(urlsplit[spl], url2split[spl])
+                }
+                TaskHandler.addTask(url, "", true, true, true, (data) => {
+
+                })
             }
         }
         this.#eventEl.dispatchEvent(new CustomEvent("songchange"));

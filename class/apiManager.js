@@ -45,7 +45,7 @@ export default class ApiManager {
                     else {
                         //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
                         //console.error(result)
-                        if (result["reason"].includes("API")) {
+                        if (result["reason"].includes("Bad API key")) {
                             return new Promise((resolve) => {
                                 var logP = new LoginPanel("refresh");
                                 logP.style.display = "none"
