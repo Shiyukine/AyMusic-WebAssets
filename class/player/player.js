@@ -81,6 +81,7 @@ export default class Player {
                     url = url.replace(urlsplit[spl], url2split[spl])
                 }
                 if (play) url += "&autoplay=1"
+                url += "&volume=" + this.volume
                 TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wtId) => {
                     window.addEventListener("message", (e) => {
                         if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcb") {
