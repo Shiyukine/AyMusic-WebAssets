@@ -32,7 +32,8 @@ export default class PlatformHandler {
             UseListenUrl: true,
             ReplaceInSongUrl: null,
             Token: "",
-            FilterSearch: ""
+            FilterSearch: "",
+            NoMute: false
         }
         var platforms = await this.searchPlatforms()
         var settingsOverrided = platforms["Servers"][platform]["OverrideSettings"]
@@ -40,6 +41,11 @@ export default class PlatformHandler {
             settings[set] = settingsOverrided[set]
         }
         return settings
+    }
+
+    static async getPlatformControl(platform, control, value = "") {
+        var platforms = await this.searchPlatforms()
+        return platforms["Servers"][platform]["Controls"][control].split("%VALUE%").join(value)
     }
 
     static async setPlatformSetting(platform, setting, value) {

@@ -15,6 +15,8 @@ export default class Player {
     volume = 100;
     isMuted = false;
     currentUrl = "";
+    currentSongUrl = "";
+    currentPlatform = null;
 
     /**
      * 
@@ -28,8 +30,8 @@ export default class Player {
             this.audioElement = null;
         }
         try {
-        TaskHandler.stopWebTaskManually(this.currentUrl, true)
-        } catch(e) {}
+            TaskHandler.stopWebTaskManually(this.currentUrl, true)
+        } catch (e) { }
         console.log("Resetted. Creating new audio element")
         if (song.imgUrl == "localImg") {
             this.isLocalMusic = true;
@@ -57,10 +59,12 @@ export default class Player {
             }
             this.audioElement.src = song.url
             this.currentUrl = song.url
+            this.currentPlatform = null
         }
         else {
             this.isLocalMusic = false;
             var platform = await PlatformHandler.getPlatformBySongUrl(song.url)
+            this.currentPlatform = platform
             console.log("Platform: " + platform)
             if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform &&
                 (await PlatformHandler.getPlatformSettings(platform)).Token == "") {
@@ -76,13 +80,13 @@ export default class Player {
                 for (let spl in urlsplit) {
                     url = url.replace(urlsplit[spl], url2split[spl])
                 }
-                if(play) url += "&autoplay=1"
+                if (play) url += "&autoplay=1"
                 TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wtId) => {
                     window.addEventListener("message", (e) => {
                         if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcb") {
-                            if(e.data.id == wtId) {
+                            if (e.data.id == wtId) {
                                 this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
-                                if(e.data.cb == "loadedmetadata") {
+                                if (e.data.cb == "loadedmetadata") {
                                     this.changeVolume(this.volume)
                                     if (play) this.play()
                                     else this.pause()
@@ -95,6 +99,7 @@ export default class Player {
             }
             this.currentUrl = url
         }
+        this.currentSongUrl = song.url
         this.#eventEl.dispatchEvent(new CustomEvent("songchange"));
         console.log("audio element created")
     }
@@ -139,21 +144,21 @@ export default class Player {
         this.#eventEl.addEventListener("muted", callback)
     }
 
-    play() {
+    async play() {
         if (this.isLocalMusic) {
             this.audioElement.play()
         }
         else {
-            TaskHandler.executeJs(this.currentUrl, "play.resume()")
+            TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "Play"))
         }
     }
 
-    pause() {
+    async pause() {
         if (this.isLocalMusic) {
             this.audioElement.pause()
         }
         else {
-            TaskHandler.executeJs(this.currentUrl, "play.pause()")
+            TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "Pause"))
         }
     }
 
@@ -206,26 +211,35 @@ export default class Player {
         this.#eventEl.dispatchEvent(new CustomEvent("repeatchange"));
     }
 
-    changeVolume(volume) {
-        if(!isNaN(volume)) {
+    async changeVolume(volume) {
+        if (!isNaN(volume)) {
             this.volume = volume;
             if (this.isLocalMusic) {
                 this.audioElement.volume = volume / 100
             }
             else {
-                TaskHandler.executeJs(this.currentUrl, "async () => { play.setVolume(" + (volume / 100) + `).then(() =>
-                    {
-                        aaaaaaab()
-                    })
-                }`)
+                TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "SetVolume", volume))
             }
         }
     }
 
-    setMute(mute) {
+    anVol = 0;
+
+    async setMute(mute) {
         this.isMuted = mute
         if (this.isLocalMusic) {
             this.audioElement.muted = mute
+        } else {
+            let platform = await PlatformHandler.getPlatformBySongUrl(this.currentSongUrl)
+            if ((await PlatformHandler.getPlatformSettings(platform)).NoMute) {
+                if (this.isMuted) {
+                    this.anVol = await Utils.player.getVolume()
+                    this.changeVolume(0)
+                }
+                else {
+                    this.changeVolume(this.anVol)
+                }
+            }
         }
         this.#eventEl.dispatchEvent(new CustomEvent("muted"));
     }
@@ -235,14 +249,17 @@ export default class Player {
             return this.audioElement.currentTime * 1000
         }
         else {
-            let result = await TaskHandler.executeJs(this.currentUrl, "async () => { return (await play.getCurrentState()).position }")
+            let result = await TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "CurrentTime"))
             return result
         }
     }
 
-    seek(ms) {
+    async seek(ms) {
         if (this.isLocalMusic) {
             this.audioElement.currentTime = ms / 1000
+        }
+        else {
+            await TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "Seek", ms))
         }
     }
 
@@ -251,8 +268,8 @@ export default class Player {
             return this.audioElement.volume * 100
         }
         else {
-            let result = parseFloat(await TaskHandler.executeJs(this.currentUrl, "async () => { return await play.getVolume() }"))
-            if(!isNaN(result)) return parseFloat(result) * 100;
+            let result = parseFloat(await TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "GetVolume")))
+            if (!isNaN(result)) return parseFloat(result) * 100;
             else return this.volume
         }
     }
@@ -262,7 +279,7 @@ export default class Player {
             return this.audioElement.duration * 1000
         }
         else {
-            let result = await TaskHandler.executeJs(this.currentUrl, "async () => { let state = await play.getCurrentState(); return state.duration }")
+            let result = await TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "Duration"))
             return result ? result : -1
         }
     }
@@ -272,7 +289,7 @@ export default class Player {
             return !this.audioElement.paused
         }
         else {
-            let result = await TaskHandler.executeJs(this.currentUrl, "async () => { return !(await play.getCurrentState()).paused }")
+            let result = await TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "GetState"))
             return result
         }
     }
