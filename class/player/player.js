@@ -14,6 +14,7 @@ export default class Player {
     isLocalMusic = false;
     volume = 100;
     isMuted = false;
+    currentUrl = "";
 
     /**
      * 
@@ -26,6 +27,7 @@ export default class Player {
             this.audioElement.pause()
             this.audioElement = null;
         }
+        TaskHandler.stopWebTaskManually(this.currentUrl, true)
         console.log("Resetted. Creating new audio element")
         if (song.imgUrl == "localImg") {
             this.isLocalMusic = true;
@@ -52,6 +54,7 @@ export default class Player {
                 this.#eventEl.dispatchEvent(new CustomEvent("ended"));
             }
             this.audioElement.src = song.url
+            this.currentUrl = song.url
         }
         else {
             this.isLocalMusic = false;
@@ -64,15 +67,15 @@ export default class Player {
                 console.log("Platform token refreshed")
             }
             let url = song.url
-            if((await PlatformHandler.getPlatformSettings(platform)).UseListenUrl) {
+            if ((await PlatformHandler.getPlatformSettings(platform)).UseListenUrl) {
                 let urlsplit = (await PlatformHandler.getPlatformUrl(platform, "BaseSongUrl")).split("%id%")
                 let url2split = (await PlatformHandler.getPlatformUrl(platform, "ListenUrl")).split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
                     .split("%id%")
-                for(let spl in urlsplit) {
+                for (let spl in urlsplit) {
                     url = url.replace(urlsplit[spl], url2split[spl])
                 }
                 TaskHandler.addTask(url, "", true, true, true, (data) => {
-
+                    this.currentUrl = url
                 })
             }
         }

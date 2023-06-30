@@ -36,7 +36,7 @@ export default class SearchWindow extends HTMLDivElement {
                 })
                 shadow.getElementById("tb_search").addEventListener("keydown", async (e) => {
                     if (e.key == "Enter") {
-                        while(shadow.getElementById("songs").children.length > 0) {
+                        while (shadow.getElementById("songs").children.length > 0) {
                             shadow.getElementById("songs").removeChild(shadow.getElementById("songs").children[0])
                         }
                         if (this.selectedServer != "icon") {
@@ -75,6 +75,7 @@ export default class SearchWindow extends HTMLDivElement {
         if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
             searchUrl = searchUrl.split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
         }
+        searchUrl = encodeURI(searchUrl)
         console.log("Search url: " + searchUrl)
         var urlsExist = []
         urlsExist = await Utils.apiManager.doPostRequest({
@@ -82,7 +83,7 @@ export default class SearchWindow extends HTMLDivElement {
             filter: (await PlatformHandler.getPlatformSettings(platform)).FilterSearch
         })
         TaskHandler.addTask(searchUrl, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "SearchScript")), false, true, false, async (data) => {
-            if(data == "Error" && (await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
+            if (data == "Error" && (await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
                 console.log("Platform need refresh token")
                 await PlatformHandler.refreshTokenForPlatform(platform)
                 console.log("Platform token refreshed")
@@ -92,14 +93,14 @@ export default class SearchWindow extends HTMLDivElement {
                 var json = JSON.parse(data)
                 var songsToAdd = []
                 var songsIDs = []
-                for(let song of json) {
+                for (let song of json) {
                     let songID = null
-                    for(let songDB of urlsExist) {
-                        if(songDB["url"] == song.url) songID = songDB["songID"]
+                    for (let songDB of urlsExist) {
+                        if (songDB["url"] == song.url) songID = songDB["songID"]
                     }
-                    if(!songID) {
+                    if (!songID) {
                         songsToAdd.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
-                            song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
+                        song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
                     }
                     else {
                         songsIDs.push(songID)
@@ -109,8 +110,8 @@ export default class SearchWindow extends HTMLDivElement {
                     act: "addMultipleSongsDB",
                     songs: songsToAdd
                 })
-                if(!listAddedServerSongs) {
-                    for(let i in nsongsID) {
+                if (!listAddedServerSongs) {
+                    for (let i in nsongsID) {
                         let id = nsongsID[i]["songID"]
                         let url = songsToAdd[i][0]
                         let positionOrDate = nsongsID[i]["songPosition"]
@@ -152,12 +153,12 @@ export default class SearchWindow extends HTMLDivElement {
                     }*/
                 }
                 else {
-                    for(let song of songsIDs.concat(nsongsID)) {
-                        if(!urlsExist.includes(song.url)) {
+                    /*for (let song of songsIDs.concat(nsongsID)) {
+                        if (!urlsExist.includes(song.url)) {
                             songs.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
-                                song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
+                            song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
                         }
-                    }
+                    }*/
                 }
             }
         })
