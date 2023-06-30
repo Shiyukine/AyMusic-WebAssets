@@ -27,7 +27,9 @@ export default class Player {
             this.audioElement.pause()
             this.audioElement = null;
         }
+        try {
         TaskHandler.stopWebTaskManually(this.currentUrl, true)
+        } catch(e) {}
         console.log("Resetted. Creating new audio element")
         if (song.imgUrl == "localImg") {
             this.isLocalMusic = true;
@@ -74,10 +76,24 @@ export default class Player {
                 for (let spl in urlsplit) {
                     url = url.replace(urlsplit[spl], url2split[spl])
                 }
-                TaskHandler.addTask(url, "", true, true, true, (data) => {
-                    this.currentUrl = url
+                if(play) url += "&autoplay=1"
+                TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wtId) => {
+                    window.addEventListener("message", (e) => {
+                        if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcb") {
+                            if(e.data.id == wtId) {
+                                this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
+                                if(e.data.cb == "loadedmetadata") {
+                                    this.changeVolume(this.volume)
+                                    if (play) this.play()
+                                    else this.pause()
+                                    //TaskHandler.executeJs(url, "async () => { navigator.mediaSession.metadata = " + navigator.mediaSession.metadata + " }")
+                                }
+                            }
+                        }
+                    })
                 })
             }
+            this.currentUrl = url
         }
         this.#eventEl.dispatchEvent(new CustomEvent("songchange"));
         console.log("audio element created")
@@ -127,11 +143,17 @@ export default class Player {
         if (this.isLocalMusic) {
             this.audioElement.play()
         }
+        else {
+            TaskHandler.executeJs(this.currentUrl, "play.resume()")
+        }
     }
 
     pause() {
         if (this.isLocalMusic) {
             this.audioElement.pause()
+        }
+        else {
+            TaskHandler.executeJs(this.currentUrl, "play.pause()")
         }
     }
 
@@ -185,9 +207,18 @@ export default class Player {
     }
 
     changeVolume(volume) {
-        this.volume = volume;
-        if (this.isLocalMusic) {
-            this.audioElement.volume = volume / 100
+        if(!isNaN(volume)) {
+            this.volume = volume;
+            if (this.isLocalMusic) {
+                this.audioElement.volume = volume / 100
+            }
+            else {
+                TaskHandler.executeJs(this.currentUrl, "async () => { play.setVolume(" + (volume / 100) + `).then(() =>
+                    {
+                        aaaaaaab()
+                    })
+                }`)
+            }
         }
     }
 
@@ -199,11 +230,14 @@ export default class Player {
         this.#eventEl.dispatchEvent(new CustomEvent("muted"));
     }
 
-    getCurrentTime() {
+    async getCurrentTime() {
         if (this.isLocalMusic) {
             return this.audioElement.currentTime * 1000
         }
-        return -1;
+        else {
+            let result = await TaskHandler.executeJs(this.currentUrl, "async () => { return (await play.getCurrentState()).position }")
+            return result
+        }
     }
 
     seek(ms) {
@@ -212,26 +246,34 @@ export default class Player {
         }
     }
 
-    getVolume() {
+    async getVolume() {
         if (this.isLocalMusic) {
             return this.audioElement.volume * 100
         }
-        return -1;
+        else {
+            let result = parseFloat(await TaskHandler.executeJs(this.currentUrl, "async () => { return await play.getVolume() }"))
+            if(!isNaN(result)) return parseFloat(result) * 100;
+            else return this.volume
+        }
     }
 
-    getDuration() {
+    async getDuration() {
         if (this.isLocalMusic) {
             return this.audioElement.duration * 1000
         }
-        return -1;
+        else {
+            let result = await TaskHandler.executeJs(this.currentUrl, "async () => { let state = await play.getCurrentState(); return state.duration }")
+            return result ? result : -1
+        }
     }
 
-    getState() {
+    async getState() {
         if (this.isLocalMusic) {
             return !this.audioElement.paused
         }
         else {
-            return false;
+            let result = await TaskHandler.executeJs(this.currentUrl, "async () => { return !(await play.getCurrentState()).paused }")
+            return result
         }
     }
 }

@@ -37,18 +37,29 @@ export default class TaskHandler {
         iframe.height = 720;
         var adblockcount = 0;
         var iscf = false;
-        Utils.app.remoteClient.registerIframeUrl(wt.url, `addEventListener('message', (e) =>
+        Utils.app.remoteClient.registerIframeUrl(wt.url, `addEventListener('message', async (e) =>
             {
                 if(e.origin.includes('app://root'))
                 {
                     if(e.data.message == 'js')
                     {
-                        parent.postMessage({message: 'callback', data:(() => { ` + wt.script + `})(), id: e.data.id}, 'app://root')
+                        parent.postMessage({message: 'callback', data:await (async () => { var wtId = e.data.id; ` + wt.script + `})(), id: e.data.id}, 'app://root')
+                    }
+                    if(e.data.message == 'execjs')
+                    {
+                        try {
+                            eval(e.data.js)().then((result) => {
+                                parent.postMessage({message: 'jscb', data:result, id: e.data.id}, 'app://root')
+                            })
+                        } catch (ex) {
+                            console.error(ex)
+                            parent.postMessage({message: 'jscb', data:null, id: e.data.id}, 'app://root')
+                        }
                     }
                 }
             })`)
         iframe.onload = async () => {
-            wt.callback(await TaskHandler.postJs(iframe, wt))
+            wt.callback(await TaskHandler.postJs(iframe, wt), wt.id)
             if (!wt.stopTaskManually) this.switchTask(wt)
         }
         iframe.allow = "encrypted-media"
@@ -69,6 +80,27 @@ export default class TaskHandler {
                 }
             })
             iframe.contentWindow.postMessage({ message: "js", id: wt.id }, wt.url)
+        })
+    }
+
+    static executeJs(url, func) {
+        return new Promise((resolve) => {
+            let id = Date.now() + (Math.random() + 1).toString(36).substring(7);
+            for(let i in this.wbs[0]) {
+                let wt = this.wbs[0][i]
+                if(wt.url == url) {
+                    let iframe = this.wbs[1][i]
+                    window.addEventListener("message", (e) => {
+                        if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.id == id) {
+                            //console.log(e.data)
+                            if (e.data.message == "jscb") {
+                                resolve(e.data.data)
+                            }
+                        }
+                    })
+                    iframe.contentWindow.postMessage({ message: "execjs", id: id, js: func }, wt.url)
+                }
+            }
         })
     }
 
@@ -189,5 +221,17 @@ export default class TaskHandler {
                 if (wt.url == url && wt.stopTaskManually) this.switchTask(wt);
             }
         }
+    }
+
+    static getFirstTaskForUrl(url, includeWaiting) {
+        for (let wt of this.wbs[0]) {
+            if (wt.url == url) return wt;
+        }
+        if (includeWaiting) {
+            for (let wt of this.waiting) {
+                if (wt.url == url) return wt;
+            }
+        }
+        return null;
     }
 }

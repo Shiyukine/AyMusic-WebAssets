@@ -33,10 +33,10 @@ export default class SongGrid extends HTMLDivElement {
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 //new Translations(shadow.children[1])
                 if (song !== null) this.changeSong(song)
-                Utils.player.onSongChange(() => {
+                Utils.player.onSongChange(async () => {
                     if (this.isMySong()) {
                         this.shadowRoot.getElementById("title").style.color = "#00ccff"
-                        if (Utils.player.getState()) this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Pause"])
+                        //if (await Utils.player.getState()) this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Pause"])
                         this.shadowRoot.getElementById("svg").style.opacity = "1"
                         this.shadowRoot.getElementById("cache").style.opacity = "1"
                     }
@@ -62,6 +62,11 @@ export default class SongGrid extends HTMLDivElement {
                         this.parentElement.removeChild(this)
                     }
                 });
+                Utils.player.onLoadedMetadata(async () => {
+                    if (this.isMySong() && await Utils.player.getState()) {
+                        this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Pause"])
+                    }
+                })
                 this.song = song
                 new ThemeColor(shadow.children[1])
             }
@@ -105,7 +110,7 @@ export default class SongGrid extends HTMLDivElement {
             let curThis = this;
             this.shadowRoot.getElementById("svg").addEventListener("click", async function () {
                 if (curThis.isMySong()) {
-                    if (Utils.player.getState()) Utils.player.pause()
+                    if (await Utils.player.getState()) Utils.player.pause()
                     else Utils.player.play()
                 }
                 else {
@@ -163,7 +168,7 @@ export default class SongGrid extends HTMLDivElement {
             }
             if (this.isMySong()) {
                 this.shadowRoot.getElementById("title").style.color = "#00ccff"
-                if (Utils.player.getState()) this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Pause"])
+                if (await Utils.player.getState()) this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Pause"])
                 this.shadowRoot.getElementById("svg").style.opacity = "1"
                 this.shadowRoot.getElementById("cache").style.opacity = "1"
             }

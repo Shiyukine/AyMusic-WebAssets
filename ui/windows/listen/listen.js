@@ -33,9 +33,53 @@ export default class ListenWindow extends HTMLDivElement {
                 let firstS = true;
                 Utils.player.onSongChange(async () => {
                     this.clearUrls()
+                    Utils.app.remoteClient.registerIframeUrl("https://sdk.scdn.co/embedded/index.html", `addEventListener('message', async (e) =>
+                    {
+                        if(e.origin.includes('app://root'))
+                        {
+                            if(e.data.message == 'changeMediaMetadata')
+                            {
+                                navigator.mediaSession.metadata = new window.MediaMetadata({
+                                    title: e.data.inData.title,
+                                    artist: e.data.inData.artist,
+                                    album: e.data.inData.album,
+                                    artwork: JSON.parse(e.data.inData.artwork)
+                                });
+                            }
+                            if(e.data.message == 'changePositionState')
+                            {
+                                navigator.mediaSession.setPositionState({
+                                    playbackRate: e.data.inData.pR,
+                                    position: e.data.inData.cur,
+                                    duration: e.data.inData.dur
+                                });
+                            }
+                            if(e.data.message == 'setActionHandler')
+                            {
+                                navigator.mediaSession.setActionHandler(e.data.inData.action, (event) => { 
+                                    parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, 'app://root')
+                                    parent.parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, 'app://root')
+                                });
+                            }
+                        }
+                    })`)
                     shadow.getElementById("music_title").innerText = Utils.queueManager.currentSong.title
                     shadow.getElementById("music_artist").innerText = Utils.queueManager.currentSong.singerName
                     shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isSongIsInLikedSongs(Utils.queueManager.currentSong) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
+                    Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
+                    Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
+                    shadow.getElementById("next").style.color = Utils.queueManager.canNext() ? "white" : "gray"
+                    shadow.getElementById("previous").style.color = Utils.queueManager.canPrevious() ? "white" : "gray"
+                    navigator.mediaSession.playbackState = "paused";
+                    if (!firstS) {
+                        await Utils.apiManager.doPostRequest({
+                            act: "updateUserInfo",
+                            curTime: 0,
+                            curMusic: Utils.libManager.userInfo.curMusic,
+                            curObject: Utils.libManager.userInfo.curObject
+                        })
+                    }
+                    firstS = false
                     if (Utils.player.isLocalMusic) {
                         if (Utils.queueManager.currentSong.canBeLoaded) {
                             var imge = this.shadowRoot.getElementById("music_img");
@@ -83,61 +127,62 @@ export default class ListenWindow extends HTMLDivElement {
                             ]
                         });
                     }
-                    shadow.getElementById("next").style.color = Utils.queueManager.canNext() ? "white" : "gray"
-                    shadow.getElementById("previous").style.color = Utils.queueManager.canPrevious() ? "white" : "gray"
                     navigator.mediaSession.setActionHandler('previoustrack', Utils.queueManager.canPrevious() ? () => {
                         Utils.player.previous()
                     } : null);
                     navigator.mediaSession.setActionHandler("nexttrack", Utils.queueManager.canNext() ? () => {
                         Utils.player.next()
                     } : null);
-                    Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
-                    Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
-                    if (!firstS) {
-                        await Utils.apiManager.doPostRequest({
-                            act: "updateUserInfo",
-                            curTime: 0,
-                            curMusic: Utils.libManager.userInfo.curMusic,
-                            curObject: Utils.libManager.userInfo.curObject
-                        })
+                    navigator.mediaSession.setActionHandler('play', () => { Utils.player.play() });
+                    navigator.mediaSession.setActionHandler('pause', () => { Utils.player.pause() });
+                    //navigator.mediaSession.setActionHandler('stop', () => { /* Code excerpted. */ });
+                    //navigator.mediaSession.setActionHandler('seekbackward', () => { /* Code excerpted. */ });
+                    //navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
+                    navigator.mediaSession.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime) });
+                })
+                Utils.player.onLoadedMetadata(async () => {
+                    let dur = await Utils.player.getDuration()
+                    if(dur != -1) {
+                        pb.changeValue(0)
+                        pb.changeMax(dur)
+                        shadow.getElementById("maxTime").innerText = Utils.msToTime(dur)
+                        shadow.getElementById("curTime").innerText = Utils.msToTime(0)
+                        if(await Utils.player.getState()) {
+                            shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
+                            navigator.mediaSession.playbackState = "playing";
+                        }
                     }
-                    firstS = false
+                    this.updateMediaSession("changeMediaMetadata", "https://sdk.scdn.co", null)
+                    this.updateMediaSession("setActionHandler", "https://sdk.scdn.co", null)
                 })
-                Utils.player.onLoadedMetadata(() => {
-                    pb.changeValue(0)
-                    pb.changeMax(Utils.player.getDuration())
-                    shadow.getElementById("maxTime").innerText = Utils.msToTime(Utils.player.getDuration())
-                    shadow.getElementById("curTime").innerText = Utils.msToTime(0)
+                Utils.player.onTimeUpdate(async () => {
+                    let cur = await Utils.player.getCurrentTime()
+                    if (!mouseDownPb) pb.changeValue(cur)
+                    shadow.getElementById("curTime").innerText = Utils.msToTime(cur)
+                    navigator.mediaSession.setPositionState({
+                        playbackRate: 1,
+                        position: cur,
+                        duration: pb.getMax()
+                    });
+                    this.updateMediaSession("changePositionState", "https://sdk.scdn.co", {
+                        pR: 1,
+                        cur: cur,
+                        dur: pb.getMax()
+                    })
                 })
-                Utils.player.onTimeUpdate(() => {
-                    if (!mouseDownPb) pb.changeValue(Utils.player.getCurrentTime())
-                    shadow.getElementById("curTime").innerText = Utils.msToTime(Utils.player.getCurrentTime())
-                    if (Utils.player.getDuration()) {
-                        navigator.mediaSession.setPositionState({
-                            duration: Utils.player.getDuration(),
-                            playbackRate: 1,
-                            position: Utils.player.getCurrentTime()
-                        });
-                    }
-                })
-                navigator.mediaSession.setActionHandler('play', () => { Utils.player.play() });
-                navigator.mediaSession.setActionHandler('pause', () => { Utils.player.pause() });
-                //navigator.mediaSession.setActionHandler('stop', () => { /* Code excerpted. */ });
-                //navigator.mediaSession.setActionHandler('seekbackward', () => { /* Code excerpted. */ });
-                //navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
-                navigator.mediaSession.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime) });
-                let lastTime = Utils.player.getCurrentTime();
+                let lastTime = /*await Utils.player.getCurrentTime()*/0;
                 setInterval(async () => {
-                    if (Utils.player.getCurrentTime() != lastTime && Utils.player.getDuration()) {
+                    let cur = await Utils.player.getCurrentTime()
+                    if (cur != lastTime && await Utils.player.getDuration()) {
                         Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
                         Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
                         await Utils.apiManager.doPostRequest({
                             act: "updateUserInfo",
-                            curTime: Utils.player.getCurrentTime(),
+                            curTime: cur,
                             curMusic: Utils.libManager.userInfo.curMusic,
                             curObject: Utils.libManager.userInfo.curObject
                         })
-                        lastTime = Utils.player.getCurrentTime()
+                        lastTime = cur
                     }
                 }, 15000)
                 let mouseDownPb = false;
@@ -190,15 +235,18 @@ export default class ListenWindow extends HTMLDivElement {
                 })
                 Utils.player.onPlay(() => {
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
+                    navigator.mediaSession.playbackState = "playing";
                 })
                 Utils.player.onPause(() => {
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Play"])
+                    navigator.mediaSession.playbackState = "paused";
                 })
                 let anVol = 0;
-                Utils.player.onVolumeChange(() => {
-                    pbVol.changeValue(Utils.player.getVolume());
-                    if (Utils.player.getVolume() > 0) anVol = Utils.player.getVolume()
-                    Utils.app.changeSetting("music_vol", Utils.player.getVolume())
+                Utils.player.onVolumeChange(async () => {
+                    let vol = await Utils.player.getVolume()
+                    pbVol.changeValue(vol);
+                    if (vol > 0) anVol = vol
+                    Utils.app.changeSetting("music_vol", vol)
                 })
                 Utils.player.onMuted(() => {
                     if (Utils.player.isMuted) shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeOff"])
@@ -209,18 +257,20 @@ export default class ListenWindow extends HTMLDivElement {
                     Utils.player.changeVolume(pbVol.getValue());
                 })*/
                 pbVol.onValueChange(() => {
-                    Utils.player.changeVolume(pbVol.getValue());
-                    if (pbVol.getValue() == 0 || Utils.player.isMuted) {
-                        shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeOff"])
-                    }
-                    else if (pbVol.getValue() < 34) {
-                        shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeLow"])
-                    }
-                    else if (pbVol.getValue() < 67) {
-                        shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeMedium"])
-                    }
-                    else {
-                        shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeHigh"])
+                    if(Utils.player.volume != pbVol.getValue()) {
+                        Utils.player.changeVolume(pbVol.getValue());
+                        if (pbVol.getValue() == 0 || Utils.player.isMuted) {
+                            shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeOff"])
+                        }
+                        else if (pbVol.getValue() < 34) {
+                            shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeLow"])
+                        }
+                        else if (pbVol.getValue() < 67) {
+                            shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeMedium"])
+                        }
+                        else {
+                            shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeHigh"])
+                        }
                     }
                 })
                 Utils.player.changeRepeat(parseInt(Utils.app.getSetting("repeat")))
@@ -254,8 +304,10 @@ export default class ListenWindow extends HTMLDivElement {
                         queueViewer.hide()
                     }
                 }
-                shadow.getElementById("changeState").onclick = () => {
-                    if (Utils.player.getState()) {
+                shadow.getElementById("changeState").onclick = async () => {
+                    let state = await Utils.player.getState()
+                    console.log(state)
+                    if (state) {
                         Utils.player.pause()
                     }
                     else {
@@ -328,5 +380,52 @@ export default class ListenWindow extends HTMLDivElement {
         for (let url of this.urlsCreated) {
             URL.revokeObjectURL(url)
         }
+    }
+
+    updateMediaSession(part, url, data) {
+        [frames[0], frames[0].frames[0]].forEach((x) => {
+            if(part == "changeMediaMetadata") {
+                x.postMessage({ message: part, inData: {
+                    title: navigator.mediaSession.metadata.title,
+                    album: navigator.mediaSession.metadata.album,
+                    artist: navigator.mediaSession.metadata.artist,
+                    artwork: JSON.stringify(navigator.mediaSession.metadata.artwork),
+                    }
+                }, url)
+            }
+            if(part == "changePositionState") {
+                x.postMessage({ message: part, inData: data }, url)
+            }
+            if(part == "setActionHandler") {
+                let id = Date.now() + (Math.random() + 1).toString(36).substring(7);
+                if(Utils.queueManager.canPrevious()) x.postMessage({ message: part, inData: {action: "previoustrack"}, id: id }, url)
+                if(Utils.queueManager.canNext()) x.postMessage({ message: part, inData: {action: "nexttrack"}, id: id }, url)
+                x.postMessage({ message: part, inData: {action: "play"}, id: id }, url)
+                x.postMessage({ message: part, inData: {action: "pause"}, id: id }, url)
+                x.postMessage({ message: part, inData: {action: "seekto"}, id: id }, url)
+                window.addEventListener("message", (e) => {
+                    if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.id == id) {
+                        //console.log(e.data)
+                        if (e.data.message == "setActionHandlerCB") {
+                            if(e.data.action == "previoustrack") {
+                                Utils.player.previous()
+                            }
+                            if(e.data.action == "nexttrack") {
+                                Utils.player.next()
+                            }
+                            if(e.data.action == "play") {
+                                Utils.player.play()
+                            }
+                            if(e.data.action == "pause") {
+                                Utils.player.pause()
+                            }
+                            if(e.data.action == "seekto") {
+                                if (e.data.event.seekTime) Utils.player.seek(e.data.event.seekTime)
+                            }
+                        }
+                    }
+                })
+            }
+        })
     }
 }
