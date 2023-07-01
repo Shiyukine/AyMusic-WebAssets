@@ -144,6 +144,7 @@ export default class ListenWindow extends HTMLDivElement {
                     //navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
                     navigator.mediaSession.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime) });
                 })
+                let firstPlay = true
                 Utils.player.onLoadedMetadata(async () => {
                     let dur = await Utils.player.getDuration()
                     if (dur != -1) {
@@ -160,6 +161,10 @@ export default class ListenWindow extends HTMLDivElement {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                    }
+                    if(firstPlay && Utils.libManager.userInfo.curMusic != null) {
+                        await Utils.player.seek(Utils.libManager.userInfo.curTime)
+                        firstPlay = false
                     }
                 })
                 Utils.player.onTimeUpdate(async () => {
@@ -253,12 +258,12 @@ export default class ListenWindow extends HTMLDivElement {
                 })
                 let anVol = 0;
                 Utils.player.onVolumeChange(async () => {
+                    let vol = await Utils.player.getVolume()
                     if (Utils.player.volume != pbVol.getValue()) {
-                        let vol = await Utils.player.getVolume()
                         pbVol.changeValue(vol);
-                        if (vol > 0) anVol = vol
-                        Utils.app.changeSetting("music_vol", vol)
                     }
+                    if (vol > 0) anVol = vol
+                    Utils.app.changeSetting("music_vol", vol)
                 })
                 Utils.player.onMuted(() => {
                     if (Utils.player.isMuted) shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeOff"])
@@ -380,7 +385,6 @@ export default class ListenWindow extends HTMLDivElement {
                         let al = result["albumInfo"]
                         await Utils.queueManager.changeQueue(new Album(al.id, al.name, al.singerID, al.type, al.imgUrl), Utils.libManager.userInfo.curMusic, false)
                     }
-                    Utils.player.seek(Utils.libManager.userInfo.curTime)
                 }
                 pbVol.changeValue(parseInt(Utils.app.getSetting("music_vol")))
                 if (Utils.app.getSetting("mute")) Utils.player.setMute(true)
