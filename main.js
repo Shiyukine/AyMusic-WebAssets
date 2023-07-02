@@ -63,7 +63,7 @@ async function main() {
                     let lp = document.getElementById("loadPanel");
                     lp.children[0].classList.add("pauseSVG");
                     let mainPanel = document.getElementById("main");
-                    document.body.style.backgroundImage = "url(/resources/background.jpg)"
+                    document.getElementById("main").style.backgroundImage = "url(/resources/background.jpg)"
                     if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS")
                         document.getElementsByClassName("windowTopBar")[0].classList.add("loaded")
                     mainPanel.removeChild(lp);

@@ -82,7 +82,12 @@ export default class SearchWindow extends HTMLDivElement {
             act: "getSongsUrl",
             filter: (await PlatformHandler.getPlatformSettings(platform)).FilterSearch
         })
-        TaskHandler.addTask(searchUrl, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "SearchScript")), false, true, false, async (data) => {
+        TaskHandler.addTask(searchUrl, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "SearchScript"), {
+            headers: {
+                "pragma": "no-cache",
+                "cache-control": "no-cache"
+            }
+        }), false, true, false, async (data) => {
             if (data == "Error" && (await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
                 console.log("Platform need refresh token")
                 await PlatformHandler.refreshTokenForPlatform(platform)

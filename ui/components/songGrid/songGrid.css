@@ -53,6 +53,9 @@
     background-size: 48px;
     border-radius: 5px;
     position: absolute;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .panel_ep .epName {

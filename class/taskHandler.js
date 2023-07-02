@@ -33,8 +33,6 @@ export default class TaskHandler {
 
     static async createTask(wt) {
         var iframe = document.createElement("iframe");
-        iframe.width = 1280;
-        iframe.height = 720;
         var adblockcount = 0;
         var iscf = false;
         Utils.app.remoteClient.registerIframeUrl(wt.url, `addEventListener('message', async (e) =>
@@ -63,6 +61,9 @@ export default class TaskHandler {
             if (!wt.stopTaskManually) this.switchTask(wt)
         }
         iframe.allow = "encrypted-media"
+        iframe.style.width = "100%"
+        iframe.style.height = "100%"
+        iframe.style.opacity = "0"
         iframe.src = wt.url;
         document.getElementById("iframes").appendChild(iframe)
         this.wbs[0].push(wt);
@@ -86,9 +87,9 @@ export default class TaskHandler {
     static executeJs(url, func) {
         return new Promise((resolve) => {
             let id = Date.now() + (Math.random() + 1).toString(36).substring(7);
-            for(let i in this.wbs[0]) {
+            for (let i in this.wbs[0]) {
                 let wt = this.wbs[0][i]
-                if(wt.url == url) {
+                if (wt.url == url) {
                     let iframe = this.wbs[1][i]
                     window.addEventListener("message", (e) => {
                         if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.id == id) {
