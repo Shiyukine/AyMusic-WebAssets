@@ -29,6 +29,7 @@ export default class TaskHandler {
             this.waiting.push(wt);
             console.log("Added new task in waiting list. Url : " + url + ". " + (this.wbs[0].length + this.waiting.length) + " remaining task");
         }
+        return wt.id
     }
 
     static async createTask(wt) {
@@ -63,7 +64,9 @@ export default class TaskHandler {
         iframe.allow = "encrypted-media"
         iframe.style.width = "100%"
         iframe.style.height = "100%"
-        iframe.style.opacity = "0"
+        iframe.allowFullscreen = true
+        //iframe.sandbox.add('allow-scripts');
+        //iframe.sandbox.add('allow-same-origin');
         iframe.src = wt.url;
         document.getElementById("iframes").appendChild(iframe)
         this.wbs[0].push(wt);

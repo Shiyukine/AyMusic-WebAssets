@@ -80,22 +80,23 @@ export default class Player {
                 for (let spl in urlsplit) {
                     url = url.replace(urlsplit[spl], url2split[spl])
                 }
+                if (!url.includes("?")) url += "?uwu=1"
                 if (play) url += "&autoplay=1"
                 url += "&volume=" + this.volume
-                TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wtId) => {
-                    window.addEventListener("message", (e) => {
-                        if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcb") {
-                            if (e.data.id == wtId) {
-                                this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
-                                if (e.data.cb == "loadedmetadata") {
-                                    this.changeVolume(this.volume)
-                                    if (play) this.play()
-                                    else this.pause()
-                                    //TaskHandler.executeJs(url, "async () => { navigator.mediaSession.metadata = " + navigator.mediaSession.metadata + " }")
-                                }
+                var wtId = TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => {
+                })
+                window.addEventListener("message", (e) => {
+                    if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcb") {
+                        if (e.data.id == wtId) {
+                            this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
+                            if (e.data.cb == "loadedmetadata") {
+                                this.changeVolume(this.volume)
+                                if (play) this.play()
+                                else this.pause()
+                                //TaskHandler.executeJs(url, "async () => { navigator.mediaSession.metadata = " + navigator.mediaSession.metadata + " }")
                             }
                         }
-                    })
+                    }
                 })
             }
             this.currentUrl = url

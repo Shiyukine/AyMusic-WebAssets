@@ -162,7 +162,7 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                     }
-                    if(firstPlay && Utils.libManager.userInfo.curMusic != null) {
+                    if (firstPlay && Utils.queueManager.currentSong != null) {
                         await Utils.player.seek(Utils.libManager.userInfo.curTime)
                         firstPlay = false
                     }

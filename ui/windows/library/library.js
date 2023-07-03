@@ -265,6 +265,7 @@ export default class LibraryWindow extends HTMLDivElement {
                     }
                     let total = parseInt(result["total"])
                     while (objs.children.length < total - counterSongNotLoaded) {
+                        console.log(objs.children.length, total, counterSongNotLoaded)
                         objs.appendChild(new SongGrid(null, Utils.libManager.userLikedPl))
                     }
                 }
