@@ -61,7 +61,7 @@ export default class ListenWindow extends HTMLDivElement {
                                 {
                                     navigator.mediaSession.setActionHandler(e.data.inData.action, (event) => { 
                                         parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, 'app://root')
-                                        parent.parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, 'app://root')
+                                        if(e.data.platform == "Spotify") parent.parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, 'app://root')
                                     });
                                 }
                             }
@@ -178,6 +178,8 @@ export default class ListenWindow extends HTMLDivElement {
                     });
                     if (!Utils.player.isLocalMusic) {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                        this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                        this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                             pR: 1,
                             cur: cur,
@@ -248,11 +250,17 @@ export default class ListenWindow extends HTMLDivElement {
                     } : null);
                     Utils.app.changeSetting("repeat", Utils.queueManager.repeat)
                 })
-                Utils.player.onPlay(() => {
+                Utils.player.onPlay(async () => {
+                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                    this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                    this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
                     navigator.mediaSession.playbackState = "playing";
                 })
-                Utils.player.onPause(() => {
+                Utils.player.onPause(async () => {
+                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                    this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                    this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Play"])
                     navigator.mediaSession.playbackState = "paused";
                 })
@@ -408,7 +416,8 @@ export default class ListenWindow extends HTMLDivElement {
         }
     }
 
-    updateMediaSession(part, url, data) {
+    async updateMediaSession(part, url, data) {
+        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl);
         [frames[0], frames[0].frames[0]].forEach((x) => {
             if (part == "changeMediaMetadata") {
                 x.postMessage({
@@ -417,19 +426,19 @@ export default class ListenWindow extends HTMLDivElement {
                         album: navigator.mediaSession.metadata.album,
                         artist: navigator.mediaSession.metadata.artist,
                         artwork: JSON.stringify(navigator.mediaSession.metadata.artwork),
-                    }
+                    }, platform: platform
                 }, url)
             }
             if (part == "changePositionState") {
-                x.postMessage({ message: part, inData: data }, url)
+                x.postMessage({ message: part, inData: data, platform: platform }, url)
             }
             if (part == "setActionHandler") {
                 let id = Date.now() + (Math.random() + 1).toString(36).substring(7);
-                if (Utils.queueManager.canPrevious()) x.postMessage({ message: part, inData: { action: "previoustrack" }, id: id }, url)
-                if (Utils.queueManager.canNext()) x.postMessage({ message: part, inData: { action: "nexttrack" }, id: id }, url)
-                x.postMessage({ message: part, inData: { action: "play" }, id: id }, url)
-                x.postMessage({ message: part, inData: { action: "pause" }, id: id }, url)
-                x.postMessage({ message: part, inData: { action: "seekto" }, id: id }, url)
+                if (Utils.queueManager.canPrevious()) x.postMessage({ message: part, inData: { action: "previoustrack" }, id: id, platform: platform }, url)
+                if (Utils.queueManager.canNext()) x.postMessage({ message: part, inData: { action: "nexttrack" }, id: id, platform: platform }, url)
+                x.postMessage({ message: part, inData: { action: "play" }, id: id, platform: platform }, url)
+                x.postMessage({ message: part, inData: { action: "pause" }, id: id, platform: platform }, url)
+                x.postMessage({ message: part, inData: { action: "seekto" }, id: id, platform: platform }, url)
                 window.addEventListener("message", (e) => {
                     if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.id == id) {
                         //console.log(e.data)
