@@ -186,6 +186,24 @@ export default class ListenWindow extends HTMLDivElement {
                             dur: pb.getMax()
                         })
                     }
+                    if (cur >= 0 && cur < 1000 && Utils.app.getSetting("gen_discordRPC")) {
+                        let plat = Utils.player.isLocalMusic ? "icon" : (await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)).toLowerCase()
+                        let platName = Utils.player.isLocalMusic ? "Local music" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                        Utils.app.remoteClient.discordRPC({
+                            details: "Listening " + Utils.queueManager.currentSong.title,
+                            state: "By " + Utils.queueManager.currentSong.singerName,
+                            endTimestamp: Date.now() + (Utils.queueManager.currentSong.time - pb.getValue()),
+                            largeImageKey: "icon",
+                            largeImageText: "AyMusic by Aketsuky",
+                            smallImageKey: plat,
+                            smallImageText: "Listening on " + platName,
+                            buttons: [
+                                { label: "Listen music", url: Utils.queueManager.currentSong.url },
+                                { label: "Download AyMusic", url: Utils.servURL + "projects/AyMusic.php" }
+                            ],
+                            instance: false,
+                        })
+                    }
                 })
                 let lastTime = /*await Utils.player.getCurrentTime()*/0;
                 setInterval(async () => {
@@ -256,6 +274,24 @@ export default class ListenWindow extends HTMLDivElement {
                     this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
                     navigator.mediaSession.playbackState = "playing";
+                    if (Utils.app.getSetting("gen_discordRPC")) {
+                        let plat = Utils.player.isLocalMusic ? "icon" : (await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)).toLowerCase()
+                        let platName = Utils.player.isLocalMusic ? "Local music" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                        Utils.app.remoteClient.discordRPC({
+                            details: "Listening " + Utils.queueManager.currentSong.title,
+                            state: "By " + Utils.queueManager.currentSong.singerName,
+                            endTimestamp: Date.now() + (Utils.queueManager.currentSong.time - pb.getValue()),
+                            largeImageKey: "icon",
+                            largeImageText: "AyMusic by Aketsuky",
+                            smallImageKey: plat,
+                            smallImageText: "Listening on " + platName,
+                            buttons: [
+                                { label: "Listen music", url: Utils.queueManager.currentSong.url },
+                                { label: "Download AyMusic", url: Utils.servURL + "projects/AyMusic.php" }
+                            ],
+                            instance: false,
+                        })
+                    }
                 })
                 Utils.player.onPause(async () => {
                     let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
@@ -263,6 +299,9 @@ export default class ListenWindow extends HTMLDivElement {
                     this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Play"])
                     navigator.mediaSession.playbackState = "paused";
+                    if (Utils.app.getSetting("gen_discordRPC") && Utils.queueManager.repeat != 2) {
+                        Utils.app.remoteClient.discordRPC({})
+                    }
                 })
                 let anVol = 0;
                 Utils.player.onVolumeChange(async () => {
@@ -311,13 +350,13 @@ export default class ListenWindow extends HTMLDivElement {
                 })
                 Utils.player.changeRepeat(parseInt(Utils.app.getSetting("repeat")))
                 Utils.player.changeShuffle(Utils.app.getSetting("shuffle"))
-                Utils.player.onEnded(() => {
+                Utils.player.onEnded(async () => {
                     if (Utils.queueManager.repeat != 2) {
                         Utils.player.next()
                     }
                     else {
-                        Utils.player.seek(0)
-                        Utils.player.play()
+                        await Utils.player.seek(0)
+                        await Utils.player.play()
                     }
                 })
                 Utils.libManager.onAddSongToLikedSongs((e) => {
