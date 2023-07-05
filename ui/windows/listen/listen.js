@@ -359,6 +359,13 @@ export default class ListenWindow extends HTMLDivElement {
                         await Utils.player.play()
                     }
                 })
+                Utils.player.onNeedTokenChange(async () => {
+                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                    console.log("Platform need refresh token")
+                    await PlatformHandler.refreshTokenForPlatform(platform)
+                    console.log("Platform token refreshed")
+                    Utils.player.playSong(Utils.queueManager.currentSong)
+                })
                 Utils.libManager.onAddSongToLikedSongs((e) => {
                     if (Utils.queueManager.currentSong != null && e.detail.objId == "so_" + Utils.queueManager.currentSong.id) {
                         shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isSongIsInLikedSongs(Utils.queueManager.currentSong) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])

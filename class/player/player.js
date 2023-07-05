@@ -146,6 +146,10 @@ export default class Player {
         this.#eventEl.addEventListener("muted", callback)
     }
 
+    onNeedTokenChange(callback) {
+        this.#eventEl.addEventListener("needtokenchange", callback)
+    }
+
     async play() {
         if (this.isLocalMusic) {
             this.audioElement.play()

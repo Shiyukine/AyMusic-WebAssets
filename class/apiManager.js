@@ -5,6 +5,8 @@ export default class ApiManager {
     userId = "";
     apiKey = "";
     #anDico = {}
+    countFailed = 0;
+    disconnected = false
 
     refreshApiKey() {
         this.userId = Utils.actualAccount.id
@@ -40,20 +42,31 @@ export default class ApiManager {
                 try {
                     if (result["success"]) {
                         //console.log("<- POST request : OK (" + (Date.now() - start) + "ms)")
+                        this.countFailed = 0
+                        if (this.disconnected) {
+                            Utils.newError("Connected", "You're now connected to the server.")
+                            this.disconnected = false
+                        }
                         return result["content"];
                     }
                     else {
                         //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
                         //console.error(result)
-                        if (result["reason"].includes("Bad API key")) {
-                            return new Promise((resolve) => {
-                                var logP = new LoginPanel("refresh");
-                                logP.style.display = "none"
-                                document.getElementById("main").appendChild(logP);
-                                logP.logged = async () => {
-                                    resolve(this.doPostRequest(content))
-                                };
-                            })
+                        this.countFailed += 1
+                        if (this.countFailed < 3) {
+                            if (result["reason"].includes("Bad API key")) {
+                                return new Promise((resolve) => {
+                                    var logP = new LoginPanel("refresh");
+                                    logP.style.display = "none"
+                                    document.getElementById("main").appendChild(logP);
+                                    logP.logged = async () => {
+                                        resolve(await this.doPostRequest(content))
+                                    };
+                                })
+                            }
+                        }
+                        else {
+                            location.reload()
                         }
                     }
                 }
@@ -63,13 +76,13 @@ export default class ApiManager {
                     return result;
                 }
             }
-            else return {
-                content: "You're being rate limited"
-            }
+            else return "You're being rate limited"
         }
         catch (e) {
             //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
-            Utils.newError("Can't connect to the server", "The server is offline or maybe there is a maintenance.\nPlease wait.")
+            if (!this.disconnected)
+                Utils.newError("Can't connect to the server", "The server is offline or maybe there is a maintenance.\nPlease wait.")
+            this.disconnected = true
             return e;
         }
     }

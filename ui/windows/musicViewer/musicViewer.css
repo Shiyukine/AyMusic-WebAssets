@@ -1,7 +1,14 @@
-p {
+p,
+h1 {
     font-family: "Quicksand";
     margin: 0px;
-    color:white;
+    color: white;
+}
+
+.center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .search {
@@ -24,7 +31,8 @@ p {
     height: calc(100% - 78px - 15px);
 }
 
-#menu p, .sub .set.topbar p {
+#menu p,
+.sub .set.topbar p {
     border-radius: 15px;
     font-size: 20px;
     color: white;
@@ -36,12 +44,14 @@ p {
     cursor: pointer;
 }
 
-#menu .selected, .sub .set.topbar .selected {
+#menu .selected,
+.sub .set.topbar .selected {
     background-color: rgb(110, 110, 110, 0.6);
     color: white;
 }
 
-#menu p:hover, .sub .set.topbar p:hover {
+#menu p:hover,
+.sub .set.topbar p:hover {
     background-color: rgba(99, 99, 99, 0.6);
 }
 
@@ -98,60 +108,60 @@ p {
 }
 
 .search .slider[max="1"] {
-  width: 35px !important;
+    width: 35px !important;
 }
 
 .search .slider {
-  -webkit-appearance: none;
-  width: 150px;
-  height: 25px;
-  padding: 0 5px;
-  border-radius: 12.5px;
-  background: rgb(0, 162, 255);
-  outline: none;
-  float: right;
-  margin: auto 0;
-  transition: 0.4s;
+    -webkit-appearance: none;
+    width: 150px;
+    height: 25px;
+    padding: 0 5px;
+    border-radius: 12.5px;
+    background: rgb(0, 162, 255);
+    outline: none;
+    float: right;
+    margin: auto 0;
+    transition: 0.4s;
 }
 
 .search .slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 19px;
-  height: 19px;
-  border-radius: 50%;
-  background: white;
-  cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
 }
 
 .search .slider::-moz-range-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 19px;
-  height: 19px;
-  border-radius: 50%;
-  background: white;
-  cursor: pointer;
-  border: none;
-  stroke: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    border: none;
+    stroke: transparent;
 }
 
 .search .select-container {
     float: right;
-    position: relative; 
+    position: relative;
     background-color: rgb(80, 80, 80, 0.6);
     border-radius: 15px;
-	overflow: hidden; 
+    overflow: hidden;
 }
 
 .search select {
-	height: auto;
-	border: 0; 
-	margin: 0;
+    height: auto;
+    border: 0;
+    margin: 0;
     margin-right: 5px;
-	padding: 5px 11px;
-	overflow: hidden;
-	text-overflow: ellipsis;
+    padding: 5px 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     outline: none;
     -webkit-appearance: none;
     color: white;
@@ -218,7 +228,8 @@ p {
     float: right;
 }
 
-#acc_name, #acc_email {
+#acc_name,
+#acc_email {
     float: left;
     font-size: 20px;
     padding-left: 20px;
@@ -239,46 +250,46 @@ p {
 }
 
 button:focus {
-	background: #67b7fd radial-gradient(circle, transparent 1%, #67b7fd 1%) center/15000%;
-	color: black;
-	font-weight: normal;
+    background: #67b7fd radial-gradient(circle, transparent 1%, #67b7fd 1%) center/15000%;
+    color: black;
+    font-weight: normal;
 }
 
 button:hover {
-	background: #67b7fd radial-gradient(circle, transparent 1%, #67b7fd 1%) center/15000%;
-	color: black;
-	font-weight: normal;
+    background: #67b7fd radial-gradient(circle, transparent 1%, #67b7fd 1%) center/15000%;
+    color: black;
+    font-weight: normal;
 }
 
 button:active {
-	background-color: white;
-	color: black;
-	background-size: 100%;
-	transition: background 0s;
-	font-weight: normal;
+    background-color: white;
+    color: black;
+    background-size: 100%;
+    transition: background 0s;
+    font-weight: normal;
 }
 
 button {
-	background-position: center;
-	transition: background 0.6s;
-	border-radius: 10px;
-	padding: 5px 10px;
-	font-size: 18px;
-	cursor: pointer;
-	color: #67b7fd;
-	background-color: transparent;
-	border: #67b7fd solid 2px;
-	outline: none;
-	font-family: "Quicksand";
-	box-shadow: 0px 0px 5px 1px #000000a1;
-	font-weight: normal;
+    background-position: center;
+    transition: background 0.6s;
+    border-radius: 10px;
+    padding: 5px 10px;
+    font-size: 18px;
+    cursor: pointer;
+    color: #67b7fd;
+    background-color: transparent;
+    border: #67b7fd solid 2px;
+    outline: none;
+    font-family: "Quicksand";
+    box-shadow: 0px 0px 5px 1px #000000a1;
+    font-weight: normal;
     margin-left: 5px;
     margin-bottom: 5px;
 }
 
 button:disabled {
-	opacity: 0.6;
-	cursor: not-allowed;
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .sinfo {
@@ -296,4 +307,106 @@ button:disabled {
 
 .sub .set#mylib_list {
     display: grid;
+}
+
+@keyframes offsettozero {
+    50% {
+        stroke-dashoffset: 168;
+    }
+
+    100% {
+        stroke-dashoffset: 251;
+        transform: rotate(270deg);
+    }
+}
+
+#music {
+    background-color: rgb(49, 49, 49, 0.8);
+    width: 700px;
+    height: 650px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 15px;
+    overflow: hidden;
+    scrollbar-width: thin;
+}
+
+#musicBG {
+    z-index: 3;
+    backdrop-filter: blur(20px);
+    background-color: rgba(71, 71, 71, 0.5);
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.7s;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.visible {
+    opacity: 100%;
+}
+
+.hidden {
+    opacity: 0%;
+}
+
+#musicBG svg {
+    transform: rotate(-90deg);
+    stroke-dasharray: 251;
+    /* (2PI * 40px) */
+    stroke-dashoffset: 251;
+    animation: offsettozero 1.1s cubic-bezier(0.4, 0, 0.7, 0.87) infinite;
+    bottom: 20px;
+    position: absolute;
+    right: 20px;
+    float: left;
+    width: 100px;
+    height: 100px;
+    animation-play-state: paused;
+    visibility: collapse;
+}
+
+#musicBG #cache {
+    background-color: rgba(37, 37, 37, 0.5);
+    backdrop-filter: blur(20px);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    visibility: collapse;
+    top: 0%;
+}
+
+#top {
+    /*background-color: rgba(37, 37, 37, 0.5);*/
+    height: 20%;
+    margin: 15px;
+    border-radius: 15px;
+    display: flex;
+}
+
+#cover {
+    margin: 10px;
+}
+
+#title {
+    margin-top: 50%;
+}
+
+#subtitle {
+    color: rgb(165, 165, 165);
+}
+
+#titles {
+    margin-left: 5px;
+}
+
+#list {
+    position: relative;
+    height: calc(100% - 20% - 30px - 10px);
+    border-radius: 15px;
+    background-color: rgba(37, 37, 37, 0.5);
+    margin: 10px;
 }

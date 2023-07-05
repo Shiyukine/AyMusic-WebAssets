@@ -1,21 +1,18 @@
 <style type="text/css" id="cssImport">
-    @import url("/ui/windows/musicViewer/musicViewer.css");
+    /*@import url("/ui/windows/musicViewer/musicViewer.css");*/
+    @import url("musicViewer.css");
 </style>
-<div class="search">
-    <p class="wintitle">{search}</p>
-    <div id="main">
-        <div id="view">
-            <div class="panel selected">
-                <div class="sub">
-                    <div class="set last">
-                        <p class="selected">{playlists}</p>
-                        <p>{artists}</p>
-                        <p>{albums}</p>
-                    </div>
-                    <div id="mylib_list" class="set last"></div>
-                </div>
+<div id="musicBG">
+    <div id="music">
+        <div id="top">
+            <img src="/res/resources/icon.ico" alt="" id="cover">
+            <div id="titles">
+                <h1 id="title">Title</h1>
+                <p id="subtitle">Subtitle</p>
             </div>
-            <!--suite des playlists ici, mais à chaque fois, penser à clear les items de la playlist pour éviter lag après avoir changé de playlist (view)-->
+        </div>
+        <div id="list">
+
         </div>
     </div>
 </div>
