@@ -186,7 +186,7 @@ export default class ListenWindow extends HTMLDivElement {
                             dur: pb.getMax()
                         })
                     }
-                    if (cur >= 0 && cur < 1000 && Utils.app.getSetting("gen_discordRPC")) {
+                    if (cur >= 0 && cur < 1000 && Utils.app.getSetting("gen_discordRPC") && await Utils.player.getState()) {
                         let plat = Utils.player.isLocalMusic ? "icon" : (await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)).toLowerCase()
                         let platName = Utils.player.isLocalMusic ? "Local music" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         Utils.app.remoteClient.discordRPC({
@@ -299,7 +299,7 @@ export default class ListenWindow extends HTMLDivElement {
                     this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Play"])
                     navigator.mediaSession.playbackState = "paused";
-                    if (Utils.app.getSetting("gen_discordRPC") && Utils.queueManager.repeat != 2) {
+                    if (Utils.app.getSetting("gen_discordRPC") && pb.getValue() != pb.getMax()) {
                         Utils.app.remoteClient.discordRPC({})
                     }
                 })
