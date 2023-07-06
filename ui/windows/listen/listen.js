@@ -442,6 +442,27 @@ export default class ListenWindow extends HTMLDivElement {
                 }
                 pbVol.changeValue(parseInt(Utils.app.getSetting("music_vol")))
                 if (Utils.app.getSetting("mute")) Utils.player.setMute(true)
+                window.addEventListener("message", (e) => {
+                    //console.log(e)
+                    //console.log(e.data)
+                    if (e.data.message == "setActionHandlerCB") {
+                        if (e.data.action == "previoustrack") {
+                            Utils.player.previous()
+                        }
+                        if (e.data.action == "nexttrack") {
+                            Utils.player.next()
+                        }
+                        if (e.data.action == "play") {
+                            Utils.player.play()
+                        }
+                        if (e.data.action == "pause") {
+                            Utils.player.pause()
+                        }
+                        if (e.data.action == "seekto") {
+                            if (e.data.event.seekTime) Utils.player.seek(e.data.event.seekTime)
+                        }
+                    }
+                })
                 new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
                 this.style.opacity = "1"
@@ -485,28 +506,6 @@ export default class ListenWindow extends HTMLDivElement {
                 x.postMessage({ message: part, inData: { action: "play" }, id: id, platform: platform }, url)
                 x.postMessage({ message: part, inData: { action: "pause" }, id: id, platform: platform }, url)
                 x.postMessage({ message: part, inData: { action: "seekto" }, id: id, platform: platform }, url)
-                window.addEventListener("message", (e) => {
-                    if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.id == id) {
-                        //console.log(e.data)
-                        if (e.data.message == "setActionHandlerCB") {
-                            if (e.data.action == "previoustrack") {
-                                Utils.player.previous()
-                            }
-                            if (e.data.action == "nexttrack") {
-                                Utils.player.next()
-                            }
-                            if (e.data.action == "play") {
-                                Utils.player.play()
-                            }
-                            if (e.data.action == "pause") {
-                                Utils.player.pause()
-                            }
-                            if (e.data.action == "seekto") {
-                                if (e.data.event.seekTime) Utils.player.seek(e.data.event.seekTime)
-                            }
-                        }
-                    }
-                })
             }
         })
     }

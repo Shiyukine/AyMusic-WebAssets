@@ -30,12 +30,13 @@ export default class LoginPanel extends HTMLDivElement {
         return new Promise((resolve) => {
             this.#iframe.contentWindow.postMessage({ message: "getURL", id: this.messID }, Utils.servURL)
             window.addEventListener("message", (e) => {
+                //console.log(e)
                 if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == this.messID) {
                     if (e.data.message == "callbackURL") {
                         resolve(e.data.data)
                     }
                 }
-            })
+            }, { signal: this.controller.signal })
         })
     }
 
@@ -75,6 +76,7 @@ export default class LoginPanel extends HTMLDivElement {
                 }
             }
             window.addEventListener("message", (e) => {
+                //console.log(e)
                 if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == this.messID) {
                     if (e.data.message == "callbackHTML") {
                         let text = e.data.data.split("<br>").join("\n");
@@ -96,7 +98,7 @@ export default class LoginPanel extends HTMLDivElement {
                         this.close()
                     }
                 }
-            })
+            }, { signal: this.controller.signal })
             setTimeout(() => {
                 if (!loaded) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
             }, 21500)

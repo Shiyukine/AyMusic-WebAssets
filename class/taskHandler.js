@@ -75,19 +75,23 @@ export default class TaskHandler {
     }
 
     static postJs(iframe, wt) {
+        let controller = new AbortController();
         return new Promise((resolve) => {
             window.addEventListener("message", (e) => {
+                //console.log(e)
                 if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.id == wt.id) {
                     if (e.data.message == "callback") {
+                        controller.abort()
                         resolve(e.data.data)
                     }
                 }
-            })
+            }, { signal: controller.signal })
             iframe.contentWindow.postMessage({ message: "js", id: wt.id }, wt.url)
         })
     }
 
     static executeJs(url, func) {
+        let controller = new AbortController();
         return new Promise((resolve) => {
             let id = Date.now() + (Math.random() + 1).toString(36).substring(7);
             for (let i in this.wbs[0]) {
@@ -95,13 +99,15 @@ export default class TaskHandler {
                 if (wt.url == url) {
                     let iframe = this.wbs[1][i]
                     window.addEventListener("message", (e) => {
+                        //console.log(e)
                         if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.id == id) {
                             //console.log(e.data)
                             if (e.data.message == "jscb") {
+                                controller.abort()
                                 resolve(e.data.data)
                             }
                         }
-                    })
+                    }, { signal: controller.signal })
                     iframe.contentWindow.postMessage({ message: "execjs", id: id, js: func }, wt.url)
                 }
             }

@@ -17,12 +17,29 @@ export default class Player {
     currentUrl = "";
     currentSongUrl = "";
     currentPlatform = null;
+    needPlay = true;
+
+    constructor() {
+        window.addEventListener("message", (e) => {
+            //console.log(e)
+            if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcb") {
+                this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
+                if (e.data.cb == "loadedmetadata") {
+                    this.changeVolume(this.volume)
+                    if (this.needPlay) this.play()
+                    else this.pause()
+                    //TaskHandler.executeJs(url, "async () => { navigator.mediaSession.metadata = " + navigator.mediaSession.metadata + " }")
+                }
+            }
+        })
+    }
 
     /**
      * 
      * @param {Song} song 
      */
     async playSong(song, play = true) {
+        this.needPlay = play
         console.log("begin to play song " + song.url)
         console.log("Resetting ancient song elements")
         if (this.audioElement != null) {
@@ -83,21 +100,7 @@ export default class Player {
                 if (!url.includes("?")) url += "?uwu=1"
                 if (play) url += "&autoplay=1"
                 url += "&volume=" + this.volume
-                var wtId = TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => {
-                })
-                window.addEventListener("message", (e) => {
-                    if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcb") {
-                        if (e.data.id == wtId) {
-                            this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
-                            if (e.data.cb == "loadedmetadata") {
-                                this.changeVolume(this.volume)
-                                if (play) this.play()
-                                else this.pause()
-                                //TaskHandler.executeJs(url, "async () => { navigator.mediaSession.metadata = " + navigator.mediaSession.metadata + " }")
-                            }
-                        }
-                    }
-                })
+                var wtId = TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => { })
             }
             this.currentUrl = url
         }
