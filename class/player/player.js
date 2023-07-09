@@ -153,6 +153,10 @@ export default class Player {
         this.#eventEl.addEventListener("needtokenchange", callback)
     }
 
+    onSkipAds(callback) {
+        this.#eventEl.addEventListener("skipads", callback)
+    }
+
     async play() {
         if (this.isLocalMusic) {
             this.audioElement.play()

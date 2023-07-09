@@ -45,7 +45,7 @@ export default class PlatformHandler {
 
     static async getPlatformControl(platform, control, value = "") {
         var platforms = await this.searchPlatforms()
-        if(platform) {
+        if (platform) {
             return platforms["Servers"][platform]["Controls"][control].split("%VALUE%").join(value)
         }
         else return ""
@@ -77,6 +77,7 @@ export default class PlatformHandler {
                 return platform
             }
         }
+        return ""
     }
 
     static async refreshTokenForPlatform(platform) {

@@ -45,9 +45,9 @@ async function main() {
                 LocalMusicHandler.init()
                 await LocalMusicHandler.getLocalLibrary()
                 //
-                Update.searchUpdate(loadPanel);
-                await Utils.delay(1000);
-                loadPanel.changeText("Connecting to your account...");
+                await Update.searchUpdate(loadPanel);
+                loadPanel.changeText("Connecting to your account...", "Please wait...");
+                loadPanel.changeloading(true)
                 var logP = new LoginPanel("");
                 logP.style.width = logP.style.height = "100%";
                 logP.style.position = "absolute";

@@ -187,22 +187,7 @@ export default class ListenWindow extends HTMLDivElement {
                         })
                     }
                     if (cur >= 0 && cur < 1000 && Utils.app.getSetting("gen_discordRPC") && await Utils.player.getState()) {
-                        let plat = Utils.player.isLocalMusic ? "icon" : (await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)).toLowerCase()
-                        let platName = Utils.player.isLocalMusic ? "Local music" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                        Utils.app.remoteClient.discordRPC({
-                            details: "Listening " + Utils.queueManager.currentSong.title,
-                            state: "By " + Utils.queueManager.currentSong.singerName,
-                            endTimestamp: Date.now() + (Utils.queueManager.currentSong.time - pb.getValue()),
-                            largeImageKey: "icon",
-                            largeImageText: "AyMusic by Aketsuky",
-                            smallImageKey: plat,
-                            smallImageText: "Listening on " + platName,
-                            buttons: [
-                                { label: "Listen music", url: Utils.queueManager.currentSong.url },
-                                { label: "Download AyMusic", url: Utils.servURL + "projects/AyMusic.php" }
-                            ],
-                            instance: false,
-                        })
+                        this.updateDiscordRPC(pb, false)
                     }
                 })
                 let lastTime = /*await Utils.player.getCurrentTime()*/0;
@@ -269,38 +254,25 @@ export default class ListenWindow extends HTMLDivElement {
                     Utils.app.changeSetting("repeat", Utils.queueManager.repeat)
                 })
                 Utils.player.onPlay(async () => {
-                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                    this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                    this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                    if (!Utils.player.isLocalMusic) {
+                        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                        this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                        this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                    }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
                     navigator.mediaSession.playbackState = "playing";
-                    if (Utils.app.getSetting("gen_discordRPC")) {
-                        let plat = Utils.player.isLocalMusic ? "icon" : (await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)).toLowerCase()
-                        let platName = Utils.player.isLocalMusic ? "Local music" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                        Utils.app.remoteClient.discordRPC({
-                            details: "Listening " + Utils.queueManager.currentSong.title,
-                            state: "By " + Utils.queueManager.currentSong.singerName,
-                            endTimestamp: Date.now() + (Utils.queueManager.currentSong.time - pb.getValue()),
-                            largeImageKey: "icon",
-                            largeImageText: "AyMusic by Aketsuky",
-                            smallImageKey: plat,
-                            smallImageText: "Listening on " + platName,
-                            buttons: [
-                                { label: "Listen music", url: Utils.queueManager.currentSong.url },
-                                { label: "Download AyMusic", url: Utils.servURL + "projects/AyMusic.php" }
-                            ],
-                            instance: false,
-                        })
-                    }
+                    this.updateDiscordRPC(pb, false)
                 })
                 Utils.player.onPause(async () => {
-                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                    this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                    this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                    if (!Utils.player.isLocalMusic) {
+                        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                        this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                        this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                    }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Play"])
                     navigator.mediaSession.playbackState = "paused";
                     if (Utils.app.getSetting("gen_discordRPC") && pb.getValue() != pb.getMax()) {
-                        Utils.app.remoteClient.discordRPC({})
+                        this.updateDiscordRPC(pb, true)
                     }
                 })
                 let anVol = 0;
@@ -366,6 +338,9 @@ export default class ListenWindow extends HTMLDivElement {
                     console.log("Platform token refreshed")
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 })
+                Utils.player.onSkipAds(async () => {
+                    Utils.player.playSong(Utils.queueManager.currentSong)
+                });
                 Utils.libManager.onAddSongToLikedSongs((e) => {
                     if (Utils.queueManager.currentSong != null && e.detail.objId == "so_" + Utils.queueManager.currentSong.id) {
                         shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isSongIsInLikedSongs(Utils.queueManager.currentSong) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
@@ -508,5 +483,32 @@ export default class ListenWindow extends HTMLDivElement {
                 x.postMessage({ message: part, inData: { action: "seekto" }, id: id, platform: platform }, url)
             }
         })
+    }
+
+    async updateDiscordRPC(pb, setNothing = false) {
+        if (Utils.app.getSetting("gen_discordRPC")) {
+            if (!setNothing) {
+                let buttons = []
+                if (!Utils.player.isLocalMusic) buttons.push({ label: "Listen music", url: Utils.queueManager.currentSong.url })
+                if (!Utils.servURL.includes("192.168")) buttons.push({ label: "Download AyMusic", url: Utils.servURL + "projects/AyMusic.php" })
+                let plat = Utils.player.isLocalMusic ? "icon" : (await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)).toLowerCase()
+                let platName = Utils.player.isLocalMusic ? "Local music" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                let out = {
+                    details: "Listening " + Utils.queueManager.currentSong.title,
+                    state: "By " + Utils.queueManager.currentSong.singerName,
+                    endTimestamp: Date.now() + (Utils.queueManager.currentSong.time - pb.getValue()),
+                    largeImageKey: "icon",
+                    largeImageText: "AyMusic by Aketsuky",
+                    smallImageKey: plat,
+                    smallImageText: "Listening on " + platName,
+                    instance: false,
+                }
+                if (buttons.length > 0) out["buttons"] = buttons
+                Utils.app.remoteClient.discordRPC(out)
+            }
+            else {
+                Utils.app.remoteClient.discordRPC({})
+            }
+        }
     }
 }

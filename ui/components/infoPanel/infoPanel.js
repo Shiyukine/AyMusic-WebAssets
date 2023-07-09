@@ -87,18 +87,21 @@ export default class InfoPanel extends HTMLDivElement {
 
     changeloading(newLoading = false) {
         if (typeof newLoading === 'number') {
+            if (this.#progressBar.classList.contains("hidden")) this.#progressBar.classList.remove("hidden");
             this.#progressBar.style.width = newLoading + "%";
             this.#svg.classList.remove("playSVG");
-            this.#svg.parentElement.removeChild(this.#svg);
+            if (this.#svg.parentElement) this.#svg.parentElement.removeChild(this.#svg);
         }
         else {
             if (!newLoading) {
+                if (this.#progressBar.classList.contains("hidden")) this.#progressBar.classList.remove("hidden");
                 this.#svg.classList.remove("playSVG");
-                this.#svg.parentElement.removeChild(this.#svg);
+                if (this.#svg.parentElement) this.#svg.parentElement.removeChild(this.#svg);
             }
             else {
+                if (!this.#progressBar.classList.contains("hidden")) this.#progressBar.classList.add("hidden");
+                if (!this.#svg.parentElement) this.shadowRoot.getElementById("panelInfo").insertBefore(this.#svg, this.shadowRoot.getElementById("panelInfo").children[0]);
                 this.#svg.classList.add("playSVG");
-                this.shadowRoot.getElementById("panelInfo").insertBefore(this.shadowRoot.getElementById("panelInfo").firstChild, this.#svg);
             }
         }
     }
