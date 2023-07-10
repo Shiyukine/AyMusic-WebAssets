@@ -57,10 +57,12 @@ export default class MenuWindow extends HTMLDivElement {
         this.shadowRoot.getElementById("acc_pp").onload = () => {
             let i = this.shadowRoot.getElementById("acc_pp")
             var cnv = this.shadowRoot.getElementById("acc_ppstatic")
+            var scale = 2
+            var c1 = this.scaleIt(i, scale, scale)
             var ctx = cnv.getContext('2d')
-            cnv.height = i.height
-            cnv.width = i.width
-            ctx.drawImage(i, 0, 0, i.width, i.height)
+            cnv.height = c1.height * (1 / scale)
+            cnv.width = c1.width * (1 / scale)
+            ctx.drawImage(c1, 0, 0, cnv.width, cnv.height)
         }
         this.accountEl.src = Utils.actualAccount.avatarUrl;
     }
@@ -108,5 +110,16 @@ export default class MenuWindow extends HTMLDivElement {
             return awindow
         }
         return this.anWindow.win
+    }
+
+    scaleIt(source, scaleFactor) {
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        var w = source.width * scaleFactor;
+        var h = source.height * scaleFactor;
+        c.width = w;
+        c.height = h;
+        ctx.drawImage(source, 0, 0, w, h);
+        return (c);
     }
 }

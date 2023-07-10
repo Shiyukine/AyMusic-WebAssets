@@ -17,14 +17,14 @@ export default class ProgressBar extends HTMLDivElement {
         Import.getData("/ui/components/progressBar/progressBar.html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
-                shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
-                shadow.getElementById("progressBar").style.position = "absolute"
+                //shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
+                //shadow.getElementById("progressBar").style.position = "absolute"
                 this.changeMax(this.getAttribute("max") ? this.getAttribute("max") : this.getMax())
                 this.changeValue(this.getAttribute("value") ? this.getAttribute("value") : this.getValue())
                 new ThemeColor(shadow.children[1])
             }
             window.addEventListener("resize", () => {
-                shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
+                //shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
                 this.changeValue(this.getValue())
             })
             let mouseState = {
@@ -37,6 +37,10 @@ export default class ProgressBar extends HTMLDivElement {
                 mouseState.down = true
                 mouseState.x = e.x - this.shadowRoot.getElementById("stateThumb").getClientRects()[0].x
                 let left = e.x - this.shadowRoot.getElementById("pbInfo").getClientRects()[0].x - this.shadowRoot.getElementById("stateThumb").clientWidth / 2
+                if (left < 0)
+                    left = 0
+                if (left > this.shadowRoot.getElementById("pbInfo").clientWidth - 18)
+                    left = this.shadowRoot.getElementById("pbInfo").clientWidth - 18
                 left = left / (this.shadowRoot.getElementById("pbInfo").clientWidth - 18) * parseFloat(this.max)
                 this.changeValue(left)
             }

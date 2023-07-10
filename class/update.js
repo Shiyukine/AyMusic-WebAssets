@@ -15,7 +15,7 @@ export default class Update {
             Update.infoPanel = panelInfo
             Utils.app.remoteClient.onUpdateStateChange((state) => {
                 Update.infoPanel.changeloading(state.cur / state.max * 100)
-                if (state.step == 0) Update.infoPanel.changeText(null, "Downloading update file")
+                if (state.step == 0) Update.infoPanel.changeText(null, "Downloading update file...")
                 if (state.step == 1) Update.infoPanel.changeText(null, "Checking files...")
                 if (state.step == 2) Update.infoPanel.changeText(null, "Verifying files...")
                 if (state.step == 3) {
@@ -29,6 +29,7 @@ export default class Update {
                     Update.infoPanel.changeText(null, "Applying update...")
                 }
                 if (state.step == -1) resolve()
+                if (state.step == -2) Update.infoPanel.changeText("Can't search for updates", "Error when searching updates:\n" + state.error)
             })
             Utils.app.remoteClient.searchUpdates()
         })

@@ -6,7 +6,7 @@ html {
     -webkit-app-region: no-drag;
 }
 
-html * {
+html *:not(.mvmt) {
     -webkit-app-region: no-drag;
 }
 
@@ -214,6 +214,10 @@ svg.rotate:hover {
     background-color: rgba(74, 74, 74, 0.73);
     z-index: 999;
     height: 35px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
     margin: 0;
     /*-webkit-app-region: drag;
     -webkit-user-select: none;*/
@@ -227,7 +231,6 @@ svg.rotate:hover {
     height: 29px;
     border-radius: 25%;
     position: relative;
-    /*-webkit-app-region: no-drag;*/
 }
 
 .windowTopBar img.left,
@@ -273,7 +276,7 @@ img:hover {
     backdrop-filter: blur(10px);
     position: absolute;
     bottom: 90px;
-    top: 0;
+    top: 35px;
     right: 0;
     left: 0;
     padding-left: 100px;

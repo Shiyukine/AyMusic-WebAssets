@@ -48,8 +48,8 @@ export default class Window {
         forward.classList.add("left")
         topbar.appendChild(back)
         topbar.appendChild(forward)
-        document.body.insertBefore(topbar, document.body.firstChild)
-        document.getElementById("main").style.height = "calc(100% - 35px)"
+        document.body.appendChild(topbar)
+        //document.getElementById("main").style.height = "calc(100% - 35px)"
         Utils.app.addForwardTouch(icon, async function () {
             await Utils.app.remoteClient.beginMoveWindow()
         }, null, null, async function () {
