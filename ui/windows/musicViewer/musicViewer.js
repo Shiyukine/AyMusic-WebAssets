@@ -1,6 +1,7 @@
 import Import from "../../../class/import.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
+import Utils from "../../../class/utils/utils.js";
 
 export default class MusicViewerWindow extends HTMLDivElement {
     selectedIndex = 0;
@@ -18,6 +19,18 @@ export default class MusicViewerWindow extends HTMLDivElement {
             new ThemeColor(shadow.children[1])
             this.style.opacity = "1"
         })
+    }
+
+    /**
+     * 
+     * @param {String} objectID 
+     */
+    async changeView(objectID) {
+        if (objectID.startsWith("pl_")) {
+            let info = await Utils.apiManager.doPostRequest({
+                //act: 
+            })
+        }
     }
 
     close() {

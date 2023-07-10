@@ -6,6 +6,7 @@ import MenuWindow from "../../ui/windows/menu/menu.js";
 import App from "../app.js";
 import QueueManager from "../player/queueManager.js";
 import Player from "../player/player.js";
+import MusicViewerWindow from "../../ui/windows/musicViewer/musicViewer.js";
 
 export default class Utils {
     static useLocalServer = true
@@ -31,6 +32,11 @@ export default class Utils {
      * @type {MenuWindow}
      */
     static menu = null;
+
+    /**
+     * @type {MusicViewerWindow}
+     */
+    static musicViewer = null
 
     static delay(ms) {
         return new Promise(resolve => setTimeout(() => resolve(), ms))

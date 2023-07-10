@@ -9,6 +9,7 @@ import Translations from "./class/translations.js";
 import Import from "./class/import.js";
 import LocalMusicHandler from "./class/utils/localMusicHandler.js";
 import ThemeColor from "./class/themeColor.js";
+import MusicViewerWindow from "./ui/windows/musicViewer/musicViewer.js";
 
 async function main() {
     window.app = Utils.app;
@@ -70,6 +71,8 @@ async function main() {
                     document.body.classList.remove("loading");
                     let menuWin = new MenuWindow()
                     Utils.menu = menuWin
+                    let viewerWin = new MusicViewerWindow()
+                    Utils.musicViewer = viewerWin
                     mainPanel.appendChild(menuWin);
                     mainPanel.appendChild(new ListenWindow())
                 };
