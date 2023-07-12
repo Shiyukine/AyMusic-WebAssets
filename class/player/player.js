@@ -90,19 +90,26 @@ export default class Player {
                 await PlatformHandler.refreshTokenForPlatform(platform)
                 console.log("Platform token refreshed")
             }
+            console.log("2")
             let url = song.url
             if ((await PlatformHandler.getPlatformSettings(platform)).UseListenUrl) {
+                console.log("3")
                 let urlsplit = (await PlatformHandler.getPlatformUrl(platform, "BaseSongUrl")).split("%id%")
+                console.log("4")
                 let url2split = (await PlatformHandler.getPlatformUrl(platform, "ListenUrl")).split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
                     .split("%id%")
+                console.log("5")
                 for (let spl in urlsplit) {
                     url = url.replace(urlsplit[spl], url2split[spl])
                 }
+                console.log("6")
                 if (!url.includes("?")) url += "?uwu=1"
                 if (play) url += "&autoplay=1"
                 url += "&volume=" + this.volume
-                var wtId = TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => { })
             }
+            console.log("7")
+            var wtId = TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => { })
+            console.log("8")
             this.currentUrl = url
         }
         this.currentSongUrl = song.url
