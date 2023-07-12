@@ -1,5 +1,7 @@
 import InfoPanel from "../ui/components/infoPanel/infoPanel.js";
+import Album from "./music/album.js";
 import Playlist from "./music/playlist.js"
+import Singer from "./music/singer.js";
 import Song from "./music/song.js";
 import LocalMusicHandler from "./utils/localMusicHandler.js";
 import Utils from "./utils/utils.js"
@@ -13,7 +15,7 @@ export default class LibraryManager {
     /**
      * @type {[String]}
      */
-    userLikedSongs = []
+    userLikedObjects = []
 
     /**
      * @type {Playlist}
@@ -44,7 +46,7 @@ export default class LibraryManager {
                 if (pl.id == info["likedSongsPlId"])
                     this.userLikedPl = npl
             }
-            this.userLikedSongs = info["likedSongs"]
+            this.userLikedObjects = info["likedSongs"]
             this.userInfo.likedSongsPlId = info["likedSongsPlId"]
             console.log("User info refreshed successfully")
         }
@@ -177,7 +179,7 @@ export default class LibraryManager {
     async addObjToLikedSongs(objId) {
         var result = await this.addSongToAPlaylist(this.userInfo.likedSongsPlId, objId)
         if (result) {
-            this.userLikedSongs.push(objId.replace("so_", ""))
+            this.userLikedObjects.push(objId)
             this.#eventEl.dispatchEvent(new CustomEvent("addsongtolikedsongs", {
                 detail: {
                     objId: objId
@@ -193,10 +195,10 @@ export default class LibraryManager {
      */
     async removeObjFromLikedSongs(objId) {
         await this.removeSongFromAPlaylist(this.userInfo.likedSongsPlId, objId)
-        for (let i in this.userLikedSongs) {
-            let id = this.userLikedSongs[i]
-            if (id === objId.replace("so_", "")) {
-                this.userLikedSongs.splice(i, 1)
+        for (let i in this.userLikedObjects) {
+            let id = this.userLikedObjects[i]
+            if (id === objId) {
+                this.userLikedObjects.splice(i, 1)
                 this.#eventEl.dispatchEvent(new CustomEvent("removesongfromlikedsongs", {
                     detail: {
                         objId: objId
@@ -228,7 +230,7 @@ export default class LibraryManager {
             document.getElementById("main").appendChild(ip)
             ip.show()
         }
-        else if (Utils.libManager.userLikedSongs.includes(song.id)) {
+        else if (Utils.libManager.userLikedObjects.includes("so_" + song.id)) {
             await Utils.libManager.removeObjFromLikedSongs("so_" + song.id)
             console.log("removed song")
         }
@@ -243,7 +245,29 @@ export default class LibraryManager {
         }
     }
 
+    async addOrRemoveObjectIDLikedSongs(objectID) {
+        if (Utils.libManager.userLikedObjects.includes(objectID)) {
+            await Utils.libManager.removeObjFromLikedSongs(objectID)
+            console.log("removed song")
+        }
+        else {
+            await Utils.libManager.addObjToLikedSongs(objectID)
+            console.log("added song")
+        }
+    }
+
     isSongIsInLikedSongs(song) {
-        return LocalMusicHandler.isMusicInLocalLibrary(song.id) || Utils.libManager.userLikedSongs.includes(song.id)
+        return LocalMusicHandler.isMusicInLocalLibrary(song.id) || Utils.libManager.userLikedObjects.includes("so_" + song.id)
+    }
+
+    isObjectIsInLikedSongs(obj) {
+        if (obj.constructor == Playlist) return Utils.libManager.userLikedObjects.includes("pl_" + obj.id)
+        if (obj.constructor == Album) return Utils.libManager.userLikedObjects.includes("al_" + obj.id)
+        if (obj.constructor == Singer) return Utils.libManager.userLikedObjects.includes("si_" + obj.id)
+        return false
+    }
+
+    isObjectIDIsInLikedSongs(obj) {
+        return Utils.libManager.userLikedObjects.includes(obj)
     }
 }

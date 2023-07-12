@@ -103,13 +103,37 @@ export default class SettingsWindow extends HTMLDivElement {
                 shadow.getElementById("music_add").onclick = () => {
                     LocalMusicHandler.addMusic()
                 }
-                shadow.getElementById("acc_spotify").onclick = async () => {
-                    await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl("Spotify", "LoginUrl"),
-                        await PlatformHandler.getPlatformUrl("Spotify", "BaseUrl"))
+                for (let platform of await PlatformHandler.getAvailablePlatforms()) {
+                    /*<div class="set">
+                        <p>{set.music.addSpotify}</p>
+                        <button id="acc_spotify">{set.music.addAccount}</button>
+                        <button id="acc_spotify_rm">{set.music.rmAccount}</button>
+                    </div>*/
+                    let div = document.createElement("div")
+                    div.classList.add("set")
+                    let p = document.createElement("p")
+                    p.innerHTML = "<span>{set.music.addAccountPlatform}</span><span> " + platform + "</span>"
+                    div.appendChild(p)
+                    let btn1 = document.createElement("button")
+                    btn1.innerText = "{set.music.addAccount}"
+                    btn1.onclick = async () => {
+                        await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
+                            await PlatformHandler.getPlatformUrl(platform, "BaseUrl"))
+                    }
+                    div.appendChild(btn1)
+                    let btn2 = document.createElement("button")
+                    btn2.innerText = "{set.music.rmAccount}"
+                    btn2.onclick = async () => {
+                        /*await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
+                            await PlatformHandler.getPlatformUrl(platform, "BaseUrl"))*/
+                        Utils.newError("Not available now", "Sorry, but this feature will be added soon :)")
+                    }
+                    div.appendChild(btn2)
+                    shadow.getElementById("music_panel").insertBefore(div, shadow.getElementById("music_import"))
                 }
-                shadow.getElementById("experimental_popout").onclick = async () => {
+                /*shadow.getElementById("experimental_popout").onclick = async () => {
                     await Utils.app.remoteClient.popoutChrome()
-                }
+                }*/
                 window.addEventListener("popstate", (e) => {
                     if (!this.isClosed) {
                         if (e.state.where == "settings") {

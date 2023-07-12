@@ -76,6 +76,7 @@ export default class MenuWindow extends HTMLDivElement {
      * @param {Boolean} updateHistory
      */
     changeWindow(newWindow, menuId, updateHistory = true) {
+        Utils.musicViewer.close()
         let menu = this.shadowRoot.getElementById(menuId)
         if (!this.anWindow || newWindow != this.anWindow.enum) {
             let awindow;

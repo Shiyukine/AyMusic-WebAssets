@@ -44,7 +44,7 @@ export default class PlaylistGrid extends HTMLDivElement {
                         })
                     }
                     else {
-                        //to-do
+                        Utils.musicViewer.changeView("pl_" + playlist.id)
                     }
                 });
                 new Translations(shadow.children[1])

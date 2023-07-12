@@ -18,7 +18,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: "open" })
         this.style.position = "absolute"
         this.style.width = "calc(100% - 5px)"
-        this.style.height = "calc(100% - 100px)"
+        this.style.height = "calc(100% - 135px)"
         this.style.left = "105px"
         this.style.top = window.innerHeight + "px"
         Import.getData("/ui/windows/queueViewer/queueViewer.html").then((html) => {
@@ -45,7 +45,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
                     if (dragInfo.drag && !this.isClosed) {
                         let mov = e.y - dragInfo.yBase
                         if (mov < dragInfo.yBase - 70) mov = dragInfo.yBase - 70
-                        this.style.top = "calc(10px + " + (mov) + "px)"
+                        this.style.top = "calc(45px + " + (mov) + "px)"
                     }
                 })
                 window.addEventListener("mouseup", (e) => {
@@ -56,7 +56,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
                         }
                         else {
                             this.style.transition = "0.3s"
-                            this.style.top = "10px"
+                            this.style.top = "45px"
                         }
                         dragInfo.drag = false
                         dragInfo.yBase = 0
@@ -83,10 +83,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
             var curI = Utils.queueManager.currentIndex
             for (let i in Utils.queueManager.allSongs) {
                 let song = Utils.queueManager.allSongs[i].song
-                let pl = null
-                if (Utils.queueManager.allSongs[i].obj.constructor === Playlist) {
-                    pl = Utils.queueManager.allSongs[i].obj
-                }
+                let pl = Utils.queueManager.allSongs[i].obj
                 if (i == curI) {
                     this.shadowRoot.getElementById("cur").appendChild(new SongGrid(song, pl))
                 }
@@ -102,7 +99,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
         document.getElementById("main").appendChild(this)
         this.clientWidth //wait element loaded
         this.style.transition = "0.3s"
-        this.style.top = "10px"
+        this.style.top = "45px"
         this.isClosed = false
         this.refresh()
     }

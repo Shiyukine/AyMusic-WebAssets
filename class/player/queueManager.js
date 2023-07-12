@@ -1,5 +1,6 @@
 import Album from "../music/album.js";
 import Playlist from "../music/playlist.js";
+import Singer from "../music/singer.js";
 import Song from "../music/song.js";
 import Utils from "../utils/utils.js";
 
@@ -30,6 +31,7 @@ export default class QueueManager {
         this.currentSong = null;
         this.allSongs = []
         this.allSongsIds = []
+        idSong = idSong.replace("so_", "")
         if (obj.constructor === Song) {
             this.allSongs.push({ song: obj, obj: obj })
             this.allSongsIds.push(obj.id)
@@ -84,8 +86,7 @@ export default class QueueManager {
         if (obj.constructor === Album) {
             let result = await Utils.apiManager.doPostRequest({
                 act: "getAlbumInfo",
-                playlistID: obj.id,
-                /*A MODIFIER*/
+                id: obj.id,
                 orderByDesc: true,
                 //
                 offset: -1
@@ -93,7 +94,7 @@ export default class QueueManager {
             let songs = result["songs"]["songs"]
             for (let i in songs) {
                 let objs = songs[i]
-                let sng = new Song(objs.musicID.replace("so_", ""), objs.url, objs.dateAdded, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID)
+                let sng = new Song(objs.songID.replace("so_", ""), objs.url, objs.albumPosition, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID)
                 if (sng.canBeLoaded) {
                     this.allSongs.push({ song: sng, obj: obj })
                     this.allSongsIds.push({ song: sng.id, obj: "al_" + obj.id })
@@ -103,7 +104,7 @@ export default class QueueManager {
             if (idSong != "") {
                 for (let i in this.allSongs) {
                     let sng = this.allSongs[i]
-                    if (sng.id == idSong) {
+                    if (sng.song.id == idSong) {
                         this.currentIndex = parseInt(i)
                         this.currentSong = sng.song
                         this.currentObject = sng.obj
@@ -117,6 +118,41 @@ export default class QueueManager {
             }
             this.currentObject = Object.assign(new Album(), this.currentObject)
             if (!this.currentObject.id.startsWith("al_")) this.currentObject.id = "al_" + this.currentObject.id
+            Utils.player.playSong(this.currentSong, play)
+            return;
+        }
+        if (obj.constructor === Singer) {
+            let result = await Utils.apiManager.doPostRequest({
+                act: "getSingerInfo",
+                id: obj.id
+            })
+            let songs = result["songs"]
+            for (let i in songs) {
+                let objs = songs[i]
+                let sng = new Song(objs.songID.replace("so_", ""), objs.url, objs.albumPosition, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, obj.id, obj.name, objs.albumName, objs.albumID)
+                if (sng.canBeLoaded) {
+                    this.allSongs.push({ song: sng, obj: obj })
+                    this.allSongsIds.push({ song: sng.id, obj: "si_" + obj.id })
+                }
+            }
+            if (this.shuffle) this.allSongs = this.shuffleArray(this.allSongs)
+            if (idSong != "") {
+                for (let i in this.allSongs) {
+                    let sng = this.allSongs[i]
+                    if (sng.song.id == idSong) {
+                        this.currentIndex = parseInt(i)
+                        this.currentSong = sng.song
+                        this.currentObject = sng.obj
+                    }
+                }
+            }
+            else {
+                this.currentIndex = 0
+                this.currentSong = this.allSongs[0].song
+                this.currentObject = this.allSongs[0].obj
+            }
+            this.currentObject = Object.assign(new Singer(), this.currentObject)
+            if (!this.currentObject.id.startsWith("si_")) this.currentObject.id = "si_" + this.currentObject.id
             Utils.player.playSong(this.currentSong, play)
             return;
         }
@@ -153,6 +189,10 @@ export default class QueueManager {
             if (song.obj.constructor === Album) {
                 this.currentObject = Object.assign(new Album(), this.currentObject)
                 if (!this.currentObject.id.startsWith("al_")) this.currentObject.id = "al_" + this.currentObject.id
+            }
+            if (song.obj.constructor === Singer) {
+                this.currentObject = Object.assign(new Singer(), this.currentObject)
+                if (!this.currentObject.id.startsWith("si_")) this.currentObject.id = "si_" + this.currentObject.id
             }
         }
         return song.song;

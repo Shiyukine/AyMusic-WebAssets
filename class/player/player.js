@@ -40,6 +40,7 @@ export default class Player {
      */
     async playSong(song, play = true) {
         this.needPlay = play
+        console.trace()
         console.log("begin to play song " + song.url)
         console.log("Resetting ancient song elements")
         if (this.audioElement != null) {

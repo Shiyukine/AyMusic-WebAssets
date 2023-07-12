@@ -66,13 +66,30 @@
     width: 65%;
 }
 
-.panel_ep .epName>p {
+.panel_ep .epName p {
     overflow: hidden;
     white-space: nowrap;
     /* text-overflow: ellipsis; */
     height: 20px;
+    cursor: pointer;
+}
+
+.divMask {
     -webkit-mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
     mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
+    display: flex;
+}
+
+.panel_ep .epName p:hover {
+    text-decoration: underline;
+}
+
+.panel_ep .epName p.nohover:hover {
+    text-decoration: none !important;
+}
+
+.panel_ep .epName p.nohover {
+    cursor: default !important;
 }
 
 .panel_ep .stats {

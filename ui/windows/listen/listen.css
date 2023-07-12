@@ -2,18 +2,15 @@
     color: white;
     margin: auto;
     cursor: pointer;
-}
-
-.listen svg:hover {
-    background-color: rgb(221, 221, 221, 0.3);
-}
-
-.listen svg {
     width: 48px;
     height: 48px;
     border-radius: 15px;
     padding: 1px;
     transition: 0.4s background;
+}
+
+.listen svg:hover {
+    background-color: rgb(221, 221, 221, 0.3);
 }
 
 .listen {
@@ -83,6 +80,19 @@ p {
     -webkit-mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
     mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
     width: 100%;
+    cursor: pointer;
+}
+
+.left p:hover {
+    text-decoration: underline;
+}
+
+.left p.nohover {
+    cursor: default !important;
+}
+
+.left p.nohover:hover {
+    text-decoration: none !important;
 }
 
 .middle p {

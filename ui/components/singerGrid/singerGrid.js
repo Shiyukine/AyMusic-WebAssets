@@ -2,6 +2,7 @@ import Import from "../../../class/import.js";
 import Singer from "../../../class/music/singer.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
+import Utils from "../../../class/utils/utils.js";
 
 export default class SingerGrid extends HTMLDivElement {
 
@@ -30,6 +31,9 @@ export default class SingerGrid extends HTMLDivElement {
                 });
                 this.addEventListener("mouseout", function () {
                     this.shadowRoot.getElementById("img").style.transform = "scale(1)"
+                });
+                this.addEventListener("click", function () {
+                    Utils.musicViewer.changeView("si_" + singer.id)
                 });
                 new ThemeColor(shadow.children[1])
             }

@@ -1,10 +1,14 @@
 import Import from "../../../class/import.js";
+import Album from "../../../class/music/album.js";
+import Singer from "../../../class/music/singer.js";
 import Song from "../../../class/music/song.js";
 import PlatformHandler from "../../../class/player/platformHandler.js";
 import TaskHandler from "../../../class/taskHandler.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
+import AlbumGrid from "../../components/albumGrid/albumGrid.js";
+import SingerGrid from "../../components/singerGrid/singerGrid.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
 
 export default class SearchWindow extends HTMLDivElement {
@@ -41,7 +45,7 @@ export default class SearchWindow extends HTMLDivElement {
                         }
                         if (this.selectedServer != "icon") {
                             await this.searchForAPlatform(this.selectedServer, false)
-                            shadow.getElementById("bottom").style.display = "grid"
+                            shadow.getElementById("bottom").style.display = "block"
                         }
                     }
                 })
@@ -116,6 +120,8 @@ export default class SearchWindow extends HTMLDivElement {
                     songs: songsToAdd
                 })
                 if (!listAddedServerSongs) {
+                    let albumsIDAdded = []
+                    let singersIDAdded = []
                     for (let i in nsongsID) {
                         let id = nsongsID[i]["songID"]
                         let url = songsToAdd[i][0]
@@ -129,10 +135,21 @@ export default class SearchWindow extends HTMLDivElement {
                         let cropEnd = songsToAdd[i][6]
                         let singerID = nsongsID[i]["singerID"]
                         let singerName = songsToAdd[i][10]
+                        let singerImgUrl = songsToAdd[i][11]
                         let albumName = songsToAdd[i][7]
                         let albumID = nsongsID[i]["albumID"]
+                        let albumType = songsToAdd[i][8]
+                        let albumImgUrl = songsToAdd[i][9]
                         this.shadowRoot.getElementById("songs").appendChild(new SongGrid(new Song(id, url, positionOrDate, title, imgUrl, time,
                             isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID)))
+                        if (!singersIDAdded.includes(singerID)) {
+                            this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(new Singer(singerID, singerName, singerImgUrl)))
+                            singersIDAdded.push(singerID)
+                        }
+                        if (!albumsIDAdded.includes(albumID)) {
+                            this.shadowRoot.getElementById("albums").appendChild(new AlbumGrid(new Album(albumID, albumName, singerID, albumType, albumImgUrl)))
+                            albumsIDAdded.push(albumID)
+                        }
                     }
                     /*for(let i in urlsExist) {
                         for(let j in songsToAdd) {

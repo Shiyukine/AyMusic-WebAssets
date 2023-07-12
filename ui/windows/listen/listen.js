@@ -1,5 +1,6 @@
 import Import from "../../../class/import.js";
 import Album from "../../../class/music/album.js";
+import Singer from "../../../class/music/singer.js";
 import Song from "../../../class/music/song.js";
 import PlatformHandler from "../../../class/player/platformHandler.js";
 import ThemeColor from "../../../class/themeColor.js";
@@ -69,6 +70,14 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                     shadow.getElementById("music_title").innerText = Utils.queueManager.currentSong.title
                     shadow.getElementById("music_artist").innerText = Utils.queueManager.currentSong.singerName
+                    if (Utils.player.isLocalMusic) {
+                        if (!this.shadowRoot.getElementById("music_title").classList.contains("nohover")) this.shadowRoot.getElementById("music_title").classList.add("nohover")
+                        if (!this.shadowRoot.getElementById("music_artist").classList.contains("nohover")) this.shadowRoot.getElementById("music_artist").classList.add("nohover")
+                    }
+                    else {
+                        if (this.shadowRoot.getElementById("music_title").classList.contains("nohover")) this.shadowRoot.getElementById("music_title").classList.remove("nohover")
+                        if (this.shadowRoot.getElementById("music_artist").classList.contains("nohover")) this.shadowRoot.getElementById("music_artist").classList.remove("nohover")
+                    }
                     shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isSongIsInLikedSongs(Utils.queueManager.currentSong) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
                     Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
                     Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
@@ -186,7 +195,7 @@ export default class ListenWindow extends HTMLDivElement {
                             dur: pb.getMax()
                         })
                     }
-                    if (cur >= 0 && cur < 1000 && Utils.app.getSetting("gen_discordRPC") && await Utils.player.getState()) {
+                    if (cur >= 0 && cur < 1000 && await Utils.player.getState()) {
                         this.updateDiscordRPC(pb, false)
                     }
                 })
@@ -271,7 +280,7 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Play"])
                     navigator.mediaSession.playbackState = "paused";
-                    if (Utils.app.getSetting("gen_discordRPC") && pb.getValue() != pb.getMax()) {
+                    if (pb.getValue() != pb.getMax()) {
                         this.updateDiscordRPC(pb, true)
                     }
                 })
@@ -343,12 +352,12 @@ export default class ListenWindow extends HTMLDivElement {
                 });
                 Utils.libManager.onAddSongToLikedSongs((e) => {
                     if (Utils.queueManager.currentSong != null && e.detail.objId == "so_" + Utils.queueManager.currentSong.id) {
-                        shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isSongIsInLikedSongs(Utils.queueManager.currentSong) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
+                        shadow.getElementById("like").children[0].setAttribute("d", Utils.pathsData["Heart"])
                     }
                 });
                 Utils.libManager.onRemoveSongFromLikedSongs((e) => {
                     if (Utils.queueManager.currentSong != null && e.detail.objId == "so_" + Utils.queueManager.currentSong.id) {
-                        shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isSongIsInLikedSongs(Utils.queueManager.currentSong) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
+                        shadow.getElementById("like").children[0].setAttribute("d", Utils.pathsData["HeartOutline"])
                     }
                 });
                 let queueViewer = new QueueViewerWindow()
@@ -388,6 +397,16 @@ export default class ListenWindow extends HTMLDivElement {
                 shadow.getElementById("volSvg").onclick = () => {
                     Utils.player.setMute(!Utils.player.isMuted)
                 }
+                shadow.getElementById("music_title").onclick = () => {
+                    if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                        Utils.musicViewer.changeView("al_" + Utils.queueManager.currentSong.albumID)
+                    }
+                }
+                shadow.getElementById("music_artist").onclick = () => {
+                    if (!Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                        Utils.musicViewer.changeView("si_" + Utils.queueManager.currentSong.singerID)
+                    }
+                }
                 if (Utils.libManager.userInfo.curMusic != null) {
                     if (Utils.libManager.userInfo.curObject == null) {
                         let obj = await Utils.apiManager.doPostRequest({
@@ -413,6 +432,14 @@ export default class ListenWindow extends HTMLDivElement {
                         })
                         let al = result["albumInfo"]
                         await Utils.queueManager.changeQueue(new Album(al.id, al.name, al.singerID, al.type, al.imgUrl), Utils.libManager.userInfo.curMusic, false)
+                    }
+                    else if (Utils.libManager.userInfo.curObject.startsWith("si_")) {
+                        let result = await Utils.apiManager.doPostRequest({
+                            act: "getSingerInfo",
+                            id: Utils.libManager.userInfo.curObject.replace("si_", "")
+                        })
+                        let al = result["singerInfo"]
+                        await Utils.queueManager.changeQueue(new Singer(al.id, al.name, al.imgUrl), Utils.libManager.userInfo.curMusic, false)
                     }
                 }
                 pbVol.changeValue(parseInt(Utils.app.getSetting("music_vol")))
@@ -486,13 +513,13 @@ export default class ListenWindow extends HTMLDivElement {
     }
 
     async updateDiscordRPC(pb, setNothing = false) {
-        if (Utils.app.getSetting("gen_discordRPC")) {
+        if (Utils.app.settings.gen_discordRPC) {
             if (!setNothing) {
                 let buttons = []
                 if (!Utils.player.isLocalMusic) buttons.push({ label: "Listen music", url: Utils.queueManager.currentSong.url })
                 if (!Utils.servURL.includes("192.168")) buttons.push({ label: "Download AyMusic", url: Utils.servURL + "projects/AyMusic.php" })
                 let plat = Utils.player.isLocalMusic ? "icon" : (await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)).toLowerCase()
-                let platName = Utils.player.isLocalMusic ? "Local music" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                let platName = Utils.player.isLocalMusic ? "them PC" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                 let out = {
                     details: "Listening " + Utils.queueManager.currentSong.title,
                     state: "By " + Utils.queueManager.currentSong.singerName,

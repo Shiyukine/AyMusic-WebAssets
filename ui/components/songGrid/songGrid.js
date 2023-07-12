@@ -7,6 +7,8 @@ import ContextMenu from "../contextMenu/contextMenu.js";
 import * as id3 from "../../../plugins/id3/id3.js"
 import InfoPanel from "../infoPanel/infoPanel.js";
 import ThemeColor from "../../../class/themeColor.js";
+import Album from "../../../class/music/album.js";
+import Singer from "../../../class/music/singer.js";
 
 export default class SongGrid extends HTMLDivElement {
 
@@ -15,18 +17,18 @@ export default class SongGrid extends HTMLDivElement {
      */
     song = null;
     /**
-     * @type {Playlist}
+     * @type {Playlist|Album|Singer}
      */
-    playlist = null;
+    object = null;
 
     /**
      * 
      * @param {Song} song 
-     * @param {Playlist} playlist
+     * @param {Playlist|Album|Singer} object
      */
-    constructor(song, playlist = null) {
+    constructor(song, object = null) {
         super();
-        this.playlist = playlist;
+        this.object = object;
         var shadow = this.attachShadow({ mode: "open" })
         Import.getData("/ui/components/songGrid/songGrid.html").then((html) => {
             shadow.innerHTML = html
@@ -58,7 +60,7 @@ export default class SongGrid extends HTMLDivElement {
                     }
                 })
                 Utils.libManager.onRemoveSongFromPlaylist((e) => {
-                    if (e.detail.objId == "so_" + song.id && e.detail.playlistId == playlist.id && this.parentElement) {
+                    if (e.detail.objId == "so_" + song.id && e.detail.playlistId == object.id && this.parentElement) {
                         this.parentElement.removeChild(this)
                     }
                 });
@@ -74,10 +76,17 @@ export default class SongGrid extends HTMLDivElement {
     }
 
     isMySong() {
+        let b = this.object == null || (Utils.queueManager.currentObject.id == "pl_" + this.object.id && this.object.constructor == Playlist)
+        b ||= this.object == null || (Utils.queueManager.currentObject.id == "al_" + this.object.id && this.object.constructor == Album)
+        b ||= this.object == null || (Utils.queueManager.currentObject.id == "si_" + this.object.id && this.object.constructor == Singer)
         return Utils.queueManager.currentSong != null && Utils.queueManager.currentSong.id == this.song.id &&
-            (this.playlist == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "pl_" + this.playlist.id.replace("pl_", "")))
+            (this.object == null || (Utils.queueManager.currentObject != null && b))
     }
 
+    /**
+     * 
+     * @param {Song} song 
+     */
     async changeSong(song) {
         if (this.song === null) {
             this.song = song;
@@ -106,7 +115,7 @@ export default class SongGrid extends HTMLDivElement {
                     this.shadowRoot.getElementById("cache").style.opacity = "0"
                 }
             });
-            let pl = this.playlist;
+            let pl = this.object;
             let curThis = this;
             this.shadowRoot.getElementById("svg").addEventListener("click", async function () {
                 if (curThis.isMySong()) {
@@ -116,6 +125,20 @@ export default class SongGrid extends HTMLDivElement {
                 else {
                     if (pl != null) await Utils.queueManager.changeQueue(pl, curThis.song.id)
                     else await Utils.queueManager.changeQueue(curThis.song)
+                }
+            });
+            if (song.imgUrl === "localImg") {
+                this.shadowRoot.getElementById("title").classList.add("nohover")
+                this.shadowRoot.getElementById("artist").classList.add("nohover")
+            }
+            this.shadowRoot.getElementById("title").addEventListener("click", async function () {
+                if (song.imgUrl !== "localImg") {
+                    Utils.musicViewer.changeView("al_" + song.albumID)
+                }
+            });
+            this.shadowRoot.getElementById("artist").addEventListener("click", async function () {
+                if (song.imgUrl !== "localImg") {
+                    Utils.musicViewer.changeView("si_" + song.singerID)
                 }
             });
             var cm = new ContextMenu()
@@ -133,20 +156,20 @@ export default class SongGrid extends HTMLDivElement {
                     Utils.queueManager.addToQueue(song)
                 })
                 cm.addElement("{lib.goArtist}", () => {
-                    Utils.newError("Can't do this", "This feature will be added soon :)")
+                    Utils.musicViewer.changeView("si_" + song.singerID)
                 })
                 cm.addElement("{lib.goAlbum}", () => {
-                    Utils.newError("Can't do this", "This feature will be added soon :)")
+                    Utils.musicViewer.changeView("al_" + song.albumID)
                 })
-                if (this.playlist != null && this.playlist.id != Utils.libManager.userInfo.likedSongsPlId && Utils.libManager.userPlaylists.includes(this.playlist)) {
+                if (this.object != null && this.object.id != Utils.libManager.userInfo.likedSongsPlId && Utils.libManager.userPlaylists.includes(this.object)) {
                     let result = await Utils.apiManager.doPostRequest({
                         act: "getIdSongsInPlaylist",
-                        playlistID: this.playlist.id,
+                        playlistID: this.object.id,
                         orderByDesc: false
                     })
                     if (result.includes(song.id)) {
                         cm.addElement("{lib.removeFromPl}", () => {
-                            Utils.libManager.removeSongFromAPlaylist(this.playlist.id, "so_" + song.id)
+                            Utils.libManager.removeSongFromAPlaylist(this.object.id, "so_" + song.id)
                             //this.parentElement.removeChild(this)
                         })
                     }

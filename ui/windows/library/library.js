@@ -265,7 +265,6 @@ export default class LibraryWindow extends HTMLDivElement {
                     }
                     let total = parseInt(result["total"])
                     while (objs.children.length < total - counterSongNotLoaded) {
-                        console.log(objs.children.length, total, counterSongNotLoaded)
                         objs.appendChild(new SongGrid(null, Utils.libManager.userLikedPl))
                     }
                 }
@@ -295,7 +294,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             }
                         }
                     }
-                    else if (newIndex == 2) {
+                    else if (newIndex == 3) {
                         let list = []
                         for (let i in result) {
                             let obj = result[i]
@@ -304,9 +303,9 @@ export default class LibraryWindow extends HTMLDivElement {
                                 list.push(new Singer(id, obj.name, obj.imgUrl, obj.dateAdded))
                             }
                         }
-                        for (let i of LocalMusicHandler.getArtists()) {
+                        /*for (let i of LocalMusicHandler.getArtists()) {
                             list.push(i)
-                        }
+                        }*/
                         list.sort((a, b) => {
                             if (a.name > b.name)
                                 return 1;
@@ -318,7 +317,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             objs.appendChild(new SingerGrid(i))
                         }
                     }
-                    else if (newIndex == 3) {
+                    else if (newIndex == 2) {
                         let list = []
                         for (let i in result) {
                             let obj = result[i]
@@ -327,9 +326,9 @@ export default class LibraryWindow extends HTMLDivElement {
                                 list.push(new Album(id, obj.name, obj.singerID, obj.type, obj.imgUrl, obj.dateAdded))
                             }
                         }
-                        for (let i of LocalMusicHandler.getAlbums()) {
+                        /*for (let i of LocalMusicHandler.getAlbums()) {
                             list.push(i)
-                        }
+                        }*/
                         list.sort((a, b) => {
                             if (a.name > b.name)
                                 return 1;
