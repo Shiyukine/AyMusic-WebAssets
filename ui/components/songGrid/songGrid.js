@@ -9,6 +9,7 @@ import InfoPanel from "../infoPanel/infoPanel.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
+import PlatformHandler from "../../../class/player/platformHandler.js";
 
 export default class SongGrid extends HTMLDivElement {
 
@@ -76,11 +77,10 @@ export default class SongGrid extends HTMLDivElement {
     }
 
     isMySong() {
-        let b = this.object == null || (Utils.queueManager.currentObject.id == "pl_" + this.object.id && this.object.constructor == Playlist)
-        b ||= this.object == null || (Utils.queueManager.currentObject.id == "al_" + this.object.id && this.object.constructor == Album)
-        b ||= this.object == null || (Utils.queueManager.currentObject.id == "si_" + this.object.id && this.object.constructor == Singer)
-        return Utils.queueManager.currentSong != null && Utils.queueManager.currentSong.id == this.song.id &&
-            (this.object == null || (Utils.queueManager.currentObject != null && b))
+        let b = this.object == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "pl_" + this.object.id && this.object.constructor == Playlist)
+        b ||= this.object == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "al_" + this.object.id && this.object.constructor == Album)
+        b ||= this.object == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "si_" + this.object.id && this.object.constructor == Singer)
+        return Utils.queueManager.currentSong != null && Utils.queueManager.currentSong.id == this.song.id && b
     }
 
     /**
@@ -93,6 +93,8 @@ export default class SongGrid extends HTMLDivElement {
             this.shadowRoot.getElementById("title").innerText = this.song.title
             this.shadowRoot.getElementById("artist").innerText = this.song.singerName
             this.shadowRoot.getElementById("time").innerText = Utils.msToTime(this.song.time)
+            let plat = song.imgUrl == "localImg" ? "icon" : await PlatformHandler.getPlatformBySongUrl(song.url)
+            this.shadowRoot.getElementById("platform").style.backgroundImage = "url('/resources/" + plat + ".ico')"
             if (this.song.imgUrl === "localImg") {
                 if (this.song.canBeLoaded) {
                     var imge = this.shadowRoot.getElementById("img");

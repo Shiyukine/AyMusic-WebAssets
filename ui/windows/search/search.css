@@ -246,6 +246,38 @@ button {
     margin-bottom: 5px;
 }
 
+button#launchSearch {
+    background-color: rgb(56, 56, 56);
+    color: white;
+    border-radius: 22.5px;
+    margin: 5px;
+    margin-left: 0px;
+    box-shadow: none;
+    border: none;
+    display: flex;
+}
+
+svg {
+    width: 29px;
+}
+
+button#launchSearch:focus {
+    background: rgb(78, 78, 78) radial-gradient(circle, transparent 1%, rgb(78, 78, 78) 1%) center/15000%;
+    font-weight: normal;
+}
+
+button#launchSearch:hover {
+    background: rgb(78, 78, 78) radial-gradient(circle, transparent 1%, rgb(78, 78, 78) 1%) center/15000%;
+    font-weight: normal;
+}
+
+button#launchSearch:active {
+    background-color: white;
+    background-size: 100%;
+    transition: background 0s;
+    font-weight: normal;
+}
+
 button:disabled {
     opacity: 0.6;
     cursor: not-allowed;

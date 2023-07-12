@@ -77,10 +77,14 @@ p {
     white-space: nowrap;
     /*overflow: hidden;*/
     /*text-overflow: ellipsis;*/
-    -webkit-mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
-    mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
     width: 100%;
     cursor: pointer;
+    display: initial;
+}
+
+.divMask {
+    -webkit-mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
+    mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
 }
 
 .left p:hover {

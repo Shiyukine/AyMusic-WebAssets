@@ -75,6 +75,17 @@ async function main() {
                     Utils.musicViewer = viewerWin
                     mainPanel.appendChild(menuWin);
                     mainPanel.appendChild(new ListenWindow())
+                    if (Utils.app.settings.firstOpen) {
+                        var info = new InfoPanel("Welcome to AyMusic!", "Hello! Thanks for testing our app.\n"
+                            + "We would like to remind you that this app isn't in its release state. So, the Aketsuky Team can reset the database and it may have bugs in several features of AyMusic.\n"
+                            + "Thanks for reading, and if you find a bug, please report it to Aketsuky Team!", [{
+                                text: "OK", isPositive: true, onclick: () => {
+                                    info.close()
+                                    Utils.app.changeSetting("firstOpen", false)
+                                }
+                            }], false);
+                        document.getElementById("main").appendChild(info)
+                    }
                 };
             }
             catch (e) {

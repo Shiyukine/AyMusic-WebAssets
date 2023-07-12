@@ -194,8 +194,13 @@ export default class Player {
 
     async previous() {
         console.log("previous song")
-        let song = await Utils.queueManager.previousSong()
-        this.playSong(song)
+        if (await Utils.player.getCurrentTime() > 5000) {
+            Utils.player.seek(0)
+        }
+        else {
+            let song = await Utils.queueManager.previousSong()
+            this.playSong(song)
+        }
     }
 
     changeShuffle(activate) {

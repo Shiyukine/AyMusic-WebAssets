@@ -38,19 +38,41 @@ export default class SearchWindow extends HTMLDivElement {
                     this.selectedServer = shadow.getElementById("serv_picker").value
                     shadow.getElementById("serv_ico").src = "/resources/" + shadow.getElementById("serv_picker").value + ".ico"
                 })
+                shadow.getElementById("launchSearch").addEventListener("click", async () => {
+                    this.launchSearch()
+                })
                 shadow.getElementById("tb_search").addEventListener("keydown", async (e) => {
                     if (e.key == "Enter") {
-                        while (shadow.getElementById("songs").children.length > 0) {
-                            shadow.getElementById("songs").removeChild(shadow.getElementById("songs").children[0])
-                        }
-                        if (this.selectedServer != "icon") {
-                            await this.searchForAPlatform(this.selectedServer, false)
-                            shadow.getElementById("bottom").style.display = "block"
-                        }
+                        this.launchSearch()
                     }
                 })
             }
         })
+    }
+
+    async launchSearch() {
+        while (this.shadowRoot.getElementById("songs").children.length > 0) {
+            this.shadowRoot.getElementById("songs").removeChild(this.shadowRoot.getElementById("songs").children[0])
+        }
+        while (this.shadowRoot.getElementById("artists").children.length > 0) {
+            this.shadowRoot.getElementById("artists").removeChild(this.shadowRoot.getElementById("artists").children[0])
+        }
+        while (this.shadowRoot.getElementById("albums").children.length > 0) {
+            this.shadowRoot.getElementById("albums").removeChild(this.shadowRoot.getElementById("albums").children[0])
+        }
+        while (this.shadowRoot.getElementById("playlists").children.length > 0) {
+            this.shadowRoot.getElementById("playlists").removeChild(this.shadowRoot.getElementById("playlists").children[0])
+        }
+        if (this.selectedServer != "icon") {
+            await this.searchForAPlatform(this.capitalizeFirstLetter(this.selectedServer), false)
+            this.shadowRoot.getElementById("bottom").style.display = "block"
+        }
+        else {
+            for (let plat of await PlatformHandler.getAvailablePlatforms()) {
+                await this.searchForAPlatform(plat, false)
+            }
+            this.shadowRoot.getElementById("bottom").style.display = "block"
+        }
     }
 
     close() {
@@ -67,7 +89,7 @@ export default class SearchWindow extends HTMLDivElement {
 
     async searchForAPlatform(server, listAddedServerSongs) {
         //listAddedServerSongs = show songs which are already added on AyMusic DB
-        var platform = this.capitalizeFirstLetter(server)
+        var platform = server
         if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform &&
             (await PlatformHandler.getPlatformSettings(platform)).Token == "") {
             console.log("Platform need refresh token")

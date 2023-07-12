@@ -29,7 +29,16 @@ export default class Update {
                     Update.infoPanel.changeText(null, "Applying update...")
                 }
                 if (state.step == -1) resolve()
-                if (state.step == -2) Update.infoPanel.changeText("Can't search for updates", "Error when searching updates:\n" + state.error)
+                if (state.step == -2) {
+                    //Update.infoPanel.changeText("Can't search for updates", "Error when searching updates:\n" + state.error)
+                    var info = new InfoPanel("Can't search for updates", "Error when searching updates:\n" + state.error, [{
+                        text: "Retry", isPositive: true, onclick: () => {
+                            Utils.app.remoteClient.searchUpdates()
+                            info.close()
+                        }
+                    }], false);
+                    document.getElementById("main").appendChild(info)
+                }
             })
             Utils.app.remoteClient.searchUpdates()
         })

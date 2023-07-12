@@ -152,21 +152,21 @@ export default class LibraryWindow extends HTMLDivElement {
                 })
                 this.addScrollEventForList("playlist_songs")
                 this.addScrollEventForList("mylib_list")
-                Utils.player.onSongChange(() => {
-                    let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && Utils.player.getState()
+                Utils.player.onSongChange(async () => {
+                    let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                 })
-                Utils.player.onPlay(() => {
-                    let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && Utils.player.getState()
+                Utils.player.onPlay(async () => {
+                    let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                 })
-                Utils.player.onPause(() => {
-                    let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && Utils.player.getState()
+                Utils.player.onPause(async () => {
+                    let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                 })
-                shadow.getElementById("plState").onclick = () => {
+                shadow.getElementById("plState").onclick = async () => {
                     if (Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id) {
-                        if (Utils.player.getState()) Utils.player.pause()
+                        if (await Utils.player.getState()) Utils.player.pause()
                         else Utils.player.play()
                     }
                     else {

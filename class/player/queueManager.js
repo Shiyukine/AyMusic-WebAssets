@@ -28,7 +28,7 @@ export default class QueueManager {
 
     async changeQueue(obj, idSong = "", play = true) {
         //this.currentObject = obj
-        this.currentSong = null;
+        //this.currentSong = null;
         this.allSongs = []
         this.allSongsIds = []
         idSong = idSong.replace("so_", "")

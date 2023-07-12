@@ -126,7 +126,9 @@ export default class SettingsWindow extends HTMLDivElement {
                     btn2.onclick = async () => {
                         /*await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
                             await PlatformHandler.getPlatformUrl(platform, "BaseUrl"))*/
-                        Utils.newError("Not available now", "Sorry, but this feature will be added soon :)")
+                        Utils.newError("Not available now", "Sorry, but this feature will be added soon :)\n"
+                            + "However, if you want actually to remove an account, you must delete the folder at\n"
+                            + "%appdata%\\AyMusic\\Cache\\WebCache (you can copy the link) and restart AyMusic.")
                     }
                     div.appendChild(btn2)
                     shadow.getElementById("music_panel").insertBefore(div, shadow.getElementById("music_import"))

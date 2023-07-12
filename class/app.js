@@ -14,7 +14,8 @@ export default class App {
         music_skipS: false,
         shuffle: false,
         repeat: 0,
-        mute: false
+        mute: false,
+        firstOpen: true
     }
 
     constructor() {

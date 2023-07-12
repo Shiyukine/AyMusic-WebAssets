@@ -15,6 +15,10 @@ export default class MusicViewerWindow extends HTMLDivElement {
     loaded = false;
     controller = new AbortController();
     fullObjId = "";
+    /**
+     * @type {Album|Singer|Playlist}
+     */
+    object = null;
 
     constructor() {
         super();
@@ -50,10 +54,32 @@ export default class MusicViewerWindow extends HTMLDivElement {
             shadow.getElementById("like").onclick = () => {
                 Utils.libManager.addOrRemoveObjectIDLikedSongs(this.fullObjId)
             }
+            Utils.player.onSongChange(async () => {
+                let isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id && await Utils.player.getState()
+                shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
+            })
+            Utils.player.onPlay(async () => {
+                let isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id && await Utils.player.getState()
+                shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
+            })
+            Utils.player.onPause(async () => {
+                let isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id && await Utils.player.getState()
+                shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
+            })
+            shadow.getElementById("changeState").onclick = async () => {
+                if (Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id) {
+                    if (await Utils.player.getState()) Utils.player.pause()
+                    else Utils.player.play()
+                }
+                else {
+                    if (this.object != null)
+                        Utils.queueManager.changeQueue(this.object)
+                }
+            }
         })
     }
 
-    addList(title) {
+    addList(title, isSong = true) {
         let h1 = document.createElement("h3")
         h1.innerText = title
         h1.classList.add("sublistTitle")
@@ -61,7 +87,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
         let div = document.createElement("div")
         div.classList.add("sublist")
         this.shadowRoot.getElementById("list").appendChild(div)
-        this.addScrollEventForList(div)
+        if (isSong) this.addScrollEventForList(div)
         return div
     }
 
@@ -71,8 +97,8 @@ export default class MusicViewerWindow extends HTMLDivElement {
      */
     async changeView(objectID, updateHistory = true) {
         this.fullObjId = objectID
+        this.object = null
         if (!this.parentElement) document.getElementById("main").appendChild(this)
-        if (updateHistory) window.history.pushState({ where: "musicViewer", objId: objectID }, "", "/index.html")
         while (this.shadowRoot.getElementById("list").firstChild) {
             this.shadowRoot.getElementById("list").removeChild(this.shadowRoot.getElementById("list").lastChild);
         }
@@ -80,6 +106,8 @@ export default class MusicViewerWindow extends HTMLDivElement {
         this.clientWidth
         //
         this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.libManager.isObjectIDIsInLikedSongs(this.fullObjId) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
+        let isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id && await Utils.player.getState()
+        this.shadowRoot.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
         this.style.opacity = "1"
         if (objectID.startsWith("pl_")) {
             if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
@@ -95,6 +123,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
             let songs = info["songs"]["songs"]
             let counterSongNotLoaded = 0
             let pl = new Playlist(info["playlistInfo"]["id"], info["playlistInfo"]["name"], info["playlistInfo"]["userID"], info["playlistInfo"]["desc"], info["playlistInfo"]["imgUrl"], info["playlistInfo"]["isPrivate"], info["playlistInfo"]["rank"])
+            this.object = pl
             for (let i in songs) {
                 let obj = songs[i]
                 let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID)
@@ -125,6 +154,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
             let songs = info["songs"]["songs"]
             let counterSongNotLoaded = 0
             let pl = new Album(info["albumInfo"]["id"], info["albumInfo"]["name"], info["albumInfo"]["singerID"], info["albumInfo"]["type"], info["albumInfo"]["imgUrl"])
+            this.object = pl
             for (let i in songs) {
                 let obj = songs[i]
                 this.shadowRoot.getElementById("subtitle").innerText = "By " + obj.singerName
@@ -150,12 +180,13 @@ export default class MusicViewerWindow extends HTMLDivElement {
             let div = this.addList("Latest added song on AyMusic's database of this singer:")
             let songs = info["songs"]
             let pl = new Singer(info["singerInfo"]["id"], info["singerInfo"]["name"], info["singerInfo"]["imgUrl"])
+            this.object = pl
             for (let i in songs) {
                 let obj = songs[i]
                 let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, pl.id, pl.name, obj.albumName, obj.albumID)
                 if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
             }
-            let div2 = this.addList("Albums of this singer added on AyMusic's database:")
+            let div2 = this.addList("Albums of this singer added on AyMusic's database:", false)
             let als = info["singerAlbums"]
             for (let i in als) {
                 let obj = als[i]
@@ -164,6 +195,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
             }
         }
         this.loaded = true
+        if (updateHistory) window.history.pushState({ where: "musicViewer", objId: objectID }, "", "/index.html")
     }
 
     addScrollEventForList(list) {
@@ -216,7 +248,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
     close() {
         if (this.loaded) {
             this.ontransitionend = () => {
-                this.parentElement.removeChild(this)
+                if (this.style.opacity != "1") this.parentElement.removeChild(this)
                 this.ontransitionend = () => { };
             };
             this.style.opacity = "0%"

@@ -58,6 +58,16 @@
     background-size: cover;
 }
 
+#platform {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    margin-right: 5px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 .panel_ep .epName {
     top: 50%;
     left: 70px;
