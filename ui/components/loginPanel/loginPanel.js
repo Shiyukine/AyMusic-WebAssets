@@ -132,7 +132,7 @@ export default class LoginPanel extends HTMLDivElement {
         else this.shadowRoot.getElementById("loginBG").style.opacity = "0%"
     }
 
-    #endLogin() {
+    #endLogin = () => {
         this.shadowRoot.getRootNode().host.parentElement.removeChild(this)
         if (document.getElementById("menu_win"))
             document.getElementById("menu_win").style.zIndex = ""
