@@ -85,7 +85,7 @@ export default class ContextMenu extends HTMLDivElement {
                         let rect = this.getBoundingClientRect();
                         context.show(new MouseEvent("contextmenu", {
                             clientX: rect.left,
-                            clientY: rect.top - 1 + 39 * Array.from(this.shadowRoot.getElementById("context").children).indexOf(div),
+                            clientY: rect.top + 39 * Array.from(this.shadowRoot.getElementById("context").children).indexOf(div),
                             button: 0,
                             ctrlKey: false,
                             altKey: false,
@@ -170,7 +170,7 @@ export default class ContextMenu extends HTMLDivElement {
         this.style.bottom = !testy ? "10px" : "";
         //if (!this.isSub) this.style.position = "inherit"
         this.style.left = testx ? x + "px" : ""
-        this.style.top = testy ? (y - 34) + "px" : ""
+        this.style.top = testy ? y + "px" : ""
         this.loaded = true
     }
 }
