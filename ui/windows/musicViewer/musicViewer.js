@@ -175,9 +175,9 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 offset: 0
             })
             this.shadowRoot.getElementById("title").innerText = info["singerInfo"]["name"]
-            this.shadowRoot.getElementById("subtitle").innerText = "Singer"
+            this.shadowRoot.getElementById("subtitle").innerText = "Artist"
             this.shadowRoot.getElementById("cover").src = info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico"
-            let div = this.addList("Latest added song on AyMusic's database of this singer:")
+            let div = this.addList("Latest added song on AyMusic's database of this artist:")
             let songs = info["songs"]
             let pl = new Singer(info["singerInfo"]["id"], info["singerInfo"]["name"], info["singerInfo"]["imgUrl"])
             this.object = pl
@@ -186,7 +186,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, pl.id, pl.name, obj.albumName, obj.albumID)
                 if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
             }
-            let div2 = this.addList("Albums of this singer added on AyMusic's database:", false)
+            let div2 = this.addList("Albums of this artist added on AyMusic's database:", false)
             let als = info["singerAlbums"]
             for (let i in als) {
                 let obj = als[i]
