@@ -47,7 +47,7 @@ export default class LoginPanel extends HTMLDivElement {
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.3s"
         //this.style.zIndex = "101"
-        Import.getData("/ui/components/loginPanel/loginPanel.html").then((html) => {
+        Import.getData("/ui/components/loginPanel/loginPanel" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.#iframe = this.shadowRoot.getElementById("iframe")
             this.#cache = this.shadowRoot.getElementById("cache")

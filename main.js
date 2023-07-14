@@ -27,6 +27,9 @@ async function main() {
                     Window.setTopBarWindow();
                     Window.setDevToolLogger();
                 }
+                if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                    document.getElementById("main_style").href = "/main_mobile.css";
+                }
                 new Translations(document.body)
                 new ThemeColor(document.body)
                 document.getElementById("version_name").innerText = Utils.app.versionName + " (" + Utils.app.versionId + ")"

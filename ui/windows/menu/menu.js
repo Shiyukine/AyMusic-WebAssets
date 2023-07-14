@@ -15,13 +15,19 @@ export default class MenuWindow extends HTMLDivElement {
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.7s"
         this.id = "menu_win"
-        Import.getData("/ui/windows/menu/menu.html").then((html) => {
+        Import.getData("/ui/windows/menu/menu" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html;
             this.shadowRoot.getElementById("cssImport").onload = () => {
                 this.shadowRoot.getElementById("main").ontransitionend = () => { };
                 this.shadowRoot.getElementById("main").style = "";
-                this.style.width = "100px";
-                this.style.height = "100%";
+                if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                    this.style.width = "100%";
+                    this.style.bottom = "0";
+                }
+                else {
+                    this.style.width = "100px";
+                    this.style.height = "100%";
+                }
                 this.style.position = "absolute";
                 this.style.opacity = "1"
                 this.accountEl = this.shadowRoot.getElementById("acc_pp");

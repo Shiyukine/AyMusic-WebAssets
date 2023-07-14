@@ -21,7 +21,7 @@ export default class SearchWindow extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: "open" })
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.7s"
-        Import.getData("/ui/windows/search/search.html").then((html) => {
+        Import.getData("/ui/windows/search/search" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 new Translations(shadow.children[1])

@@ -16,10 +16,10 @@ export default class ListenWindow extends HTMLDivElement {
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.7s"
         this.style.position = "absolute"
-        this.style.bottom = "0"
+        this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "78px" : "0"
         this.style.left = "0"
         this.style.right = "0"
-        Import.getData("/ui/windows/listen/listen.html").then((html) => {
+        Import.getData("/ui/windows/listen/listen" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 /**
@@ -403,7 +403,7 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                 }
                 shadow.getElementById("music_artist").onclick = () => {
-                    if (!Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                    if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
                         Utils.musicViewer.changeView("si_" + Utils.queueManager.currentSong.singerID)
                     }
                 }

@@ -1,6 +1,7 @@
 import Import from "../../../class/import.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
+import Utils from "../../../class/utils/utils.js";
 
 export default class InfoPanel extends HTMLDivElement {
     /**
@@ -35,7 +36,7 @@ export default class InfoPanel extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: 'open' });
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.3s"
-        Import.getData("/ui/components/infoPanel/infoPanel.html").then((html) => {
+        Import.getData("/ui/components/infoPanel/infoPanel" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.#textEl = shadow.getElementById("text");
             this.#subtextEl = shadow.getElementById("subtext");
