@@ -30,6 +30,21 @@ export default class App {
     */
     async registerClient(platform, versionName, versionId, remoteClient) {
         try {
+            //force change settings for mobile
+            this.settings = {
+                gen_langs: "English",
+                gen_theme: "Dark",
+                gen_discordRPC: platform != "Android" && platform != "iOS",
+                gen_logs: platform == "Android" || platform == "iOS",
+                music_adblock: true,
+                music_createMix: false,
+                music_vol: platform == "Android" || platform == "iOS" ? 100 : 66,
+                music_skipS: false,
+                shuffle: false,
+                repeat: 0,
+                mute: false,
+                firstOpen: true
+            }
             this.platform = platform;
             this.versionName = versionName;
             this.versionId = versionId;

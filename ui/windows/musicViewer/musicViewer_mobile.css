@@ -1,0 +1,169 @@
+p,
+h1,
+h2,
+h3 {
+    font-family: "Quicksand";
+    margin: 0px;
+    color: white;
+}
+
+.center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.search {
+    width: 100%;
+    border-radius: 15px;
+    height: 100%;
+}
+
+#main {
+    display: contents;
+}
+
+#music {
+    background-color: rgb(49, 49, 49, 0.3);
+    width: 100%;
+    height: 100%;
+    /* top: 50%; */
+    /* left: 50%; */
+    /* transform: translate(0, -50%); */
+    border-radius: 15px;
+    overflow: hidden;
+    scrollbar-width: thin;
+    position: absolute;
+}
+
+#musicBG {
+    z-index: 3;
+    backdrop-filter: blur(20px);
+    /* background-color: rgba(71, 71, 71, 0); */
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.7s;
+    left: 0;
+}
+
+.visible {
+    opacity: 100%;
+}
+
+.hidden {
+    opacity: 0%;
+}
+
+#musicBG svg {
+    color: white;
+    transition: 0.4s background;
+    cursor: pointer;
+    border-radius: 15px;
+}
+
+#musicBG svg:hover {
+    background-color: rgb(221, 221, 221, 0.3);
+}
+
+#svgs {
+    height: 42px;
+    display: flex;
+    position: absolute;
+    top: 148px;
+    right: 15px;
+}
+
+#musicBG #cache {
+    background-color: rgba(37, 37, 37, 0.5);
+    backdrop-filter: blur(20px);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    visibility: collapse;
+    top: 0%;
+}
+
+#top {
+    /*background-color: rgba(37, 37, 37, 0.5);*/
+    height: 100px;
+    margin: 15px;
+    border-radius: 15px;
+    display: flex;
+}
+
+#cover {
+    margin: 10px;
+    border-radius: 15px;
+}
+
+#title {
+    top: 25%;
+    position: relative;
+    -webkit-mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
+    white-space: nowrap;
+    line-height: 30px;
+}
+
+#subtitle {
+    color: rgb(165, 165, 165);
+    top: 25%;
+    position: relative;
+    cursor: pointer;
+    line-height: 20px;
+}
+
+#subtitle:hover {
+    text-decoration: underline;
+}
+
+#subtitle.nohover {
+    cursor: default !important;
+}
+
+#subtitle.nohover:hover {
+    text-decoration: none !important;
+}
+
+#titles {
+    margin-left: 5px;
+    width: 65%;
+}
+
+#list {
+    position: relative;
+    height: calc(100% - 228px);
+    border-radius: 15px;
+    /* background-color: rgba(37, 37, 37, 0.5); */
+    /* margin: 10px; */
+    padding: 10px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+.sublist {
+    background-color: rgba(19, 19, 19, 0.5);
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    display: flow-root;
+}
+
+.sublistTitle {
+    margin: 8px;
+}
+
+#topbar {
+    display: flex;
+    margin-top: 40px;
+}
+
+#topbar p {
+    margin-top: 8px;
+    font-size: 17px;
+}
+
+#topbar svg {
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 38px;
+}

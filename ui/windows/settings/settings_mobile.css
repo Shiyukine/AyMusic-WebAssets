@@ -1,77 +1,13 @@
-p,
-h3 {
+p {
     font-family: "Quicksand";
     margin: 0px;
     color: white;
 }
 
-.search {
+.settings {
     width: 100%;
     border-radius: 15px;
     height: 100%;
-}
-
-#picker {
-    display: flex;
-    background-color: rgb(56, 56, 56);
-    border-radius: 22.5px;
-    margin: 5px;
-    margin-left: 0px;
-    width: 125px;
-}
-
-#serv_picker {
-    border-radius: 15px;
-    margin-left: 0px;
-    float: right;
-}
-
-#serv_ico {
-    margin: 7px;
-    margin-right: 0px;
-    margin-left: 12px;
-    float: left;
-    height: 25px;
-    position: absolute;
-}
-
-#tb_search {
-    margin: 11px;
-    margin-left: 5px;
-    border: 0px;
-    float: right;
-    position: relative;
-    outline: none;
-    height: 25px;
-    width: 100%;
-    font-size: 16px;
-    color: white;
-    background-color: transparent;
-    font-family: "QuickSand";
-}
-
-#top {
-    background-color: rgba(26, 26, 26, 0.6);
-    border-radius: 27.5px;
-    display: flex;
-    margin: 18px;
-    margin-top: 0px;
-    overflow: hidden;
-}
-
-#bottom {
-    height: calc(100% - 65px);
-    padding-left: 18px;
-    padding-right: 18px;
-    display: none;
-}
-
-.lists {
-    border-radius: 15px;
-    background-color: rgba(26, 26, 26, 0.6);
-    padding: 7px;
-    margin-bottom: 10px;
-    display: flow-root;
 }
 
 #main {
@@ -86,23 +22,45 @@ h3 {
     margin-left: 15px;
     float: left;
     height: calc(100% - 78px - 15px);
+    display: none;
+}
+
+#menu p {
+    border-radius: 15px;
+    font-size: 20px;
+    color: white;
+    padding: 10px;
+    margin: 0px;
+    margin-bottom: 4px;
+    color: rgb(215, 215, 215);
+    transition: background 0.4s, color 0.4s;
+    cursor: pointer;
+}
+
+#menu .selected {
+    background-color: rgb(110, 110, 110, 0.6);
+    color: white;
+}
+
+#menu p:hover {
+    background-color: rgba(99, 99, 99, 0.6);
 }
 
 #view {
-    /* margin-left: 25px; */
-    margin-top: 10px;
-    border-radius: 15px;
+    margin-left: 25px;
+    margin-top: 25px;
+    /* border-radius: 15px; */
     position: relative;
-    height: calc(100% - 71px);
+    overflow: auto;
+    height: calc(100% - 66px);
+    /* width: calc(100% - 50px); */
 }
 
 .panel {
-    position: absolute;
     z-index: 0;
     width: 100%;
     opacity: 0%;
     transition: opacity 0.4s;
-    height: 100%;
 }
 
 #view .selected {
@@ -110,33 +68,76 @@ h3 {
     opacity: 1;
 }
 
+.panel>p {
+    font-size: 25px;
+    color: rgb(0, 204, 255);
+    font-weight: bold;
+    margin-top: 25px;
+}
+
 .sub {
-    /* background-color: rgb(59, 59, 59, 0.6); */
+    background-color: rgb(59, 59, 59, 0.6);
     border-radius: 15px;
     padding-bottom: 0px;
-    /* margin-right: 25px; */
+    margin-right: 25px;
     margin-top: 10px;
     padding-top: 10px;
-    height: 100%;
-    display: block;
 }
 
 .sub .set {
-    display: flow-root;
-    /* padding-right: 10px; */
+    display: flex;
+    padding-right: 10px;
     padding-left: 10px;
-    /* margin-bottom: 7px; */
-    /* padding-bottom: 7px; */
+    margin-bottom: 7px;
+    padding-bottom: 7px;
     border-bottom: rgba(99, 99, 99, 0.6) solid 1px;
-    /* min-height: 33px; */
-    overflow: scroll;
+    min-height: 33px;
 }
 
 .sub .last {
     border-bottom: inherit;
 }
 
-.search .select-container {
+.settings .slider[max="1"] {
+    width: 35px !important;
+}
+
+.settings .slider {
+    -webkit-appearance: none;
+    width: 150px;
+    height: 25px;
+    padding: 0 5px;
+    border-radius: 12.5px;
+    background: rgb(0, 162, 255);
+    outline: none;
+    float: right;
+    margin: auto 0;
+    transition: 0.4s;
+}
+
+.settings .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+}
+
+.settings .slider::-moz-range-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    border: none;
+    stroke: transparent;
+}
+
+.settings .select-container {
     float: right;
     position: relative;
     background-color: rgb(80, 80, 80, 0.6);
@@ -144,7 +145,7 @@ h3 {
     overflow: hidden;
 }
 
-.search select {
+.settings select {
     height: auto;
     border: 0;
     margin: 0;
@@ -154,26 +155,20 @@ h3 {
     text-overflow: ellipsis;
     outline: none;
     -webkit-appearance: none;
-    color: transparent;
+    color: white;
     background-color: rgba(0, 0, 0, 0);
     background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z' fill='white'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
     background-repeat: no-repeat;
     background-position-x: 100%;
-    background-position-y: 50%;
+    background-position-y: 5px;
     font-family: "Quicksand";
     font-size: 18px;
-    width: 65px;
+    width: 150px;
 }
 
-select:not(:-internal-list-box) {
-    overflow: visible !important;
-    left: 100px;
-}
-
-.search select option {
+.settings select option {
     background-color: rgb(56, 56, 56);
     color: white;
-    margin-left: 20px;
 }
 
 .sub p {
@@ -210,6 +205,34 @@ select:not(:-internal-list-box) {
     text-align: center;
     font-size: 30px;
     padding-top: 20px;
+}
+
+.account {
+    display: flow-root !important;
+}
+
+#acc_img {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    right: 0;
+    float: right;
+}
+
+#acc_name,
+#acc_email {
+    float: left;
+    font-size: 20px;
+    padding-left: 20px;
+    color: rgb(215, 215, 215);
+}
+
+.account-1 {
+    float: left !important;
+}
+
+.account-2 {
+    float: right !important;
 }
 
 .big {
@@ -255,39 +278,24 @@ button {
     margin-bottom: 5px;
 }
 
-button#launchSearch {
-    background-color: rgb(56, 56, 56);
-    color: white;
-    border-radius: 22.5px;
-    margin: 5px;
-    margin-left: 0px;
-    box-shadow: none;
-    border: none;
-    display: none;
-}
-
-svg {
-    width: 29px;
-}
-
-button#launchSearch:focus {
-    background: rgb(78, 78, 78) radial-gradient(circle, transparent 1%, rgb(78, 78, 78) 1%) center/15000%;
-    font-weight: normal;
-}
-
-button#launchSearch:hover {
-    background: rgb(78, 78, 78) radial-gradient(circle, transparent 1%, rgb(78, 78, 78) 1%) center/15000%;
-    font-weight: normal;
-}
-
-button#launchSearch:active {
-    background-color: white;
-    background-size: 100%;
-    transition: background 0s;
-    font-weight: normal;
-}
-
 button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.sinfo {
+    color: rgb(165, 165, 165);
+}
+
+.hidden {
+    visibility: collapse;
+    position: absolute;
+}
+
+.grid {
+    display: inline-grid !important;
+}
+
+.grid>button {
+    margin-top: 10px;
 }

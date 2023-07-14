@@ -34,7 +34,7 @@ export default class LibraryWindow extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: "open" })
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.7s"
-        Import.getData("/ui/windows/library/library.html").then(async (html) => {
+        Import.getData("/ui/windows/library/library" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 /*shadow.getElementById("menu").addEventListener("wheel", (ev) => {
@@ -56,6 +56,14 @@ export default class LibraryWindow extends HTMLDivElement {
                 this.changeViewMyLib(0)
                 this.style.opacity = "1"
                 this.refreshUserPlaylists()
+                if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                    shadow.getElementById("libBack").onclick = () => {
+                        history.back()
+                    }
+                    shadow.getElementById("libBack2").onclick = () => {
+                        history.back()
+                    }
+                }
                 shadow.getElementById("addPl").onclick = async () => {
                     this.changeView(1)
                 }

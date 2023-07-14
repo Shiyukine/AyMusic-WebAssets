@@ -31,7 +31,7 @@ export default class SongGrid extends HTMLDivElement {
         super();
         this.object = object;
         var shadow = this.attachShadow({ mode: "open" })
-        Import.getData("/ui/components/songGrid/songGrid.html").then((html) => {
+        Import.getData("/ui/components/songGrid/songGrid" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 //new Translations(shadow.children[1])
@@ -119,30 +119,35 @@ export default class SongGrid extends HTMLDivElement {
             });
             let pl = this.object;
             let curThis = this;
-            this.shadowRoot.getElementById("svg").addEventListener("click", async function () {
-                if (curThis.isMySong()) {
-                    if (await Utils.player.getState()) Utils.player.pause()
-                    else Utils.player.play()
-                }
-                else {
-                    if (pl != null) await Utils.queueManager.changeQueue(pl, curThis.song.id)
-                    else await Utils.queueManager.changeQueue(curThis.song)
+            let elToClick = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? this : this.shadowRoot.getElementById("svg")
+            elToClick.addEventListener("click", async function () {
+                if (!this.shadowRoot.getElementById("context").matches(":hover")) {
+                    if (curThis.isMySong()) {
+                        if (await Utils.player.getState()) Utils.player.pause()
+                        else Utils.player.play()
+                    }
+                    else {
+                        if (pl != null) await Utils.queueManager.changeQueue(pl, curThis.song.id)
+                        else await Utils.queueManager.changeQueue(curThis.song)
+                    }
                 }
             });
-            if (song.imgUrl === "localImg") {
-                this.shadowRoot.getElementById("title").classList.add("nohover")
-                this.shadowRoot.getElementById("artist").classList.add("nohover")
+            if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
+                if (song.imgUrl === "localImg") {
+                    this.shadowRoot.getElementById("title").classList.add("nohover")
+                    this.shadowRoot.getElementById("artist").classList.add("nohover")
+                }
+                this.shadowRoot.getElementById("title").addEventListener("click", async function () {
+                    if (song.imgUrl !== "localImg") {
+                        Utils.musicViewer.changeView("al_" + song.albumID)
+                    }
+                });
+                this.shadowRoot.getElementById("artist").addEventListener("click", async function () {
+                    if (song.imgUrl !== "localImg") {
+                        Utils.musicViewer.changeView("si_" + song.singerID)
+                    }
+                });
             }
-            this.shadowRoot.getElementById("title").addEventListener("click", async function () {
-                if (song.imgUrl !== "localImg") {
-                    Utils.musicViewer.changeView("al_" + song.albumID)
-                }
-            });
-            this.shadowRoot.getElementById("artist").addEventListener("click", async function () {
-                if (song.imgUrl !== "localImg") {
-                    Utils.musicViewer.changeView("si_" + song.singerID)
-                }
-            });
             var cm = new ContextMenu()
             this.shadowRoot.getElementById("context").onclick = async (e) => {
                 cm.show(e)

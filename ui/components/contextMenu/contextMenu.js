@@ -1,6 +1,7 @@
 import Import from "../../../class/import.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
+import Utils from "../../../class/utils/utils.js";
 
 export default class ContextMenu extends HTMLDivElement {
 
@@ -10,6 +11,8 @@ export default class ContextMenu extends HTMLDivElement {
     loaded = false;
     isSub = false;
     beforeShow = null;
+    controller = new AbortController();
+    id = Date.now()
 
     constructor() {
         super();
@@ -17,9 +20,18 @@ export default class ContextMenu extends HTMLDivElement {
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.4s"
         this.style.display = "flex"
-        Import.getData("/ui/components/contextMenu/contextMenu.html").then((html) => {
+        Import.getData("/ui/components/contextMenu/contextMenu" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
+                new Translations(shadow.children[1])
+                new ThemeColor(shadow.children[1])
+            }
+            window.addEventListener("popstate", (e) => {
+                if (e.state.where != "contextMenu") {
+                    this.hide(false)
+                }
+            }, { signal: this.controller.signal })
+            if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
                 window.addEventListener("pointerdown", (e) => {
                     if (!this.isHidded && !this.shadowRoot.getElementById("context").matches(":hover") && !this.isSub)
                         this.hide()
@@ -31,8 +43,11 @@ export default class ContextMenu extends HTMLDivElement {
                         }
                     }
                 })
-                new Translations(shadow.children[1])
-                new ThemeColor(shadow.children[1])
+            }
+            else {
+                this.shadowRoot.getElementById("main").getRootNode().host.addEventListener("click", (e) => {
+                    history.back()
+                })
             }
         })
     }
@@ -68,7 +83,7 @@ export default class ContextMenu extends HTMLDivElement {
                 div.onclick = (e) => {
                     if (typeof el.onclick === "function")
                         el.onclick(e)
-                    this.hide();
+                    if (!el.isSub) this.hide();
                 }
                 if (el.icon) {
                     let icon = this.createSVGPath(el.icon, "white", null, 24)
@@ -80,25 +95,45 @@ export default class ContextMenu extends HTMLDivElement {
                  * @type {ContextMenu}
                  */
                 let context = el.contextMenu
-                div.onmouseenter = () => {
-                    if (!this.isHidded) {
-                        let rect = this.getBoundingClientRect();
-                        context.show(new MouseEvent("contextmenu", {
-                            clientX: rect.left,
-                            clientY: rect.top + 39 * Array.from(this.shadowRoot.getElementById("context").children).indexOf(div),
-                            button: 0,
-                            ctrlKey: false,
-                            altKey: false,
-                            shiftKey: false,
-                            metaKey: false,
-                            bubbles: true,
-                            cancelable: true
-                        }))
+                if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                    div.onclick = () => {
+                        if (!this.isHidded) {
+                            let rect = this.getBoundingClientRect();
+                            context.show(new MouseEvent("contextmenu", {
+                                clientX: rect.left,
+                                clientY: rect.top + 39 * Array.from(this.shadowRoot.getElementById("context").children).indexOf(div),
+                                button: 0,
+                                ctrlKey: false,
+                                altKey: false,
+                                shiftKey: false,
+                                metaKey: false,
+                                bubbles: true,
+                                cancelable: true
+                            }))
+                        }
                     }
                 }
-                div.onmouseleave = () => {
-                    if (this.shadowRoot.getElementById("context").matches(':hover'))
-                        context.hide()
+                else {
+                    div.onmouseenter = () => {
+                        if (!this.isHidded) {
+                            let rect = this.getBoundingClientRect();
+                            context.show(new MouseEvent("contextmenu", {
+                                clientX: rect.left,
+                                clientY: rect.top + 39 * Array.from(this.shadowRoot.getElementById("context").children).indexOf(div),
+                                button: 0,
+                                ctrlKey: false,
+                                altKey: false,
+                                shiftKey: false,
+                                metaKey: false,
+                                bubbles: true,
+                                cancelable: true
+                            }))
+                        }
+                    }
+                    div.onmouseleave = () => {
+                        if (this.shadowRoot.getElementById("context").matches(':hover'))
+                            context.hide()
+                    }
                 }
                 //left M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z
                 //right M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z
@@ -121,16 +156,18 @@ export default class ContextMenu extends HTMLDivElement {
         this.#eventEl.addEventListener("hidden", callback)
     }
 
-    hide() {
+    hide(hideSubs = true) {
         this.ontransitionend = () => {
             document.getElementById("main").removeChild(this)
             this.#eventEl.dispatchEvent(new CustomEvent("hidden"));
         };
         this.style.opacity = "0%"
-        for (let i in this.elements) {
-            var el = this.elements[i]
-            if (el.isSub) {
-                el.contextMenu.hide()
+        if (hideSubs) {
+            for (let i in this.elements) {
+                var el = this.elements[i]
+                if (el.isSub) {
+                    el.contextMenu.hide()
+                }
             }
         }
         this.isHidded = true;
@@ -166,11 +203,22 @@ export default class ContextMenu extends HTMLDivElement {
         let y = testy
             ? event.y
             : document.body.clientHeight - this.clientHeight - 10
-        this.style.right = !testx ? "10px" : "";
-        this.style.bottom = !testy ? "10px" : "";
-        //if (!this.isSub) this.style.position = "inherit"
-        this.style.left = testx ? x + "px" : ""
-        this.style.top = testy ? y + "px" : ""
+        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+            this.style.bottom = "0"
+            this.style.left = "0"
+            this.style.right = "0"
+            this.style.top = "0"
+            this.style.zIndex = "9"
+            this.style.backdropFilter = "blur(20px)"
+        }
+        else {
+            this.style.right = !testx ? "10px" : "";
+            this.style.bottom = !testy ? "10px" : "";
+            //if (!this.isSub) this.style.position = "inherit"
+            this.style.left = testx ? x + "px" : ""
+            this.style.top = testy ? y + "px" : ""
+        }
+        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") window.history.pushState({ where: "contextMenu", id: this.id }, "", "/index.html")
         this.loaded = true
     }
 }

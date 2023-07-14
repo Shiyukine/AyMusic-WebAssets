@@ -21,7 +21,7 @@ export default class PlaylistGrid extends HTMLDivElement {
         super();
         this.playlist = playlist
         var shadow = this.attachShadow({ mode: "open" })
-        Import.getData("/ui/components/playlistGrid/playlistGrid.html").then((html) => {
+        Import.getData("/ui/components/playlistGrid/playlistGrid" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.shadowRoot.getElementById("title").innerText = this.playlist.name

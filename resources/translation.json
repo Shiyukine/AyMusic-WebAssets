@@ -79,6 +79,8 @@
         "{lib.addToPl}": "Add to a playlist",
         "{lib.removeFromPl}": "Remove from this playlist",
         "{qv.curPlaying}": "Current song",
-        "{qv.next}": "Next songs"
+        "{qv.next}": "Next songs",
+        "{musicViewer.title}": "View something",
+        "{listenViewer.title}": "Playing now"
     }
 }

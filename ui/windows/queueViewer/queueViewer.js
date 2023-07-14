@@ -17,11 +17,18 @@ export default class QueueViewerWindow extends HTMLDivElement {
         super();
         var shadow = this.attachShadow({ mode: "open" })
         this.style.position = "absolute"
-        this.style.width = "calc(100% - 5px)"
-        this.style.height = "calc(100% - 135px)"
-        this.style.left = "105px"
+        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+            this.style.width = "calc(100% - 10px)"
+            this.style.marginLeft = "5px"
+            this.style.height = "calc(100% - 200px)"
+        }
+        else {
+            this.style.width = "calc(100% - 5px)"
+            this.style.height = "calc(100% - 135px)"
+        }
         this.style.top = window.innerHeight + "px"
-        Import.getData("/ui/windows/queueViewer/queueViewer.html").then((html) => {
+        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") this.style.zIndex = "4"
+        Import.getData("/ui/windows/queueViewer/queueViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 new Translations(shadow.children[1])
@@ -36,19 +43,19 @@ export default class QueueViewerWindow extends HTMLDivElement {
                     drag: false,
                     yBase: 0
                 };
-                shadow.getElementById("close").addEventListener("mousedown", (e) => {
+                shadow.getElementById("close").addEventListener("pointerdown", (e) => {
                     this.style.transition = ""
                     dragInfo.drag = true
                     dragInfo.yBase = e.y
                 })
-                window.addEventListener("mousemove", (e) => {
+                window.addEventListener("pointermove", (e) => {
                     if (dragInfo.drag && !this.isClosed) {
                         let mov = e.y - dragInfo.yBase
-                        if (mov < dragInfo.yBase - 70) mov = dragInfo.yBase - 70
-                        this.style.top = "calc(45px + " + (mov) + "px)"
+                        if (Utils.app.platform != "Android" && Utils.app.platform != "iOS" && mov < dragInfo.yBase - 70) mov = dragInfo.yBase - 70
+                        this.style.top = ((Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 200 : 45) + mov) + "px"
                     }
                 })
-                window.addEventListener("mouseup", (e) => {
+                window.addEventListener("pointerup", (e) => {
                     if (dragInfo.drag && !this.isClosed) {
                         if (e.y - dragInfo.yBase > 100) {
                             this.style.transition = "0.7s"
@@ -56,16 +63,16 @@ export default class QueueViewerWindow extends HTMLDivElement {
                         }
                         else {
                             this.style.transition = "0.3s"
-                            this.style.top = "45px"
+                            this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "200px" : "45px"
                         }
                         dragInfo.drag = false
                         dragInfo.yBase = 0
                     }
                 })
                 let mouseHover = false
-                this.addEventListener("mouseenter", () => mouseHover = true)
-                this.addEventListener("mouseleave", () => mouseHover = false)
-                window.addEventListener("mousedown", (e) => {
+                this.addEventListener("pointerenter", () => mouseHover = true)
+                this.addEventListener("pointerleave", () => mouseHover = false)
+                window.addEventListener("pointerdown", (e) => {
                     var rect = e.target.getBoundingClientRect();
                     var y = rect.bottom - e.clientY
                     if (!this.isClosed && !mouseHover && y >= 0) {
@@ -99,7 +106,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
         document.getElementById("main").appendChild(this)
         this.clientWidth //wait element loaded
         this.style.transition = "0.3s"
-        this.style.top = "45px"
+        this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "200px" : "45px"
         this.isClosed = false
         this.refresh()
     }

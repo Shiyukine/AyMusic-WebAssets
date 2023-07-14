@@ -25,11 +25,17 @@ export default class MusicViewerWindow extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: "open" })
         this.ontransitionend = () => { };
         this.style.opacity = "0%"
-        this.style.marginTop = "35px"
         this.style.width = "100%"
-        this.style.height = "calc(100% - 125px)"
+        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+            this.style.marginTop = "0px"
+            this.style.height = "calc(100% - 138px)"
+        }
+        else {
+            this.style.marginTop = "35px"
+            this.style.height = "calc(100% - 125px)"
+        }
         this.style.transition = "opacity 0.7s"
-        Import.getData("/ui/windows/musicViewer/musicViewer.html").then((html) => {
+        Import.getData("/ui/windows/musicViewer/musicViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             new Translations(shadow.children[1])
             new ThemeColor(shadow.children[1])
@@ -74,6 +80,11 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 else {
                     if (this.object != null)
                         Utils.queueManager.changeQueue(this.object)
+                }
+            }
+            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                shadow.getElementById("back").onclick = () => {
+                    history.back()
                 }
             }
         })

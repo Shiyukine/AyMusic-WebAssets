@@ -19,7 +19,7 @@ export default class AlbumGrid extends HTMLDivElement {
         super();
         this.album = album
         var shadow = this.attachShadow({ mode: "open" })
-        Import.getData("/ui/components/albumGrid/albumGrid.html").then((html) => {
+        Import.getData("/ui/components/albumGrid/albumGrid" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             //new Translations(shadow.children[1])
             this.shadowRoot.getElementById("cssImport").onload = async () => {

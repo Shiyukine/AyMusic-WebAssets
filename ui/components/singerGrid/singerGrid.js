@@ -20,7 +20,7 @@ export default class SingerGrid extends HTMLDivElement {
         super();
         this.singer = singer
         var shadow = this.attachShadow({ mode: "open" })
-        Import.getData("/ui/components/singerGrid/singerGrid.html").then((html) => {
+        Import.getData("/ui/components/singerGrid/singerGrid" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             //new Translations(shadow.children[1])
             this.shadowRoot.getElementById("cssImport").onload = async () => {

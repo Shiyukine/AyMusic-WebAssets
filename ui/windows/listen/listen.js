@@ -7,6 +7,7 @@ import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
 import ProgressBar from "../../components/progressBar/progressBar.js";
+import ListenViewerWindow from "../listenViewer/listenViewer.js";
 import QueueViewerWindow from "../queueViewer/queueViewer.js";
 
 export default class ListenWindow extends HTMLDivElement {
@@ -222,7 +223,7 @@ export default class ListenWindow extends HTMLDivElement {
                     mouseDownPb = false;
                     Utils.player.seek(pb.getValue());
                 })
-                Utils.player.onShuffleChange(() => {
+                Utils.player.onShuffleChange(async () => {
                     if (Utils.queueManager.shuffle) {
                         shadow.getElementById("shuffle").children[0].setAttribute("fill", "#00ccff")
                     }
@@ -238,8 +239,10 @@ export default class ListenWindow extends HTMLDivElement {
                         Utils.player.next()
                     } : null);
                     Utils.app.changeSetting("shuffle", Utils.queueManager.shuffle)
+                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                    this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                 })
-                Utils.player.onRepeatChange(() => {
+                Utils.player.onRepeatChange(async () => {
                     if (Utils.queueManager.repeat == 0) {
                         shadow.getElementById("repeat").children[0].setAttribute("fill", "currentColor")
                         shadow.getElementById("repeat").children[0].setAttribute("d", Utils.pathsData["Repeat"])
@@ -261,6 +264,8 @@ export default class ListenWindow extends HTMLDivElement {
                         Utils.player.next()
                     } : null);
                     Utils.app.changeSetting("repeat", Utils.queueManager.repeat)
+                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                    this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                 })
                 Utils.player.onPlay(async () => {
                     if (!Utils.player.isLocalMusic) {
@@ -360,14 +365,28 @@ export default class ListenWindow extends HTMLDivElement {
                         shadow.getElementById("like").children[0].setAttribute("d", Utils.pathsData["HeartOutline"])
                     }
                 });
-                let queueViewer = new QueueViewerWindow()
-                //document.getElementById("main").appendChild(queueViewer)
-                shadow.getElementById("queue").onclick = () => {
-                    if (queueViewer.isClosed) {
-                        queueViewer.show()
+                if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
+                    let queueViewer = new QueueViewerWindow()
+                    //document.getElementById("main").appendChild(queueViewer)
+                    shadow.getElementById("queue").onclick = () => {
+                        if (queueViewer.isClosed) {
+                            queueViewer.show()
+                        }
+                        else {
+                            queueViewer.hide()
+                        }
                     }
-                    else {
-                        queueViewer.hide()
+                }
+                else {
+                    let lvw = new ListenViewerWindow()
+                    //document.getElementById("main").appendChild(queueViewer)
+                    shadow.getElementById("left").onclick = () => {
+                        if (lvw.isClosed) {
+                            lvw.show()
+                        }
+                        else {
+                            lvw.close()
+                        }
                     }
                 }
                 shadow.getElementById("changeState").onclick = async () => {
@@ -397,14 +416,16 @@ export default class ListenWindow extends HTMLDivElement {
                 shadow.getElementById("volSvg").onclick = () => {
                     Utils.player.setMute(!Utils.player.isMuted)
                 }
-                shadow.getElementById("music_title").onclick = () => {
-                    if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
-                        Utils.musicViewer.changeView("al_" + Utils.queueManager.currentSong.albumID)
+                if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
+                    shadow.getElementById("music_title").onclick = () => {
+                        if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                            Utils.musicViewer.changeView("al_" + Utils.queueManager.currentSong.albumID)
+                        }
                     }
-                }
-                shadow.getElementById("music_artist").onclick = () => {
-                    if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
-                        Utils.musicViewer.changeView("si_" + Utils.queueManager.currentSong.singerID)
+                    shadow.getElementById("music_artist").onclick = () => {
+                        if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                            Utils.musicViewer.changeView("si_" + Utils.queueManager.currentSong.singerID)
+                        }
                     }
                 }
                 if (Utils.libManager.userInfo.curMusic != null) {

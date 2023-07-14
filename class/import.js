@@ -15,6 +15,7 @@ import MusicViewerWindow from "../ui/windows/musicViewer/musicViewer.js";
 import QueueViewerWindow from "../ui/windows/queueViewer/queueViewer.js";
 import ContextMenu from "../ui/components/contextMenu/contextMenu.js";
 import ProgressBar from "../ui/components/progressBar/progressBar.js";
+import ListenViewerWindow from "../ui/windows/listenViewer/listenViewer.js";
 
 export default class Import {
     static loadCustomElements() {
@@ -26,6 +27,7 @@ export default class Import {
         customElements.define("library-window", LibraryWindow, { extends: "div" });
         customElements.define("search-window", SearchWindow, { extends: "div" });
         customElements.define("musicview-window", MusicViewerWindow, { extends: "div" });
+        customElements.define("listenview-window", ListenViewerWindow, { extends: "div" });
         customElements.define("home-window", HomeWindow, { extends: "div" });
         customElements.define("playlist-grid", PlaylistGrid, { extends: "div" });
         customElements.define("album-grid", AlbumGrid, { extends: "div" });

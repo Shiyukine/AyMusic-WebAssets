@@ -2,8 +2,8 @@
     color: white;
     margin: auto;
     cursor: pointer;
-    width: 35px;
-    height: 46px;
+    width: 48px;
+    height: 48px;
     border-radius: 15px;
     padding: 1px;
     transition: 0.4s background;
@@ -14,33 +14,44 @@
 }
 
 .listen {
-    height: 50px;
+    height: calc(100% - 10px);
     background-color: rgba(31, 31, 31, 0.73);
     padding: 10px;
     padding-bottom: 0px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px);
     z-index: 2;
-    border-radius: 15px;
+    display: grid;
+    align-content: center;
+    width: calc(100% - 20px);
 }
 
 img {
-    width: 40px;
+    width: 231px;
     border-radius: 15px;
     float: left;
     margin-right: 10px;
-    height: 40px;
+    height: 231px;
     object-fit: cover;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0px);
 }
 
 .left {
     float: left;
-    width: 78%;
+    width: 100%;
     position: relative;
+    left: 50%;
+    display: grid;
+    transform: translate(-50%, 0px);
+    align-content: center;
+    text-align: center;
 }
 
 .left_container {
     position: relative;
-    margin: 2px 0;
+    margin: 9px 0;
+    overflow: hidden;
     display: flow-root;
 }
 
@@ -53,19 +64,21 @@ svg.mini {
 }
 
 svg.miniButNot {
-    width: 30px;
+    width: 40px;
     height: 40px;
     margin: 0 3px;
-    margin-bottom: 3px;
+    margin-bottom: 4.5px;
     border-radius: 15px;
 }
 
 .middle {
-    text-align: end;
+    text-align: center;
     margin: auto;
     width: 100%;
     --value: 20;
+    margin-top: 70px;
     --max: 100;
+    overflow: hidden;
 }
 
 p {
@@ -76,11 +89,10 @@ p {
 
 .left p {
     white-space: nowrap;
-    /*overflow: hidden;*/
-    /*text-overflow: ellipsis;*/
+    overflow: hidden;
+    text-overflow: ellipsis;
     width: 100%;
-    font-size: 12px;
-    line-height: 12px;
+    cursor: pointer;
     display: initial;
 }
 
@@ -89,21 +101,41 @@ p {
     mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
 }
 
+.left p:hover {
+    text-decoration: underline;
+}
+
+.left p.nohover {
+    cursor: default !important;
+}
+
+.left p.nohover:hover {
+    text-decoration: none !important;
+}
+
 .middle p {
     float: left;
     width: 54px;
 }
 
 .right {
-    position: absolute;
-    bottom: 5px;
-    right: 15px;
-    display: none;
+    left: 50%;
+    transform: translate(-50%, 0px);
+    width: 80px;
+    position: relative;
+    margin-top: 40px;
 }
 
 .right svg {
     width: 36px;
     height: 36px;
+}
+
+#music_title {
+    font-size: 22px;
+    line-height: 28px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #music_artist {
@@ -129,6 +161,20 @@ p {
     margin-right: -10px;
 }
 
-.hidden {
-    display: none !important;
+#topbar {
+    position: absolute;
+    display: flex;
+    top: 40px;
+    left: 10px;
+}
+
+#topbar svg {
+    width: 40px;
+    height: 40px;
+}
+
+#topbar p {
+    font-size: 18px;
+    margin-top: 9px;
+    margin-left: 10px;
 }
