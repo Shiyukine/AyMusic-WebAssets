@@ -29,6 +29,7 @@ async function main() {
                 }
                 if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                     document.getElementById("main_style").href = "/main_mobile.css";
+                    document.getElementById("iframes").style.display = "none";
                 }
                 new Translations(document.body)
                 new ThemeColor(document.body)
@@ -60,6 +61,9 @@ async function main() {
                     loadPanel.hide();
                 }
                 logP.logged = async () => {
+                    if (Utils.app.platform == "Android") {
+                        Utils.app.remoteClient.syncCookies()
+                    }
                     loadPanel.changeText("Getting your playlists...");
                     loadPanel.show();
                     await Utils.libManager.refreshUserInfo()

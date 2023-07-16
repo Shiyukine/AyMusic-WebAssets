@@ -13,7 +13,7 @@ export default class Update {
         let maxUpdate = 0
         return new Promise(resolve => {
             Update.infoPanel = panelInfo
-            Utils.app.remoteClient.onUpdateStateChange((state) => {
+            var a = (state) => {
                 Update.infoPanel.changeloading(state.cur / state.max * 100)
                 if (state.step == 0) Update.infoPanel.changeText(null, "Downloading update file...")
                 if (state.step == 1) Update.infoPanel.changeText(null, "Checking files...")
@@ -28,7 +28,10 @@ export default class Update {
                 if (state.step == 5) {
                     Update.infoPanel.changeText(null, "Applying update...")
                 }
-                if (state.step == -1) resolve()
+                if (state.step == -1) {
+                    window.updateCallBack = undefined;
+                    resolve()
+                }
                 if (state.step == -2) {
                     //Update.infoPanel.changeText("Can't search for updates", "Error when searching updates:\n" + state.error)
                     var info = new InfoPanel("Can't search for updates", "Error when searching updates:\n" + state.error, [{
@@ -39,7 +42,9 @@ export default class Update {
                     }], false);
                     document.getElementById("main").appendChild(info)
                 }
-            })
+            }
+            window.updateCallBack = a;
+            Utils.app.remoteClient.onUpdateStateChange(a)
             Utils.app.remoteClient.searchUpdates()
         })
     }

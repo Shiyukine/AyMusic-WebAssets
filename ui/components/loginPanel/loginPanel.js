@@ -30,9 +30,10 @@ export default class LoginPanel extends HTMLDivElement {
         return new Promise((resolve) => {
             this.#iframe.contentWindow.postMessage({ message: "getURL", id: this.messID }, Utils.servURL)
             window.addEventListener("message", (e) => {
-                //console.log(e)
+                console.error(e)
                 if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == this.messID) {
                     if (e.data.message == "callbackURL") {
+                        console.log(e.data.data)
                         resolve(e.data.data)
                     }
                 }
@@ -76,7 +77,6 @@ export default class LoginPanel extends HTMLDivElement {
                 }
             }
             window.addEventListener("message", (e) => {
-                //console.log(e)
                 if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == this.messID) {
                     if (e.data.message == "callbackHTML") {
                         let text = e.data.data.split("<br>").join("\n");
@@ -103,7 +103,7 @@ export default class LoginPanel extends HTMLDivElement {
                 if (!loaded) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
             }, 21500)
             if (isForModification == "" || isForModification == "refresh") {
-                this.#iframe.src = Utils.servURL + "login/?inapp=1&date=" + Date.now().toString()
+                this.#iframe.src = Utils.servURL + "login/?inapp=1&injectscript=1&date=" + Date.now().toString()
             }
             if (isForModification == "modify") {
                 this.#iframe.src = Utils.servURL + "account/?inapp=1&date=" + Date.now().toString()
@@ -145,17 +145,19 @@ export default class LoginPanel extends HTMLDivElement {
 
     addScript() {
         try {
+            let origin = "app://root"
+            if (Utils.app.platform == "Android") origin = "https://myapp"
             Utils.app.remoteClient.registerIframeUrl(Utils.servURL, `addEventListener('message', (e) =>
             {
-                if(e.origin.includes('app://root'))
+                if(e.origin.includes('` + origin + `'))
                 {
                     if(e.data.message == 'getURL')
                     {
-                        parent.postMessage({message: 'callbackURL', data: document.location.toString(), id: e.data.id}, 'app://root')
+                        parent.postMessage({message: 'callbackURL', data: document.location.toString(), id: e.data.id}, '` + origin + `')
                     }
                     if(e.data.message == 'html')
                     {
-                        parent.postMessage({message: 'callbackHTML', data: document.body.innerHTML, id: e.data.id}, 'app://root')
+                        parent.postMessage({message: 'callbackHTML', data: document.body.innerText, id: e.data.id}, '` + origin + `')
                     }
                 }
             })`)

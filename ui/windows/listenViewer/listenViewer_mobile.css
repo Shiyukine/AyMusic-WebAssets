@@ -121,7 +121,7 @@ p {
 .right {
     left: 50%;
     transform: translate(-50%, 0px);
-    width: 80px;
+    width: 81px;
     position: relative;
     margin-top: 40px;
 }

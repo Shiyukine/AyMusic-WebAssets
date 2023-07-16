@@ -36,23 +36,25 @@ export default class TaskHandler {
         var iframe = document.createElement("iframe");
         var adblockcount = 0;
         var iscf = false;
+        let origin = "app://root"
+        if (Utils.app.platform == "Android") origin = "https://myapp"
         Utils.app.remoteClient.registerIframeUrl(wt.url, `addEventListener('message', async (e) =>
             {
-                if(e.origin.includes('app://root'))
+                if(e.origin.includes('` + origin + `'))
                 {
                     if(e.data.message == 'js')
                     {
-                        parent.postMessage({message: 'callback', data:await (async () => { var wtId = e.data.id; ` + wt.script + `})(), id: e.data.id}, 'app://root')
+                        parent.postMessage({message: 'callback', data:await (async () => { var wtId = e.data.id; ` + wt.script.split("app://root").join(origin) + `})(), id: e.data.id}, '` + origin + `')
                     }
                     if(e.data.message == 'execjs')
                     {
                         try {
                             eval(e.data.js)().then((result) => {
-                                parent.postMessage({message: 'jscb', data:result, id: e.data.id}, 'app://root')
+                                parent.postMessage({message: 'jscb', data:result, id: e.data.id}, '` + origin + `')
                             })
                         } catch (ex) {
                             console.error(ex)
-                            parent.postMessage({message: 'jscb', data:null, id: e.data.id}, 'app://root')
+                            parent.postMessage({message: 'jscb', data:null, id: e.data.id}, '` + origin + `')
                         }
                     }
                 }
@@ -62,8 +64,10 @@ export default class TaskHandler {
             if (!wt.stopTaskManually) this.switchTask(wt)
         }
         iframe.allow = "encrypted-media"
-        iframe.style.width = "100%"
-        iframe.style.height = "100%"
+        iframe.style.width = "1920"
+        iframe.style.height = "1080"
+        iframe.width = "1920"
+        iframe.height = "1080"
         iframe.allowFullscreen = true
         //iframe.sandbox.add('allow-scripts');
         //iframe.sandbox.add('allow-same-origin');

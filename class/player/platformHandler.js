@@ -8,10 +8,17 @@ export default class PlatformHandler {
     static searchPlatforms() {
         return new Promise((resolve) => {
             if (!this.platforms) {
-                Utils.app.remoteClient.httpRequestGET(Utils.servURL + "dl/AyMusic/scripts/servers.json").then((result) => {
+                let result = Utils.app.remoteClient.httpRequestGET(Utils.servURL + "dl/AyMusic/scripts/servers.json")
+                if (result.then) {
+                    result.then((result) => {
+                        this.platforms = JSON.parse(result)
+                        resolve(this.platforms)
+                    })
+                }
+                else {
                     this.platforms = JSON.parse(result)
-                    resolve(this.platforms)
-                })
+                    resolve(JSON.parse(result))
+                }
             }
             else {
                 resolve(this.platforms)

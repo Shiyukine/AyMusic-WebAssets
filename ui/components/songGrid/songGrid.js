@@ -94,6 +94,7 @@ export default class SongGrid extends HTMLDivElement {
             this.shadowRoot.getElementById("artist").innerText = this.song.singerName
             this.shadowRoot.getElementById("time").innerText = Utils.msToTime(this.song.time)
             let plat = song.imgUrl == "localImg" ? "icon" : await PlatformHandler.getPlatformBySongUrl(song.url)
+            plat = plat.toLowerCase()
             this.shadowRoot.getElementById("platform").style.backgroundImage = "url('/resources/" + plat + ".ico')"
             if (this.song.imgUrl === "localImg") {
                 if (this.song.canBeLoaded) {
