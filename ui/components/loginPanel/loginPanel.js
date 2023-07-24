@@ -71,7 +71,7 @@ export default class LoginPanel extends HTMLDivElement {
                 if (url.includes("/login/index.php") && isForModification == "logout") {
                     Utils.app.remoteClient.refreshApp()
                 }
-                if (url.includes("login/?inapp=1") && isForModification == "") {
+                if ((url.includes("login/?inapp=1") || url.includes("confirm.php")) && isForModification == "") {
                     this.#eventEl.dispatchEvent(new CustomEvent("notconnected"));
                     this.style.opacity = "1"
                 }
