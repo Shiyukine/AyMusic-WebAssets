@@ -122,7 +122,7 @@ export default class SongGrid extends HTMLDivElement {
             let curThis = this;
             let elToClick = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? this : this.shadowRoot.getElementById("svg")
             elToClick.addEventListener("click", async function () {
-                if (!this.shadowRoot.getElementById("context").matches(":hover")) {
+                if ((Utils.app.platform != "Android" && Utils.app.platform != "iOS") || !this.shadowRoot.getElementById("context").matches(":hover")) {
                     if (curThis.isMySong()) {
                         if (await Utils.player.getState()) Utils.player.pause()
                         else Utils.player.play()

@@ -90,7 +90,7 @@ export default class PlatformHandler {
     static async refreshTokenForPlatform(platform) {
         return new Promise((resolve) => {
             PlatformHandler.getPlatformUrl(platform, "BaseUrl").then((url) => {
-                TaskHandler.addTask(url, "", false, true, true, () => {
+                if (Utils.app.platform == "Android") {
                     var intv = setInterval(async () => {
                         if (Utils.app.remoteClient.getClientToken(platform)) {
                             await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
@@ -99,7 +99,20 @@ export default class PlatformHandler {
                             resolve()
                         }
                     }, 1000)
-                })
+                    Utils.app.remoteClient.loadBackgroundWeb(url)
+                }
+                else {
+                    TaskHandler.addTask(url, "", false, true, true, () => {
+                        var intv = setInterval(async () => {
+                            if (Utils.app.remoteClient.getClientToken(platform)) {
+                                await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
+                                clearInterval(intv)
+                                TaskHandler.stopWebTaskManually(url, true)
+                                resolve()
+                            }
+                        }, 1000)
+                    })
+                }
             })
         })
     }
