@@ -24,6 +24,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
         }
         else {
             this.style.width = "calc(100% - 5px)"
+            this.style.left = "105px"
             this.style.height = "calc(100% - 135px)"
         }
         this.style.top = window.innerHeight + "px"
@@ -51,7 +52,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
                 window.addEventListener("pointermove", (e) => {
                     if (dragInfo.drag && !this.isClosed) {
                         let mov = e.y - dragInfo.yBase
-                        if (Utils.app.platform != "Android" && Utils.app.platform != "iOS" && mov < dragInfo.yBase - 70) mov = dragInfo.yBase - 70
+                        if (mov < dragInfo.yBase - 70) mov = dragInfo.yBase - 70
                         this.style.top = ((Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 200 : 45) + mov) + "px"
                     }
                 })

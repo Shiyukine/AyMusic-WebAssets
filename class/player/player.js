@@ -161,6 +161,10 @@ export default class Player {
         this.#eventEl.addEventListener("needtokenchange", callback)
     }
 
+    onNotConnected(callback) {
+        this.#eventEl.addEventListener("notconnected", callback)
+    }
+
     onSkipAds(callback) {
         this.#eventEl.addEventListener("skipads", callback)
     }

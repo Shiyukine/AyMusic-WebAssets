@@ -30,10 +30,8 @@ export default class LoginPanel extends HTMLDivElement {
         return new Promise((resolve) => {
             this.#iframe.contentWindow.postMessage({ message: "getURL", id: this.messID }, Utils.servURL)
             window.addEventListener("message", (e) => {
-                console.error(e)
                 if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == this.messID) {
                     if (e.data.message == "callbackURL") {
-                        console.log(e.data.data)
                         resolve(e.data.data)
                     }
                 }
@@ -103,7 +101,7 @@ export default class LoginPanel extends HTMLDivElement {
                 if (!loaded) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
             }, 21500)
             if (isForModification == "" || isForModification == "refresh") {
-                this.#iframe.src = Utils.servURL + "login/?inapp=1&injectscript=1&date=" + Date.now().toString()
+                this.#iframe.src = Utils.servURL + "login/?inapp=1&" + (Utils.app.platform == "Android" ? "injectscript=1" : "") + "&date=" + Date.now().toString()
             }
             if (isForModification == "modify") {
                 this.#iframe.src = Utils.servURL + "account/?inapp=1&date=" + Date.now().toString()
@@ -157,7 +155,7 @@ export default class LoginPanel extends HTMLDivElement {
                     }
                     if(e.data.message == 'html')
                     {
-                        parent.postMessage({message: 'callbackHTML', data: document.body.innerText, id: e.data.id}, '` + origin + `')
+                        parent.postMessage({message: 'callbackHTML', data: document.body.innerHTML.split('script')[0], id: e.data.id}, '` + origin + `')
                     }
                 }
             })`)

@@ -6,6 +6,7 @@ import PlatformHandler from "../../../class/player/platformHandler.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
+import InfoPanel from "../../components/infoPanel/infoPanel.js";
 import ProgressBar from "../../components/progressBar/progressBar.js";
 import ListenViewerWindow from "../listenViewer/listenViewer.js";
 import QueueViewerWindow from "../queueViewer/queueViewer.js";
@@ -87,6 +88,12 @@ export default class ListenWindow extends HTMLDivElement {
                     shadow.getElementById("next").style.color = Utils.queueManager.canNext() ? "white" : "gray"
                     shadow.getElementById("previous").style.color = Utils.queueManager.canPrevious() ? "white" : "gray"
                     if (!firstS) {
+                        console.log({
+                            act: "updateUserInfo",
+                            curTime: 0,
+                            curMusic: Utils.libManager.userInfo.curMusic,
+                            curObject: Utils.libManager.userInfo.curObject
+                        })
                         await Utils.apiManager.doPostRequest({
                             act: "updateUserInfo",
                             curTime: 0,
@@ -255,8 +262,10 @@ export default class ListenWindow extends HTMLDivElement {
                         } : null);
                     }
                     Utils.app.changeSetting("shuffle", Utils.queueManager.shuffle)
-                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                    this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                    if (!Utils.player.isLocalMusic) {
+                        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                        this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                    }
                 })
                 Utils.player.onRepeatChange(async () => {
                     if (Utils.queueManager.repeat == 0) {
@@ -282,8 +291,10 @@ export default class ListenWindow extends HTMLDivElement {
                         } : null);
                     }
                     Utils.app.changeSetting("repeat", Utils.queueManager.repeat)
-                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                    this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                    if (!Utils.player.isLocalMusic) {
+                        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                        this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                    }
                 })
                 Utils.player.onPlay(async () => {
                     if (!Utils.player.isLocalMusic) {
@@ -376,6 +387,21 @@ export default class ListenWindow extends HTMLDivElement {
                 })
                 Utils.player.onSkipAds(async () => {
                     Utils.player.playSong(Utils.queueManager.currentSong)
+                });
+                Utils.player.onNotConnected(async () => {
+                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                    let errPanel = new InfoPanel("Not connected into " + platform, "You must be connected into " + platform + " to listen a music on this platform!\nIf you're sure to be connected into " + platform + ", please click on \"I'm connected!\".", [
+                        {
+                            text: "OK", isPositive: true, onclick: () => {
+                                errPanel.close()
+                            }
+                        },
+                        {
+                            text: "I'm connected!", isPositive: false, onclick: () => {
+                                location.reload()
+                            }
+                        }], false)
+                    document.getElementById("main").appendChild(errPanel)
                 });
                 Utils.libManager.onAddSongToLikedSongs((e) => {
                     if (Utils.queueManager.currentSong != null && e.detail.objId == "so_" + Utils.queueManager.currentSong.id) {
