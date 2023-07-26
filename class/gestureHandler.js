@@ -1,3 +1,5 @@
+import Utils from "./utils/utils.js";
+
 export default class GestureHandler {
     /**
      * @type {HTMLElement}
@@ -30,23 +32,23 @@ export default class GestureHandler {
             }
         })
         var callbackMove = (e) => {
+            let ndiff = 4
+            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") ndiff = 50
             element.parentElement.style.overflow = "hidden"
             if (isDown) {
                 var currentY = e.touches ? e.touches[0].pageY : e.pageY;
                 var currentX = e.touches ? e.touches[0].pageX : e.pageX;
                 if (!isTopDown) {
                     let diff = mv.x - currentX
-                    if (diff > 4 || diff < -4) {
-                        element.style.marginLeft = (diff * -1) + "px"
-                        element.style.marginRight = diff + "px"
+                    if ((diff > ndiff || diff < -ndiff) || this.movedOk) {
+                        element.style.transform = "translateX(" + (diff * -1) + "px)"
                         this.movedOk = true;
                     }
                 }
                 else {
                     let diff = mv.y - currentY
-                    if (diff > 4 || diff < -4) {
-                        element.style.marginTop = (diff * -1) + "px"
-                        element.style.marginBottom = diff + "px"
+                    if ((diff > ndiff || diff < -ndiff) || this.movedOk) {
+                        element.style.transform = "translateY(" + (diff * -1) + "px)"
                         this.movedOk = true;
                     }
                 }
@@ -90,26 +92,24 @@ export default class GestureHandler {
                     }
                     count += 1
                 }
-                if (this.noTransition) this.element.style.transition = "margin 0.0000001s"
-                element.style.marginRight = element.style.marginLeft = element.style.marginTop = element.style.marginBottom = ""
+                if (this.noTransition) this.element.style.transition = "transform 0.0000001s"
+                element.style.transform = ""
                 this.noTransition = false
             }
-            element.style.transition = "margin .2s"
+            element.style.transition = "transform .2s"
             if (!isTopDown) {
                 let diff = mv.x - currentX
                 if (diff > 100 && this.noTransition) diff += element.clientWidth
                 else if (diff < -100 && this.noTransition) diff -= element.clientWidth
                 else diff = 0
-                element.style.marginLeft = (diff * -1) + "px"
-                element.style.marginRight = diff + "px"
+                element.style.transform = "translateX(" + (diff * -1) + "px)"
             }
             else {
                 let diff = mv.y - currentY
                 if (diff > 100 && this.noTransition) diff += element.clientHeight
                 else if (diff < -100 && this.noTransition) diff -= element.clientHeight
                 else diff = 0
-                element.style.marginTop = (diff * -1) + "px"
-                element.style.marginBottom = diff + "px"
+                element.style.transform = "translateY(" + (diff * -1) + "px)"
             }
             if (this.movedOk) {
                 e.stopPropagation();

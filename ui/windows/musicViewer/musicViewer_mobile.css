@@ -158,12 +158,14 @@ h3 {
 }
 
 #topbar p {
-    margin-top: 8px;
-    font-size: 17px;
+    margin-top: 9px;
+    font-size: 18px;
 }
 
 #topbar svg {
-    margin-left: 10px;
-    margin-right: 10px;
-    width: 38px;
+    margin-left: 11px;
+    margin-right: 9px;
+    width: 40px;
+    height: 40px;
+    margin-top: 1px;
 }

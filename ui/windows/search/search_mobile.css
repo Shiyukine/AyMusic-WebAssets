@@ -64,6 +64,7 @@ h3 {
     padding-left: 18px;
     padding-right: 18px;
     display: none;
+    overflow-x: hidden;
 }
 
 .lists {

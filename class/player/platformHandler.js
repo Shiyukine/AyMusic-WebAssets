@@ -40,6 +40,8 @@ export default class PlatformHandler {
             ReplaceInSongUrl: null,
             Token: "",
             FilterSearch: "",
+            NeedDisplayNoneWhenSearching: true,
+            NeedDisplayNoneWhenPlaying: true,
             NoMute: false
         }
         var platforms = await this.searchPlatforms()

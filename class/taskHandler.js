@@ -6,14 +6,15 @@ export default class TaskHandler {
     static maxTask = 5;
     static allowBgTask = true;
 
-    static addTask(url, script, urgent, displayFailError, stopTaskManually, callback) {
+    static addTask(url, script, urgent, displayFailError, stopTaskManually, callback, needDisplayNone = true) {
         var wt = {
             id: Date.now(),
             url: url,
             script: script,
             displayFailError: displayFailError,
             stopTaskManually: stopTaskManually,
-            callback: callback
+            callback: callback,
+            needDisplayNone: needDisplayNone
         };
         if (this.wbs[0].length < this.maxTask || urgent) {
             if (urgent) {
@@ -64,11 +65,14 @@ export default class TaskHandler {
             if (!wt.stopTaskManually) this.switchTask(wt)
         }
         iframe.allow = "encrypted-media"
-        iframe.style.width = "1920"
+        /*iframe.style.width = "1920"
         iframe.style.height = "1080"
         iframe.width = "1920"
-        iframe.height = "1080"
+        iframe.height = "1080"*/
+        iframe.style.width = "100%"
+        iframe.style.height = "100%"
         iframe.allowFullscreen = true
+        if (wt.needDisplayNone) iframe.style.display = "none"
         //iframe.sandbox.add('allow-scripts');
         //iframe.sandbox.add('allow-same-origin');
         iframe.src = wt.url;

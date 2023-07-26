@@ -155,7 +155,7 @@ export default class LoginPanel extends HTMLDivElement {
                     }
                     if(e.data.message == 'html')
                     {
-                        parent.postMessage({message: 'callbackHTML', data: document.body.innerHTML.split('script')[0], id: e.data.id}, '` + origin + `')
+                        parent.postMessage({message: 'callbackHTML', data: document.body.innerHTML, id: e.data.id}, '` + origin + `')
                     }
                 }
             })`)

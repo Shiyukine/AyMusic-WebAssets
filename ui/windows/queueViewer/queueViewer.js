@@ -27,7 +27,8 @@ export default class QueueViewerWindow extends HTMLDivElement {
             this.style.left = "105px"
             this.style.height = "calc(100% - 135px)"
         }
-        this.style.top = window.innerHeight + "px"
+        this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "200px" : "45px"
+        this.style.transform = "translateY(" + window.innerHeight + "px)"
         if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") this.style.zIndex = "4"
         Import.getData("/ui/windows/queueViewer/queueViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
@@ -52,8 +53,14 @@ export default class QueueViewerWindow extends HTMLDivElement {
                 window.addEventListener("pointermove", (e) => {
                     if (dragInfo.drag && !this.isClosed) {
                         let mov = e.y - dragInfo.yBase
-                        if (mov < dragInfo.yBase - 70) mov = dragInfo.yBase - 70
-                        this.style.top = ((Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 200 : 45) + mov) + "px"
+                        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                            if (mov < dragInfo.yBase - 225) mov = dragInfo.yBase - 225
+                        }
+                        else {
+                            if (mov < dragInfo.yBase - 70) mov = dragInfo.yBase - 70
+                        }
+                        //this.style.top = ((Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 200 : 45) + mov) + "px"
+                        this.style.transform = "translateY(" + (mov) + "px)"
                     }
                 })
                 window.addEventListener("pointerup", (e) => {
@@ -64,7 +71,8 @@ export default class QueueViewerWindow extends HTMLDivElement {
                         }
                         else {
                             this.style.transition = "0.3s"
-                            this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "200px" : "45px"
+                            //this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "200px" : "45px"
+                            this.style.transform = "translateY(0px)"
                         }
                         dragInfo.drag = false
                         dragInfo.yBase = 0
@@ -107,7 +115,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
         document.getElementById("main").appendChild(this)
         this.clientWidth //wait element loaded
         this.style.transition = "0.3s"
-        this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "200px" : "45px"
+        this.style.transform = "translateY(0px)"
         this.isClosed = false
         this.refresh()
     }
@@ -120,7 +128,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
             this.ontransitionend = () => { }
             this.parentElement.removeChild(this)
         }
-        this.style.top = window.innerHeight + "px"
+        this.style.transform = "translateY(" + window.innerHeight + "px)"
     }
 
     clearAll() {

@@ -17,6 +17,8 @@ export default class App {
         mute: false,
         firstOpen: true
     }
+    registered = false;
+    haveCallback = null;
 
     constructor() {
         this.loaded = function () { }
@@ -29,50 +31,57 @@ export default class App {
     * @param {Object} remoteClient Object to send information on the client
     */
     async registerClient(platform, versionName, versionId, remoteClient) {
-        try {
-            //force change settings for mobile
-            this.settings = {
-                gen_langs: "English",
-                gen_theme: "Dark",
-                gen_discordRPC: platform != "Android" && platform != "iOS",
-                gen_logs: platform == "Android" || platform == "iOS",
-                music_adblock: true,
-                music_createMix: false,
-                music_vol: platform == "Android" || platform == "iOS" ? 100 : 66,
-                music_skipS: false,
-                shuffle: false,
-                repeat: 0,
-                mute: false,
-                firstOpen: true
-            }
-            this.platform = platform;
-            this.versionName = versionName;
-            this.versionId = versionId;
-            this.remoteClient = remoteClient;
-            let newS = await this.remoteClient.getSettingFile()
-            if (newS) {
-                newS = JSON.parse(newS)
-                for (var x in this.settings) {
-                    if (typeof newS[x] === "undefined") {
-                        console.warn("Adding settings which didn't exists : " + x)
-                        newS[x] = this.settings[x]
-                    }
+        if (!this.registered && this.haveCallback.toString() != "function () { }") {
+            this.registered = true;
+            try {
+                //force change settings for mobile
+                this.settings = {
+                    gen_langs: "English",
+                    gen_theme: "Dark",
+                    gen_discordRPC: platform != "Android" && platform != "iOS",
+                    gen_logs: platform == "Android" || platform == "iOS",
+                    music_adblock: true,
+                    music_createMix: false,
+                    music_vol: platform == "Android" || platform == "iOS" ? 100 : 66,
+                    music_skipS: false,
+                    shuffle: false,
+                    repeat: 0,
+                    mute: false,
+                    firstOpen: true
                 }
-                this.settings = newS
+                this.platform = platform;
+                this.versionName = versionName;
+                this.versionId = versionId;
+                this.remoteClient = remoteClient;
+                let newS = await this.remoteClient.getSettingFile()
+                if (newS) {
+                    newS = JSON.parse(newS)
+                    for (var x in this.settings) {
+                        if (typeof newS[x] === "undefined") {
+                            console.warn("Adding settings which didn't exists : " + x)
+                            newS[x] = this.settings[x]
+                        }
+                    }
+                    this.settings = newS
+                }
+                else {
+                    console.warn("No settings imported. Creating new setting file")
+                }
+                this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
+                this.#eventEl.dispatchEvent(new CustomEvent("loaded"));
             }
-            else {
-                console.warn("No settings imported. Creating new setting file")
+            catch (e) {
+                console.error(e)
             }
-            this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
-            this.#eventEl.dispatchEvent(new CustomEvent("loaded"));
         }
-        catch (e) {
-            console.error(e)
+        else {
+            console.warn("Client already registred! Ignoring.")
         }
     }
 
     set loaded(callback) {
-        this.addEventListener("loaded", callback)
+        this.haveCallback = callback;
+        this.#eventEl.addEventListener("loaded", callback)
     }
 
     changeSetting(settingName, value) {
@@ -100,6 +109,7 @@ export default class App {
 
     /**
      * Forward touch events to the main window
+     * Deprecated
      * @param {HTMLElement} element 
      */
     async addForwardTouch(element, leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, rightMouseUpEvent) {

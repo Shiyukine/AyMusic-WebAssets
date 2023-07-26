@@ -53,6 +53,7 @@ img {
     margin: 9px 0;
     overflow: hidden;
     display: flow-root;
+    margin-top: 30px;
 }
 
 svg.mini {
@@ -76,7 +77,7 @@ svg.miniButNot {
     margin: auto;
     width: 100%;
     --value: 20;
-    margin-top: 70px;
+    margin-top: 40px;
     --max: 100;
     overflow: hidden;
 }
@@ -123,7 +124,7 @@ p {
     transform: translate(-50%, 0px);
     width: 81px;
     position: relative;
-    margin-top: 40px;
+    margin-top: 10px;
 }
 
 .right svg {

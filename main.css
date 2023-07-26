@@ -4,6 +4,7 @@ html {
     height: 100%;
     user-select: none;
     -webkit-app-region: no-drag;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html *:not(.mvmt) {

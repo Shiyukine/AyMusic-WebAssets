@@ -29,7 +29,6 @@ async function main() {
                 }
                 if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                     document.getElementById("main_style").href = "/main_mobile.css";
-                    document.getElementById("iframes").style.display = "none";
                 }
                 new Translations(document.body)
                 new ThemeColor(document.body)
