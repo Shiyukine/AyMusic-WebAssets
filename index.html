@@ -11,6 +11,16 @@
         var app = null;
         var newError = () => { };
         var loaded = false;
+        var listeners = {
+            player: {
+                pause: () => { },
+                play: () => { },
+                next: () => { },
+                previous: () => { },
+                seek: (time) => { }
+            },
+            showListenViewerWindow: () => { }
+        }
     </script>
     <script src="/plugins/jsmediatags.js"></script>
     <script src="/main.js" type="module"></script>
