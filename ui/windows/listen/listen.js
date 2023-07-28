@@ -50,7 +50,7 @@ export default class ListenWindow extends HTMLDivElement {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         let origin = "app://root"
                         if (Utils.app.platform == "Android") origin = "https://myapp"
-                        Utils.app.remoteClient.registerIframeUrl(await PlatformHandler.getPlatformUrl(platform, "IframeUrl"), `addEventListener('message', async (e) =>
+                        Utils.app.remoteClient.registerIframeUrl(await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), `addEventListener('message', async (e) =>
                         {
                             if(e.origin.includes('` + origin + `'))
                             {
@@ -118,19 +118,19 @@ export default class ListenWindow extends HTMLDivElement {
                                 imge.src = "/resources/icon.ico"
                             }
                             imge.onload = async () => {
-                                /*let blob = await (await fetch(imge.src)).blob();
-                                let dataUrl = await new Promise(resolve => {
-                                    let reader = new FileReader();
-                                    reader.onload = () => resolve(reader.result);
-                                    reader.readAsDataURL(blob);
-                                });*/
                                 if (Utils.app.platform != "Android") {
+                                    let blob = await (await fetch(imge.src)).blob();
+                                    let dataUrl = await new Promise(resolve => {
+                                        let reader = new FileReader();
+                                        reader.onload = () => resolve(reader.result);
+                                        reader.readAsDataURL(blob);
+                                    });
                                     navigator.mediaSession.metadata = new window.MediaMetadata({
                                         title: Utils.queueManager.currentSong.title,
                                         artist: Utils.queueManager.currentSong.singerName,
                                         album: Utils.queueManager.currentSong.albumName,
                                         artwork: [
-                                            { src: imge.src, sizes: '512x512', type: 'image/png' },
+                                            { src: dataUrl, sizes: '512x512', type: 'image/png' },
                                         ]
                                     });
                                 }
@@ -243,7 +243,7 @@ export default class ListenWindow extends HTMLDivElement {
                             Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
                         }
                     }
-                    if (firstPlay && Utils.queueManager.currentSong != null) {
+                    if (firstPlay && Utils.queueManager.currentSong != null && !Utils.player.needPlay) {
                         await Utils.player.seek(Utils.libManager.userInfo.curTime)
                         firstPlay = false
                     }
