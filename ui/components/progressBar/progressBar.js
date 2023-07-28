@@ -19,10 +19,10 @@ export default class ProgressBar extends HTMLDivElement {
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 //shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
                 //shadow.getElementById("progressBar").style.position = "absolute"
-                this.changeMax(this.getAttribute("max") ? this.getAttribute("max") : this.getMax())
-                this.changeValue(this.getAttribute("value") ? this.getAttribute("value") : this.getValue())
                 new ThemeColor(shadow.children[1])
             }
+            this.changeMax(this.getAttribute("max") ? this.getAttribute("max") : this.getMax())
+            this.changeValue(this.getAttribute("value") ? this.getAttribute("value") : this.getValue())
             window.addEventListener("resize", () => {
                 //shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
                 this.changeValue(this.getValue())

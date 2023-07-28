@@ -60,7 +60,9 @@ export default class ListenViewerWindow extends HTMLDivElement {
                         imge.onerror = () => {
                             imge.src = "/resources/icon.ico"
                         }
-                        imge.src = "app://cache/Image/" + Utils.queueManager.currentSong.id + ".png"
+                        let imgU = "app://data"
+                        if (Utils.app.platform == "Android") imgU = "https://mydata";
+                        imge.src = imgU + "/Image/" + Utils.queueManager.currentSong.id + ".png"
                     }
                 }
                 else {
@@ -228,6 +230,8 @@ export default class ListenViewerWindow extends HTMLDivElement {
             let pb = this.shadowRoot.getElementById("pb");
             pb.changeMax(dur)
             pb.changeValue(cur)
+            this.shadowRoot.getElementById("maxTime").innerText = Utils.msToTime(dur)
+            this.shadowRoot.getElementById("curTime").innerText = Utils.msToTime(cur)
         }
         catch (e) {
             console.error(e)

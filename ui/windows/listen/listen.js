@@ -118,19 +118,19 @@ export default class ListenWindow extends HTMLDivElement {
                                 imge.src = "/resources/icon.ico"
                             }
                             imge.onload = async () => {
-                                let blob = await (await fetch(imge.src)).blob();
+                                /*let blob = await (await fetch(imge.src)).blob();
                                 let dataUrl = await new Promise(resolve => {
                                     let reader = new FileReader();
                                     reader.onload = () => resolve(reader.result);
                                     reader.readAsDataURL(blob);
-                                });
+                                });*/
                                 if (Utils.app.platform != "Android") {
                                     navigator.mediaSession.metadata = new window.MediaMetadata({
                                         title: Utils.queueManager.currentSong.title,
                                         artist: Utils.queueManager.currentSong.singerName,
                                         album: Utils.queueManager.currentSong.albumName,
                                         artwork: [
-                                            { src: dataUrl, sizes: '512x512', type: 'image/png' },
+                                            { src: imge.src, sizes: '512x512', type: 'image/png' },
                                         ]
                                     });
                                 }
@@ -140,12 +140,14 @@ export default class ListenWindow extends HTMLDivElement {
                                         artist: Utils.queueManager.currentSong.singerName,
                                         album: Utils.queueManager.currentSong.albumName,
                                         artwork: [
-                                            { src: "/resources/icon.ico", sizes: '512x512', type: 'image/png' },
+                                            { src: imge.src, sizes: '512x512', type: 'image/png' },
                                         ]
                                     }
                                 }
                             }
-                            imge.src = "app://cache/Image/" + Utils.queueManager.currentSong.id + ".png"
+                            let imgU = "app://data"
+                            if (Utils.app.platform == "Android") imgU = "https://mydata";
+                            imge.src = imgU + "/Image/" + Utils.queueManager.currentSong.id + ".png"
                         }
                         else {
                             this.shadowRoot.getElementById("music_img").src = "/resources/icon.ico"

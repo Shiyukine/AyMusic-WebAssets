@@ -91,6 +91,7 @@ export default class PlatformHandler {
 
     static async refreshTokenForPlatform(platform) {
         return new Promise((resolve) => {
+            Utils.app.remoteClient.removeClientToken(platform)
             PlatformHandler.getPlatformUrl(platform, "BaseUrl").then((url) => {
                 if (Utils.app.platform == "Android") {
                     var intv = setInterval(async () => {

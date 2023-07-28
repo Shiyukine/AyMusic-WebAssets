@@ -99,7 +99,9 @@ export default class SongGrid extends HTMLDivElement {
             if (this.song.imgUrl === "localImg") {
                 if (this.song.canBeLoaded) {
                     var imge = this.shadowRoot.getElementById("img");
-                    imge.style.backgroundImage = "url('app://cache/Image/" + this.song.id + ".png'), url('/resources/icon.ico')"
+                    let imgU = "app://data"
+                    if (Utils.app.platform == "Android") imgU = "https://mydata";
+                    imge.style.backgroundImage = "url('" + imgU + "/Image/" + this.song.id + ".png'), url('/resources/icon.ico')"
                 }
                 else {
                     this.shadowRoot.getElementById("img").style.backgroundImage = "url('/resources/icon.ico')"

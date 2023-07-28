@@ -31,6 +31,21 @@ export default class LocalMusicHandler {
         this.albums.push(new Album(this.albumUnknownID, "Unknown album", this.singerUnknownID, "Album", "", Date.now()))
     }
 
+    static async filePicker() {
+        if (Utils.app.platform == "Android") {
+            Utils.app.remoteClient.pickUpMusic()
+            return new Promise(resolve => {
+                window.listeners.filePickerCallback = (urls) => {
+                    window.listeners.filePickerCallback = () => { }
+                    resolve(urls)
+                }
+            })
+        }
+        else {
+            return await Utils.app.remoteClient.pickUpMusic()
+        }
+    }
+
     static addLocalSinger(name) {
         var id = this.generateId();
         var filt = this.singers.filter(sing => sing.name == name);
@@ -74,12 +89,12 @@ export default class LocalMusicHandler {
         console.log("Adding song to liked song... Waiting user choose")
         var allMusics = []
         var musicInfo = []
-        var urls = await Utils.app.remoteClient.pickUpMusic()
+        var urls = await LocalMusicHandler.filePicker()
         let isOk = true;
         let counter = 0;
         for (let i in urls) {
             let nurl = urls[i]
-            let result = "app://localfiles/" + nurl
+            let result = LocalMusicHandler.getLocalUrl() + nurl
             var gmt = new GetMusicTag(result)
             gmt.getTags().then(async (tags) => {
                 let artist = LocalMusicHandler.addLocalSinger(tags != null && tags.artist != null ? tags.artist : "Unknown artist")
@@ -113,7 +128,7 @@ export default class LocalMusicHandler {
                                 singerID: mi[0]
                             })
                             try {
-                                await Utils.app.remoteClient.saveCache("Image/" + musicID + ".png", mi[2])
+                                await Utils.app.remoteClient.saveData("Image/" + musicID + ".png", mi[2])
                             }
                             catch (e) {
 
@@ -235,5 +250,12 @@ export default class LocalMusicHandler {
             if (music.artistID == artistID) mus.push(music)
         }
         return mus;
+    }
+
+    static getLocalUrl() {
+        if (Utils.app.platform == "Android") return "https://myfiles/";
+        else {
+            return "app://localfiles/";
+        }
     }
 }

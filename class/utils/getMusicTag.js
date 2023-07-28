@@ -62,7 +62,7 @@ export default class GetMusicTag {
                                     duration: audio.duration * 1000,
                                     album: tags != null && tags.album != null ? tags.album : "Unknown album",
                                     artist: tags != null && tags.artist != null ? tags.artist : "Unknown artist",
-                                    image: tags != null && tags.images != null ? tags.images[0].data : null
+                                    image: tags != null && tags.images != null && tags.images.length > 0 ? tags.images[0].data : null
                                 }
                                 resolve(base.tags)
                             }

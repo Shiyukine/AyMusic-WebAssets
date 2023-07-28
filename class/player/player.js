@@ -34,6 +34,8 @@ export default class Player {
         })
     }
 
+    objurl = "";
+
     /**
      * 
      * @param {Song} song 
@@ -41,6 +43,7 @@ export default class Player {
     async playSong(song, play = true) {
         this.needPlay = play
         console.trace()
+        if (this.objurl != "") URL.revokeObjectURL(this.objurl)
         console.log("begin to play song " + song.url)
         console.log("Resetting ancient song elements")
         if (this.audioElement != null) {
@@ -75,7 +78,15 @@ export default class Player {
             this.audioElement.onended = () => {
                 this.#eventEl.dispatchEvent(new CustomEvent("ended"));
             }
-            this.audioElement.src = song.url
+            if (Utils.app.platform == "Android") {
+                var data = await (await fetch(song.url)).blob()
+                let url = URL.createObjectURL(data)
+                this.audioElement.src = url
+                this.objurl = url
+            }
+            else {
+                this.audioElement.src = song.url
+            }
             this.currentUrl = song.url
             this.currentPlatform = null
         }
