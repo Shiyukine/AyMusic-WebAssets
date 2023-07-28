@@ -50,7 +50,9 @@ export default class ListenWindow extends HTMLDivElement {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         let origin = "app://root"
                         if (Utils.app.platform == "Android") origin = "https://myapp"
-                        Utils.app.remoteClient.registerIframeUrl(await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), `addEventListener('message', async (e) =>
+                        let iframeUrl = "IframeUrlMediaSession"
+                        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") iframeUrl = "IframeUrlMediaSessionMobile"
+                        Utils.app.remoteClient.registerIframeUrl(await PlatformHandler.getPlatformUrl(platform, iframeUrl), `addEventListener('message', async (e) =>
                         {
                             if(e.origin.includes('` + origin + `'))
                             {

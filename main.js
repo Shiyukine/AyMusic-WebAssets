@@ -49,7 +49,17 @@ async function main() {
                 LocalMusicHandler.init()
                 await LocalMusicHandler.getLocalLibrary()
                 //
-                await Update.searchUpdate(loadPanel);
+                if (Utils.app.platform == "Android") {
+                    await new Promise(resolve => {
+                        setTimeout(async () => {
+                            await Update.searchUpdate(loadPanel)
+                            resolve()
+                        }, 1000);
+                    })
+                }
+                else {
+                    await Update.searchUpdate(loadPanel);
+                }
                 loadPanel.changeText("Connecting to your account...", "Please wait...");
                 loadPanel.changeloading(true)
                 var logP = new LoginPanel("");

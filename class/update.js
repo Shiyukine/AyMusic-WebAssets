@@ -26,7 +26,12 @@ export default class Update {
                     Update.infoPanel.changeText("Updating...", "Downloading update " + curUpdate + "/" + maxUpdate + "\n" + Math.floor(state.cur / 1000 / 1000) + " MB/" + Math.floor(state.max / 1000 / 1000) + " MB")
                 }
                 if (state.step == 5) {
-                    Update.infoPanel.changeText(null, "Applying update...")
+                    if (Utils.app.platform == "Android") {
+                        Update.infoPanel.changeText("New version available", "An update is available. Please install the update.")
+                    }
+                    else {
+                        Update.infoPanel.changeText(null, "Applying update...")
+                    }
                 }
                 if (state.step == -1) {
                     window.updateCallBack = undefined;
