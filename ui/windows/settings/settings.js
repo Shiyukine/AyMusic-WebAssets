@@ -119,16 +119,17 @@ export default class SettingsWindow extends HTMLDivElement {
                     btn1.onclick = async () => {
                         await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
                             await PlatformHandler.getPlatformUrl(platform, "BaseUrl"))
+                        Utils.newError("Information", "If the window has closed by itself, it means that you've been connected!")
                     }
                     div.appendChild(btn1)
                     let btn2 = document.createElement("button")
                     btn2.innerText = "{set.music.rmAccount}"
                     btn2.onclick = async () => {
+                        await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LogoutUrl"),
+                            await PlatformHandler.getPlatformUrl(platform, "LogoutUrlCallback"))
                         /*await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
                             await PlatformHandler.getPlatformUrl(platform, "BaseUrl"))*/
-                        Utils.newError("Not available now", "Sorry, but this feature will be added soon :)\n"
-                            + "However, if you want actually to remove an account, you must delete the folder at\n"
-                            + "%appdata%\\AyMusic\\Cache\\WebCache (you can copy the link) and restart AyMusic.")
+                        Utils.newError("Information", "If the window has closed by itself, it means that you've been disconnected!")
                     }
                     div.appendChild(btn2)
                     shadow.getElementById("music_panel").insertBefore(div, shadow.getElementById("music_import"))
@@ -168,7 +169,7 @@ export default class SettingsWindow extends HTMLDivElement {
                     document.getElementById("main").appendChild(ip)
                     ip.show()
                 }
-                shadow.getElementById("about_ver").innerText += " " + Utils.app.versionName + " (" + Utils.app.versionId + ")"
+                shadow.getElementById("about_ver").innerText += " " + Utils.app.versionName
                 this.changeView(this.selectedIndex)
                 this.style.opacity = "1"
             }
@@ -186,6 +187,9 @@ export default class SettingsWindow extends HTMLDivElement {
     }
 
     changeAccount() {
+        this.shadowRoot.getElementById("acc_img").onerror = () => {
+            this.shadowRoot.getElementById("acc_img").src = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+        }
         this.shadowRoot.getElementById("acc_img").src = Utils.actualAccount.avatarUrl;
         this.shadowRoot.getElementById("acc_name").innerText = Utils.actualAccount.name;
         this.shadowRoot.getElementById("acc_email").innerText = Utils.actualAccount.email;

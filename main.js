@@ -32,7 +32,7 @@ async function main() {
                 }
                 new Translations(document.body)
                 new ThemeColor(document.body)
-                document.getElementById("version_name").innerText = Utils.app.versionName + " (" + Utils.app.versionId + ")"
+                document.getElementById("version_name").innerText = Utils.app.versionName
                 var loadPanel = new InfoPanel("Searching for updates...", "Please wait...", null, true);
                 document.getElementById("main").appendChild(loadPanel);
                 loadPanel.style.width = loadPanel.style.height = "100%";
