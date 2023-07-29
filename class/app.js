@@ -29,8 +29,9 @@ export default class App {
     * @param {String} versionName Name of the actual version
     * @param {Number} versionId ID version
     * @param {Object} remoteClient Object to send information on the client
+    * @param {Boolean} isRelease Know if the package is in release state or not
     */
-    async registerClient(platform, versionName, versionId, remoteClient) {
+    async registerClient(platform, versionName, versionId, remoteClient, isRelease) {
         if (!this.registered && this.haveCallback.toString() != "function () { }") {
             this.registered = true;
             try {
@@ -53,6 +54,7 @@ export default class App {
                 this.versionName = versionName;
                 this.versionId = versionId;
                 this.remoteClient = remoteClient;
+                this.isRelease = isRelease;
                 let newS = await this.remoteClient.getSettingFile()
                 if (newS) {
                     newS = JSON.parse(newS)
