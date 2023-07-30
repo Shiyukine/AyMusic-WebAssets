@@ -131,7 +131,7 @@ h3 {
 
 #list {
     position: relative;
-    height: calc(100% - 20% - 30px - 30px);
+    height: calc(100% - 100px - 30px - 30px);
     border-radius: 15px;
     background-color: rgba(37, 37, 37, 0.5);
     margin: 10px;

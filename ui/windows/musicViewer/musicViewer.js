@@ -107,106 +107,108 @@ export default class MusicViewerWindow extends HTMLDivElement {
      * @param {String} objectID 
      */
     async changeView(objectID, updateHistory = true) {
-        this.fullObjId = objectID
-        this.object = null
         if (!this.parentElement) document.getElementById("main").appendChild(this)
-        while (this.shadowRoot.getElementById("list").firstChild) {
-            this.shadowRoot.getElementById("list").removeChild(this.shadowRoot.getElementById("list").lastChild);
-        }
         //wait
         this.clientWidth
         //
-        this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.libManager.isObjectIDIsInLikedSongs(this.fullObjId) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
-        let isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id && await Utils.player.getState()
-        this.shadowRoot.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
         this.style.opacity = "1"
-        if (objectID.startsWith("pl_")) {
-            if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
-            let info = await Utils.apiManager.doPostRequest({
-                act: "getPlaylistInfo",
-                id: objectID.split("pl_").join(""),
-                offset: 0
-            })
-            this.shadowRoot.getElementById("title").innerText = info["playlistInfo"]["name"]
-            this.shadowRoot.getElementById("subtitle").innerText = "By " + info["playlistInfo"]["userID"]
-            this.shadowRoot.getElementById("cover").src = info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico"
-            let div = this.addList("Songs in this playlist:")
-            let songs = info["songs"]["songs"]
-            let counterSongNotLoaded = 0
-            let pl = new Playlist(info["playlistInfo"]["id"], info["playlistInfo"]["name"], info["playlistInfo"]["userID"], info["playlistInfo"]["desc"], info["playlistInfo"]["imgUrl"], info["playlistInfo"]["isPrivate"], info["playlistInfo"]["rank"])
-            this.object = pl
-            for (let i in songs) {
-                let obj = songs[i]
-                let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID)
-                if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
-                else counterSongNotLoaded++
+        if (this.fullObjId != objectID) {
+            this.fullObjId = objectID
+            this.object = null
+            while (this.shadowRoot.getElementById("list").firstChild) {
+                this.shadowRoot.getElementById("list").removeChild(this.shadowRoot.getElementById("list").lastChild);
             }
-            let total = parseInt(info["songs"]["total"])
-            while (div.children.length < total - counterSongNotLoaded) {
-                div.appendChild(new SongGrid(null, pl))
-            }
-        }
-        if (objectID.startsWith("al_")) {
-            if (this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.remove("nohover")
-            let info = await Utils.apiManager.doPostRequest({
-                act: "getAlbumInfo",
-                id: objectID.split("al_").join(""),
-                offset: 0
-            })
-            this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
-            this.shadowRoot.getElementById("subtitle").innerText = "By " + info["albumInfo"]["singerID"]
-            this.shadowRoot.getElementById("subtitle").onclick = () => {
-                if (!Utils.queueManager.currentSong.imgUrl !== "localImg") {
-                    Utils.musicViewer.changeView("si_" + info["albumInfo"]["singerID"])
+            this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.libManager.isObjectIDIsInLikedSongs(this.fullObjId) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
+            let isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id && await Utils.player.getState()
+            this.shadowRoot.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
+            if (objectID.startsWith("pl_")) {
+                if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
+                let info = await Utils.apiManager.doPostRequest({
+                    act: "getPlaylistInfo",
+                    id: objectID.split("pl_").join(""),
+                    offset: 0
+                })
+                this.shadowRoot.getElementById("title").innerText = info["playlistInfo"]["name"]
+                this.shadowRoot.getElementById("subtitle").innerText = "By " + info["playlistInfo"]["userID"]
+                this.shadowRoot.getElementById("cover").src = info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico"
+                let div = this.addList("Songs in this playlist:")
+                let songs = info["songs"]["songs"]
+                let counterSongNotLoaded = 0
+                let pl = new Playlist(info["playlistInfo"]["id"], info["playlistInfo"]["name"], info["playlistInfo"]["userID"], info["playlistInfo"]["desc"], info["playlistInfo"]["imgUrl"], info["playlistInfo"]["isPrivate"], info["playlistInfo"]["rank"])
+                this.object = pl
+                for (let i in songs) {
+                    let obj = songs[i]
+                    let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID)
+                    if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
+                    else counterSongNotLoaded++
+                }
+                let total = parseInt(info["songs"]["total"])
+                while (div.children.length < total - counterSongNotLoaded) {
+                    div.appendChild(new SongGrid(null, pl))
                 }
             }
-            this.shadowRoot.getElementById("cover").src = info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico"
-            let div = this.addList("Songs in this album added on AyMusic's database:")
-            let songs = info["songs"]["songs"]
-            let counterSongNotLoaded = 0
-            let pl = new Album(info["albumInfo"]["id"], info["albumInfo"]["name"], info["albumInfo"]["singerID"], info["albumInfo"]["type"], info["albumInfo"]["imgUrl"])
-            this.object = pl
-            for (let i in songs) {
-                let obj = songs[i]
-                this.shadowRoot.getElementById("subtitle").innerText = "By " + obj.singerName
-                let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, pl.name, pl.id)
-                if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
-                else counterSongNotLoaded++
+            if (objectID.startsWith("al_")) {
+                if (this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.remove("nohover")
+                let info = await Utils.apiManager.doPostRequest({
+                    act: "getAlbumInfo",
+                    id: objectID.split("al_").join(""),
+                    offset: 0
+                })
+                this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
+                this.shadowRoot.getElementById("subtitle").innerText = "By " + info["albumInfo"]["singerID"]
+                this.shadowRoot.getElementById("subtitle").onclick = () => {
+                    if (!Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                        Utils.musicViewer.changeView("si_" + info["albumInfo"]["singerID"])
+                    }
+                }
+                this.shadowRoot.getElementById("cover").src = info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico"
+                let div = this.addList("Songs in this album added on AyMusic's database:")
+                let songs = info["songs"]["songs"]
+                let counterSongNotLoaded = 0
+                let pl = new Album(info["albumInfo"]["id"], info["albumInfo"]["name"], info["albumInfo"]["singerID"], info["albumInfo"]["type"], info["albumInfo"]["imgUrl"])
+                this.object = pl
+                for (let i in songs) {
+                    let obj = songs[i]
+                    this.shadowRoot.getElementById("subtitle").innerText = "By " + obj.singerName
+                    let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, pl.name, pl.id)
+                    if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
+                    else counterSongNotLoaded++
+                }
+                let total = parseInt(info["songs"]["total"])
+                while (div.children.length < total - counterSongNotLoaded) {
+                    div.appendChild(new SongGrid(null, pl))
+                }
             }
-            let total = parseInt(info["songs"]["total"])
-            while (div.children.length < total - counterSongNotLoaded) {
-                div.appendChild(new SongGrid(null, pl))
+            if (objectID.startsWith("si_")) {
+                if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
+                let info = await Utils.apiManager.doPostRequest({
+                    act: "getSingerInfo",
+                    id: objectID.split("si_").join(""),
+                    offset: 0
+                })
+                this.shadowRoot.getElementById("title").innerText = info["singerInfo"]["name"]
+                this.shadowRoot.getElementById("subtitle").innerText = "Artist"
+                this.shadowRoot.getElementById("cover").src = info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico"
+                let div = this.addList("Latest added song on AyMusic's database of this artist:")
+                let songs = info["songs"]
+                let pl = new Singer(info["singerInfo"]["id"], info["singerInfo"]["name"], info["singerInfo"]["imgUrl"])
+                this.object = pl
+                for (let i in songs) {
+                    let obj = songs[i]
+                    let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, pl.id, pl.name, obj.albumName, obj.albumID)
+                    if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
+                }
+                let div2 = this.addList("Albums of this artist added on AyMusic's database:", false)
+                let als = info["singerAlbums"]
+                for (let i in als) {
+                    let obj = als[i]
+                    let al = new Album(obj.id, obj.name, pl.id, obj.type, obj.imgUrl)
+                    div2.appendChild(new AlbumGrid(al))
+                }
             }
+            this.loaded = true
+            if (updateHistory) window.history.pushState({ where: "musicViewer", objId: objectID }, "", "/index.html")
         }
-        if (objectID.startsWith("si_")) {
-            if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
-            let info = await Utils.apiManager.doPostRequest({
-                act: "getSingerInfo",
-                id: objectID.split("si_").join(""),
-                offset: 0
-            })
-            this.shadowRoot.getElementById("title").innerText = info["singerInfo"]["name"]
-            this.shadowRoot.getElementById("subtitle").innerText = "Artist"
-            this.shadowRoot.getElementById("cover").src = info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico"
-            let div = this.addList("Latest added song on AyMusic's database of this artist:")
-            let songs = info["songs"]
-            let pl = new Singer(info["singerInfo"]["id"], info["singerInfo"]["name"], info["singerInfo"]["imgUrl"])
-            this.object = pl
-            for (let i in songs) {
-                let obj = songs[i]
-                let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, pl.id, pl.name, obj.albumName, obj.albumID)
-                if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
-            }
-            let div2 = this.addList("Albums of this artist added on AyMusic's database:", false)
-            let als = info["singerAlbums"]
-            for (let i in als) {
-                let obj = als[i]
-                let al = new Album(obj.id, obj.name, pl.id, obj.type, obj.imgUrl)
-                div2.appendChild(new AlbumGrid(al))
-            }
-        }
-        this.loaded = true
-        if (updateHistory) window.history.pushState({ where: "musicViewer", objId: objectID }, "", "/index.html")
     }
 
     addScrollEventForList(list) {
