@@ -67,7 +67,7 @@ export default class LoginPanel extends HTMLDivElement {
                     this.#iframe.contentWindow.postMessage({ message: "html", id: this.messID }, Utils.servURL)
                 }
                 if (url.includes("/login/index.php") && isForModification == "logout") {
-                    Utils.app.remoteClient.refreshApp()
+                    location.reload()
                 }
                 if ((url.includes("login/?inapp=1") || url.includes("confirm.php")) && isForModification == "") {
                     this.#eventEl.dispatchEvent(new CustomEvent("notconnected"));
@@ -109,6 +109,7 @@ export default class LoginPanel extends HTMLDivElement {
             }
             if (isForModification == "logout") {
                 this.#iframe.src = Utils.servURL + "login/logout.php?inapp=1&date=" + Date.now().toString()
+                this.style.opacity = "1"
             }
         })
     }

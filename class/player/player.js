@@ -268,17 +268,19 @@ export default class Player {
 
     async setMute(mute) {
         this.isMuted = mute
-        if (this.isLocalMusic) {
-            this.audioElement.muted = mute
-        } else {
-            let platform = await PlatformHandler.getPlatformBySongUrl(this.currentSongUrl)
-            if ((await PlatformHandler.getPlatformSettings(platform)).NoMute) {
-                if (this.isMuted) {
-                    this.anVol = await Utils.player.getVolume()
-                    this.changeVolume(0)
-                }
-                else {
-                    this.changeVolume(this.anVol)
+        if (Utils.queueManager.currentSong != null) {
+            if (this.isLocalMusic) {
+                this.audioElement.muted = mute
+            } else {
+                let platform = await PlatformHandler.getPlatformBySongUrl(this.currentSongUrl)
+                if ((await PlatformHandler.getPlatformSettings(platform)).NoMute) {
+                    if (this.isMuted) {
+                        this.anVol = await Utils.player.getVolume()
+                        this.changeVolume(0)
+                    }
+                    else {
+                        this.changeVolume(this.anVol)
+                    }
                 }
             }
         }

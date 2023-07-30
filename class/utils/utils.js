@@ -73,6 +73,32 @@ export default class Utils {
         await errPanel.showDialog()
     }
 
+    static currentMiniErrorID = -1
+
+    static async showMiniError(miniErrorID, info, temp = false, colorBg = "", colorText = "") {
+        console.error(info)
+        document.getElementById("miniInfoP").innerHTML = info
+        document.getElementById("miniInfoP").style.color = colorText
+        document.getElementById("miniInfo").style.backgroundColor = colorBg
+        document.getElementById("miniInfo").classList.add("showInfo")
+        document.getElementById("main").classList.add("infoShown")
+        Utils.currentMiniErrorID = miniErrorID
+        if (temp) {
+            setTimeout(() => {
+                Utils.hideMiniError(miniErrorID)
+            }, 3000);
+        }
+    }
+
+    static async hideMiniError(miniErrorID) {
+        if (miniErrorID == Utils.currentMiniErrorID) {
+            document.getElementById("miniInfo").classList.remove("showInfo")
+            document.getElementById("main").classList.remove("infoShown")
+            document.getElementById("miniInfoP").style.color = ""
+            document.getElementById("miniInfo").style.backgroundColor = ""
+        }
+    }
+
     static msToTime(duration) {
         var milliseconds = Math.floor((duration % 1000) / 100),
             seconds = Math.floor((duration / 1000) % 60),

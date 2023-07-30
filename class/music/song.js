@@ -47,7 +47,7 @@ export default class Song {
                 this.singerID = si.id
             }
             catch (e) {
-                console.error("Unable to get local data for a song.")
+                //console.error("Unable to get local data for a song.")
                 this.canBeLoaded = false
             }
         }

@@ -70,7 +70,7 @@ export default class MenuWindow extends HTMLDivElement {
             cnv.width = c1.width * (1 / scale)
             ctx.drawImage(c1, 0, 0, cnv.width, cnv.height)
         }
-        this.accountEl.src = Utils.actualAccount.avatarUrl;
+        this.accountEl.src = Utils.actualAccount.avatarUrl.split("?")[0];
     }
 
     UserWindows = Object.freeze({ "Home": 1, "Search": 2, "Library": 3, "Settings": 4 })

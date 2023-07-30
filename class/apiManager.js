@@ -44,7 +44,7 @@ export default class ApiManager {
                         //console.log("<- POST request : OK (" + (Date.now() - start) + "ms)")
                         this.countFailed = 0
                         if (this.disconnected) {
-                            Utils.newError("Connected", "You're now connected to the server.")
+                            Utils.showMiniError(15, "Connected!", true, "rgb(0, 204, 255)", "#000")
                             this.disconnected = false
                         }
                         return result["content"];
@@ -80,8 +80,7 @@ export default class ApiManager {
         }
         catch (e) {
             //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
-            if (!this.disconnected)
-                Utils.newError("Can't connect to the server", "The server is offline or maybe there is a maintenance.\nPlease wait.")
+            Utils.showMiniError(15, "You are disconnected from the server")
             this.disconnected = true
             return e;
         }

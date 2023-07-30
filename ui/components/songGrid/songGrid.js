@@ -114,6 +114,10 @@ export default class SongGrid extends HTMLDivElement {
                 this.shadowRoot.getElementById("svg").style.opacity = "1"
                 this.shadowRoot.getElementById("cache").style.opacity = "1"
             });
+            this.addEventListener("mousemove", function () {
+                this.shadowRoot.getElementById("svg").style.opacity = "1"
+                this.shadowRoot.getElementById("cache").style.opacity = "1"
+            });
             this.addEventListener("mouseout", function () {
                 if (!this.isMySong()) {
                     this.shadowRoot.getElementById("svg").style.opacity = "0"
@@ -165,12 +169,14 @@ export default class SongGrid extends HTMLDivElement {
                     //Utils.newError("Can't do this", "This feature will be added soon :)")
                     Utils.queueManager.addToQueue(song)
                 })
-                cm.addElement("{lib.goArtist}", () => {
-                    Utils.musicViewer.changeView("si_" + song.singerID)
-                })
-                cm.addElement("{lib.goAlbum}", () => {
-                    Utils.musicViewer.changeView("al_" + song.albumID)
-                })
+                if (this.song.imgUrl !== "localImg") {
+                    cm.addElement("{lib.goArtist}", () => {
+                        Utils.musicViewer.changeView("si_" + song.singerID)
+                    })
+                    cm.addElement("{lib.goAlbum}", () => {
+                        Utils.musicViewer.changeView("al_" + song.albumID)
+                    })
+                }
                 if (this.object != null && this.object.id != Utils.libManager.userInfo.likedSongsPlId && Utils.libManager.userPlaylists.includes(this.object)) {
                     let result = await Utils.apiManager.doPostRequest({
                         act: "getIdSongsInPlaylist",

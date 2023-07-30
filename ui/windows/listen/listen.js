@@ -30,6 +30,7 @@ export default class ListenWindow extends HTMLDivElement {
         this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "78px" : "0"
         this.style.left = "0"
         this.style.right = "0"
+        this.style.zIndex = "1"
         Import.getData("/ui/windows/listen/listen" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
@@ -326,7 +327,7 @@ export default class ListenWindow extends HTMLDivElement {
                         } : null);
                     }
                     Utils.app.changeSetting("shuffle", Utils.queueManager.shuffle)
-                    if (!Utils.player.isLocalMusic) {
+                    if (!Utils.player.isLocalMusic && Utils.queueManager.currentSong != null) {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                     }
@@ -355,7 +356,7 @@ export default class ListenWindow extends HTMLDivElement {
                         } : null);
                     }
                     Utils.app.changeSetting("repeat", Utils.queueManager.repeat)
-                    if (!Utils.player.isLocalMusic) {
+                    if (!Utils.player.isLocalMusic && Utils.queueManager.currentSong != null) {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                     }
@@ -609,6 +610,16 @@ export default class ListenWindow extends HTMLDivElement {
                         }
                         if (e.data.action == "seekto") {
                             if (e.data.event.seekTime) Utils.player.seek(e.data.event.seekTime)
+                        }
+                    }
+                })
+                window.addEventListener("keydown", async (e) => {
+                    if (e.key == " " && e.target == document.body && !e.repeat) {
+                        if (await Utils.player.getState()) {
+                            Utils.player.pause()
+                        }
+                        else {
+                            Utils.player.play()
                         }
                     }
                 })
