@@ -29,6 +29,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    transition: height 0.3s;
 }
 
 h1,
@@ -333,4 +334,34 @@ img:hover {
 .barMaximized {
     width: 0% !important;
     height: 0% !important;
+}
+
+#miniInfo {
+    /* top: 40px; */
+    width: 100%;
+    background-color: #ff7070;
+    /* color: white; */
+    z-index: 1;
+    transition: 0.3s;
+    height: 0px;
+    text-align: center;
+}
+
+#miniInfo.showInfo {
+    height: 75px;
+}
+
+#miniInfo>p {
+    position: relative;
+    bottom: -40px;
+    margin: 0;
+    /* left: 50%; */
+    /* transform: translateX(-50%); */
+    color: white;
+    text-align: center;
+}
+
+.infoShown {
+    /*top: 40px !important;*/
+    height: calc(100% - 75px) !important;
 }
