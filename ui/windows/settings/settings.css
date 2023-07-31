@@ -285,7 +285,13 @@ button:disabled {
 
 .hidden {
     visibility: collapse;
+    transition: none !important;
+    display: none;
     position: absolute;
+}
+
+.hidden * {
+    transition: none !important;
 }
 
 .grid {
