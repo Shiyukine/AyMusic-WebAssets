@@ -87,6 +87,7 @@
     -webkit-mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
     mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
     display: -webkit-box;
+    overflow: hidden;
 }
 
 .panel_ep .stats {
