@@ -195,12 +195,17 @@ export default class SongGrid extends HTMLDivElement {
                 })
                 var cm2 = new ContextMenu()
                 cm2.beforeShow = () => {
+                    let havePl = false;
                     for (let pl of Utils.libManager.userPlaylists) {
                         if (!pl.name.includes("{") && !pl.name.includes("}")) {
+                            havePl = true
                             cm2.addElement(pl.name, () => {
                                 Utils.libManager.addSongToAPlaylist(pl.id, "so_" + song.id)
                             })
                         }
+                    }
+                    if (!havePl) {
+                        cm2.addElement("No playlist available", () => { })
                     }
                 }
                 cm.addSubContextMenu("{lib.addToPl}", cm2)

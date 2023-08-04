@@ -140,6 +140,12 @@ export default class LibraryWindow extends HTMLDivElement {
                             x.value = x.value == 0 ? 1 : 0
                             x.style.backgroundColor = x.value == "1" ? "" : "gray"
                         }
+                        x.ontouchstart = (e) => {
+                            x.value = x.value == 0 ? 1 : 0
+                            x.style.backgroundColor = x.value == "1" ? "" : "gray"
+                            e.preventDefault()
+                            e.stopPropagation()
+                        }
                     }
                 })
                 var gest = new GestureHandler(shadow.getElementById("mylib_list"))
