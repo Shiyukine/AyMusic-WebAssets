@@ -424,6 +424,8 @@ export default class ListenWindow extends HTMLDivElement {
                     Utils.player.changeVolume(pbVol.getValue());
                 })*/
                 pbVol.onValueChange(() => {
+                    if (Utils.player.isMuted && Utils.player.volume != 0)
+                        Utils.player.setMute(false)
                     Utils.player.changeVolume(pbVol.getValue());
                     if (pbVol.getValue() == 0 || Utils.player.isMuted) {
                         shadow.getElementById("volSvg").children[0].setAttribute("d", Utils.pathsData["VolumeOff"])

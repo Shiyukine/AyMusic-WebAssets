@@ -205,7 +205,7 @@ export default class SongGrid extends HTMLDivElement {
                         }
                     }
                     if (!havePl) {
-                        cm2.addElement("No playlist available", () => { })
+                        cm2.addElement("No playlists available", () => { })
                     }
                 }
                 cm.addSubContextMenu("{lib.addToPl}", cm2)

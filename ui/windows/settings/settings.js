@@ -190,7 +190,7 @@ export default class SettingsWindow extends HTMLDivElement {
 
     changeAccount() {
         this.shadowRoot.getElementById("acc_img").onerror = () => {
-            this.shadowRoot.getElementById("acc_img").src = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+            this.shadowRoot.getElementById("acc_img").src = "/resources/noavatar.png"
         }
         this.shadowRoot.getElementById("acc_img").src = Utils.actualAccount.avatarUrl;
         this.shadowRoot.getElementById("acc_name").innerText = Utils.actualAccount.name;
