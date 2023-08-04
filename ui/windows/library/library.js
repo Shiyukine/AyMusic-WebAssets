@@ -136,7 +136,8 @@ export default class LibraryWindow extends HTMLDivElement {
                 }
                 shadow.querySelectorAll("*").forEach((x) => {
                     if (x.tagName == "INPUT" && x.max == "1") {
-                        x.oninput = () => {
+                        x.onmousedown = (e) => {
+                            x.value = x.value == 0 ? 1 : 0
                             x.style.backgroundColor = x.value == "1" ? "" : "gray"
                         }
                     }

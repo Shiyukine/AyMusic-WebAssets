@@ -61,10 +61,12 @@ export default class SettingsWindow extends HTMLDivElement {
                         if (x.tagName == "INPUT" && x.max == "1") {
                             x.value = Utils.app.getSetting(x.id) ? 1 : 0
                             x.style.backgroundColor = x.value == "1" ? "" : "gray"
-                            x.oninput = () => {
+                            x.onmousedown = (e) => {
+                                x.value = x.value == 0 ? 1 : 0
                                 Utils.app.changeSetting(x.id, x.value == "1")
                                 x.style.backgroundColor = x.value == "1" ? "" : "gray"
-                                x.value = Utils.app.getSetting(x.id) ? 1 : 0
+                                e.preventDefault()
+                                e.stopPropagation()
                             }
                         }
                         if (x.tagName == "INPUT" && x.max != "1") {
