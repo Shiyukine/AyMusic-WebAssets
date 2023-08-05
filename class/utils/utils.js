@@ -105,11 +105,11 @@ export default class Utils {
             minutes = Math.floor((duration / (1000 * 60)) % 60),
             hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
 
-        hours = hours > 0 ? hours + ":" : "";
-        minutes = (hours > 0 && minutes < 10 ? "0" + minutes : minutes) + ":";
-        seconds = seconds < 10 ? "0" + seconds : seconds;
+        var thours = hours > 0 ? hours + ":" : "";
+        var tminutes = (hours > 0 && minutes < 10 ? "0" + minutes : minutes) + ":";
+        var tseconds = seconds < 10 ? "0" + seconds : seconds;
 
-        return hours + minutes + seconds/* + "." + milliseconds*/;
+        return thours + tminutes + tseconds/* + "." + milliseconds*/;
     }
 
     static findIndexOfLike(node) {
