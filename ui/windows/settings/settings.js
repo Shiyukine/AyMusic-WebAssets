@@ -96,11 +96,10 @@ export default class SettingsWindow extends HTMLDivElement {
                  */
                 var lp = null;
                 shadow.getElementById("acc_change").onclick = () => {
-                    if (lp == null) {
-                        lp = new LoginPanel("modify")
-                        document.getElementById("main").appendChild(lp)
-                        window.history.pushState({ where: "settings", showLog: true }, "", "/index.html")
-                    }
+                    if (lp) lp.close(false)
+                    lp = new LoginPanel("modify")
+                    document.getElementById("main").appendChild(lp)
+                    window.history.pushState({ where: "settings", showLog: true }, "", "/index.html")
                 }
                 shadow.getElementById("music_add").onclick = () => {
                     LocalMusicHandler.addMusic()

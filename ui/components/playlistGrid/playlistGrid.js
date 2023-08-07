@@ -32,7 +32,7 @@ export default class PlaylistGrid extends HTMLDivElement {
                 });
                 this.addEventListener("mouseout", function () {
                     this.shadowRoot.getElementById("img").style.transform = "scale(1)"
-                    if ("pl_" + playlist.id != Utils.queueManager.currentObject.id) this.shadowRoot.getElementById("cache").style.opacity = "0"
+                    if (Utils.queueManager.currentObject != null && "pl_" + playlist.id != Utils.queueManager.currentObject.id) this.shadowRoot.getElementById("cache").style.opacity = "0"
                 });
                 this.addEventListener("click", function () {
                     if (!this.shadowRoot.getElementById("svg").matches(':hover')) {

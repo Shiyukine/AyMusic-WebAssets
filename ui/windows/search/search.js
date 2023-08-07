@@ -15,6 +15,7 @@ export default class SearchWindow extends HTMLDivElement {
     selectedServer = "icon";
     isClosed = false;
     controller = new AbortController();
+    platformsBusy = []
 
     constructor() {
         super();
@@ -51,27 +52,33 @@ export default class SearchWindow extends HTMLDivElement {
     }
 
     async launchSearch() {
-        while (this.shadowRoot.getElementById("songs").children.length > 0) {
-            this.shadowRoot.getElementById("songs").removeChild(this.shadowRoot.getElementById("songs").children[0])
-        }
-        while (this.shadowRoot.getElementById("artists").children.length > 0) {
-            this.shadowRoot.getElementById("artists").removeChild(this.shadowRoot.getElementById("artists").children[0])
-        }
-        while (this.shadowRoot.getElementById("albums").children.length > 0) {
-            this.shadowRoot.getElementById("albums").removeChild(this.shadowRoot.getElementById("albums").children[0])
-        }
-        while (this.shadowRoot.getElementById("playlists").children.length > 0) {
-            this.shadowRoot.getElementById("playlists").removeChild(this.shadowRoot.getElementById("playlists").children[0])
-        }
-        if (this.selectedServer != "icon") {
-            await this.searchForAPlatform(this.capitalizeFirstLetter(this.selectedServer), false)
-            this.shadowRoot.getElementById("bottom").style.display = "block"
+        if (this.platformsBusy.length == 0) {
+            while (this.shadowRoot.getElementById("songs").children.length > 0) {
+                this.shadowRoot.getElementById("songs").removeChild(this.shadowRoot.getElementById("songs").children[0])
+            }
+            while (this.shadowRoot.getElementById("artists").children.length > 0) {
+                this.shadowRoot.getElementById("artists").removeChild(this.shadowRoot.getElementById("artists").children[0])
+            }
+            while (this.shadowRoot.getElementById("albums").children.length > 0) {
+                this.shadowRoot.getElementById("albums").removeChild(this.shadowRoot.getElementById("albums").children[0])
+            }
+            while (this.shadowRoot.getElementById("playlists").children.length > 0) {
+                this.shadowRoot.getElementById("playlists").removeChild(this.shadowRoot.getElementById("playlists").children[0])
+            }
+            if (this.selectedServer != "icon") {
+                await this.searchForAPlatform(this.capitalizeFirstLetter(this.selectedServer), false)
+                this.shadowRoot.getElementById("bottom").style.display = "block"
+            }
+            else {
+                for (let plat of await PlatformHandler.getAvailablePlatforms()) {
+                    await this.searchForAPlatform(plat, false)
+                }
+                this.shadowRoot.getElementById("bottom").style.display = "block"
+            }
         }
         else {
-            for (let plat of await PlatformHandler.getAvailablePlatforms()) {
-                await this.searchForAPlatform(plat, false)
-            }
-            this.shadowRoot.getElementById("bottom").style.display = "block"
+            let id = "search"
+            Utils.showMiniError(id, "Already searching! Please wait...", true)
         }
     }
 
@@ -90,6 +97,7 @@ export default class SearchWindow extends HTMLDivElement {
     async searchForAPlatform(server, listAddedServerSongs) {
         //listAddedServerSongs = show songs which are already added on AyMusic DB
         var platform = server
+        this.platformsBusy.push(platform)
         if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform &&
             (await PlatformHandler.getPlatformSettings(platform)).Token == "") {
             console.log("Platform need refresh token")
@@ -97,11 +105,11 @@ export default class SearchWindow extends HTMLDivElement {
             console.log("Platform token refreshed")
         }
         var searchUrl = await PlatformHandler.getPlatformUrl(platform, "SearchUrl")
-        searchUrl = searchUrl.split("%search%").join(this.shadowRoot.getElementById("tb_search").value)
+        searchUrl = searchUrl.split("%search%").join(encodeURIComponent(this.shadowRoot.getElementById("tb_search").value))
         if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
             searchUrl = searchUrl.split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
         }
-        searchUrl = encodeURI(searchUrl)
+        //searchUrl = encodeURI(searchUrl)
         console.log("Search url: " + searchUrl)
         var urlsExist = []
         urlsExist = await Utils.apiManager.doPostRequest({
@@ -124,88 +132,97 @@ export default class SearchWindow extends HTMLDivElement {
                 this.searchForAPlatform(server, listAddedServerSongs)
             }
             else {
-                var json = JSON.parse(data)
-                var songsToAdd = []
-                var songsIDs = []
-                for (let song of json) {
-                    let songID = null
-                    for (let songDB of urlsExist) {
-                        if (songDB["url"] == song.url) songID = songDB["songID"]
-                    }
-                    if (!songID) {
-                        songsToAdd.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
-                        song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
-                    }
-                    else {
-                        songsIDs.push(songID)
-                    }
-                }
-                let nsongsID = await Utils.apiManager.doPostRequest({
-                    act: "addMultipleSongsDB",
-                    songs: songsToAdd
-                })
-                if (!listAddedServerSongs) {
-                    let albumsIDAdded = []
-                    let singersIDAdded = []
-                    for (let i in nsongsID) {
-                        let id = nsongsID[i]["songID"]
-                        let url = songsToAdd[i][0]
-                        let positionOrDate = nsongsID[i]["songPosition"]
-                        let title = songsToAdd[i][1]
-                        let imgUrl = songsToAdd[i][2]
-                        let time = songsToAdd[i][3]
-                        let isExplicit = songsToAdd[i][4]
-                        let addedBy = "AyMusic"
-                        let cropStart = songsToAdd[i][5]
-                        let cropEnd = songsToAdd[i][6]
-                        let singerID = nsongsID[i]["singerID"]
-                        let singerName = songsToAdd[i][10]
-                        let singerImgUrl = songsToAdd[i][11]
-                        let albumName = songsToAdd[i][7]
-                        let albumID = nsongsID[i]["albumID"]
-                        let albumType = songsToAdd[i][8]
-                        let albumImgUrl = songsToAdd[i][9]
-                        this.shadowRoot.getElementById("songs").appendChild(new SongGrid(new Song(id, url, positionOrDate, title, imgUrl, time,
-                            isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID)))
-                        if (!singersIDAdded.includes(singerID)) {
-                            this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(new Singer(singerID, singerName, singerImgUrl)))
-                            singersIDAdded.push(singerID)
-                        }
-                        if (!albumsIDAdded.includes(albumID)) {
-                            this.shadowRoot.getElementById("albums").appendChild(new AlbumGrid(new Album(albumID, albumName, singerID, albumType, albumImgUrl)))
-                            albumsIDAdded.push(albumID)
-                        }
-                    }
-                    /*for(let i in urlsExist) {
-                        for(let j in songsToAdd) {
-                            if(urlsExist[i]["songID"] == songsIDs[j]) {
-                                let id = urlsExist[i]["songID"]
-                                let url = songsToAdd[j][0]
-                                let positionOrDate = urlsExist[i]["songPosition"]
-                                let title = songsToAdd[j][1]
-                                let imgUrl = songsToAdd[j][2]
-                                let time = songsToAdd[j][3]
-                                let isExplicit = songsToAdd[j][4]
-                                let addedBy = "AyMusic"
-                                let cropStart = songsToAdd[j][5]
-                                let cropEnd = songsToAdd[j][6]
-                                let singerID = urlsExist[i]["singerID"]
-                                let singerName = songsToAdd[j][10]
-                                let albumName = songsToAdd[j][7]
-                                let albumID = urlsExist[i]["albumID"]
-                                this.shadowRoot.getElementById("songs").appendChild(new SongGrid(new Song(id, url, positionOrDate, title, imgUrl, time,
-                                    isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID)))
+                try {
+                    var json = JSON.parse(data)
+                    if (json.length > 0) {
+                        var songsToAdd = []
+                        var songsIDs = []
+                        for (let song of json) {
+                            let songID = null
+                            for (let songDB of urlsExist) {
+                                if (songDB["url"] == song.url) songID = songDB["songID"]
+                            }
+                            if (!songID) {
+                                songsToAdd.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
+                                song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
+                            }
+                            else {
+                                songsIDs.push(songID)
                             }
                         }
-                    }*/
-                }
-                else {
-                    /*for (let song of songsIDs.concat(nsongsID)) {
-                        if (!urlsExist.includes(song.url)) {
-                            songs.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
-                            song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
+                        let nsongsID = await Utils.apiManager.doPostRequest({
+                            act: "addMultipleSongsDB",
+                            songs: songsToAdd
+                        })
+                        if (!listAddedServerSongs) {
+                            let albumsIDAdded = []
+                            let singersIDAdded = []
+                            for (let i in nsongsID) {
+                                let id = nsongsID[i]["songID"]
+                                let url = songsToAdd[i][0]
+                                let positionOrDate = nsongsID[i]["songPosition"]
+                                let title = songsToAdd[i][1]
+                                let imgUrl = songsToAdd[i][2]
+                                let time = songsToAdd[i][3]
+                                let isExplicit = songsToAdd[i][4]
+                                let addedBy = "AyMusic"
+                                let cropStart = songsToAdd[i][5]
+                                let cropEnd = songsToAdd[i][6]
+                                let singerID = nsongsID[i]["singerID"]
+                                let singerName = songsToAdd[i][10]
+                                let singerImgUrl = songsToAdd[i][11]
+                                let albumName = songsToAdd[i][7]
+                                let albumID = nsongsID[i]["albumID"]
+                                let albumType = songsToAdd[i][8]
+                                let albumImgUrl = songsToAdd[i][9]
+                                this.shadowRoot.getElementById("songs").appendChild(new SongGrid(new Song(id, url, positionOrDate, title, imgUrl, time,
+                                    isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID)))
+                                if (!singersIDAdded.includes(singerID)) {
+                                    this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(new Singer(singerID, singerName, singerImgUrl)))
+                                    singersIDAdded.push(singerID)
+                                }
+                                if (!albumsIDAdded.includes(albumID)) {
+                                    this.shadowRoot.getElementById("albums").appendChild(new AlbumGrid(new Album(albumID, albumName, singerID, albumType, albumImgUrl)))
+                                    albumsIDAdded.push(albumID)
+                                }
+                            }
+                            /*for(let i in urlsExist) {
+                                for(let j in songsToAdd) {
+                                    if(urlsExist[i]["songID"] == songsIDs[j]) {
+                                        let id = urlsExist[i]["songID"]
+                                        let url = songsToAdd[j][0]
+                                        let positionOrDate = urlsExist[i]["songPosition"]
+                                        let title = songsToAdd[j][1]
+                                        let imgUrl = songsToAdd[j][2]
+                                        let time = songsToAdd[j][3]
+                                        let isExplicit = songsToAdd[j][4]
+                                        let addedBy = "AyMusic"
+                                        let cropStart = songsToAdd[j][5]
+                                        let cropEnd = songsToAdd[j][6]
+                                        let singerID = urlsExist[i]["singerID"]
+                                        let singerName = songsToAdd[j][10]
+                                        let albumName = songsToAdd[j][7]
+                                        let albumID = urlsExist[i]["albumID"]
+                                        this.shadowRoot.getElementById("songs").appendChild(new SongGrid(new Song(id, url, positionOrDate, title, imgUrl, time,
+                                            isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID)))
+                                    }
+                                }
+                            }*/
                         }
-                    }*/
+                        this.platformsBusy.splice(this.platformsBusy.indexOf(platform), 1)
+                    }
+                    else {
+                        /*for (let song of songsIDs.concat(nsongsID)) {
+                            if (!urlsExist.includes(song.url)) {
+                                songs.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
+                                song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
+                            }
+                        }*/
+                    }
+                }
+                catch (e) {
+                    this.platformsBusy.splice(this.platformsBusy.indexOf(platform), 1)
+                    Utils.newError("Unable to search on " + platform, e)
                 }
             }
         }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenSearching)
