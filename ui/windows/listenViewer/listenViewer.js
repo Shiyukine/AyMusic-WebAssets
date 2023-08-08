@@ -13,6 +13,7 @@ export default class ListenViewerWindow extends HTMLDivElement {
     isClosed = true;
     controller = new AbortController();
     id = Date.now()
+    goToMusicViewer = ""
 
     constructor() {
         super();
@@ -181,13 +182,13 @@ export default class ListenViewerWindow extends HTMLDivElement {
                 shadow.getElementById("music_title").onclick = () => {
                     if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
                         history.back()
-                        Utils.musicViewer.changeView("al_" + Utils.queueManager.currentSong.albumID)
+                        this.goToMusicViewer = "al_" + Utils.queueManager.currentSong.albumID
                     }
                 }
                 shadow.getElementById("music_artist").onclick = () => {
                     if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
                         history.back()
-                        Utils.musicViewer.changeView("si_" + Utils.queueManager.currentSong.singerID)
+                        this.goToMusicViewer = "si_" + Utils.queueManager.currentSong.singerID
                     }
                 }
                 new Translations(shadow.children[1])
@@ -246,6 +247,8 @@ export default class ListenViewerWindow extends HTMLDivElement {
         }
         this.style.opacity = "0%"
         this.isClosed = true
+        if (this.goToMusicViewer != "") Utils.musicViewer.changeView(this.goToMusicViewer)
+        this.goToMusicViewer = ""
     }
 
     urlsCreated = []
