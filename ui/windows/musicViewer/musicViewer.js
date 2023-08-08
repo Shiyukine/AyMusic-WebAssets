@@ -207,50 +207,52 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 }
             }
             this.loaded = true
-            if (updateHistory) window.history.pushState({ where: "musicViewer", objId: objectID }, "", "/index.html")
         }
+        if (updateHistory) window.history.pushState({ where: "musicViewer", objId: objectID }, "", "/index.html")
     }
 
     addScrollEventForList(list) {
         list.parentElement.addEventListener("scroll", async (e) => {
-            let offset = parseInt((list.parentElement.scrollTop + list.parentElement.offsetHeight) / 3200)
-            /**
-             * @type {SongGrid}
-             */
-            let el = list.children[offset * 50]
-            if (el && el.song === null && !el.changeRequested) {
-                el.changeRequested = true
-                if (this.fullObjId.startsWith("pl_")) {
-                    let result = await Utils.apiManager.doPostRequest({
-                        act: "getPlaylistSongs",
-                        playlistID: this.fullObjId.replace("pl_", ""),
-                        orderByDesc: false,
-                        offset: offset
-                    })
-                    let i = -1;
-                    for (let obj of result["songs"]) {
-                        /**
-                         * @type {SongGrid}
-                         */
-                        let grid = list.children[offset * 50 + i]
-                        grid.changeSong(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID))
-                        i++;
+            if (list.parentElement) {
+                let offset = parseInt((list.parentElement.scrollTop + list.parentElement.offsetHeight - list.offsetTop) / 3200)
+                /**
+                 * @type {SongGrid}
+                 */
+                let el = list.children[offset * 50]
+                if (el && el.song === null && !el.changeRequested) {
+                    el.changeRequested = true
+                    if (this.fullObjId.startsWith("pl_")) {
+                        let result = await Utils.apiManager.doPostRequest({
+                            act: "getPlaylistSongs",
+                            playlistID: this.fullObjId.replace("pl_", ""),
+                            orderByDesc: false,
+                            offset: offset
+                        })
+                        let i = -1;
+                        for (let obj of result["songs"]) {
+                            /**
+                             * @type {SongGrid}
+                             */
+                            let grid = list.children[offset * 50 + i]
+                            grid.changeSong(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID))
+                            i++;
+                        }
                     }
-                }
-                if (this.fullObjId.startsWith("al_")) {
-                    let result = await Utils.apiManager.doPostRequest({
-                        act: "getAlbumSongs",
-                        albumID: this.fullObjId.replace("al_", ""),
-                        offset: offset
-                    })
-                    let i = -1;
-                    for (let obj of result["songs"]) {
-                        /**
-                         * @type {SongGrid}
-                         */
-                        let grid = list.children[offset * 50 + i]
-                        grid.changeSong(new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID))
-                        i++;
+                    if (this.fullObjId.startsWith("al_")) {
+                        let result = await Utils.apiManager.doPostRequest({
+                            act: "getAlbumSongs",
+                            albumID: this.fullObjId.replace("al_", ""),
+                            offset: offset
+                        })
+                        let i = -1;
+                        for (let obj of result["songs"]) {
+                            /**
+                             * @type {SongGrid}
+                             */
+                            let grid = list.children[offset * 50 + i]
+                            grid.changeSong(new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID))
+                            i++;
+                        }
                     }
                 }
             }
