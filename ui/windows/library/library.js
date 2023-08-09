@@ -236,7 +236,8 @@ export default class LibraryWindow extends HTMLDivElement {
                             let songs = result["songs"]
                             for (let i in songs) {
                                 let obj = songs[i]
-                                songsList.appendChild(new SongGrid(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID), pl))
+                                let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID)
+                                songsList.appendChild(new SongGrid(sng, pl, !sng.canBeLoaded))
                             }
                             let total = parseInt(result["total"])
                             while (songsList.children.length < total) {
@@ -275,11 +276,11 @@ export default class LibraryWindow extends HTMLDivElement {
                     for (let i in songs) {
                         let obj = songs[i]
                         let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID)
-                        if (sng.canBeLoaded) objs.appendChild(new SongGrid(sng, Utils.libManager.userLikedPl))
-                        else counterSongNotLoaded++
+                        let grid = new SongGrid(sng, Utils.libManager.userLikedPl, !sng.canBeLoaded)
+                        objs.appendChild(grid)
                     }
                     let total = parseInt(result["total"])
-                    while (objs.children.length < total - counterSongNotLoaded) {
+                    while (objs.children.length < total) {
                         objs.appendChild(new SongGrid(null, Utils.libManager.userLikedPl))
                     }
                 }
@@ -416,7 +417,11 @@ export default class LibraryWindow extends HTMLDivElement {
 
     addScrollEventForList(listId) {
         this.shadowRoot.getElementById(listId).addEventListener("scroll", async (e) => {
-            let offset = parseInt((this.shadowRoot.getElementById(listId).scrollTop + this.shadowRoot.getElementById(listId).offsetHeight) / 3200)
+            let counterSongNotLoaded = 0
+            Array.from(this.shadowRoot.getElementById(listId).children).forEach(x => {
+                if (x.style.height == "") counterSongNotLoaded++
+            })
+            let offset = parseInt((this.shadowRoot.getElementById(listId).scrollTop + this.shadowRoot.getElementById(listId).offsetHeight) / ((this.shadowRoot.getElementById(listId).children.length - counterSongNotLoaded) * 70 - 100))
             /**
              * @type {SongGrid}
              */
@@ -429,13 +434,14 @@ export default class LibraryWindow extends HTMLDivElement {
                     orderByDesc: !(this.selectedPl && this.selectedIndex != 0),
                     offset: offset
                 })
-                let i = -1;
+                let i = 0;
                 for (let obj of result["songs"]) {
                     /**
                      * @type {SongGrid}
                      */
                     let grid = this.shadowRoot.getElementById(listId).children[offset * 50 + i]
-                    grid.changeSong(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID))
+                    let song = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID)
+                    grid.changeSong(song, !song.canBeLoaded)
                     i++;
                 }
             }

@@ -228,7 +228,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                             orderByDesc: false,
                             offset: offset
                         })
-                        let i = -1;
+                        let i = 0;
                         for (let obj of result["songs"]) {
                             /**
                              * @type {SongGrid}
@@ -244,7 +244,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                             albumID: this.fullObjId.replace("al_", ""),
                             offset: offset
                         })
-                        let i = -1;
+                        let i = 0;
                         for (let obj of result["songs"]) {
                             /**
                              * @type {SongGrid}
