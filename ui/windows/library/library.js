@@ -421,7 +421,10 @@ export default class LibraryWindow extends HTMLDivElement {
             Array.from(this.shadowRoot.getElementById(listId).children).forEach(x => {
                 if (x.style.height == "") counterSongNotLoaded++
             })
-            let offset = parseInt((this.shadowRoot.getElementById(listId).scrollTop + this.shadowRoot.getElementById(listId).offsetHeight) / 3200)
+            let slice = 3200
+            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") slice = 2900
+            let offset = parseInt((this.shadowRoot.getElementById(listId).scrollTop + this.shadowRoot.getElementById(listId).offsetHeight) / slice)
+            console.log(offset)
             /**
              * @type {SongGrid}
              */
