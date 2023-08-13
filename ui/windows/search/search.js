@@ -105,7 +105,8 @@ export default class SearchWindow extends HTMLDivElement {
             console.log("Platform token refreshed")
         }
         var searchUrl = await PlatformHandler.getPlatformUrl(platform, "SearchUrl")
-        searchUrl = searchUrl.split("%search%").join(encodeURIComponent(this.shadowRoot.getElementById("tb_search").value))
+        //searchUrl = searchUrl.split("%search%").join(encodeURIComponent(this.shadowRoot.getElementById("tb_search").value))
+        searchUrl = searchUrl.split("%search%").join(this.shadowRoot.getElementById("tb_search").value)
         if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
             searchUrl = searchUrl.split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
         }

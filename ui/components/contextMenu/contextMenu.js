@@ -10,9 +10,10 @@ export default class ContextMenu extends HTMLDivElement {
     isHidded = true;
     loaded = false;
     isSub = false;
-    beforeShow = null;
+    beforeShow = () => { };
     controller = new AbortController();
     id = Date.now()
+    curEvent = null;
 
     constructor() {
         super();
@@ -20,11 +21,42 @@ export default class ContextMenu extends HTMLDivElement {
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.4s"
         this.style.display = "flex"
+        this.style.position = "absolute"
         Import.getData("/ui/components/contextMenu/contextMenu" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
+                let event = this.curEvent;
                 new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
+                this.style.opacity = "1"
+                setTimeout(() => {
+                    let testx = event.x + this.clientWidth < document.body.clientWidth
+                    let testy = event.y + this.clientHeight < document.body.clientHeight
+                    let x = testx
+                        ? event.x
+                        : document.body.clientWidth - this.clientWidth - 10
+                    if (this.isSub) x -= this.clientWidth
+                    let y = testy
+                        ? event.y
+                        : document.body.clientHeight - this.clientHeight - 10
+                    if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                        this.style.bottom = "0"
+                        this.style.left = "0"
+                        this.style.right = "0"
+                        this.style.top = "0"
+                        this.style.zIndex = "9"
+                        this.style.backdropFilter = "blur(20px)"
+                    }
+                    else {
+                        this.style.right = !testx ? "10px" : "";
+                        this.style.bottom = !testy ? "10px" : "";
+                        //if (!this.isSub) this.style.position = "inherit"
+                        this.style.left = testx ? x + "px" : ""
+                        this.style.top = testy ? y + "px" : ""
+                    }
+                    if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") window.history.pushState({ where: "contextMenu", id: this.id }, "", "/index.html")
+                    this.loaded = true
+                }, 1);
             }
             window.addEventListener("popstate", (e) => {
                 if (e.state.where != "contextMenu") {
@@ -70,7 +102,9 @@ export default class ContextMenu extends HTMLDivElement {
      * @param {MouseEvent} event 
      */
     async show(event) {
+        this.curEvent = event;
         this.ontransitionend = () => { };
+        document.getElementById("main").appendChild(this)
         this.resetElements()
         while (this.shadowRoot.getElementById("context").firstChild) {
             this.shadowRoot.getElementById("context").removeChild(this.shadowRoot.getElementById("context").lastChild)
@@ -144,9 +178,8 @@ export default class ContextMenu extends HTMLDivElement {
             para.innerText = el.text
             div.appendChild(para)
             this.shadowRoot.getElementById("context").appendChild(div)
-            this.shadowRoot.getElementById("context").clientWidth //wait load
+            para.clientWidth //wait load
         }
-        document.getElementById("main").appendChild(this)
         this.clientWidth //wait load
         this.#showLoaded(event)
         this.isHidded = false
@@ -192,33 +225,6 @@ export default class ContextMenu extends HTMLDivElement {
     }
 
     #showLoaded = (event) => {
-        this.style.opacity = "1"
-        this.style.position = "absolute"
-        let testx = event.x + this.clientWidth < document.body.clientWidth
-        let testy = event.y + this.clientHeight < document.body.clientHeight
-        let x = testx
-            ? event.x
-            : document.body.clientWidth - this.clientWidth - 10
-        if (this.isSub) x -= this.clientWidth
-        let y = testy
-            ? event.y
-            : document.body.clientHeight - this.clientHeight - 10
-        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-            this.style.bottom = "0"
-            this.style.left = "0"
-            this.style.right = "0"
-            this.style.top = "0"
-            this.style.zIndex = "9"
-            this.style.backdropFilter = "blur(20px)"
-        }
-        else {
-            this.style.right = !testx ? "10px" : "";
-            this.style.bottom = !testy ? "10px" : "";
-            //if (!this.isSub) this.style.position = "inherit"
-            this.style.left = testx ? x + "px" : ""
-            this.style.top = testy ? y + "px" : ""
-        }
-        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") window.history.pushState({ where: "contextMenu", id: this.id }, "", "/index.html")
-        this.loaded = true
+
     }
 }

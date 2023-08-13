@@ -9,6 +9,7 @@ p {
     margin-right: 10px;
     margin-left: 10px;
     display: table;
+    white-space: nowrap;
 }
 
 img,

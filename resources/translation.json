@@ -78,9 +78,21 @@
         "{lib.addLikedSong}": "Add to liked songs",
         "{lib.addToPl}": "Add to a playlist",
         "{lib.removeFromPl}": "Remove from this playlist",
+        "{lib.openLink}": "Open link in your browser",
         "{qv.curPlaying}": "Current song",
         "{qv.next}": "Next songs",
         "{musicViewer.title}": "View something",
-        "{listenViewer.title}": "Playing now"
+        "{listenViewer.title}": "Playing now",
+        "{lv.noData}": "No data for this song :(",
+        "{lv.fetching}": "Fetching lyrics for this song.\nPlease wait...",
+        "{lv.title}": "Lyrics - May not be to the right music",
+        "{timer}": "Sleep timer",
+        "{timer.clear}": "Clear timer",
+        "{timer.5}": "5 minutes",
+        "{timer.10}": "10 minutes",
+        "{timer.15}": "15 minutes",
+        "{timer.30}": "30 minutes",
+        "{timer.45}": "45 minutes",
+        "{timer.60}": "1 hour"
     }
 }

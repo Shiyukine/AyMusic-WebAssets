@@ -3,12 +3,16 @@ import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
 import Song from "../../../class/music/song.js";
 import PlatformHandler from "../../../class/player/platformHandler.js";
+import TimerHandler from "../../../class/player/timerHandler.js";
+import TaskHandler from "../../../class/taskHandler.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
+import ContextMenu from "../../components/contextMenu/contextMenu.js";
 import InfoPanel from "../../components/infoPanel/infoPanel.js";
 import ProgressBar from "../../components/progressBar/progressBar.js";
 import ListenViewerWindow from "../listenViewer/listenViewer.js";
+import LyricsViewerWindow from "../lyricsViewer/lyricsViewer.js";
 import QueueViewerWindow from "../queueViewer/queueViewer.js";
 
 export default class ListenWindow extends HTMLDivElement {
@@ -497,6 +501,52 @@ export default class ListenWindow extends HTMLDivElement {
                             queueViewer.hide()
                         }
                     }
+                    let lyrics = new LyricsViewerWindow()
+                    //document.getElementById("main").appendChild(queueViewer)
+                    shadow.getElementById("lyrics").onclick = () => {
+                        if (lyrics.isClosed) {
+                            lyrics.show()
+                        }
+                        else {
+                            lyrics.hide()
+                        }
+                    }
+                    var cm = new ContextMenu()
+                    var cm2 = new ContextMenu()
+                    cm2.beforeShow = () => {
+                        if (TimerHandler.timers != -1) {
+                            cm2.addElement("{timer.clear}", () => {
+                                TimerHandler.clearTimers()
+                            })
+                        }
+                        cm2.addElement("{timer.5}", () => {
+                            TimerHandler.addTimer(5)
+                        })
+                        cm2.addElement("{timer.10}", () => {
+                            TimerHandler.addTimer(10)
+                        })
+                        cm2.addElement("{timer.15}", () => {
+                            TimerHandler.addTimer(15)
+                        })
+                        cm2.addElement("{timer.30}", () => {
+                            TimerHandler.addTimer(30)
+                        })
+                        cm2.addElement("{timer.45}", () => {
+                            TimerHandler.addTimer(45)
+                        })
+                        cm2.addElement("{timer.60}", () => {
+                            TimerHandler.addTimer(60)
+                        })
+                    }
+                    cm.beforeShow = () => {
+                        cm.addElement("{lib.openLink}", () => {
+                            Utils.app.remoteClient.openLink(Utils.queueManager.currentSong.url)
+                        })
+                        cm.addSubContextMenu("{timer}", cm2)
+                    }
+                    shadow.getElementById("menu").onclick = (e) => {
+                        cm.show(e)
+                    }
                 }
                 else {
                     let lvw = new ListenViewerWindow()
@@ -690,10 +740,10 @@ export default class ListenWindow extends HTMLDivElement {
         if (Utils.app.settings.gen_discordRPC) {
             if (!setNothing) {
                 let buttons = []
-                if (!Utils.player.isLocalMusic) buttons.push({ label: "Listen music", url: Utils.queueManager.currentSong.url })
+                if (!Utils.player.isLocalMusic) buttons.push({ label: "Listen this music", url: Utils.queueManager.currentSong.url })
                 if (!Utils.servURL.includes("192.168")) buttons.push({ label: "Download AyMusic", url: Utils.servURL + "projects/AyMusic.php" })
                 let plat = Utils.player.isLocalMusic ? "icon" : (await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)).toLowerCase()
-                let platName = Utils.player.isLocalMusic ? "them PC" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                let platName = Utils.player.isLocalMusic ? "their PC" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                 let out = {
                     details: "Listening " + Utils.queueManager.currentSong.title,
                     state: "By " + Utils.queueManager.currentSong.singerName,
