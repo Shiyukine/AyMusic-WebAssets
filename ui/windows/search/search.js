@@ -16,6 +16,8 @@ export default class SearchWindow extends HTMLDivElement {
     isClosed = false;
     controller = new AbortController();
     platformsBusy = []
+    elementFocus = null
+    anSearch = "";
 
     constructor() {
         super();
@@ -42,9 +44,79 @@ export default class SearchWindow extends HTMLDivElement {
                 shadow.getElementById("launchSearch").addEventListener("click", async () => {
                     this.launchSearch()
                 })
+                /*window.addEventListener("mousedown", () => {
+                    if (shadow.getElementById("suggest").style.display != "none" && !this.elementFocus) shadow.getElementById("suggest").style.display = "none"
+                })*/
+                let dontHide = false
+                shadow.getElementById("tb_search").addEventListener("blur", () => {
+                    if (!dontHide && shadow.querySelectorAll(":hover")[shadow.querySelectorAll(":hover").length - 1].tagName != "LI" && !this.elementFocus) shadow.getElementById("suggest").style.display = "none"
+                    dontHide = false
+                })
                 shadow.getElementById("tb_search").addEventListener("keydown", async (e) => {
                     if (e.key == "Enter") {
                         this.launchSearch()
+                    }
+                    else if (e.key == "ArrowDown") {
+                        if (this.elementFocus == null) {
+                            this.anSearch = shadow.getElementById("tb_search").value
+                            dontHide = true
+                            shadow.getElementById("suggest").children[0].focus()
+                        }
+                        else {
+                            this.elementFocus.nextElementSibling.focus()
+                        }
+                    }
+                    else if (e.key == "ArrowUp") {
+                        let el = this.elementFocus.previousElementSibling
+                        if (el == null) {
+                            shadow.getElementById("tb_search").value = this.anSearch
+                            this.anSearch = null
+                            if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
+                            this.elementFocus = null
+                        }
+                        else el.focus()
+                        e.preventDefault()
+                        e.stopImmediatePropagation()
+                        e.stopPropagation()
+                    }
+                    else {
+                        if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
+                        this.elementFocus = null
+                        this.anSearch = null
+                        if (shadow.getElementById("tb_search").value != "") {
+                            let data = await (await fetch("https://suggestqueries-clients6.youtube.com/complete/search?client=youtube&hl=en&gl=fr&gs_rn=64&gs_ri=youtube&ds=yt&cp=12&gs_id=2p&callback=uwu&q=" + shadow.getElementById("tb_search").value)).text()
+                            shadow.getElementById("suggest").style.display = ""
+                            data = data.replace("uwu && uwu(", "").slice(0, -1)
+                            let json = JSON.parse(data)
+                            let arr = json[1]
+                            while (this.shadowRoot.getElementById("suggest").firstChild) {
+                                this.shadowRoot.getElementById("suggest").removeChild(this.shadowRoot.getElementById("suggest").lastChild);
+                            }
+                            for (let suggest of arr) {
+                                let li = document.createElement("li")
+                                li.innerText = suggest[0]
+                                li.tabIndex = "0"
+                                li.onclick = () => {
+                                    shadow.getElementById("tb_search").value = li.innerText
+                                    shadow.getElementById("suggest").style.display = "none"
+                                    this.launchSearch()
+                                }
+                                li.onfocus = () => {
+                                    shadow.getElementById("tb_search").value = li.innerText
+                                    if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
+                                    this.elementFocus = li
+                                    shadow.getElementById("tb_search").focus()
+                                    li.classList.add("lifocused")
+                                }
+                                shadow.getElementById("suggest").appendChild(li)
+                            }
+                            if (arr.length == 0) {
+                                shadow.getElementById("suggest").style.display = "none"
+                            }
+                        }
+                        else {
+                            shadow.getElementById("suggest").style.display = "none"
+                        }
                     }
                 })
             }
@@ -52,6 +124,10 @@ export default class SearchWindow extends HTMLDivElement {
     }
 
     async launchSearch() {
+        this.anSearch = null
+        if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
+        this.elementFocus = null
+        this.shadowRoot.getElementById("suggest").style.display = "none"
         if (this.platformsBusy.length == 0) {
             while (this.shadowRoot.getElementById("songs").children.length > 0) {
                 this.shadowRoot.getElementById("songs").removeChild(this.shadowRoot.getElementById("songs").children[0])

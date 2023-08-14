@@ -39,9 +39,6 @@ export default class LyricsViewerWindow extends HTMLDivElement {
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
-                Utils.queueManager.onQueueChanged(() => {
-                    this.refresh()
-                })
                 Utils.player.onSongChange(() => {
                     this.refresh()
                 })
@@ -113,7 +110,7 @@ export default class LyricsViewerWindow extends HTMLDivElement {
                 }
             })
             /**/
-            TaskHandler.addTask("https://www.google.com/search?hl=en&q=" + (Utils.queueManager.currentSong.title.split("feat")[0] + " " + Utils.queueManager.currentSong.singerName.split(",")[0] + " lyrics").split(" ").join("+"), script, false, true, false, async (data) => {
+            TaskHandler.addTask("https://www.google.com/search?hl=en&q=" + (Utils.queueManager.currentSong.title.split("(")[0] + " " + Utils.queueManager.currentSong.singerName.split(",")[0].split("(")[0] + " lyrics").split(" ").join("+"), script, false, true, false, async (data) => {
                 this.shadowRoot.getElementById("lyrics").innerText = data
                 this.refreshing = false
                 /*if (data != "{lv.noData}") {

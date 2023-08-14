@@ -14,7 +14,7 @@
                                 <option value="icon">All servers</option>
                             </select>
                         </div>
-                        <input type="text" name="search" id="tb_search">
+                        <input type="text" name="search" id="tb_search" tabindex="0">
                         <button id="launchSearch">
                             <svg id="changeState" viewBox="0 0 24 24">
                                 <path
@@ -33,6 +33,8 @@
                         <h3>{playlists}</h3>
                         <div id="playlists" class="lists"></div>
                     </div>
+                    <ul id="suggest" style="display: none;">
+                    </ul>
                 </div>
             </div>
         </div>

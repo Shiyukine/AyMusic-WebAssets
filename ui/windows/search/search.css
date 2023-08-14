@@ -299,3 +299,34 @@ button:disabled {
     width: 0px;
     height: 0px;
 }
+
+#suggest {
+    position: absolute;
+    top: 53px;
+    left: 20px;
+    right: 20px;
+    width: calc(100% - 80px);
+    background-color: #303030;
+    border-radius: 15px;
+    max-height: 250px;
+    padding: 10px;
+    padding-top: 3px;
+    list-style-type: none;
+    overflow: auto;
+}
+
+#suggest>li {
+    color: white;
+    font-family: "Quicksand";
+    margin: 5px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#suggest>li:hover,
+#suggest>li:focus,
+#suggest>li:active,
+.lifocused {
+    background-color: #464646;
+}
