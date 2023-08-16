@@ -78,7 +78,7 @@ export default class HomeWindow extends HTMLDivElement {
             }
             if (obj.id.includes("si_")) {
                 let id = obj.id.replace("si_", "")
-                list.appendChild(new SingerGrid(new Singer(id, obj.name, obj.imgUrl, obj.dateAdded)))
+                list.appendChild(new SingerGrid(new Singer(id, obj.name, obj.imgUrl, obj.dateAdded, obj.aliasName)))
             }
             if (obj.id.includes("pl_")) {
                 let id = obj.id.replace("pl_", "")

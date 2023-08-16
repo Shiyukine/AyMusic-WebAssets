@@ -282,10 +282,24 @@ export default class Player {
 
     async getCurrentTime() {
         if (this.isLocalMusic) {
+            if (this.audioElement.currentTime * 1000 < Utils.queueManager.currentSong.cropStart) {
+                this.seek(Utils.queueManager.currentSong.cropStart)
+            }
+            if (Utils.queueManager.currentSong.cropEnd != -1 && this.audioElement.currentTime * 1000 > Utils.queueManager.currentSong.cropEnd) {
+                this.seek(await this.getDuration())
+            }
             return this.audioElement.currentTime * 1000
         }
         else {
             let result = await TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "CurrentTime"))
+            if (result) {
+                if (result < Utils.queueManager.currentSong.cropStart) {
+                    this.seek(Utils.queueManager.currentSong.cropStart)
+                }
+                if (Utils.queueManager.currentSong.cropEnd != -1 && result > Utils.queueManager.currentSong.cropEnd) {
+                    this.seek(await this.getDuration())
+                }
+            }
             return result
         }
     }

@@ -79,6 +79,7 @@
         "{lib.addToPl}": "Add to a playlist",
         "{lib.removeFromPl}": "Remove from this playlist",
         "{lib.openLink}": "Open link in your browser",
+        "{lib.modifySong}": "Modify this song",
         "{qv.curPlaying}": "Current song",
         "{qv.next}": "Next songs",
         "{musicViewer.title}": "View something",
@@ -93,6 +94,19 @@
         "{timer.15}": "15 minutes",
         "{timer.30}": "30 minutes",
         "{timer.45}": "45 minutes",
-        "{timer.60}": "1 hour"
+        "{timer.60}": "1 hour",
+        "{mv.modifySong}": "Modify a song",
+        "{mv.modifySongHelp}": "You can modify a song here.\nIf Alias title setting is filled, the alias title of this song will be used to display that song.\nStart/end song at enables you to skip a part of this song (e.g. remove ads).",
+        "{mv.usePos}": "Use this position",
+        "{mv.resetPos}": "Reset",
+        "{mv.cancel}": "Cancel",
+        "{mv.save}": "Save",
+        "{mv.modifySinger}": "Modify an artist",
+        "{mv.modifySingerHelp}": "You can modify an artist here.\nIf Alias name setting is filled, the alias name of this artist will be used to display that artist.",
+        "{mv.artist}": "Alias name",
+        "{mv.title}": "Alias title",
+        "{mv.cropStart}": "Start song at",
+        "{mv.cropEnd}": "End song at",
+        "{mv.explicit}": "Is this song explicit?"
     }
 }

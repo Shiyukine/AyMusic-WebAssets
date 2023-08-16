@@ -60,8 +60,8 @@ export default class SongGrid extends HTMLDivElement {
                     this.shadowRoot.getElementById("cssImport").onload = async () => {
                         //new Translations(shadow.children[1])
                         this.song = song;
-                        this.shadowRoot.getElementById("title").innerText = this.song.title
-                        this.shadowRoot.getElementById("artist").innerText = this.song.singerName
+                        this.shadowRoot.getElementById("title").innerText = this.song.aliasTitle != null ? song.aliasTitle : this.song.title
+                        this.shadowRoot.getElementById("artist").innerText = this.song.aliasSingerName != null ? song.aliasSingerName : this.song.singerName
                         this.shadowRoot.getElementById("time").innerText = Utils.msToTime(this.song.time)
                         let plat = song.imgUrl == "localImg" ? "icon" : await PlatformHandler.getPlatformBySongUrl(song.url)
                         plat = plat.toLowerCase()
@@ -148,6 +148,9 @@ export default class SongGrid extends HTMLDivElement {
                                 })
                                 cm.addElement("{lib.openLink}", () => {
                                     Utils.app.remoteClient.openLink(song.url)
+                                })
+                                cm.addElement("{lib.modifySong}", () => {
+                                    Utils.musicViewer.changeView("so_" + song.id)
                                 })
                             }
                             if (this.object != null && this.object.id != Utils.libManager.userInfo.likedSongsPlId && Utils.libManager.userPlaylists.includes(this.object)) {

@@ -96,8 +96,8 @@ export default class LyricsViewerWindow extends HTMLDivElement {
 
     async refresh() {
         if (!this.isClosed && !this.refreshing && (this.currentArtistName != Utils.queueManager.currentSong.singerName || this.currentTitle != Utils.queueManager.currentSong.title)) {
-            this.currentArtistName = Utils.queueManager.currentSong.singerName
-            this.currentTitle = Utils.queueManager.currentSong.title
+            this.currentArtistName = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+            this.currentTitle = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
             this.refreshing = true
             this.shadowRoot.getElementById("lyrics").innerText = '{lv.fetching}'
             console.log("Refreshing lyricsViewer")
