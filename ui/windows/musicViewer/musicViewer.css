@@ -269,6 +269,10 @@ button:disabled {
     height: 37px;
 }
 
+.editor div.last {
+    border-bottom: none;
+}
+
 .editor div>p {
     margin-top: 9px;
     margin-right: 20px;

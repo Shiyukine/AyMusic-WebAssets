@@ -107,6 +107,10 @@
         "{mv.title}": "Alias title",
         "{mv.cropStart}": "Start song at",
         "{mv.cropEnd}": "End song at",
-        "{mv.explicit}": "Is this song explicit?"
+        "{mv.explicit}": "Is this song explicit?",
+        "{mv.endOfSong}": "End of song",
+        "{settings.aketsukyWebsite}": "Our website",
+        "{settings.privacyPolicy}": "Privacy Policy",
+        "{settings.tos}": "Terms of Service"
     }
 }

@@ -56,6 +56,15 @@ export default class SettingsWindow extends HTMLDivElement {
                         Utils.newError("Unable to get translations", e)
                     }
                 });
+                shadow.getElementById("about_web").onclick = () => {
+                    Utils.app.remoteClient.openLink(Utils.servURL)
+                }
+                shadow.getElementById("about_pp").onclick = () => {
+                    Utils.app.remoteClient.openLink(Utils.servURL + "privacy.php")
+                }
+                shadow.getElementById("about_tos").onclick = () => {
+                    Utils.app.remoteClient.openLink(Utils.servURL + "cgu.php")
+                }
                 shadow.querySelectorAll("*").forEach((x) => {
                     if (typeof Utils.app.settings[x.id] !== "undefined") {
                         if (x.tagName == "INPUT" && x.max == "1") {
