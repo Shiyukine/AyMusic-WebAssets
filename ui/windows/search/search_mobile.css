@@ -298,7 +298,7 @@ button:disabled {
     top: 53px;
     left: 20px;
     right: 20px;
-    width: calc(100% - 80px);
+    width: calc(100% - 60px);
     background-color: #303030;
     border-radius: 15px;
     max-height: 250px;

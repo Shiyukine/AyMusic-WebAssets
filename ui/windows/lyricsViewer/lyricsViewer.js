@@ -147,7 +147,7 @@ export default class LyricsViewerWindow extends HTMLDivElement {
                             }
                         })
                     }*/
-            })
+            }, false)
             console.log("lyricsViewer refreshed")
         }
     }

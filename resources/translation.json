@@ -98,6 +98,7 @@
         "{mv.modifySong}": "Modify a song",
         "{mv.modifySongHelp}": "You can modify a song here.\nIf Alias title setting is filled, the alias title of this song will be used to display that song.\nStart/end song at enables you to skip a part of this song (e.g. remove ads).",
         "{mv.usePos}": "Use this position",
+        "{mv.usePosMini}": "Use this pos.",
         "{mv.resetPos}": "Reset",
         "{mv.cancel}": "Cancel",
         "{mv.save}": "Save",

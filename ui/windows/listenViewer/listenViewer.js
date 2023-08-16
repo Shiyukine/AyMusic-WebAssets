@@ -3,10 +3,13 @@ import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
 import Song from "../../../class/music/song.js";
 import PlatformHandler from "../../../class/player/platformHandler.js";
+import TimerHandler from "../../../class/player/timerHandler.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
+import ContextMenu from "../../components/contextMenu/contextMenu.js";
 import ProgressBar from "../../components/progressBar/progressBar.js";
+import LyricsViewerWindow from "../lyricsViewer/lyricsViewer.js";
 import QueueViewerWindow from "../queueViewer/queueViewer.js";
 
 export default class ListenViewerWindow extends HTMLDivElement {
@@ -190,6 +193,56 @@ export default class ListenViewerWindow extends HTMLDivElement {
                         history.back()
                         this.goToMusicViewer = "si_" + Utils.queueManager.currentSong.singerID
                     }
+                }
+                let lyrics = new LyricsViewerWindow()
+                //document.getElementById("main").appendChild(queueViewer)
+                shadow.getElementById("lyrics").onclick = () => {
+                    if (lyrics.isClosed) {
+                        lyrics.show()
+                    }
+                    else {
+                        lyrics.hide()
+                    }
+                }
+                var cm = new ContextMenu()
+                var cm2 = new ContextMenu()
+                cm2.beforeShow = () => {
+                    if (TimerHandler.timers != -1) {
+                        cm2.addElement("{timer.clear}", () => {
+                            TimerHandler.clearTimers()
+                        })
+                    }
+                    cm2.addElement("{timer.5}", () => {
+                        TimerHandler.addTimer(5)
+                    })
+                    cm2.addElement("{timer.10}", () => {
+                        TimerHandler.addTimer(10)
+                    })
+                    cm2.addElement("{timer.15}", () => {
+                        TimerHandler.addTimer(15)
+                    })
+                    cm2.addElement("{timer.30}", () => {
+                        TimerHandler.addTimer(30)
+                    })
+                    cm2.addElement("{timer.45}", () => {
+                        TimerHandler.addTimer(45)
+                    })
+                    cm2.addElement("{timer.60}", () => {
+                        TimerHandler.addTimer(60)
+                    })
+                }
+                cm.beforeShow = () => {
+                    cm.addElement("{lib.openLink}", () => {
+                        Utils.app.remoteClient.openLink(Utils.queueManager.currentSong.url)
+                    })
+                    cm.addElement("{lib.modifySong}", () => {
+                        history.back()
+                        this.goToMusicViewer = "so_" + Utils.queueManager.currentSong.id
+                    })
+                    cm.addSubContextMenu("{timer}", cm2)
+                }
+                shadow.getElementById("menu").onclick = (e) => {
+                    cm.show(e)
                 }
                 new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])

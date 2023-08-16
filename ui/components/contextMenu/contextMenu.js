@@ -14,6 +14,8 @@ export default class ContextMenu extends HTMLDivElement {
     controller = new AbortController();
     id = Date.now()
     curEvent = null;
+    dontBack = false;
+    onClickGlobal = () => { }
 
     constructor() {
         super();
@@ -54,8 +56,6 @@ export default class ContextMenu extends HTMLDivElement {
                         this.style.left = testx ? x + "px" : ""
                         this.style.top = testy ? y + "px" : ""
                     }
-                    if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") window.history.pushState({ where: "contextMenu", id: this.id }, "", "/index.html")
-                    this.loaded = true
                 }, 1);
             }
             window.addEventListener("popstate", (e) => {
@@ -78,7 +78,9 @@ export default class ContextMenu extends HTMLDivElement {
             }
             else {
                 this.shadowRoot.getElementById("main").getRootNode().host.addEventListener("click", (e) => {
-                    history.back()
+                    if (!this.dontBack)
+                        history.back()
+                    this.dontBack = false
                 })
             }
         })
@@ -115,8 +117,18 @@ export default class ContextMenu extends HTMLDivElement {
             let div = document.createElement("div")
             if (!el.isSub) {
                 div.onclick = (e) => {
-                    if (typeof el.onclick === "function")
-                        el.onclick(e)
+                    if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                        if (typeof el.onclick === "function") {
+                            this.onClickGlobal = () => {
+                                el.onclick(e)
+                                this.onClickGlobal = () => { }
+                            }
+                        }
+                    }
+                    else {
+                        if (typeof el.onclick === "function")
+                            el.onclick(e)
+                    }
                     if (!el.isSub) this.hide();
                 }
                 if (el.icon) {
@@ -131,6 +143,7 @@ export default class ContextMenu extends HTMLDivElement {
                 let context = el.contextMenu
                 if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                     div.onclick = () => {
+                        this.dontBack = true
                         if (!this.isHidded) {
                             let rect = this.getBoundingClientRect();
                             context.show(new MouseEvent("contextmenu", {
@@ -191,6 +204,9 @@ export default class ContextMenu extends HTMLDivElement {
 
     hide(hideSubs = true) {
         this.ontransitionend = () => {
+            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                this.onClickGlobal()
+            }
             document.getElementById("main").removeChild(this)
             this.#eventEl.dispatchEvent(new CustomEvent("hidden"));
         };
@@ -225,6 +241,7 @@ export default class ContextMenu extends HTMLDivElement {
     }
 
     #showLoaded = (event) => {
-
+        if ((Utils.app.platform == "Android" || Utils.app.platform == "iOS") && !this.isSub) window.history.pushState({ where: "contextMenu", id: this.id }, "", "/index.html")
+        this.loaded = true
     }
 }

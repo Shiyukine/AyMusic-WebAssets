@@ -305,3 +305,13 @@ button:disabled {
 .grid>button {
     margin-top: 10px;
 }
+
+.link {
+    color: #67b7fd;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.link:hover {
+    text-decoration: underline;
+}

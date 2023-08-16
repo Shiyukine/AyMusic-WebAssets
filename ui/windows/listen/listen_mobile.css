@@ -40,7 +40,7 @@ img {
 
 .left_container {
     position: relative;
-    margin: 2px 0;
+    margin: 0px 0;
     display: flow-root;
 }
 
@@ -87,6 +87,7 @@ p {
 .divMask {
     -webkit-mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
     mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
+    height: 19px;
 }
 
 .middle p {

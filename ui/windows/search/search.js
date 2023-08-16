@@ -186,7 +186,7 @@ export default class SearchWindow extends HTMLDivElement {
         if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
             searchUrl = searchUrl.split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
         }
-        //searchUrl = encodeURI(searchUrl)
+        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") searchUrl = encodeURI(searchUrl)
         console.log("Search url: " + searchUrl)
         var urlsExist = []
         urlsExist = await Utils.apiManager.doPostRequest({

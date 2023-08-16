@@ -113,7 +113,7 @@ export default class Player {
                 if (play) url += "&autoplay=1"
                 url += "&volume=" + this.volume
             }
-            var wtId = TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => { })
+            var wtId = TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => { }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying)
             this.currentUrl = url
         }
         this.currentSongUrl = song.url
@@ -297,7 +297,7 @@ export default class Player {
                     this.seek(Utils.queueManager.currentSong.cropStart)
                 }
                 if (Utils.queueManager.currentSong.cropEnd != -1 && result > Utils.queueManager.currentSong.cropEnd) {
-                    this.seek(await this.getDuration())
+                    this.#eventEl.dispatchEvent(new CustomEvent("ended"));
                 }
             }
             return result
