@@ -10,6 +10,7 @@ import Import from "./class/import.js";
 import LocalMusicHandler from "./class/utils/localMusicHandler.js";
 import ThemeColor from "./class/themeColor.js";
 import MusicViewerWindow from "./ui/windows/musicViewer/musicViewer.js";
+import TaskHandler from "./class/taskHandler.js";
 
 async function main() {
     window.app = Utils.app;
@@ -18,6 +19,18 @@ async function main() {
     Import.loadCustomElements()
     Utils.pathsData = JSON.parse(await Import.getData("./resources/paths.json"))
     //
+    window.listeners.changeDocumentVisibility = (visi) => {
+        window.documentVisible = visi
+        if (visi) {
+            document.documentElement.style.display = ""
+            document.documentElement.style.visibility = ""
+        }
+        else {
+            document.documentElement.style.display = "none"
+            document.documentElement.style.visibility = "collapse"
+        }
+        TaskHandler.executeJs(Utils.player.currentUrl, "() => { changeDocumentVisibility(" + visi + ");}")
+    }
     Utils.app.loaded = async function () {
         if (!window.loaded) {
             window.loaded = true;

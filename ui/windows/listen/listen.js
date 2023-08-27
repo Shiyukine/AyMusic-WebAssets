@@ -24,6 +24,7 @@ export default class ListenWindow extends HTMLDivElement {
             { src: null, sizes: '512x512', type: 'image/png' },
         ]
     }
+    needRefreshTime = -1
 
     constructor() {
         super();
@@ -254,6 +255,11 @@ export default class ListenWindow extends HTMLDivElement {
                         await Utils.player.seek(Utils.libManager.userInfo.curTime)
                         firstPlay = false
                     }
+                    if (this.needRefreshTime != -1) {
+                        await Utils.player.seek(this.needRefreshTime * 1000)
+                        this.needRefreshTime = -1
+                        Utils.player.play()
+                    }
                 })
                 Utils.player.onTimeUpdate(async () => {
                     let cur = await Utils.player.getCurrentTime()
@@ -292,17 +298,19 @@ export default class ListenWindow extends HTMLDivElement {
                 })
                 let lastTime = /*await Utils.player.getCurrentTime()*/0;
                 setInterval(async () => {
-                    let cur = await Utils.player.getCurrentTime()
-                    if (cur != lastTime && await Utils.player.getDuration()) {
-                        Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
-                        Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
-                        await Utils.apiManager.doPostRequest({
-                            act: "updateUserInfo",
-                            curTime: cur,
-                            curMusic: Utils.libManager.userInfo.curMusic,
-                            curObject: Utils.libManager.userInfo.curObject
-                        })
-                        lastTime = cur
+                    if (document.visibilityState == "visible") {
+                        let cur = await Utils.player.getCurrentTime()
+                        if (cur != lastTime && await Utils.player.getDuration()) {
+                            Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
+                            Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
+                            await Utils.apiManager.doPostRequest({
+                                act: "updateUserInfo",
+                                curTime: cur,
+                                curMusic: Utils.libManager.userInfo.curMusic,
+                                curObject: Utils.libManager.userInfo.curObject
+                            })
+                            lastTime = cur
+                        }
                     }
                 }, 15000)
                 let mouseDownPb = false;
@@ -463,6 +471,10 @@ export default class ListenWindow extends HTMLDivElement {
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 })
                 Utils.player.onSkipAds(async () => {
+                    Utils.player.playSong(Utils.queueManager.currentSong)
+                });
+                Utils.player.onNeedRefresh(async () => {
+                    this.needRefreshTime = await Utils.player.getCurrentTime()
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 });
                 Utils.player.onNotConnected(async () => {
@@ -644,7 +656,13 @@ export default class ListenWindow extends HTMLDivElement {
                 if (Utils.app.getSetting("mute")) Utils.player.setMute(true)
                 window.listeners.player.previous = () => Utils.player.previous()
                 window.listeners.player.next = () => Utils.player.next()
-                window.listeners.player.play = () => Utils.player.play()
+                let audioPrio = false;
+                window.listeners.player.play = () => {
+                    Utils.player.play()
+                }
+                window.listeners.player.setVolume = (vol) => {
+                    Utils.player.changeVolume(vol)
+                }
                 window.listeners.player.pause = () => Utils.player.pause()
                 window.listeners.player.seek = (time) => Utils.player.seek(time)
                 window.addEventListener("message", (e) => {

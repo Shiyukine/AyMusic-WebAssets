@@ -173,6 +173,10 @@ export default class Player {
         this.#eventEl.addEventListener("skipads", callback)
     }
 
+    onNeedRefresh(callback) {
+        this.#eventEl.addEventListener("needrefresh", callback)
+    }
+
     async play() {
         if (this.isLocalMusic) {
             this.audioElement.play()

@@ -11,16 +11,19 @@
         var app = null;
         var newError = () => { };
         var loaded = false;
+        var documentVisible = true;
         var listeners = {
             player: {
                 pause: () => { },
                 play: () => { },
                 next: () => { },
                 previous: () => { },
-                seek: (time) => { }
+                seek: (time) => { },
+                setVolume: (vol) => { }
             },
             showListenViewerWindow: () => { },
-            filePickerCallback: (urls) => { }
+            filePickerCallback: (urls) => { },
+            changeDocumentVisibility: (visible) => { }
         }
     </script>
     <script src="/plugins/jsmediatags.js"></script>

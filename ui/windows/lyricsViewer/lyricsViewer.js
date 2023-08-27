@@ -109,8 +109,14 @@ export default class LyricsViewerWindow extends HTMLDivElement {
                     "cache-control": "no-cache"
                 }
             })
+            let title = Utils.queueManager.currentSong.title.split("(")[0]
+            let artist = Utils.queueManager.currentSong.singerName.split(",")[0].split("(")[0]
+            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                title = encodeURIComponent(title)
+                artist = encodeURIComponent(artist)
+            }
             /**/
-            TaskHandler.addTask("https://www.google.com/search?hl=en&q=" + (Utils.queueManager.currentSong.title.split("(")[0] + " " + Utils.queueManager.currentSong.singerName.split(",")[0].split("(")[0] + " lyrics").split(" ").join("+"), script, false, true, false, async (data) => {
+            TaskHandler.addTask("https://www.google.com/search?hl=en&q=" + (title + " " + artist + " lyrics").split(" ").join("+"), script, false, true, false, async (data) => {
                 this.shadowRoot.getElementById("lyrics").innerText = data
                 this.refreshing = false
                 /*if (data != "{lv.noData}") {
