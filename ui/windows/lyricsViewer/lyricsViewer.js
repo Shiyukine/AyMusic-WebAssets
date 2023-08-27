@@ -109,8 +109,10 @@ export default class LyricsViewerWindow extends HTMLDivElement {
                     "cache-control": "no-cache"
                 }
             })
-            let title = Utils.queueManager.currentSong.title.split("(")[0]
-            let artist = Utils.queueManager.currentSong.singerName.split(",")[0].split("(")[0]
+            let title = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
+            let artist = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+            title = title.split("(")[0]
+            artist = artist.split(",")[0].split("(")[0]
             if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                 title = encodeURIComponent(title)
                 artist = encodeURIComponent(artist)

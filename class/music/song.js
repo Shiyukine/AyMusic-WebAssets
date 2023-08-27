@@ -20,9 +20,10 @@ export default class Song {
     albumID = ""
     aliasTitle = ""
     aliasSingerName = ""
+    aliasSongSingerName = ""
     canBeLoaded = true
 
-    constructor(id, url, positionOrDate, title, imgUrl, time, isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, aliasTitle = "", aliasSingerName = "") {
+    constructor(id, url, positionOrDate, title, imgUrl, time, isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, aliasTitle = "", aliasSongSingerName = "", aliasSingerName = "") {
         this.id = id;
         this.url = url;
         this.positionOrDate = positionOrDate;
@@ -41,6 +42,9 @@ export default class Song {
         if (aliasTitle == "") this.aliasTitle = null
         this.aliasSingerName = aliasSingerName;
         if (aliasSingerName == "") this.aliasSingerName = null
+        this.aliasSongSingerName = aliasSongSingerName;
+        if (aliasSongSingerName == "") this.aliasSongSingerName = null
+        if (this.aliasSongSingerName != null) this.aliasSingerName = this.aliasSongSingerName;
         if (this.imgUrl === "")
             this.imgUrl = '/resources/icon.ico';
         if (this.imgUrl === "localImg") {

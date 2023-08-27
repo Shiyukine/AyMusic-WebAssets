@@ -51,7 +51,7 @@ export default class App {
                     firstOpen: true
                 }
                 this.platform = platform;
-                this.versionName = versionName;
+                this.versionName = versionName + (!isRelease ? "+debug" : "");
                 this.versionId = versionId;
                 this.remoteClient = remoteClient;
                 this.isRelease = isRelease;

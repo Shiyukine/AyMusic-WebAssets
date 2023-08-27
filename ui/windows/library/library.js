@@ -236,7 +236,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             let songs = result["songs"]
                             for (let i in songs) {
                                 let obj = songs[i]
-                                let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSingerName)
+                                let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                                 songsList.appendChild(new SongGrid(sng, pl, !sng.canBeLoaded))
                             }
                             let total = parseInt(result["total"])
@@ -275,7 +275,7 @@ export default class LibraryWindow extends HTMLDivElement {
                     let counterSongNotLoaded = 0
                     for (let i in songs) {
                         let obj = songs[i]
-                        let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSingerName)
+                        let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                         let grid = new SongGrid(sng, Utils.libManager.userLikedPl, !sng.canBeLoaded)
                         objs.appendChild(grid)
                     }
@@ -442,7 +442,7 @@ export default class LibraryWindow extends HTMLDivElement {
                      * @type {SongGrid}
                      */
                     let grid = this.shadowRoot.getElementById(listId).children[offset * 50 + i]
-                    let song = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSingerName)
+                    let song = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                     grid.changeSong(song, !song.canBeLoaded)
                     i++;
                 }

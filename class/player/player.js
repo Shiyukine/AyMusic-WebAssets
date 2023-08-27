@@ -31,6 +31,12 @@ export default class Player {
                     //TaskHandler.executeJs(url, "async () => { navigator.mediaSession.metadata = " + navigator.mediaSession.metadata + " }")
                 }
             }
+            if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcbdata") {
+                this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
+                if (e.data.cb == "timeupdate") {
+                    this.checkCropSong(e.data.data)
+                }
+            }
         })
     }
 
@@ -59,24 +65,35 @@ export default class Player {
             this.audioElement = new Audio()
             this.audioElement.onplay = () => {
                 this.#eventEl.dispatchEvent(new CustomEvent("play"));
+                if (document.visibilityState == "hidden")
+                    this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
             }
             this.audioElement.onpause = () => {
                 this.#eventEl.dispatchEvent(new CustomEvent("pause"));
+                if (document.visibilityState == "hidden")
+                    this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
             }
             this.audioElement.ontimeupdate = () => {
-                this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
+                if (document.visibilityState == "visible") {
+                    this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
+                }
+                this.checkCropSong(this.audioElement.currentTime)
             }
             this.audioElement.onloadedmetadata = () => {
                 this.#eventEl.dispatchEvent(new CustomEvent("loadedmetadata"));
                 this.audioElement.volume = this.volume / 100;
                 if (play) this.play()
                 else this.pause()
+                if (document.visibilityState == "hidden")
+                    this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
             }
             this.audioElement.onvolumechange = () => {
                 this.#eventEl.dispatchEvent(new CustomEvent("volumechange"));
             }
             this.audioElement.onended = () => {
                 this.#eventEl.dispatchEvent(new CustomEvent("ended"));
+                if (document.visibilityState == "hidden")
+                    this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
             }
             if (Utils.app.platform == "Android") {
                 var data = await (await fetch(song.url)).blob()
@@ -286,25 +303,32 @@ export default class Player {
 
     async getCurrentTime() {
         if (this.isLocalMusic) {
-            if (this.audioElement.currentTime * 1000 < Utils.queueManager.currentSong.cropStart) {
-                this.seek(Utils.queueManager.currentSong.cropStart)
-            }
-            if (Utils.queueManager.currentSong.cropEnd != -1 && this.audioElement.currentTime * 1000 > Utils.queueManager.currentSong.cropEnd) {
-                this.seek(await this.getDuration())
-            }
             return this.audioElement.currentTime * 1000
         }
         else {
             let result = await TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "CurrentTime"))
-            if (result) {
-                if (result < Utils.queueManager.currentSong.cropStart) {
+            return result
+        }
+    }
+
+    async checkCropSong(time) {
+        if (this.isLocalMusic) {
+            if (time * 1000 < Utils.queueManager.currentSong.cropStart) {
+                this.seek(Utils.queueManager.currentSong.cropStart)
+            }
+            if (Utils.queueManager.currentSong.cropEnd != -1 && time * 1000 > Utils.queueManager.currentSong.cropEnd) {
+                this.seek(await this.getDuration())
+            }
+        }
+        else {
+            if (time) {
+                if (time < Utils.queueManager.currentSong.cropStart) {
                     this.seek(Utils.queueManager.currentSong.cropStart)
                 }
-                if (Utils.queueManager.currentSong.cropEnd != -1 && result > Utils.queueManager.currentSong.cropEnd) {
+                if (Utils.queueManager.currentSong.cropEnd != -1 && time > Utils.queueManager.currentSong.cropEnd) {
                     this.#eventEl.dispatchEvent(new CustomEvent("ended"));
                 }
             }
-            return result
         }
     }
 

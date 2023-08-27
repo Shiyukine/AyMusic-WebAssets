@@ -623,7 +623,7 @@ export default class ListenWindow extends HTMLDivElement {
                             act: "getSongInfo",
                             id: Utils.libManager.userInfo.curMusic
                         })
-                        await Utils.queueManager.changeQueue(new Song(obj.songID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSingerName), "", false)
+                        await Utils.queueManager.changeQueue(new Song(obj.songID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName), "", false)
                     }
                     else if (Utils.libManager.userInfo.curObject.startsWith("pl_")) {
                         let result = null;
