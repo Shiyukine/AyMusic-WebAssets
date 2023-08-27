@@ -237,5 +237,8 @@ export default class SongGrid extends HTMLDivElement {
                 })
             }
         }
+        else {
+            this.style.height = ""
+        }
     }
 }
