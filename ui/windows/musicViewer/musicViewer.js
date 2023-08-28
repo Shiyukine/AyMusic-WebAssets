@@ -134,7 +134,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     Utils.showMiniError("mv_err", "Failed to change info", true)
                 }
                 shadow.getElementById("edit").style.display = "none"
-                Utils.showMiniError("mv_success", "Info changed!", true, "rgb(0, 204, 255)", "#000")
+                Utils.showMiniError("mv_success", "Success! Please change the current song to refresh.", true, "rgb(0, 204, 255)", "#000")
             }
             shadow.querySelectorAll("*").forEach((x) => {
                 if (x.tagName == "INPUT" && x.max == "1") {

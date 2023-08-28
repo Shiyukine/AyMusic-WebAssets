@@ -96,7 +96,7 @@
         "{timer.45}": "45 minutes",
         "{timer.60}": "1 hour",
         "{mv.modifySong}": "Modify a song",
-        "{mv.modifySongHelp}": "You can modify a song here.\nIf Alias title setting is filled, the alias title of this song will be used to display that song.\nStart/end song at enables you to skip a part of this song (e.g. remove ads).",
+        "{mv.modifySongHelp}": "You can modify a song here.\nIf Alias song title setting is filled, the alias will be used to display the title of that song.\nIf Alias artist name setting is filled, the alias will be used to display the artist of that song.\nStart/end song at enables you to skip a part of this song (e.g. remove ads).",
         "{mv.usePos}": "Use this position",
         "{mv.usePosMini}": "Use this pos.",
         "{mv.resetPos}": "Reset",

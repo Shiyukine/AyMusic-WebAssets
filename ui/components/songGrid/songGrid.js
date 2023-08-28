@@ -159,7 +159,7 @@ export default class SongGrid extends HTMLDivElement {
                                     playlistID: this.object.id,
                                     orderByDesc: false
                                 })
-                                if (result.includes(song.id)) {
+                                if (result.includes("so_" + song.id)) {
                                     cm.addElement("{lib.removeFromPl}", () => {
                                         Utils.libManager.removeSongFromAPlaylist(this.object.id, "so_" + song.id)
                                         //this.parentElement.removeChild(this)

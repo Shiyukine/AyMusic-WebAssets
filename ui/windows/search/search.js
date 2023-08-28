@@ -182,7 +182,9 @@ export default class SearchWindow extends HTMLDivElement {
         }
         var searchUrl = await PlatformHandler.getPlatformUrl(platform, "SearchUrl")
         //searchUrl = searchUrl.split("%search%").join(encodeURIComponent(this.shadowRoot.getElementById("tb_search").value))
-        searchUrl = searchUrl.split("%search%").join(this.shadowRoot.getElementById("tb_search").value)
+        let value = this.shadowRoot.getElementById("tb_search").value
+        if (value.endsWith(" ")) value = value.slice(0, -1)
+        searchUrl = searchUrl.split("%search%").join(value)
         if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
             searchUrl = searchUrl.split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
         }
