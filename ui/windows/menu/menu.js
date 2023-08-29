@@ -103,6 +103,7 @@ export default class MenuWindow extends HTMLDivElement {
                 awindow = new SettingsWindow()
             }
             awindow.classList.add("aWindow")
+            if (Utils.app.platform == "Windows") awindow.classList.add("windows")
             if (updateHistory) window.history.pushState({ where: "menu", window: newWindow, menu: menuId }, "", "/index.html")
             if (this.anWindow) {
                 let thisW = this.anWindow.win

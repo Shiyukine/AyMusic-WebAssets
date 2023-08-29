@@ -210,9 +210,12 @@ svg.rotate:hover {
     height: 0px;
 }
 
-.windowTopBar {
+.colorTopBar {
     backdrop-filter: blur(10px);
     background-color: rgba(74, 74, 74, 0.73);
+}
+
+.windowTopBar {
     z-index: 999;
     height: 35px;
     position: absolute;
@@ -277,12 +280,16 @@ img:hover {
     backdrop-filter: blur(10px);
     position: absolute;
     bottom: 90px;
-    top: 35px;
+    top: 0;
     right: 0;
     left: 0;
     padding-left: 100px;
     transition: none;
     opacity: 0;
+}
+
+.aWindow.windows {
+    padding-top: 35px;
 }
 
 .aWindow.loaded {

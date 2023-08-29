@@ -36,7 +36,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
             this.style.height = "calc(100% - 138px)"
         }
         else {
-            this.style.marginTop = "35px"
+            this.style.marginTop = "0px"
             this.style.height = "calc(100% - 125px)"
         }
         this.style.transition = "opacity 0.7s"
