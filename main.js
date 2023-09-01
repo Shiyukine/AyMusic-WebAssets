@@ -46,13 +46,12 @@ async function main() {
                 new Translations(document.body)
                 new ThemeColor(document.body)
                 document.getElementById("version_name").innerText = Utils.app.versionName
-                if (Utils.app.settings.firstOpen && Utils.app.platform == "Linux") {
-                    let info = new InfoPanel("Warning - Update problem on Linux", "Hello. We have detected a problem when AyMusic is updating on Linux.\n"
-                        + "The app will not launch automatically when the update is completed on certain Linux distribution.\n"
-                        + "You need to relaunch the app when the update is completed. Sorry.\n"
+                if (window.forceRestart && Utils.app.isRelease) {
+                    let info = new InfoPanel("Warning after updating app", "The new version is installed ! But there is a problem.\n"
+                        + "For your security, please manually restart AyMusic.\n"
                         + "Please see https://github.com/castlabs/electron-releases/issues/165\nfor more information.", [{
-                            text: "OK", isPositive: true, onclick: () => {
-                                info.close()
+                            text: "Close app", isPositive: true, onclick: () => {
+                                Utils.app.remoteClient.closeWindow()
                             }
                         }], false);
                     document.getElementById("main").appendChild(info)
