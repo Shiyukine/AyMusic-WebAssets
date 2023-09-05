@@ -212,7 +212,7 @@ svg.rotate:hover {
 
 .colorTopBar {
     backdrop-filter: blur(10px);
-    background-color: rgba(74, 74, 74, 0.73);
+    background-color: rgba(74, 74, 74, 0.60);
 }
 
 .windowTopBar {

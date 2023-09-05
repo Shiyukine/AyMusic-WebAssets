@@ -719,7 +719,12 @@ export default class ListenWindow extends HTMLDivElement {
     async updateMediaSession(part, url, data) {
         if (Utils.app.platform != "Android") {
             let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl);
-            [frames[0], frames[0].frames[0]].forEach((x) => {
+            let ifr = [frames[0]]
+            try {
+                ifr.push(frames[0].frames[0])
+            }
+            catch { }
+            ifr.forEach((x) => {
                 if (part == "changeMediaMetadata") {
                     x.postMessage({
                         message: part, inData: {

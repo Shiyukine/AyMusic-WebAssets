@@ -23,6 +23,7 @@ export default class Window {
                 if (e.button == 2) await Utils.app.remoteClient.rightClickWindow()
             })*/
             mvmt.classList.add("mvmt")
+            mvmt.id = "win_mvmt"
             topbar.appendChild(mvmt)
             var wclose = document.createElement("img")
             wclose.addEventListener("click", () => Utils.app.remoteClient.closeWindow());

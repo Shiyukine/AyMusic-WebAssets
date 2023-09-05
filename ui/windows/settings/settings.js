@@ -128,7 +128,7 @@ export default class SettingsWindow extends HTMLDivElement {
                     btn1.innerText = "{set.music.addAccount}"
                     btn1.onclick = async () => {
                         await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
-                            await PlatformHandler.getPlatformUrl(platform, "BaseUrl"))
+                            await PlatformHandler.getPlatformUrl(platform, "BaseUrl"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
                         Utils.newError("Information", "If the window has closed by itself, it means that you've been connected!")
                     }
                     div.appendChild(btn1)

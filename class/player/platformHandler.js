@@ -42,6 +42,7 @@ export default class PlatformHandler {
             FilterSearch: "",
             NeedDisplayNoneWhenSearching: true,
             NeedDisplayNoneWhenPlaying: true,
+            UseIncludeUrlFilter: true,
             NoMute: false
         }
         var platforms = await this.searchPlatforms()
