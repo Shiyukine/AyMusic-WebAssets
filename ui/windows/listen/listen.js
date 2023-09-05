@@ -773,7 +773,7 @@ export default class ListenWindow extends HTMLDivElement {
                 let out = {
                     details: "Listening " + (Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title),
                     state: "By " + (Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName),
-                    endTimestamp: Date.now() + (Utils.queueManager.currentSong.time - pb.getValue()),
+                    endTimestamp: Date.now() + (pb.getMax() - pb.getValue()),
                     largeImageKey: "icon",
                     largeImageText: "AyMusic by Aketsuky",
                     smallImageKey: plat,

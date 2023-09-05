@@ -126,9 +126,11 @@ export default class Player {
                 for (let spl in urlsplit) {
                     url = url.replace(urlsplit[spl], url2split[spl])
                 }
-                if (!url.includes("?")) url += "?uwu=1"
-                if (play) url += "&autoplay=1"
-                url += "&volume=" + this.volume
+                if ((await PlatformHandler.getPlatformSettings(platform)).AddParamsInSongUrl) {
+                    if (!url.includes("?")) url += "?uwu=1"
+                    if (play) url += "&autoplay=1"
+                    url += "&volume=" + ((await PlatformHandler.getPlatformSettings(platform)).SmallVolumeInSongUrl ? this.volume / 100 : this.volume)
+                }
             }
             var wtId = TaskHandler.addTask(url, await Utils.app.remoteClient.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => { }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying)
             this.currentUrl = url

@@ -43,7 +43,9 @@ export default class PlatformHandler {
             NeedDisplayNoneWhenSearching: true,
             NeedDisplayNoneWhenPlaying: true,
             UseIncludeUrlFilter: true,
-            NoMute: false
+            NoMute: false,
+            AddParamsInSongUrl: true,
+            SmallVolumeInSongUrl: false
         }
         var platforms = await this.searchPlatforms()
         var settingsOverrided = platforms["Servers"][platform]["OverrideSettings"]

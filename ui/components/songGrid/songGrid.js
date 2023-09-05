@@ -62,7 +62,7 @@ export default class SongGrid extends HTMLDivElement {
                         this.song = song;
                         this.shadowRoot.getElementById("title").innerText = this.song.aliasTitle != null ? song.aliasTitle : this.song.title
                         this.shadowRoot.getElementById("artist").innerText = this.song.aliasSingerName != null ? song.aliasSingerName : this.song.singerName
-                        this.shadowRoot.getElementById("time").innerText = Utils.msToTime(this.song.time)
+                        this.shadowRoot.getElementById("time").innerText = this.song.time == -1 ? "--:--:--" : Utils.msToTime(this.song.time)
                         let plat = song.imgUrl == "localImg" ? "icon" : await PlatformHandler.getPlatformBySongUrl(song.url)
                         plat = plat.toLowerCase()
                         this.shadowRoot.getElementById("platform").style.backgroundImage = "url('/resources/" + plat + ".ico')"
