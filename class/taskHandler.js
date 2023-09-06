@@ -63,16 +63,18 @@ export default class TaskHandler {
         iframe.onload = async () => {
             wt.callback(await TaskHandler.postJs(iframe, wt), wt.id)
             if (!wt.stopTaskManually) this.switchTask(wt)
-            let increment = 0
-            var intv = setInterval(() => {
-                //5s
-                let mvmt = document.getElementById("win_mvmt")
-                mvmt.style.height = mvmt.style.height == "35px" ? "36px" : "35px";
-                if (increment >= 50) {
-                    clearInterval(intv)
-                }
-                increment++
-            }, 100);
+            if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS")) {
+                let increment = 0
+                var intv = setInterval(() => {
+                    //5s
+                    let mvmt = document.getElementById("win_mvmt")
+                    mvmt.style.height = mvmt.style.height == "35px" ? "36px" : "35px";
+                    if (increment >= 50) {
+                        clearInterval(intv)
+                    }
+                    increment++
+                }, 100);
+            }
         }
         iframe.allow = "encrypted-media"
         /*iframe.style.width = "1920"
