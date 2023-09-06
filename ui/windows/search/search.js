@@ -37,7 +37,7 @@ export default class SearchWindow extends HTMLDivElement {
                     shadow.getElementById("serv_picker").appendChild(opt)
                 }
                 shadow.getElementById("serv_picker").addEventListener("change", () => {
-                    //icon = all
+                    //iconround = all
                     this.selectedServer = shadow.getElementById("serv_picker").value
                     shadow.getElementById("serv_ico").src = "/resources/" + shadow.getElementById("serv_picker").value + ".ico"
                 })
