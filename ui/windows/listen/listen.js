@@ -767,7 +767,7 @@ export default class ListenWindow extends HTMLDivElement {
             if (!setNothing) {
                 let buttons = []
                 if (!Utils.player.isLocalMusic) buttons.push({ label: "Listen this music", url: Utils.queueManager.currentSong.url })
-                if (!Utils.servURL.includes("192.168")) buttons.push({ label: "Download AyMusic", url: Utils.servURL + "projects/AyMusic.php" })
+                buttons.push({ label: "Download AyMusic", url: Utils.realServURL + "projects/AyMusic.php" })
                 let plat = Utils.player.isLocalMusic ? "icon" : (await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)).toLowerCase()
                 let platName = Utils.player.isLocalMusic ? "their PC" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                 let out = {

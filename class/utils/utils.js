@@ -11,6 +11,7 @@ import MusicViewerWindow from "../../ui/windows/musicViewer/musicViewer.js";
 export default class Utils {
     static useLocalServer = true
     static servURL = ""
+    static realServURL = ""
     static actualAccount =
         {
             name: "Unknown",
