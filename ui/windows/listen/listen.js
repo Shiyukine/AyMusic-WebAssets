@@ -83,7 +83,7 @@ export default class ListenWindow extends HTMLDivElement {
                                 {
                                     navigator.mediaSession.setActionHandler(e.data.inData.action, (event) => { 
                                         parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, '` + origin + `')
-                                        if(e.data.platform == "Spotify") parent.parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, '` + origin + `')
+                                        if(parent.parent) parent.parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, '` + origin + `')
                                     });
                                 }
                             }
