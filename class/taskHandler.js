@@ -63,7 +63,7 @@ export default class TaskHandler {
         iframe.onload = async () => {
             wt.callback(await TaskHandler.postJs(iframe, wt), wt.id)
             if (!wt.stopTaskManually) this.switchTask(wt)
-            if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS")) {
+            if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS" || Utils.app.platform == "Linux")) {
                 let increment = 0
                 var intv = setInterval(() => {
                     //5s
