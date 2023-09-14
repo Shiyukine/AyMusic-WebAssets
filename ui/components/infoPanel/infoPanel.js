@@ -82,36 +82,51 @@ export default class InfoPanel extends HTMLDivElement {
     }
 
     changeText(text, subtext) {
-        if (text != null) this.#textEl.innerHTML = text;
-        if (subtext != null) this.#subtextEl.innerHTML = subtext.toString().split("\n").join("<br>");
+        try {
+            if (text != null) this.#textEl.innerHTML = text;
+            if (subtext != null) this.#subtextEl.innerHTML = subtext.toString().split("\n").join("<br>");
+        }
+        catch {
+            console.error("Info panel not initialized !")
+        }
     }
 
     changeloading(newLoading = false) {
-        if (typeof newLoading === 'number') {
-            if (this.#progressBar.classList.contains("hidden")) this.#progressBar.classList.remove("hidden");
-            this.#progressBar.style.width = newLoading + "%";
-            this.#svg.classList.remove("playSVG");
-            if (this.#svg.parentElement) this.#svg.parentElement.removeChild(this.#svg);
-        }
-        else {
-            if (!newLoading) {
+        try {
+            if (typeof newLoading === 'number') {
                 if (this.#progressBar.classList.contains("hidden")) this.#progressBar.classList.remove("hidden");
+                this.#progressBar.style.width = newLoading + "%";
                 this.#svg.classList.remove("playSVG");
                 if (this.#svg.parentElement) this.#svg.parentElement.removeChild(this.#svg);
             }
             else {
-                if (!this.#progressBar.classList.contains("hidden")) this.#progressBar.classList.add("hidden");
-                if (!this.#svg.parentElement) this.shadowRoot.getElementById("panelInfo").insertBefore(this.#svg, this.shadowRoot.getElementById("panelInfo").children[0]);
-                this.#svg.classList.add("playSVG");
+                if (!newLoading) {
+                    if (this.#progressBar.classList.contains("hidden")) this.#progressBar.classList.remove("hidden");
+                    this.#svg.classList.remove("playSVG");
+                    if (this.#svg.parentElement) this.#svg.parentElement.removeChild(this.#svg);
+                }
+                else {
+                    if (!this.#progressBar.classList.contains("hidden")) this.#progressBar.classList.add("hidden");
+                    if (!this.#svg.parentElement) this.shadowRoot.getElementById("panelInfo").insertBefore(this.#svg, this.shadowRoot.getElementById("panelInfo").children[0]);
+                    this.#svg.classList.add("playSVG");
+                }
             }
+        }
+        catch {
+            console.error("Info panel not initialized !")
         }
     }
 
     hide() {
-        this.shadowRoot.getElementById("panelInfoBG").style.opacity = "0%";
-        this.shadowRoot.getElementById("panelInfoBG").style.zIndex = "0"
-        if (document.getElementById("menu_win"))
-            document.getElementById("menu_win").style.zIndex = ""
+        try {
+            this.shadowRoot.getElementById("panelInfoBG").style.opacity = "0%";
+            this.shadowRoot.getElementById("panelInfoBG").style.zIndex = "0"
+            if (document.getElementById("menu_win"))
+                document.getElementById("menu_win").style.zIndex = ""
+        }
+        catch {
+            console.error("Info panel not initialized !")
+        }
     }
 
     close() {

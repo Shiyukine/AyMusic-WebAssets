@@ -10,6 +10,7 @@ export default class ProgressBar extends HTMLDivElement {
     #eventEl = document.createElement("event");
     max = 100.0;
     value = 0.0;
+    changeValueInitialized = null
 
     constructor() {
         super();
@@ -22,7 +23,12 @@ export default class ProgressBar extends HTMLDivElement {
                 new ThemeColor(shadow.children[1])
             }
             this.changeMax(this.getAttribute("max") ? this.getAttribute("max") : this.getMax())
-            this.changeValue(this.getAttribute("value") ? this.getAttribute("value") : this.getValue())
+            if (this.changeValueInitialized) {
+                this.changeValue(this.changeValueInitialized)
+            }
+            else {
+                this.changeValue(this.getAttribute("value") ? this.getAttribute("value") : this.getValue())
+            }
             window.addEventListener("resize", () => {
                 //shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
                 this.changeValue(this.getValue())
@@ -98,7 +104,8 @@ export default class ProgressBar extends HTMLDivElement {
             }
         }
         catch (e) {
-            console.error("Can't change value, progressBar not initialized !")
+            //console.error("Can't change value, progressBar not initialized !")
+            this.changeValueInitialized = value
         }
     }
 

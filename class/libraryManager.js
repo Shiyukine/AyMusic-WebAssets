@@ -31,24 +31,26 @@ export default class LibraryManager {
 
     #eventEl = document.createElement("event");
 
-    async refreshUserInfo() {
+    refreshUserInfo(cb) {
         try {
             console.log("Refreshing user info")
-            this.userPlaylists = []
-            let info = await Utils.apiManager.getAccountInfo()
-            this.userInfo.curMusic = info["curMusic"]
-            this.userInfo.curTime = info["curTime"]
-            this.userInfo.curObject = info["curObject"]
-            for (let i = 0; i < info["playlists"].length; i++) {
-                let pl = info["playlists"][i]
-                let npl = new Playlist(pl.id, pl.name, pl.userID, pl.desc, pl.imgUrl, pl.isPrivate, pl.rank)
-                this.userPlaylists.push(npl)
-                if (pl.id == info["likedSongsPlId"])
-                    this.userLikedPl = npl
-            }
-            this.userLikedObjects = info["likedSongs"]
-            this.userInfo.likedSongsPlId = info["likedSongsPlId"]
-            console.log("User info refreshed successfully")
+            Utils.apiManager.fetchAPIThenCache({ act: "getUserInfo" }, (info) => {
+                this.userPlaylists = []
+                this.userInfo.curMusic = info["curMusic"]
+                this.userInfo.curTime = info["curTime"]
+                this.userInfo.curObject = info["curObject"]
+                for (let i = 0; i < info["playlists"].length; i++) {
+                    let pl = info["playlists"][i]
+                    let npl = new Playlist(pl.id, pl.name, pl.userID, pl.desc, pl.imgUrl, pl.isPrivate, pl.rank)
+                    this.userPlaylists.push(npl)
+                    if (pl.id == info["likedSongsPlId"])
+                        this.userLikedPl = npl
+                }
+                this.userLikedObjects = info["likedSongs"]
+                this.userInfo.likedSongsPlId = info["likedSongsPlId"]
+                console.log("User info refreshed successfully")
+                cb()
+            })
         }
         catch (e) {
             Utils.newError("Unable to get your account information", e)

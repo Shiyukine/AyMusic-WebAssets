@@ -58,10 +58,9 @@ async function main() {
                     await info.showDialog()
                 }
                 var loadPanel = new InfoPanel("Searching for updates...", "Please wait...", null, true);
-                document.getElementById("main").appendChild(loadPanel);
                 loadPanel.style.width = loadPanel.style.height = "100%";
                 loadPanel.style.position = "absolute";
-                loadPanel.show();
+                //loadPanel.show();
                 console.log("Getting server URL");
                 Utils.realServURL = (await Utils.app.remoteClient.httpRequestGET("https://raw.githubusercontent.com/Shiyukine/Shiyukine/main/serv.txt")).replace("\n", "");
                 if (Utils.app.isRelease)
@@ -74,19 +73,11 @@ async function main() {
                 LocalMusicHandler.init()
                 await LocalMusicHandler.getLocalLibrary()
                 //
-                if (Utils.app.platform == "Android") {
-                    await new Promise(resolve => {
-                        setTimeout(async () => {
-                            await Update.searchUpdate(loadPanel)
-                            resolve()
-                        }, 1000);
-                    })
-                }
-                else {
-                    await Update.searchUpdate(loadPanel);
-                }
-                loadPanel.changeText("Connecting to your account...", "Please wait...");
-                loadPanel.changeloading(true)
+                Utils.apiManager.init()
+                //
+                Update.searchUpdate(loadPanel);
+                //loadPanel.changeText("Connecting to your account...", "Please wait...");
+                //loadPanel.changeloading(true)
                 var logP = new LoginPanel("");
                 logP.style.width = logP.style.height = "100%";
                 logP.style.position = "absolute";
@@ -94,28 +85,27 @@ async function main() {
                 logP.notConnected = () => {
                     loadPanel.hide();
                 }
-                logP.logged = async () => {
+                var cb = async () => {
                     if (Utils.app.platform == "Android") {
                         Utils.app.remoteClient.syncCookies()
                     }
                     loadPanel.changeText("Getting your playlists...");
-                    loadPanel.show();
-                    await Utils.libManager.refreshUserInfo()
-                    loadPanel.close();
-                    let lp = document.getElementById("loadPanel");
-                    lp.children[0].classList.add("pauseSVG");
-                    let mainPanel = document.getElementById("main");
-                    document.getElementById("main").style.backgroundImage = "url(/resources/background.jpg)"
-                    if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS")
-                        document.getElementsByClassName("windowTopBar")[0].classList.add("loaded")
-                    mainPanel.removeChild(lp);
-                    document.body.classList.remove("loading");
-                    let menuWin = new MenuWindow()
-                    Utils.menu = menuWin
-                    let viewerWin = new MusicViewerWindow()
-                    Utils.musicViewer = viewerWin
-                    mainPanel.appendChild(menuWin);
-                    mainPanel.appendChild(new ListenWindow())
+                    Utils.libManager.refreshUserInfo(() => {
+                        let lp = document.getElementById("loadPanel");
+                        lp.children[0].classList.add("pauseSVG");
+                        let mainPanel = document.getElementById("main");
+                        document.getElementById("main").style.backgroundImage = "url(/resources/background.jpg)"
+                        if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS")
+                            document.getElementsByClassName("windowTopBar")[0].classList.add("loaded")
+                        mainPanel.removeChild(lp);
+                        document.body.classList.remove("loading");
+                        let menuWin = new MenuWindow()
+                        Utils.menu = menuWin
+                        let viewerWin = new MusicViewerWindow()
+                        Utils.musicViewer = viewerWin
+                        mainPanel.appendChild(menuWin);
+                        mainPanel.appendChild(new ListenWindow())
+                    })
                     if (Utils.app.settings.firstOpen) {
                         var info = new InfoPanel("Welcome to AyMusic!", "Hello! Thanks for testing our app.\n"
                             + "We would like to remind you that this app isn't in its release state. So, the Aketsuky Team can reset the database and it may have bugs in several features of AyMusic.\n"
@@ -127,7 +117,15 @@ async function main() {
                             }], false);
                         document.getElementById("main").appendChild(info)
                     }
-                };
+                }
+                if (Utils.app.remoteClient.haveCookie(Utils.servURL, "PHPSESSID") && Utils.apiManager.haveCache({ act: "getUserInfo" })) {
+                    cb()
+                }
+                else {
+                    logP.logged = () => {
+                        cb()
+                    }
+                }
             }
             catch (e) {
                 Utils.newError("Unable to reach the server :(", e);

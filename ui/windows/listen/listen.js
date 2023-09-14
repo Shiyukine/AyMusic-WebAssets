@@ -105,12 +105,6 @@ export default class ListenWindow extends HTMLDivElement {
                     shadow.getElementById("next").style.color = Utils.queueManager.canNext() ? "white" : "gray"
                     shadow.getElementById("previous").style.color = Utils.queueManager.canPrevious() ? "white" : "gray"
                     if (!firstS) {
-                        console.log({
-                            act: "updateUserInfo",
-                            curTime: 0,
-                            curMusic: Utils.libManager.userInfo.curMusic,
-                            curObject: Utils.libManager.userInfo.curObject
-                        })
                         await Utils.apiManager.doPostRequest({
                             act: "updateUserInfo",
                             curTime: 0,
@@ -618,14 +612,7 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                 }
                 if (Utils.libManager.userInfo.curMusic != null) {
-                    if (Utils.libManager.userInfo.curObject == null) {
-                        let obj = await Utils.apiManager.doPostRequest({
-                            act: "getSongInfo",
-                            id: Utils.libManager.userInfo.curMusic
-                        })
-                        await Utils.queueManager.changeQueue(new Song(obj.songID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName), "", false)
-                    }
-                    else if (Utils.libManager.userInfo.curObject.startsWith("pl_")) {
+                    if (Utils.libManager.userInfo.curObject.startsWith("pl_")) {
                         let result = null;
                         for (let pl of Utils.libManager.userPlaylists) {
                             if ("pl_" + pl.id == Utils.libManager.userInfo.curObject) {
@@ -635,21 +622,31 @@ export default class ListenWindow extends HTMLDivElement {
                         await Utils.queueManager.changeQueue(result, Utils.libManager.userInfo.curMusic, false)
                     }
                     else if (Utils.libManager.userInfo.curObject.startsWith("al_")) {
-                        let result = await Utils.apiManager.doPostRequest({
+                        Utils.apiManager.fetchAPI({
                             act: "getAlbumInfo",
                             id: Utils.libManager.userInfo.curObject.replace("al_", ""),
                             offset: 0
+                        }, async (result) => {
+                            let al = result["albumInfo"]
+                            await Utils.queueManager.changeQueue(new Album(al.id, al.name, al.singerID, al.type, al.imgUrl), Utils.libManager.userInfo.curMusic, false)
                         })
-                        let al = result["albumInfo"]
-                        await Utils.queueManager.changeQueue(new Album(al.id, al.name, al.singerID, al.type, al.imgUrl), Utils.libManager.userInfo.curMusic, false)
                     }
                     else if (Utils.libManager.userInfo.curObject.startsWith("si_")) {
-                        let result = await Utils.apiManager.doPostRequest({
+                        Utils.apiManager.fetchAPI({
                             act: "getSingerInfo",
                             id: Utils.libManager.userInfo.curObject.replace("si_", "")
+                        }, async (result) => {
+                            let al = result["singerInfo"]
+                            await Utils.queueManager.changeQueue(new Singer(al.id, al.name, al.imgUrl, al.aliasName), Utils.libManager.userInfo.curMusic, false)
                         })
-                        let al = result["singerInfo"]
-                        await Utils.queueManager.changeQueue(new Singer(al.id, al.name, al.imgUrl, al.aliasName), Utils.libManager.userInfo.curMusic, false)
+                    }
+                    else {
+                        Utils.apiManager.fetchAPI({
+                            act: "getSongInfo",
+                            id: Utils.libManager.userInfo.curMusic.replace("so_", "")
+                        }, async (obj) => {
+                            await Utils.queueManager.changeQueue(new Song(obj.songID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName), Utils.libManager.userInfo.curMusic, false)
+                        })
                     }
                 }
                 pbVol.changeValue(parseInt(Utils.app.getSetting("music_vol")))

@@ -7,6 +7,18 @@ export default class ApiManager {
     #anDico = {}
     countFailed = 0;
     disconnected = false
+    cache = {}
+
+    async init() {
+        try {
+            let rep = await fetch("app://Cache/API/index")
+            let json = await rep.json()
+            this.cache = json
+        }
+        catch {
+            Utils.app.remoteClient.saveCache("API/index", new TextEncoder("utf-8").encode(JSON.stringify(this.cache)))
+        }
+    }
 
     refreshApiKey() {
         this.userId = Utils.actualAccount.id
@@ -15,6 +27,66 @@ export default class ApiManager {
 
     async getAccountInfo() {
         return await this.doPostRequest({ act: "getUserInfo" })
+    }
+
+    haveCache(body) {
+        return JSON.stringify(body) in this.cache
+    }
+
+    fetchAPI(body, callback) {
+        let result = "";
+        if (JSON.stringify(body) in this.cache) {
+            fetch("app://Cache/API/" + this.cache[JSON.stringify(body)]).then(async rep => {
+                let json = await rep.json()
+                if (json) {
+                    result = JSON.stringify(json)
+                    if (callback) callback(json)
+                }
+            })
+            this.doPostRequest(body).then(rep => {
+                if (rep && result != JSON.stringify(rep)) {
+                    if (callback) callback(rep)
+                    Utils.app.remoteClient.saveCache("API/" + this.cache[JSON.stringify(body)], new TextEncoder("utf-8").encode(JSON.stringify(rep)))
+                }
+            })
+        }
+        else {
+            this.doPostRequest(body).then(rep => {
+                if (rep) {
+                    this.cache[JSON.stringify(body)] = (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2)
+                    if (callback) callback(rep)
+                    Utils.app.remoteClient.saveCache("API/" + this.cache[JSON.stringify(body)], new TextEncoder("utf-8").encode(JSON.stringify(rep)))
+                    Utils.app.remoteClient.saveCache("API/index", new TextEncoder("utf-8").encode(JSON.stringify(this.cache)))
+                }
+            })
+        }
+    }
+
+    fetchAPIThenCache(body, callback) {
+        this.doPostRequest(body).then(rep => {
+            if (rep) {
+                if (JSON.stringify(body) in this.cache) {
+                    if (callback) callback(rep)
+                    Utils.app.remoteClient.saveCache("API/" + this.cache[JSON.stringify(body)], new TextEncoder("utf-8").encode(JSON.stringify(rep)))
+                }
+                else {
+                    this.cache[JSON.stringify(body)] = (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2)
+                    if (callback) callback(rep)
+                    Utils.app.remoteClient.saveCache("API/" + this.cache[JSON.stringify(body)], new TextEncoder("utf-8").encode(JSON.stringify(rep)))
+                    Utils.app.remoteClient.saveCache("API/index", new TextEncoder("utf-8").encode(JSON.stringify(this.cache)))
+                }
+            }
+            else {
+                if (JSON.stringify(body) in this.cache) {
+                    fetch("app://Cache/API/" + this.cache[JSON.stringify(body)]).then(async rep => {
+                        let json = await rep.json()
+                        if (json) {
+                            if (callback) callback(json)
+                        }
+                    })
+                }
+            }
+        })
     }
 
     async doPostRequest(content) {
@@ -72,8 +144,9 @@ export default class ApiManager {
                 }
                 catch (e) {
                     //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
+                    Utils.newError("Error when fetching API", "This is the error:\n" + JSON.stringify(result))
                     console.error(result)
-                    return result;
+                    return;
                 }
             }
             else return "You're being rate limited"
@@ -82,7 +155,7 @@ export default class ApiManager {
             //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
             Utils.showMiniError(15, "You are disconnected from the server")
             this.disconnected = true
-            return e;
+            return;
         }
     }
 }

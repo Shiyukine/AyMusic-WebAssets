@@ -218,134 +218,138 @@ export default class MusicViewerWindow extends HTMLDivElement {
             this.shadowRoot.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
             if (objectID.startsWith("pl_")) {
                 if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
-                let info = await Utils.apiManager.doPostRequest({
+                Utils.apiManager.fetchAPI({
                     act: "getPlaylistInfo",
                     id: objectID.split("pl_").join(""),
                     offset: 0
+                }, (info) => {
+                    this.shadowRoot.getElementById("title").innerText = info["playlistInfo"]["name"]
+                    this.shadowRoot.getElementById("subtitle").innerText = "By " + info["playlistInfo"]["userID"]
+                    this.shadowRoot.getElementById("cover").src = info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico"
+                    let div = this.addList("Songs in this playlist:")
+                    let songs = info["songs"]["songs"]
+                    let counterSongNotLoaded = 0
+                    let pl = new Playlist(info["playlistInfo"]["id"], info["playlistInfo"]["name"], info["playlistInfo"]["userID"], info["playlistInfo"]["desc"], info["playlistInfo"]["imgUrl"], info["playlistInfo"]["isPrivate"], info["playlistInfo"]["rank"])
+                    this.object = pl
+                    for (let i in songs) {
+                        let obj = songs[i]
+                        let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
+                        if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
+                        else counterSongNotLoaded++
+                    }
+                    let total = parseInt(info["songs"]["total"])
+                    while (div.children.length < total - counterSongNotLoaded) {
+                        div.appendChild(new SongGrid(null, pl))
+                    }
                 })
-                this.shadowRoot.getElementById("title").innerText = info["playlistInfo"]["name"]
-                this.shadowRoot.getElementById("subtitle").innerText = "By " + info["playlistInfo"]["userID"]
-                this.shadowRoot.getElementById("cover").src = info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico"
-                let div = this.addList("Songs in this playlist:")
-                let songs = info["songs"]["songs"]
-                let counterSongNotLoaded = 0
-                let pl = new Playlist(info["playlistInfo"]["id"], info["playlistInfo"]["name"], info["playlistInfo"]["userID"], info["playlistInfo"]["desc"], info["playlistInfo"]["imgUrl"], info["playlistInfo"]["isPrivate"], info["playlistInfo"]["rank"])
-                this.object = pl
-                for (let i in songs) {
-                    let obj = songs[i]
-                    let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
-                    if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
-                    else counterSongNotLoaded++
-                }
-                let total = parseInt(info["songs"]["total"])
-                while (div.children.length < total - counterSongNotLoaded) {
-                    div.appendChild(new SongGrid(null, pl))
-                }
             }
             if (objectID.startsWith("al_")) {
                 if (this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.remove("nohover")
-                let info = await Utils.apiManager.doPostRequest({
+                Utils.apiManager.fetchAPI({
                     act: "getAlbumInfo",
                     id: objectID.split("al_").join(""),
                     offset: 0
-                })
-                this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
-                this.shadowRoot.getElementById("subtitle").innerText = "By " + info["albumInfo"]["singerID"]
-                this.shadowRoot.getElementById("subtitle").onclick = () => {
-                    if (!Utils.queueManager.currentSong.imgUrl !== "localImg") {
-                        Utils.musicViewer.changeView("si_" + info["albumInfo"]["singerID"])
+                }, (info) => {
+                    this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
+                    this.shadowRoot.getElementById("subtitle").innerText = "By " + info["albumInfo"]["singerID"]
+                    this.shadowRoot.getElementById("subtitle").onclick = () => {
+                        if (!Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                            Utils.musicViewer.changeView("si_" + info["albumInfo"]["singerID"])
+                        }
                     }
-                }
-                this.shadowRoot.getElementById("cover").src = info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico"
-                let div = this.addList("Songs in this album added on AyMusic's database:")
-                let songs = info["songs"]["songs"]
-                let counterSongNotLoaded = 0
-                let pl = new Album(info["albumInfo"]["id"], info["albumInfo"]["name"], info["albumInfo"]["singerID"], info["albumInfo"]["type"], info["albumInfo"]["imgUrl"])
-                this.object = pl
-                for (let i in songs) {
-                    let obj = songs[i]
-                    this.shadowRoot.getElementById("subtitle").innerText = "By " + obj.singerName
-                    let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, pl.name, pl.id, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
-                    if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
-                    else counterSongNotLoaded++
-                }
-                let total = parseInt(info["songs"]["total"])
-                while (div.children.length < total - counterSongNotLoaded) {
-                    div.appendChild(new SongGrid(null, pl))
-                }
+                    this.shadowRoot.getElementById("cover").src = info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico"
+                    let div = this.addList("Songs in this album added on AyMusic's database:")
+                    let songs = info["songs"]["songs"]
+                    let counterSongNotLoaded = 0
+                    let pl = new Album(info["albumInfo"]["id"], info["albumInfo"]["name"], info["albumInfo"]["singerID"], info["albumInfo"]["type"], info["albumInfo"]["imgUrl"])
+                    this.object = pl
+                    for (let i in songs) {
+                        let obj = songs[i]
+                        this.shadowRoot.getElementById("subtitle").innerText = "By " + obj.singerName
+                        let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, pl.name, pl.id, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
+                        if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
+                        else counterSongNotLoaded++
+                    }
+                    let total = parseInt(info["songs"]["total"])
+                    while (div.children.length < total - counterSongNotLoaded) {
+                        div.appendChild(new SongGrid(null, pl))
+                    }
+                })
             }
             if (objectID.startsWith("si_")) {
                 this.shadowRoot.getElementById("edit_btn").style.display = ""
                 this.shadowRoot.getElementById("editTitle").innerText = "{mv.modifySinger}"
                 this.shadowRoot.getElementById("editHelp").innerText = "{mv.modifySingerHelp}"
                 if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
-                let info = await Utils.apiManager.doPostRequest({
+                Utils.apiManager.fetchAPI({
                     act: "getSingerInfo",
                     id: objectID.split("si_").join(""),
                     offset: 0
+                }, (info) => {
+                    this.shadowRoot.getElementById("title").innerText = info["singerInfo"]["name"]
+                    this.shadowRoot.getElementById("subtitle").innerText = info["singerInfo"]["aliasName"] && info["singerInfo"]["aliasName"] != "" ? info["singerInfo"]["aliasName"] : "Artist"
+                    this.shadowRoot.getElementById("cover").src = info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico"
+                    let div = this.addList("Latest added song on AyMusic's database of this artist:")
+                    let songs = info["songs"]
+                    let pl = new Singer(info["singerInfo"]["id"], info["singerInfo"]["name"], info["singerInfo"]["imgUrl"], info["singerInfo"]["aliasName"])
+                    this.object = pl
+                    for (let i in songs) {
+                        let obj = songs[i]
+                        let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, pl.id, pl.name, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
+                        if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
+                    }
+                    let div2 = this.addList("Albums of this artist added on AyMusic's database:", false)
+                    let als = info["singerAlbums"]
+                    for (let i in als) {
+                        let obj = als[i]
+                        let al = new Album(obj.id, obj.name, pl.id, obj.type, obj.imgUrl)
+                        div2.appendChild(new AlbumGrid(al))
+                    }
+                    /**
+                     * @type {TextBox}
+                     */
+                    let a = this.shadowRoot.getElementById("edit_artist")
+                    a.setText(info["singerInfo"]["aliasName"])
+                    this.shadowRoot.getElementById("edit_title").style.display = "none"
+                    this.shadowRoot.getElementById("edit_inline1").style.display = "none"
+                    this.shadowRoot.getElementById("edit_inline2").style.display = "none"
+                    this.shadowRoot.getElementById("edit_inline3").style.display = "none"
                 })
-                this.shadowRoot.getElementById("title").innerText = info["singerInfo"]["name"]
-                this.shadowRoot.getElementById("subtitle").innerText = info["singerInfo"]["aliasName"] && info["singerInfo"]["aliasName"] != "" ? info["singerInfo"]["aliasName"] : "Artist"
-                this.shadowRoot.getElementById("cover").src = info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico"
-                let div = this.addList("Latest added song on AyMusic's database of this artist:")
-                let songs = info["songs"]
-                let pl = new Singer(info["singerInfo"]["id"], info["singerInfo"]["name"], info["singerInfo"]["imgUrl"], info["singerInfo"]["aliasName"])
-                this.object = pl
-                for (let i in songs) {
-                    let obj = songs[i]
-                    let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, pl.id, pl.name, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
-                    if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
-                }
-                let div2 = this.addList("Albums of this artist added on AyMusic's database:", false)
-                let als = info["singerAlbums"]
-                for (let i in als) {
-                    let obj = als[i]
-                    let al = new Album(obj.id, obj.name, pl.id, obj.type, obj.imgUrl)
-                    div2.appendChild(new AlbumGrid(al))
-                }
-                /**
-                 * @type {TextBox}
-                 */
-                let a = this.shadowRoot.getElementById("edit_artist")
-                a.setText(info["singerInfo"]["aliasName"])
-                this.shadowRoot.getElementById("edit_title").style.display = "none"
-                this.shadowRoot.getElementById("edit_inline1").style.display = "none"
-                this.shadowRoot.getElementById("edit_inline2").style.display = "none"
-                this.shadowRoot.getElementById("edit_inline3").style.display = "none"
             }
             if (objectID.startsWith("so_")) {
                 this.shadowRoot.getElementById("editTitle").innerText = "{mv.modifySong}"
                 this.shadowRoot.getElementById("editHelp").innerText = "{mv.modifySongHelp}"
                 if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
-                let info = await Utils.apiManager.doPostRequest({
+                Utils.apiManager.fetchAPI({
                     act: "getSongInfo",
                     id: objectID.split("so_").join("")
+                }, (info) => {
+                    this.shadowRoot.getElementById("edit").style.display = ""
+                    this.shadowRoot.getElementById("title").innerText = info["title"]
+                    this.shadowRoot.getElementById("subtitle").innerText = info["singerName"]
+                    this.shadowRoot.getElementById("cover").src = info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico"
+                    /**
+                     * @type {TextBox}
+                     */
+                    let a = this.shadowRoot.getElementById("edit_title")
+                    a.setText(info["aliasTitle"])
+                    /**
+                     * @type {TextBox}
+                     */
+                    let b = this.shadowRoot.getElementById("edit_artist")
+                    b.setText(info["aliasSongSingerName"])
+                    let x = this.shadowRoot.getElementById("edit_explicit")
+                    x.value = info["isExplicit"] ? 1 : 0
+                    x.style.backgroundColor = x.value == "1" ? "" : "gray"
+                    this.crops = {
+                        start: info["cropStart"],
+                        end: info["cropEnd"]
+                    }
+                    this.shadowRoot.getElementById("edit_cropS").innerText = Utils.msToTime(this.crops.start)
+                    this.shadowRoot.getElementById("edit_cropE").innerText = this.crops.end != -1 ? Utils.msToTime(this.crops.end) : "{mv.endOfSong}"
+                    this.object = new Song(info["songID"], info["url"], info["dateAdded"], info["title"], info["imgUrl"], info["time"], info["isExplicit"], info["addedBy"], info["cropStart"], info["cropEnd"], info["singerID"], info["singerName"], info["albumName"], info["albumID"], info["aliasTitle"], info["aliasSongSingerName"])
+                    this.fullObjId = this.fullObjId.split("so_").join("")
                 })
-                this.shadowRoot.getElementById("edit").style.display = ""
-                this.shadowRoot.getElementById("title").innerText = info["title"]
-                this.shadowRoot.getElementById("subtitle").innerText = info["singerName"]
-                this.shadowRoot.getElementById("cover").src = info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico"
-                /**
-                 * @type {TextBox}
-                 */
-                let a = this.shadowRoot.getElementById("edit_title")
-                a.setText(info["aliasTitle"])
-                /**
-                 * @type {TextBox}
-                 */
-                let b = this.shadowRoot.getElementById("edit_artist")
-                b.setText(info["aliasSongSingerName"])
-                let x = this.shadowRoot.getElementById("edit_explicit")
-                x.value = info["isExplicit"] ? 1 : 0
-                x.style.backgroundColor = x.value == "1" ? "" : "gray"
-                this.crops = {
-                    start: info["cropStart"],
-                    end: info["cropEnd"]
-                }
-                this.shadowRoot.getElementById("edit_cropS").innerText = Utils.msToTime(this.crops.start)
-                this.shadowRoot.getElementById("edit_cropE").innerText = this.crops.end != -1 ? Utils.msToTime(this.crops.end) : "{mv.endOfSong}"
-                this.object = new Song(info["songID"], info["url"], info["dateAdded"], info["title"], info["imgUrl"], info["time"], info["isExplicit"], info["addedBy"], info["cropStart"], info["cropEnd"], info["singerID"], info["singerName"], info["albumName"], info["albumID"], info["aliasTitle"], info["aliasSongSingerName"])
-                this.fullObjId = this.fullObjId.split("so_").join("")
             }
             this.loaded = true
         }
@@ -363,37 +367,39 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 if (el && el.song === null && !el.changeRequested) {
                     el.changeRequested = true
                     if (this.fullObjId.startsWith("pl_")) {
-                        let result = await Utils.apiManager.doPostRequest({
+                        Utils.apiManager.fetchAPI({
                             act: "getPlaylistSongs",
                             playlistID: this.fullObjId.replace("pl_", ""),
                             orderByDesc: false,
                             offset: offset
+                        }, (result) => {
+                            let i = 0;
+                            for (let obj of result["songs"]) {
+                                /**
+                                 * @type {SongGrid}
+                                 */
+                                let grid = list.children[offset * 50 + i]
+                                grid.changeSong(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName))
+                                i++;
+                            }
                         })
-                        let i = 0;
-                        for (let obj of result["songs"]) {
-                            /**
-                             * @type {SongGrid}
-                             */
-                            let grid = list.children[offset * 50 + i]
-                            grid.changeSong(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName))
-                            i++;
-                        }
                     }
                     if (this.fullObjId.startsWith("al_")) {
-                        let result = await Utils.apiManager.doPostRequest({
+                        Utils.apiManager.fetchAPI({
                             act: "getAlbumSongs",
                             albumID: this.fullObjId.replace("al_", ""),
                             offset: offset
+                        }, (result) => {
+                            let i = 0;
+                            for (let obj of result["songs"]) {
+                                /**
+                                 * @type {SongGrid}
+                                 */
+                                let grid = list.children[offset * 50 + i]
+                                grid.changeSong(new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName))
+                                i++;
+                            }
                         })
-                        let i = 0;
-                        for (let obj of result["songs"]) {
-                            /**
-                             * @type {SongGrid}
-                             */
-                            let grid = list.children[offset * 50 + i]
-                            grid.changeSong(new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName))
-                            i++;
-                        }
                     }
                 }
             }

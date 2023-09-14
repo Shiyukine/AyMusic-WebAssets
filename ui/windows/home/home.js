@@ -68,30 +68,31 @@ export default class HomeWindow extends HTMLDivElement {
         var list = document.createElement("div")
         list.classList.add("plList")
         this.shadowRoot.getElementById("main").appendChild(list)
-        let result = await Utils.apiManager.doPostRequest({ act: "getObjectsInPlaylist", playlistID: playlist.id, offset: 0, orderByDesc: true, size: 6 })
-        let count = 0;
-        for (let i in result) {
-            let obj = result[i]
-            if (obj.id.includes("al_")) {
-                let id = obj.id.replace("al_", "")
-                list.appendChild(new AlbumGrid(new Album(id, obj.name, obj.singerID, obj.type, obj.imgUrl, obj.dateAdded)))
+        Utils.apiManager.fetchAPI({ act: "getObjectsInPlaylist", playlistID: playlist.id, offset: 0, orderByDesc: true, size: 6 }, (result) => {
+            let count = 0;
+            for (let i in result) {
+                let obj = result[i]
+                if (obj.id.includes("al_")) {
+                    let id = obj.id.replace("al_", "")
+                    list.appendChild(new AlbumGrid(new Album(id, obj.name, obj.singerID, obj.type, obj.imgUrl, obj.dateAdded)))
+                }
+                if (obj.id.includes("si_")) {
+                    let id = obj.id.replace("si_", "")
+                    list.appendChild(new SingerGrid(new Singer(id, obj.name, obj.imgUrl, obj.dateAdded, obj.aliasName)))
+                }
+                if (obj.id.includes("pl_")) {
+                    let id = obj.id.replace("pl_", "")
+                    list.appendChild(new PlaylistGrid(new Playlist(id, obj.name, obj.userID, obj.desc, obj.imgUrl, obj.isPrivate, obj.rank, obj.dateAdded)))
+                }
+                count++;
             }
-            if (obj.id.includes("si_")) {
-                let id = obj.id.replace("si_", "")
-                list.appendChild(new SingerGrid(new Singer(id, obj.name, obj.imgUrl, obj.dateAdded, obj.aliasName)))
+            if (count == 0) {
+                var noObj = document.createElement("p")
+                noObj.innerText = "{pl.home.noSong}"
+                noObj.classList.add("noSong")
+                list.appendChild(noObj)
             }
-            if (obj.id.includes("pl_")) {
-                let id = obj.id.replace("pl_", "")
-                list.appendChild(new PlaylistGrid(new Playlist(id, obj.name, obj.userID, obj.desc, obj.imgUrl, obj.isPrivate, obj.rank, obj.dateAdded)))
-            }
-            count++;
-        }
-        if (count == 0) {
-            var noObj = document.createElement("p")
-            noObj.innerText = "{pl.home.noSong}"
-            noObj.classList.add("noSong")
-            list.appendChild(noObj)
-        }
+        })
     }
 
     close() {

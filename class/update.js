@@ -23,7 +23,9 @@ export default class Update {
                     maxUpdate = state.max
                 }
                 if (state.step == 4) {
+                    document.getElementById("main").appendChild(Update.infoPanel);
                     Update.infoPanel.changeText("Updating...", "Downloading update " + curUpdate + "/" + maxUpdate + "\n" + Math.floor(state.cur / 1000 / 1000) + " MB/" + Math.floor(state.max / 1000 / 1000) + " MB")
+                    //Update.infoPanel.showDialog()
                 }
                 if (state.step == 5) {
                     if (Utils.app.platform == "Android") {
@@ -35,6 +37,7 @@ export default class Update {
                 }
                 if (state.step == -1) {
                     window.updateCallBack = undefined;
+                    Update.infoPanel.close()
                     resolve()
                 }
                 if (state.step == -2) {
@@ -42,6 +45,12 @@ export default class Update {
                     var info = new InfoPanel("Can't search for updates", "Error when searching updates:\n" + state.error, [{
                         text: "Retry", isPositive: true, onclick: () => {
                             Utils.app.remoteClient.searchUpdates()
+                            document.getElementById("main").removeChild(Update.infoPanel);
+                            info.close()
+                        }
+                    }, {
+                        text: "Close", isPositive: false, onclick: () => {
+                            document.getElementById("main").removeChild(Update.infoPanel);
                             info.close()
                         }
                     }], false);

@@ -27,134 +27,139 @@ export default class QueueManager {
     #eventEl = document.createElement("event");
 
     async changeQueue(obj, idSong = "", play = true) {
-        //this.currentObject = obj
-        //this.currentSong = null;
-        this.allSongs = []
-        this.allSongsIds = []
-        idSong = idSong.replace("so_", "")
-        if (obj.constructor === Song) {
-            this.allSongs.push({ song: obj, obj: obj })
-            this.allSongsIds.push(obj.id)
-            this.currentIndex = 0
-            this.currentSong = this.allSongs[0].song
-            this.currentObject = this.allSongs[0].obj
-            Utils.player.playSong(this.currentSong, play)
-            return;
-        }
-        if (obj.constructor === Playlist) {
-            let result = await Utils.apiManager.doPostRequest({
-                act: "getPlaylistSongs",
-                playlistID: obj.id,
-                orderByDesc: obj.id == Utils.libManager.userInfo.likedSongsPlId ? true : false,
-                offset: -1
-            })
-            let songs = result["songs"]
-            for (let i in songs) {
-                let objs = songs[i]
-                let sng = new Song(objs.musicID.replace("so_", ""), objs.url, objs.dateAdded, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
-                if (sng.canBeLoaded) {
-                    this.allSongs.push({ song: sng, obj: obj })
-                    this.allSongsIds.push({ song: sng.id, obj: "pl_" + obj.id })
-                }
-            }
-            if (this.shuffle) this.allSongs = this.shuffleArray(this.allSongs)
-            if (idSong != "") {
-                for (let i in this.allSongs) {
-                    let sng = this.allSongs[i]
-                    if (sng.song.id == idSong.replace("so_", "")) {
-                        this.currentIndex = parseInt(i)
-                        this.currentSong = sng.song
-                        this.currentObject = sng.obj
-                    }
-                }
-            }
-            else {
+        try {
+            //this.currentObject = obj
+            //this.currentSong = null;
+            this.allSongs = []
+            this.allSongsIds = []
+            idSong = idSong.replace("so_", "")
+            if (obj.constructor === Song) {
+                this.allSongs.push({ song: obj, obj: obj })
+                this.allSongsIds.push(obj.id)
                 this.currentIndex = 0
                 this.currentSong = this.allSongs[0].song
                 this.currentObject = this.allSongs[0].obj
-            }
-            if (this.currentObject != null && this.currentSong != null) {
-                this.currentObject = Object.assign(new Playlist(), this.currentObject)
-                if (!this.currentObject.id.startsWith("pl_")) this.currentObject.id = "pl_" + this.currentObject.id
                 Utils.player.playSong(this.currentSong, play)
+                return;
             }
-            else {
-                console.error("Playing a song that cannot be played! Resetting player.")
-            }
-            return;
-        }
-        if (obj.constructor === Album) {
-            let result = await Utils.apiManager.doPostRequest({
-                act: "getAlbumInfo",
-                id: obj.id,
-                orderByDesc: true,
-                //
-                offset: -1
-            })
-            let songs = result["songs"]["songs"]
-            for (let i in songs) {
-                let objs = songs[i]
-                let sng = new Song(objs.songID.replace("so_", ""), objs.url, objs.albumPosition, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
-                if (sng.canBeLoaded) {
-                    this.allSongs.push({ song: sng, obj: obj })
-                    this.allSongsIds.push({ song: sng.id, obj: "al_" + obj.id })
-                }
-            }
-            if (this.shuffle) this.allSongs = this.shuffleArray(this.allSongs)
-            if (idSong != "") {
-                for (let i in this.allSongs) {
-                    let sng = this.allSongs[i]
-                    if (sng.song.id == idSong) {
-                        this.currentIndex = parseInt(i)
-                        this.currentSong = sng.song
-                        this.currentObject = sng.obj
+            if (obj.constructor === Playlist) {
+                let result = await Utils.apiManager.doPostRequest({
+                    act: "getPlaylistSongs",
+                    playlistID: obj.id,
+                    orderByDesc: obj.id == Utils.libManager.userInfo.likedSongsPlId ? true : false,
+                    offset: -1
+                })
+                let songs = result["songs"]
+                for (let i in songs) {
+                    let objs = songs[i]
+                    let sng = new Song(objs.musicID.replace("so_", ""), objs.url, objs.dateAdded, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
+                    if (sng.canBeLoaded) {
+                        this.allSongs.push({ song: sng, obj: obj })
+                        this.allSongsIds.push({ song: sng.id, obj: "pl_" + obj.id })
                     }
                 }
-            }
-            else {
-                this.currentIndex = 0
-                this.currentSong = this.allSongs[0].song
-                this.currentObject = this.allSongs[0].obj
-            }
-            this.currentObject = Object.assign(new Album(), this.currentObject)
-            if (!this.currentObject.id.startsWith("al_")) this.currentObject.id = "al_" + this.currentObject.id
-            Utils.player.playSong(this.currentSong, play)
-            return;
-        }
-        if (obj.constructor === Singer) {
-            let result = await Utils.apiManager.doPostRequest({
-                act: "getSingerInfo",
-                id: obj.id
-            })
-            let songs = result["songs"]
-            for (let i in songs) {
-                let objs = songs[i]
-                let sng = new Song(objs.songID.replace("so_", ""), objs.url, objs.albumPosition, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, obj.id, obj.name, objs.albumName, objs.albumID, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
-                if (sng.canBeLoaded) {
-                    this.allSongs.push({ song: sng, obj: obj })
-                    this.allSongsIds.push({ song: sng.id, obj: "si_" + obj.id })
-                }
-            }
-            if (this.shuffle) this.allSongs = this.shuffleArray(this.allSongs)
-            if (idSong != "") {
-                for (let i in this.allSongs) {
-                    let sng = this.allSongs[i]
-                    if (sng.song.id == idSong) {
-                        this.currentIndex = parseInt(i)
-                        this.currentSong = sng.song
-                        this.currentObject = sng.obj
+                if (this.shuffle) this.allSongs = this.shuffleArray(this.allSongs)
+                if (idSong != "") {
+                    for (let i in this.allSongs) {
+                        let sng = this.allSongs[i]
+                        if (sng.song.id == idSong.replace("so_", "")) {
+                            this.currentIndex = parseInt(i)
+                            this.currentSong = sng.song
+                            this.currentObject = sng.obj
+                        }
                     }
                 }
+                else {
+                    this.currentIndex = 0
+                    this.currentSong = this.allSongs[0].song
+                    this.currentObject = this.allSongs[0].obj
+                }
+                if (this.currentObject != null && this.currentSong != null) {
+                    this.currentObject = Object.assign(new Playlist(), this.currentObject)
+                    if (!this.currentObject.id.startsWith("pl_")) this.currentObject.id = "pl_" + this.currentObject.id
+                    Utils.player.playSong(this.currentSong, play)
+                }
+                else {
+                    console.error("Playing a song that cannot be played! Resetting player.")
+                }
+                return;
             }
-            else {
-                this.currentIndex = 0
-                this.currentSong = this.allSongs[0].song
-                this.currentObject = this.allSongs[0].obj
+            if (obj.constructor === Album) {
+                let result = await Utils.apiManager.doPostRequest({
+                    act: "getAlbumInfo",
+                    id: obj.id,
+                    orderByDesc: true,
+                    //
+                    offset: -1
+                })
+                let songs = result["songs"]["songs"]
+                for (let i in songs) {
+                    let objs = songs[i]
+                    let sng = new Song(objs.songID.replace("so_", ""), objs.url, objs.albumPosition, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
+                    if (sng.canBeLoaded) {
+                        this.allSongs.push({ song: sng, obj: obj })
+                        this.allSongsIds.push({ song: sng.id, obj: "al_" + obj.id })
+                    }
+                }
+                if (this.shuffle) this.allSongs = this.shuffleArray(this.allSongs)
+                if (idSong != "") {
+                    for (let i in this.allSongs) {
+                        let sng = this.allSongs[i]
+                        if (sng.song.id == idSong) {
+                            this.currentIndex = parseInt(i)
+                            this.currentSong = sng.song
+                            this.currentObject = sng.obj
+                        }
+                    }
+                }
+                else {
+                    this.currentIndex = 0
+                    this.currentSong = this.allSongs[0].song
+                    this.currentObject = this.allSongs[0].obj
+                }
+                this.currentObject = Object.assign(new Album(), this.currentObject)
+                if (!this.currentObject.id.startsWith("al_")) this.currentObject.id = "al_" + this.currentObject.id
+                Utils.player.playSong(this.currentSong, play)
+                return;
             }
-            this.currentObject = Object.assign(new Singer(), this.currentObject)
-            if (!this.currentObject.id.startsWith("si_")) this.currentObject.id = "si_" + this.currentObject.id
-            Utils.player.playSong(this.currentSong, play)
-            return;
+            if (obj.constructor === Singer) {
+                let result = await Utils.apiManager.doPostRequest({
+                    act: "getSingerInfo",
+                    id: obj.id
+                })
+                let songs = result["songs"]
+                for (let i in songs) {
+                    let objs = songs[i]
+                    let sng = new Song(objs.songID.replace("so_", ""), objs.url, objs.albumPosition, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, obj.id, obj.name, objs.albumName, objs.albumID, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
+                    if (sng.canBeLoaded) {
+                        this.allSongs.push({ song: sng, obj: obj })
+                        this.allSongsIds.push({ song: sng.id, obj: "si_" + obj.id })
+                    }
+                }
+                if (this.shuffle) this.allSongs = this.shuffleArray(this.allSongs)
+                if (idSong != "") {
+                    for (let i in this.allSongs) {
+                        let sng = this.allSongs[i]
+                        if (sng.song.id == idSong) {
+                            this.currentIndex = parseInt(i)
+                            this.currentSong = sng.song
+                            this.currentObject = sng.obj
+                        }
+                    }
+                }
+                else {
+                    this.currentIndex = 0
+                    this.currentSong = this.allSongs[0].song
+                    this.currentObject = this.allSongs[0].obj
+                }
+                this.currentObject = Object.assign(new Singer(), this.currentObject)
+                if (!this.currentObject.id.startsWith("si_")) this.currentObject.id = "si_" + this.currentObject.id
+                Utils.player.playSong(this.currentSong, play)
+                return;
+            }
+        }
+        catch (e) {
+            console.error("Cannot change queue !\n", e)
         }
     }
 
