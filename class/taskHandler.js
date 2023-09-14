@@ -39,27 +39,30 @@ export default class TaskHandler {
         var iscf = false;
         let origin = "app://root"
         if (Utils.app.platform == "Android") origin = "https://myapp"
-        Utils.app.remoteClient.registerIframeUrl(wt.url, `addEventListener('message', async (e) =>
-            {
-                if(e.origin.includes('` + origin + `'))
+        Utils.app.remoteClient.registerIframeUrl(wt.url, `(async () => {
+            let retData = await (async () => { var wtId = ` + wt.id + `; ` + wt.script.split("app://root").join(origin) + `})()
+            addEventListener('message', async (e) =>
                 {
-                    if(e.data.message == 'js')
+                    if(e.origin.includes('` + origin + `'))
                     {
-                        parent.postMessage({message: 'callback', data:await (async () => { var wtId = e.data.id; ` + wt.script.split("app://root").join(origin) + `})(), id: e.data.id}, '` + origin + `')
-                    }
-                    if(e.data.message == 'execjs')
-                    {
-                        try {
-                            eval(e.data.js)().then((result) => {
-                                parent.postMessage({message: 'jscb', data:result, id: e.data.id}, '` + origin + `')
-                            })
-                        } catch (ex) {
-                            console.error(ex)
-                            parent.postMessage({message: 'jscb', data:null, id: e.data.id}, '` + origin + `')
+                        if(e.data.message == 'js')
+                        {
+                            parent.postMessage({message: 'callback', data: retData, id: e.data.id}, '` + origin + `')
+                        }
+                        if(e.data.message == 'execjs')
+                        {
+                            try {
+                                eval(e.data.js)().then((result) => {
+                                    parent.postMessage({message: 'jscb', data:result, id: e.data.id}, '` + origin + `')
+                                })
+                            } catch (ex) {
+                                console.error(ex)
+                                parent.postMessage({message: 'jscb', data:null, id: e.data.id}, '` + origin + `')
+                            }
                         }
                     }
-                }
-            })`)
+                })
+            })()`)
         iframe.onload = async () => {
             wt.callback(await TaskHandler.postJs(iframe, wt), wt.id)
             if (!wt.stopTaskManually) this.switchTask(wt)

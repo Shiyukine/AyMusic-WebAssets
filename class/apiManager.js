@@ -8,10 +8,12 @@ export default class ApiManager {
     countFailed = 0;
     disconnected = false
     cache = {}
+    origin = "app://Cache"
 
     async init() {
         try {
-            let rep = await fetch("app://Cache/API/index")
+            if (Utils.app.platform == "Android") this.origin = "https://mycache"
+            let rep = await fetch(this.origin + "/API/index")
             let json = await rep.json()
             this.cache = json
         }
@@ -36,7 +38,7 @@ export default class ApiManager {
     fetchAPI(body, callback) {
         let result = "";
         if (JSON.stringify(body) in this.cache) {
-            fetch("app://Cache/API/" + this.cache[JSON.stringify(body)]).then(async rep => {
+            fetch(this.origin + "/API/" + this.cache[JSON.stringify(body)]).then(async rep => {
                 let json = await rep.json()
                 if (json) {
                     result = JSON.stringify(json)
@@ -78,7 +80,7 @@ export default class ApiManager {
             }
             else {
                 if (JSON.stringify(body) in this.cache) {
-                    fetch("app://Cache/API/" + this.cache[JSON.stringify(body)]).then(async rep => {
+                    fetch(this.origin + "/API/" + this.cache[JSON.stringify(body)]).then(async rep => {
                         let json = await rep.json()
                         if (json) {
                             if (callback) callback(json)
