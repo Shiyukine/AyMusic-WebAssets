@@ -40,14 +40,31 @@ export default class TaskHandler {
         let origin = "app://root"
         if (Utils.app.platform == "Android") origin = "https://myapp"
         Utils.app.remoteClient.registerIframeUrl(wt.url, `(async () => {
-            let retData = await (async () => { var wtId = ` + wt.id + `; ` + wt.script.split("app://root").join(origin) + `})()
+            let func = async () => { var wtId = ` + wt.id + `; ` + wt.script.split("app://root").join(origin) + `}
+            let retData = null;
+            if("` + Utils.app.platform + `" == "Android") {
+                try {
+                    retData = await func()
+                }
+                catch(e) {
+                    console.warn("Error when evaluating JS");
+                    addEventListener("DOMContentLoaded", async () => {
+                        retData = await func()
+                    })
+                }
+            }
+            else {
+                addEventListener("DOMContentLoaded", async () => {
+                    retData = await func()
+                })
+            }
             addEventListener('message', async (e) =>
                 {
                     if(e.origin.includes('` + origin + `'))
                     {
                         if(e.data.message == 'js')
                         {
-                            parent.postMessage({message: 'callback', data: retData, id: e.data.id}, '` + origin + `')
+                            parent.postMessage({message: 'callback', data: retData ? retData : await func(), id: e.data.id}, '` + origin + `')
                         }
                         if(e.data.message == 'execjs')
                         {

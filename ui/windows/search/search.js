@@ -18,6 +18,9 @@ export default class SearchWindow extends HTMLDivElement {
     platformsBusy = []
     elementFocus = null
     anSearch = "";
+    static lastSearchCache = [];
+    static lastPlatformCache = "";
+    static lastSearchTextCache = "";
 
     constructor() {
         super();
@@ -40,6 +43,7 @@ export default class SearchWindow extends HTMLDivElement {
                     //iconround = all
                     this.selectedServer = shadow.getElementById("serv_picker").value
                     shadow.getElementById("serv_ico").src = "/resources/" + shadow.getElementById("serv_picker").value + ".ico"
+                    SearchWindow.lastPlatformCache = this.selectedServer
                 })
                 shadow.getElementById("launchSearch").addEventListener("click", async () => {
                     this.launchSearch()
@@ -52,7 +56,7 @@ export default class SearchWindow extends HTMLDivElement {
                     if (!dontHide && shadow.querySelectorAll(":hover")[shadow.querySelectorAll(":hover").length - 1].tagName != "LI" && !this.elementFocus) shadow.getElementById("suggest").style.display = "none"
                     dontHide = false
                 })
-                shadow.getElementById("tb_search").addEventListener("keydown", async (e) => {
+                shadow.getElementById("tb_search").addEventListener("keyup", async (e) => {
                     if (e.key == "Enter") {
                         this.launchSearch()
                     }
@@ -119,12 +123,31 @@ export default class SearchWindow extends HTMLDivElement {
                         }
                     }
                 })
+                if (SearchWindow.lastSearchCache.length > 0) {
+                    shadow.getElementById("tb_search").value = SearchWindow.lastSearchTextCache
+                    shadow.getElementById("serv_picker").value = SearchWindow.lastPlatformCache
+                    this.selectedServer = shadow.getElementById("serv_picker").value
+                    shadow.getElementById("serv_ico").src = "/resources/" + shadow.getElementById("serv_picker").value + ".ico"
+                    SearchWindow.lastSearchCache.forEach(x => {
+                        if (x instanceof Song) {
+                            this.shadowRoot.getElementById("songs").appendChild(new SongGrid(x))
+                        }
+                        else if (x instanceof Singer) {
+                            this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(x))
+                        }
+                        else {
+                            this.shadowRoot.getElementById("albums").appendChild(new AlbumGrid(x))
+                        }
+                    })
+                    this.shadowRoot.getElementById("bottom").style.display = "block"
+                }
             }
         })
     }
 
     async launchSearch() {
         this.anSearch = null
+        SearchWindow.lastSearchTextCache = this.shadowRoot.getElementById("tb_search").value
         if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
         this.elementFocus = null
         this.shadowRoot.getElementById("suggest").style.display = "none"
@@ -143,14 +166,13 @@ export default class SearchWindow extends HTMLDivElement {
             }
             if (this.selectedServer != "icon") {
                 await this.searchForAPlatform(this.capitalizeFirstLetter(this.selectedServer), false)
-                this.shadowRoot.getElementById("bottom").style.display = "block"
             }
             else {
                 for (let plat of await PlatformHandler.getAvailablePlatforms()) {
                     await this.searchForAPlatform(plat, false)
                 }
-                this.shadowRoot.getElementById("bottom").style.display = "block"
             }
+            this.shadowRoot.getElementById("bottom").style.display = "block"
         }
         else {
             let id = "search"
@@ -171,6 +193,7 @@ export default class SearchWindow extends HTMLDivElement {
     }
 
     async searchForAPlatform(server, listAddedServerSongs) {
+        SearchWindow.lastSearchCache = []
         //listAddedServerSongs = show songs which are already added on AyMusic DB
         var platform = server
         this.platformsBusy.push(platform)
@@ -254,14 +277,20 @@ export default class SearchWindow extends HTMLDivElement {
                                 let albumID = nsongsID[i]["albumID"]
                                 let albumType = songsToAdd[i][8]
                                 let albumImgUrl = songsToAdd[i][9]
-                                this.shadowRoot.getElementById("songs").appendChild(new SongGrid(new Song(id, url, positionOrDate, title, imgUrl, time,
-                                    isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID)))
+                                let sg = new Song(id, url, positionOrDate, title, imgUrl, time,
+                                    isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID)
+                                SearchWindow.lastSearchCache.push(sg)
+                                this.shadowRoot.getElementById("songs").appendChild(new SongGrid(sg))
                                 if (!singersIDAdded.includes(singerID)) {
-                                    this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(new Singer(singerID, singerName, singerImgUrl)))
+                                    let sing = new Singer(singerID, singerName, singerImgUrl)
+                                    SearchWindow.lastSearchCache.push(sing)
+                                    this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(sing))
                                     singersIDAdded.push(singerID)
                                 }
                                 if (!albumsIDAdded.includes(albumID)) {
-                                    this.shadowRoot.getElementById("albums").appendChild(new AlbumGrid(new Album(albumID, albumName, singerID, albumType, albumImgUrl)))
+                                    let al = new Album(albumID, albumName, singerID, albumType, albumImgUrl)
+                                    SearchWindow.lastSearchCache.push(al)
+                                    this.shadowRoot.getElementById("albums").appendChild(new AlbumGrid(al))
                                     albumsIDAdded.push(albumID)
                                 }
                             }
