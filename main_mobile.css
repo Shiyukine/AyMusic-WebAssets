@@ -16,9 +16,6 @@ body {
     width: 100%;
     height: 100%;
     color: rgb(64, 64, 64);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
 }
 
 #main {
@@ -26,9 +23,6 @@ body {
     height: 100%;
     position: relative;
     overflow: hidden;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
     transition: height 0.3s;
 }
 
@@ -45,6 +39,19 @@ p {
 @font-face {
     font-family: "Quicksand";
     src: url("./resources/quicksand.ttf");
+}
+
+#bgImg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-position: center;
+    object-fit: cover;
+    transition: 0.4s;
+}
+
+#bgImg.blur {
+    filter: blur(20px);
 }
 
 #loadPanel {

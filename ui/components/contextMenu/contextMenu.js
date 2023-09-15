@@ -24,6 +24,7 @@ export default class ContextMenu extends HTMLDivElement {
         this.style.transition = "opacity 0.4s"
         this.style.display = "flex"
         this.style.position = "absolute"
+        this.style.zIndex = "999"
         Import.getData("/ui/components/contextMenu/contextMenu" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {

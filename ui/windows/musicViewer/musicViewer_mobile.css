@@ -104,6 +104,7 @@ h3 {
     -webkit-mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
     white-space: nowrap;
     line-height: 30px;
+    user-select: text;
 }
 
 #subtitle {
@@ -112,6 +113,7 @@ h3 {
     position: relative;
     cursor: pointer;
     line-height: 20px;
+    user-select: text;
 }
 
 #subtitle:hover {

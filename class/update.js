@@ -45,12 +45,10 @@ export default class Update {
                     var info = new InfoPanel("Can't search for updates", "Error when searching updates:\n" + state.error, [{
                         text: "Retry", isPositive: true, onclick: () => {
                             Utils.app.remoteClient.searchUpdates()
-                            document.getElementById("main").removeChild(Update.infoPanel);
                             info.close()
                         }
                     }, {
                         text: "Close", isPositive: false, onclick: () => {
-                            document.getElementById("main").removeChild(Update.infoPanel);
                             info.close()
                         }
                     }], false);

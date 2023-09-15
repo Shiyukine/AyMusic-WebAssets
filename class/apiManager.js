@@ -65,7 +65,9 @@ export default class ApiManager {
     }
 
     fetchAPIThenCache(body, callback) {
-        this.doPostRequest(body).then(rep => {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 2000)
+        this.doPostRequest(body, controller).then(rep => {
             if (rep) {
                 if (JSON.stringify(body) in this.cache) {
                     if (callback) callback(rep)
@@ -91,7 +93,7 @@ export default class ApiManager {
         })
     }
 
-    async doPostRequest(content) {
+    async doPostRequest(content, controller = null) {
         //console.log("-> POST request : SENDING. Action : " + content.act)
         let start = Date.now();
         var newDico = {
@@ -110,7 +112,8 @@ export default class ApiManager {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(newDico)
+                    body: JSON.stringify(newDico),
+                    signal: controller ? controller.signal : null
                 });
                 var result = await rawResponse.json();
                 try {

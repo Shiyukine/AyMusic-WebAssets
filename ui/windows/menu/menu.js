@@ -92,15 +92,19 @@ export default class MenuWindow extends HTMLDivElement {
             if (newWindow == this.UserWindows.Home) {
                 awindow = new HomeWindow();
                 awindow.classList.add("home")
+                document.getElementById("bgImg").classList.remove("blur")
             }
             if (newWindow == this.UserWindows.Library) {
                 awindow = new LibraryWindow()
+                document.getElementById("bgImg").classList.add("blur")
             }
             if (newWindow == this.UserWindows.Search) {
                 awindow = new SearchWindow()
+                document.getElementById("bgImg").classList.add("blur")
             }
             if (newWindow == this.UserWindows.Settings) {
                 awindow = new SettingsWindow()
+                document.getElementById("bgImg").classList.add("blur")
             }
             awindow.classList.add("aWindow")
             if (Utils.app.platform == "Windows") awindow.classList.add("windows")
@@ -109,6 +113,7 @@ export default class MenuWindow extends HTMLDivElement {
                 let thisW = this.anWindow.win
                 thisW.ontransitionend = () => {
                     thisW.close()
+                    thisW.innerHTML = ""
                     document.getElementById("main").removeChild(thisW)
                 }
                 thisW.style.opacity = "0%";

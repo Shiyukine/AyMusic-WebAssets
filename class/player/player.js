@@ -18,11 +18,20 @@ export default class Player {
     currentSongUrl = "";
     currentPlatform = null;
     needPlay = true;
+    currentTime = -1;
+    duration = -1;
+    state = null;
 
     constructor() {
         window.addEventListener("message", (e) => {
             //console.log(e)
             if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcb") {
+                if (e.data.cb == "play") {
+                    this.state = true
+                }
+                if (e.data.cb == "pause") {
+                    this.state = false
+                }
                 this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
                 if (e.data.cb == "loadedmetadata") {
                     this.changeVolume(this.volume)
@@ -32,10 +41,18 @@ export default class Player {
                 }
             }
             if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcbdata") {
-                this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
                 if (e.data.cb == "timeupdate") {
                     this.checkCropSong(e.data.data)
+                    this.currentTime = e.data.data
                 }
+                if (e.data.cb == "loadedmetadata") {
+                    this.duration = e.data.data
+                    this.changeVolume(this.volume)
+                    if (this.needPlay) this.play()
+                    else this.pause()
+                    //TaskHandler.executeJs(url, "async () => { navigator.mediaSession.metadata = " + navigator.mediaSession.metadata + " }")
+                }
+                this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
             }
         })
     }
@@ -48,10 +65,11 @@ export default class Player {
      */
     async playSong(song, play = true) {
         this.needPlay = play
-        console.trace()
+        this.duration = -1
+        this.currentTime - 1
+        this.state = null
         if (this.objurl != "") URL.revokeObjectURL(this.objurl)
         console.log("begin to play song " + song.url)
-        console.log("Resetting ancient song elements")
         if (this.audioElement != null) {
             this.audioElement.pause()
             this.audioElement = null;
@@ -59,27 +77,30 @@ export default class Player {
         try {
             TaskHandler.stopWebTaskManually(this.currentUrl, true)
         } catch (e) { }
-        console.log("Resetted. Creating new audio element")
         if (song.imgUrl == "localImg") {
             this.isLocalMusic = true;
             this.audioElement = new Audio()
             this.audioElement.onplay = () => {
+                this.state = true
                 this.#eventEl.dispatchEvent(new CustomEvent("play"));
                 if (document.visibilityState == "hidden")
                     this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
             }
             this.audioElement.onpause = () => {
+                this.state = false
                 this.#eventEl.dispatchEvent(new CustomEvent("pause"));
                 if (document.visibilityState == "hidden")
                     this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
             }
             this.audioElement.ontimeupdate = () => {
+                this.currentTime = this.audioElement.currentTime * 1000
                 if (document.visibilityState == "visible") {
                     this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
                 }
                 this.checkCropSong(this.audioElement.currentTime)
             }
             this.audioElement.onloadedmetadata = () => {
+                this.duration = this.audioElement.duration * 1000
                 this.#eventEl.dispatchEvent(new CustomEvent("loadedmetadata"));
                 this.audioElement.volume = this.volume / 100;
                 if (play) this.play()
@@ -304,6 +325,7 @@ export default class Player {
     }
 
     async getCurrentTime() {
+        if (this.currentTime != -1) return this.currentTime
         if (this.isLocalMusic) {
             return this.audioElement.currentTime * 1000
         }
@@ -355,6 +377,7 @@ export default class Player {
     }
 
     async getDuration() {
+        if (this.duration != -1) return this.duration
         if (this.isLocalMusic) {
             return this.audioElement.duration * 1000
         }
@@ -365,6 +388,7 @@ export default class Player {
     }
 
     async getState() {
+        if (this.state != null) return this.state
         if (this.isLocalMusic) {
             return !this.audioElement.paused
         }

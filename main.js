@@ -73,7 +73,7 @@ async function main() {
                 LocalMusicHandler.init()
                 await LocalMusicHandler.getLocalLibrary()
                 //
-                Utils.apiManager.init()
+                await Utils.apiManager.init()
                 //
                 Update.searchUpdate(loadPanel);
                 //loadPanel.changeText("Connecting to your account...", "Please wait...");
@@ -94,7 +94,6 @@ async function main() {
                         let lp = document.getElementById("loadPanel");
                         lp.children[0].classList.add("pauseSVG");
                         let mainPanel = document.getElementById("main");
-                        document.getElementById("main").style.backgroundImage = "url(/resources/background.jpg)"
                         if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS")
                             document.getElementsByClassName("windowTopBar")[0].classList.add("loaded")
                         mainPanel.removeChild(lp);
@@ -118,7 +117,7 @@ async function main() {
                         document.getElementById("main").appendChild(info)
                     }
                 }
-                if (Utils.app.remoteClient.haveCookie(Utils.servURL, "PHPSESSID") && Utils.apiManager.haveCache({ act: "getUserInfo" })) {
+                if (Utils.app.remoteClient.haveCookie(Utils.servURL, "PHPSESSID").length > 0 && Utils.apiManager.haveCache({ act: "getUserInfo" })) {
                     cb()
                 }
                 else {
