@@ -11,6 +11,7 @@ import LocalMusicHandler from "./class/utils/localMusicHandler.js";
 import ThemeColor from "./class/themeColor.js";
 import MusicViewerWindow from "./ui/windows/musicViewer/musicViewer.js";
 import TaskHandler from "./class/taskHandler.js";
+import Adblock from "./class/adblock.js";
 
 async function main() {
     window.app = Utils.app;
@@ -74,6 +75,9 @@ async function main() {
                 await LocalMusicHandler.getLocalLibrary()
                 //
                 await Utils.apiManager.init()
+                //
+                //await Adblock.init()
+                await TaskHandler.init()
                 //
                 Update.searchUpdate(loadPanel);
                 //loadPanel.changeText("Connecting to your account...", "Please wait...");
