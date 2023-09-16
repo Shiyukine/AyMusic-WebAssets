@@ -31,6 +31,7 @@ export default class LyricsViewerWindow extends HTMLDivElement {
             this.style.left = "105px"
             this.style.height = "calc(100% - 135px)"
         }
+        this.style.zIndex = "1"
         this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "200px" : "45px"
         this.style.transform = "translateY(" + window.innerHeight + "px)"
         if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") this.style.zIndex = "4"

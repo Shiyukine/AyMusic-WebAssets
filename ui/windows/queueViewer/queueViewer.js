@@ -17,6 +17,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
         super();
         var shadow = this.attachShadow({ mode: "open" })
         this.style.position = "absolute"
+        this.style.zIndex = "1"
         if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
             this.style.width = "calc(100% - 10px)"
             this.style.marginLeft = "5px"

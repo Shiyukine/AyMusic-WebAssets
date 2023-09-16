@@ -11,7 +11,8 @@ p {
 }
 
 #main {
-    display: contents;
+    display: block;
+    height: 100%;
 }
 
 #menu {
@@ -21,7 +22,7 @@ p {
     padding: 10px;
     margin-left: 15px;
     float: left;
-    height: calc(100% - 78px - 15px);
+    height: calc(100% - 103px - 15px);
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -62,7 +63,6 @@ p {
 
 .panel {
     position: absolute;
-    z-index: 0;
     width: 100%;
     opacity: 0%;
     transition: opacity 0.4s;
@@ -76,7 +76,7 @@ p {
 }
 
 #view .selected {
-    z-index: 10;
+    z-index: 1;
     opacity: 1;
 }
 

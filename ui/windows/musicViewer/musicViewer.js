@@ -31,6 +31,8 @@ export default class MusicViewerWindow extends HTMLDivElement {
         this.ontransitionend = () => { };
         this.style.opacity = "0%"
         this.style.width = "100%"
+        this.style.position = "relative"
+        this.style.zIndex = "1"
         if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
             this.style.marginTop = "0px"
             this.style.height = "calc(100% - 138px)"
