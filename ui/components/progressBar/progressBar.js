@@ -97,8 +97,10 @@ export default class ProgressBar extends HTMLDivElement {
         try {
             if (this.shadowRoot.getElementById("pbInfo").clientWidth > 0) {
                 let left = value / parseFloat(this.max) * (this.shadowRoot.getElementById("pbInfo").clientWidth - 18)
-                this.shadowRoot.getElementById("stateThumb").style.marginLeft = left + "px"
-                this.shadowRoot.getElementById("state").style.width = left + "px"
+                if (document.visibilityState == "visible") {
+                    this.shadowRoot.getElementById("stateThumb").style.marginLeft = left + "px"
+                    this.shadowRoot.getElementById("state").style.width = left + "px"
+                }
                 this.value = value
                 this.#eventEl.dispatchEvent(new CustomEvent("valuechange"));
             }

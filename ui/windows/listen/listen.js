@@ -258,11 +258,12 @@ export default class ListenWindow extends HTMLDivElement {
                 Utils.player.onTimeUpdate(async () => {
                     let cur = await Utils.player.getCurrentTime()
                     if (!mouseDownPb) pb.changeValue(cur)
-                    shadow.getElementById("curTime").firstChild.textContent = Utils.msToTime(cur)
+                    if (document.visibilityState == "visible")
+                        shadow.getElementById("curTime").firstChild.textContent = Utils.msToTime(cur)
                     if (!Utils.player.isLocalMusic) {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                        this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                        this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                        //this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                        //this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                             pR: 1,
                             cur: cur,
