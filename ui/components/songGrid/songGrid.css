@@ -111,7 +111,8 @@
     transform: translate(0, -50%);
 }
 
-.panel_ep #context {
+.panel_ep #context,
+.panel_ep #like {
     width: 30px;
     height: 30px;
     padding: 2px;
@@ -120,10 +121,12 @@
     position: relative;
     margin-top: 6px;
     border-radius: 10px;
+    margin-left: 10px;
     transition: background-color 0.4s;
 }
 
-.panel_ep #context:hover {
+.panel_ep #context:hover,
+.panel_ep #like:hover {
     background-color: rgba(139, 139, 139, 0.4);
 }
 
@@ -161,4 +164,13 @@ p {
     border-radius: 50%;
     opacity: 0;
     background-color: rgb(0, 0, 0, 0.4);
+}
+
+#svg_explicit {
+    fill: gray;
+    width: 20px;
+    /* margin: auto; */
+    margin-bottom: 4px;
+    margin-right: 3px;
+    display: none;
 }

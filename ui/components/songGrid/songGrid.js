@@ -63,6 +63,18 @@ export default class SongGrid extends HTMLDivElement {
                         this.shadowRoot.getElementById("title").innerText = this.song.aliasTitle != null ? song.aliasTitle : this.song.title
                         this.shadowRoot.getElementById("artist").innerText = this.song.aliasSingerName != null ? song.aliasSingerName : this.song.singerName
                         this.shadowRoot.getElementById("time").innerText = this.song.time == -1 ? "--:--:--" : Utils.msToTime(this.song.time)
+                        if (Utils.libManager.isSongIsInLikedSongs(song)) {
+                            this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.pathsData["Heart"])
+                        }
+                        else {
+                            this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.pathsData["HeartOutline"])
+                        }
+                        if (song.isExplicit) {
+                            this.shadowRoot.getElementById("svg_explicit").style.display = "block"
+                        }
+                        else {
+                            this.shadowRoot.getElementById("svg_explicit").style.display = ""
+                        }
                         let plat = song.imgUrl == "localImg" ? "iconround" : await PlatformHandler.getPlatformBySongUrl(song.url)
                         plat = plat.toLowerCase()
                         this.shadowRoot.getElementById("platform").style.backgroundImage = "url('/resources/" + plat + ".ico')"
@@ -93,6 +105,9 @@ export default class SongGrid extends HTMLDivElement {
                                 this.shadowRoot.getElementById("svg").style.opacity = "0"
                                 this.shadowRoot.getElementById("cache").style.opacity = "0"
                             }
+                        });
+                        this.shadowRoot.getElementById("like").addEventListener("click", async function () {
+                            Utils.libManager.addOrRemoveSongLikedSongs(song)
                         });
                         let pl = this.object;
                         let curThis = this;
@@ -199,6 +214,16 @@ export default class SongGrid extends HTMLDivElement {
                             this.shadowRoot.getElementById("cache").style.opacity = "0"
                         }
                     }
+                    Utils.libManager.onAddSongToLikedSongs((e) => {
+                        if (song != null && e.detail.objId == "so_" + song.id) {
+                            this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.pathsData["Heart"])
+                        }
+                    });
+                    Utils.libManager.onRemoveSongFromLikedSongs((e) => {
+                        if (song != null && e.detail.objId == "so_" + song.id) {
+                            this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.pathsData["HeartOutline"])
+                        }
+                    });
                     Utils.player.onSongChange(async () => {
                         if (this.isMySong()) {
                             this.shadowRoot.getElementById("title").style.color = "#00ccff"
@@ -221,6 +246,18 @@ export default class SongGrid extends HTMLDivElement {
                     Utils.player.onPause(() => {
                         if (this.isMySong()) {
                             this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Play"])
+                        }
+                    })
+                    Utils.musicViewer.onSongChange((e) => {
+                        if (e.detail.objId.startsWith("so_") && song.id == e.detail.objId.replace("so_", "")) {
+                            this.shadowRoot.getElementById("title").innerText = e.detail.aliasTitle ? e.detail.aliasTitle : song.title
+                            this.shadowRoot.getElementById("artist").innerText = e.detail.aliasSongSingerName ? e.detail.aliasSongSingerName : (song.aliasSingerName ? song.aliasSingerName : song.singerName)
+                            if (e.detail.isExplicit) {
+                                this.shadowRoot.getElementById("svg_explicit").style.display = "block"
+                            }
+                            else {
+                                this.shadowRoot.getElementById("svg_explicit").style.display = ""
+                            }
                         }
                     })
                     Utils.libManager.onRemoveSongFromPlaylist((e) => {

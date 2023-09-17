@@ -52,6 +52,11 @@ export default class SingerGrid extends HTMLDivElement {
                     shadow.getElementById("svg").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                     this.shadowRoot.getElementById("cache").style.opacity = Utils.queueManager.currentObject != null && "si_" + singer.id == Utils.queueManager.currentObject.id ? "1" : "0"
                 })
+                Utils.musicViewer.onSongChange((e) => {
+                    if (e.detail.objId.startsWith("si_") && singer.id == e.detail.objId.replace("si_", "")) {
+                        this.shadowRoot.getElementById("title").innerText = e.detail.aliasName ? e.detail.aliasName : this.singer.name
+                    }
+                })
                 shadow.getElementById("svg").addEventListener("click", async () => {
                     if (Utils.queueManager.currentObject != null && "si_" + singer.id == Utils.queueManager.currentObject.id) {
                         if (await Utils.player.getState()) Utils.player.pause()

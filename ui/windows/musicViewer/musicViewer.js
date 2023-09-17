@@ -24,6 +24,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
         start: 0,
         end: -1
     }
+    #eventEl = document.createElement("event");
 
     constructor() {
         super();
@@ -124,6 +125,16 @@ export default class MusicViewerWindow extends HTMLDivElement {
                         cropEnd: this.crops.end
                     })
                     history.back()
+                    this.#eventEl.dispatchEvent(new CustomEvent("songchange", {
+                        detail: {
+                            objId: "so_" + this.fullObjId,
+                            isExplicit: shadow.getElementById("edit_explicit").value == 1,
+                            aliasTitle: shadow.getElementById("edit_title").getText(),
+                            aliasSongSingerName: shadow.getElementById("edit_artist").getText(),
+                            cropStart: this.crops.start,
+                            cropEnd: this.crops.end
+                        }
+                    }));
                 }
                 else if (this.object instanceof Singer) {
                     await Utils.apiManager.doPostRequest({
@@ -131,12 +142,18 @@ export default class MusicViewerWindow extends HTMLDivElement {
                         id: this.fullObjId.split("si_").join(""),
                         aliasName: shadow.getElementById("edit_artist").getText()
                     })
+                    this.#eventEl.dispatchEvent(new CustomEvent("songchange", {
+                        detail: {
+                            objId: this.fullObjId,
+                            aliasName: shadow.getElementById("edit_artist").getText()
+                        }
+                    }));
                 }
                 else {
                     Utils.showMiniError("mv_err", "Failed to change info", true)
                 }
                 shadow.getElementById("edit").style.display = "none"
-                Utils.showMiniError("mv_success", "Success! Please change the current song to refresh.", true, "rgb(0, 204, 255)", "#000")
+                Utils.showMiniError("mv_success", "Success!", true, "rgb(0, 204, 255)", "#000")
             }
             shadow.querySelectorAll("*").forEach((x) => {
                 if (x.tagName == "INPUT" && x.max == "1") {
@@ -417,5 +434,9 @@ export default class MusicViewerWindow extends HTMLDivElement {
             this.style.opacity = "0%"
             //this.controller.abort()
         }
+    }
+
+    onSongChange(callback) {
+        this.#eventEl.addEventListener("songchange", callback)
     }
 }

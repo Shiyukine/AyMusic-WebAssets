@@ -316,6 +316,14 @@ export default class ListenWindow extends HTMLDivElement {
                     mouseDownPb = false;
                     Utils.player.seek(pb.getValue());
                 })
+                Utils.musicViewer.onSongChange((e) => {
+                    if (e.detail.objId.startsWith("so_") && Utils.queueManager.currentSong.id == e.detail.objId.replace("so_", "")) {
+                        shadow.getElementById("music_title").innerText = e.detail.aliasTitle ? e.detail.aliasTitle : Utils.queueManager.currentSong.title
+                        shadow.getElementById("music_artist").innerText = e.detail.aliasSongSingerName ? e.detail.aliasSongSingerName : (Utils.queueManager.currentSong.aliasSingerName ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName)
+                        Utils.queueManager.currentSong.cropStart = e.detail.cropStart
+                        Utils.queueManager.currentSong.cropEnd = e.detail.cropEnd
+                    }
+                })
                 Utils.player.onShuffleChange(async () => {
                     if (Utils.queueManager.shuffle) {
                         shadow.getElementById("shuffle").children[0].setAttribute("fill", "#00ccff")
