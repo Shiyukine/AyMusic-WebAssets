@@ -101,8 +101,7 @@ export default class LocalMusicHandler {
                 console.log("Added new local artist : " + artist.id.replace("si_", ""))
                 let album = LocalMusicHandler.addLocalAlbum(tags != null && tags.album != null ? tags.album : "Unknown album", tags != null && tags.artist != null ? tags.artist : "Unknown artist")
                 console.log("Added new local album : " + album.id.replace("al_", "") + ", artist : " + album.singerID.replace("si_", ""))
-                let titleFile = nurl.split("\\")[nurl.split("\\").length - 1].split(".")[0]
-                allMusics.push([result, tags != null && tags.title != null ? tags.title : titleFile, "localImg", tags.duration])
+                allMusics.push([result, tags != null && tags.title != null ? tags.title : null, "localImg", tags.duration])
                 if (tags != null && tags.image != null) {
                     var bytes = new Uint8Array(tags.image);
                     var uwu = []

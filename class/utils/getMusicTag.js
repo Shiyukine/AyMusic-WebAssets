@@ -1,5 +1,6 @@
 import * as id3 from "../../plugins/id3/id3.js";
 import AudioWAV from "../../plugins/uttori-audio-wave/wav.js";
+import Utils from "./utils.js";
 
 export default class GetMusicTag {
     tags = {
@@ -27,7 +28,7 @@ export default class GetMusicTag {
                 reader.readAsArrayBuffer(request.response);
                 reader.onload = function (e) {
                     if (base.getFileExtension() == "wav") {
-                        let titleFile = musicURL.split("\\")[musicURL.split("\\").length - 1].split(".")[0]
+                        let titleFile = base.getFileTitle(musicURL)
                         base.tags.title = titleFile
                         var audioWav = AudioWAV;
                         const outputChunks = wav => {
@@ -56,7 +57,7 @@ export default class GetMusicTag {
                         id3.fromFile(new File([e.target.result], musicURL.split("\\")[musicURL.split("\\").length - 1])).then((tags) => {
                             let audio = new Audio()
                             audio.onloadedmetadata = async () => {
-                                let titleFile = musicURL.split("\\")[musicURL.split("\\").length - 1].split(".")[0]
+                                let titleFile = base.getFileTitle(musicURL)
                                 base.tags = {
                                     title: tags != null && tags.title != null ? tags.title : titleFile,
                                     duration: audio.duration * 1000,
@@ -74,7 +75,7 @@ export default class GetMusicTag {
                             onSuccess: function (tag) {
                                 let audio = new Audio()
                                 audio.onloadedmetadata = async () => {
-                                    let titleFile = musicURL.split("\\")[musicURL.split("\\").length - 1].split(".")[0]
+                                    let titleFile = base.getFileTitle(musicURL)
                                     base.tags = {
                                         title: tag != null && tag.tags.title != null ? tag.tags.title : titleFile,
                                         duration: audio.duration * 1000,
@@ -94,7 +95,7 @@ export default class GetMusicTag {
                     else {
                         let audio = new Audio()
                         audio.onloadedmetadata = async () => {
-                            let titleFile = musicURL.split("\\")[musicURL.split("\\").length - 1].split(".")[0]
+                            let titleFile = base.getFileTitle(musicURL)
                             base.tags = {
                                 title: titleFile,
                                 duration: audio.duration * 1000,
@@ -114,5 +115,12 @@ export default class GetMusicTag {
 
     getFileExtension() {
         return this.curMusicUrl.toLowerCase().split(".")[this.curMusicUrl.toLowerCase().split(".").length - 1]
+    }
+
+    getFileTitle(musicURL) {
+        let titleFile = musicURL.split("/")[musicURL.split("/").length - 1].split(".")[0]
+        if (Utils.app.platform == "Windows") titleFile = musicURL.split("\\")[musicURL.split("\\").length - 1].split(".")[0]
+        if (Utils.app.platform == "Android") titleFile = musicURL.split("%2F")[musicURL.split("%2F").length - 1].split(".")[0]
+        return titleFile
     }
 }

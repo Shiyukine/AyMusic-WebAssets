@@ -64,17 +64,17 @@ export default class ListenViewerWindow extends HTMLDivElement {
                         var imge2 = this.shadowRoot.getElementById("bg");
                         imge.onerror = () => {
                             imge.src = "/resources/icon.ico"
-                            imge2.src = "/resources/icon.ico"
+                            imge2.style.backgroundImage = "url('/resources/background.jpg')"
                         }
                         let imgU = "app://data"
                         if (Utils.app.platform == "Android") imgU = "https://mydata";
                         imge.src = imgU + "/Image/" + Utils.queueManager.currentSong.id + ".png"
-                        imge2.src = imgU + "/Image/" + Utils.queueManager.currentSong.id + ".png"
+                        imge2.style.backgroundImage = "url(" + imgU + "/Image/" + Utils.queueManager.currentSong.id + ".png)"
                     }
                 }
                 else {
                     this.shadowRoot.getElementById("music_img").src = Utils.queueManager.currentSong.imgUrl
-                    this.shadowRoot.getElementById("bg").src = Utils.queueManager.currentSong.imgUrl
+                    this.shadowRoot.getElementById("bg").style.backgroundImage = "url(" + Utils.queueManager.currentSong.imgUrl + ")"
                 }
             })
             Utils.player.onLoadedMetadata(async () => {
@@ -248,8 +248,9 @@ export default class ListenViewerWindow extends HTMLDivElement {
                 shadow.getElementById("menu").onclick = (e) => {
                     cm.show(e)
                 }
-                new Translations(shadow.children[1])
-                new ThemeColor(shadow.children[1])
+                //changed child index 1 to 2 with bg !
+                new Translations(shadow.children[2])
+                new ThemeColor(shadow.children[2])
             }
         })
     }

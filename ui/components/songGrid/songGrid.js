@@ -45,7 +45,7 @@ export default class SongGrid extends HTMLDivElement {
         let b = this.object == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "pl_" + this.object.id && this.object.constructor == Playlist)
         b = b || this.object == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "al_" + this.object.id && this.object.constructor == Album)
         b = b || this.object == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "si_" + this.object.id && this.object.constructor == Singer)
-        return Utils.queueManager.currentSong != null && Utils.queueManager.currentSong.id == this.song.id && b
+        return Utils.queueManager.currentSong != null && this.song != null && Utils.queueManager.currentSong.id == this.song.id && b
     }
 
     /**
@@ -137,7 +137,8 @@ export default class SongGrid extends HTMLDivElement {
                         let curThis = this;
                         let elToClick = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? this : this.shadowRoot.getElementById("svg")
                         elToClick.addEventListener("click", async function () {
-                            if ((Utils.app.platform != "Android" && Utils.app.platform != "iOS") || !this.shadowRoot.getElementById("context").matches(":hover")) {
+                            if ((Utils.app.platform != "Android" && Utils.app.platform != "iOS") ||
+                                (!this.shadowRoot.getElementById("context").matches(":hover") && !this.shadowRoot.getElementById("like").matches(":hover"))) {
                                 if (curThis.isMySong()) {
                                     if (await Utils.player.getState()) Utils.player.pause()
                                     else Utils.player.play()
