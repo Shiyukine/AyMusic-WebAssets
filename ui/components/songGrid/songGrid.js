@@ -52,6 +52,61 @@ export default class SongGrid extends HTMLDivElement {
      * 
      * @param {Song} song 
      */
+    async updateGrid(song) {
+        this.shadowRoot.getElementById("title").innerText = this.song.aliasTitle != null ? song.aliasTitle : this.song.title
+        this.shadowRoot.getElementById("artist").innerText = this.song.aliasSingerName != null ? song.aliasSingerName : this.song.singerName
+        this.shadowRoot.getElementById("time").innerText = this.song.time == -1 ? "--:--:--" : Utils.msToTime(this.song.time)
+        if (Utils.libManager.isSongIsInLikedSongs(song)) {
+            this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.pathsData["Heart"])
+        }
+        else {
+            this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.pathsData["HeartOutline"])
+        }
+        if (song.isExplicit) {
+            this.shadowRoot.getElementById("svg_explicit").style.display = "block"
+        }
+        else {
+            this.shadowRoot.getElementById("svg_explicit").style.display = ""
+        }
+        let plat = song.imgUrl == "localImg" ? "iconround" : await PlatformHandler.getPlatformBySongUrl(song.url)
+        plat = plat.toLowerCase()
+        this.shadowRoot.getElementById("platform").style.backgroundImage = "url('/resources/" + plat + ".ico')"
+        if (this.song.imgUrl === "localImg") {
+            if (this.song.canBeLoaded) {
+                var imge = this.shadowRoot.getElementById("img");
+                let imgU = "app://data"
+                if (Utils.app.platform == "Android") imgU = "https://mydata";
+                imge.style.backgroundImage = "url('" + imgU + "/Image/" + this.song.id + ".png'), url('/resources/icon.ico')"
+            }
+            else {
+                this.shadowRoot.getElementById("img").style.backgroundImage = "url('/resources/icon.ico')"
+            }
+        }
+        else {
+            this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + this.song.imgUrl + "')"
+        }
+        if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
+            if (song.imgUrl === "localImg") {
+                this.shadowRoot.getElementById("title").classList.add("nohover")
+                this.shadowRoot.getElementById("artist").classList.add("nohover")
+            }
+            this.shadowRoot.getElementById("title").addEventListener("click", async function () {
+                if (song.imgUrl !== "localImg") {
+                    Utils.musicViewer.changeView("al_" + song.albumID)
+                }
+            });
+            this.shadowRoot.getElementById("artist").addEventListener("click", async function () {
+                if (song.imgUrl !== "localImg") {
+                    Utils.musicViewer.changeView("si_" + song.singerID)
+                }
+            });
+        }
+    }
+
+    /**
+     * 
+     * @param {Song} song 
+     */
     async changeSong(song, dontShow = false) {
         if (!dontShow) {
             if (this.song === null) {
@@ -60,38 +115,7 @@ export default class SongGrid extends HTMLDivElement {
                     this.shadowRoot.getElementById("cssImport").onload = async () => {
                         //new Translations(shadow.children[1])
                         this.song = song;
-                        this.shadowRoot.getElementById("title").innerText = this.song.aliasTitle != null ? song.aliasTitle : this.song.title
-                        this.shadowRoot.getElementById("artist").innerText = this.song.aliasSingerName != null ? song.aliasSingerName : this.song.singerName
-                        this.shadowRoot.getElementById("time").innerText = this.song.time == -1 ? "--:--:--" : Utils.msToTime(this.song.time)
-                        if (Utils.libManager.isSongIsInLikedSongs(song)) {
-                            this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.pathsData["Heart"])
-                        }
-                        else {
-                            this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.pathsData["HeartOutline"])
-                        }
-                        if (song.isExplicit) {
-                            this.shadowRoot.getElementById("svg_explicit").style.display = "block"
-                        }
-                        else {
-                            this.shadowRoot.getElementById("svg_explicit").style.display = ""
-                        }
-                        let plat = song.imgUrl == "localImg" ? "iconround" : await PlatformHandler.getPlatformBySongUrl(song.url)
-                        plat = plat.toLowerCase()
-                        this.shadowRoot.getElementById("platform").style.backgroundImage = "url('/resources/" + plat + ".ico')"
-                        if (this.song.imgUrl === "localImg") {
-                            if (this.song.canBeLoaded) {
-                                var imge = this.shadowRoot.getElementById("img");
-                                let imgU = "app://data"
-                                if (Utils.app.platform == "Android") imgU = "https://mydata";
-                                imge.style.backgroundImage = "url('" + imgU + "/Image/" + this.song.id + ".png'), url('/resources/icon.ico')"
-                            }
-                            else {
-                                this.shadowRoot.getElementById("img").style.backgroundImage = "url('/resources/icon.ico')"
-                            }
-                        }
-                        else {
-                            this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + this.song.imgUrl + "')"
-                        }
+                        this.updateGrid(song)
                         this.addEventListener("mouseover", function () {
                             this.shadowRoot.getElementById("svg").style.opacity = "1"
                             this.shadowRoot.getElementById("cache").style.opacity = "1"
@@ -124,22 +148,6 @@ export default class SongGrid extends HTMLDivElement {
                                 }
                             }
                         });
-                        if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
-                            if (song.imgUrl === "localImg") {
-                                this.shadowRoot.getElementById("title").classList.add("nohover")
-                                this.shadowRoot.getElementById("artist").classList.add("nohover")
-                            }
-                            this.shadowRoot.getElementById("title").addEventListener("click", async function () {
-                                if (song.imgUrl !== "localImg") {
-                                    Utils.musicViewer.changeView("al_" + song.albumID)
-                                }
-                            });
-                            this.shadowRoot.getElementById("artist").addEventListener("click", async function () {
-                                if (song.imgUrl !== "localImg") {
-                                    Utils.musicViewer.changeView("si_" + song.singerID)
-                                }
-                            });
-                        }
                         var cm = new ContextMenu()
                         this.shadowRoot.getElementById("context").onclick = async (e) => {
                             cm.show(e)
@@ -272,6 +280,10 @@ export default class SongGrid extends HTMLDivElement {
                     })
                     new ThemeColor(this.shadowRoot.children[1])
                 })
+            }
+            else {
+                this.song = song;
+                this.updateGrid(song)
             }
         }
         else {
