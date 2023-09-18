@@ -164,10 +164,10 @@ export default class SongGrid extends HTMLDivElement {
                                 cm.addElement("{lib.openLink}", () => {
                                     Utils.app.remoteClient.openLink(song.url)
                                 })
-                                cm.addElement("{lib.modifySong}", () => {
-                                    Utils.musicViewer.changeView("so_" + song.id)
-                                })
                             }
+                            cm.addElement("{lib.modifySong}", () => {
+                                Utils.musicViewer.changeView("so_" + song.id)
+                            })
                             if (this.object != null && this.object.id != Utils.libManager.userInfo.likedSongsPlId && Utils.libManager.userPlaylists.includes(this.object)) {
                                 let result = await Utils.apiManager.doPostRequest({
                                     act: "getIdSongsInPlaylist",

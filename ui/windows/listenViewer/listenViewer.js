@@ -61,16 +61,20 @@ export default class ListenViewerWindow extends HTMLDivElement {
                 if (Utils.player.isLocalMusic) {
                     if (Utils.queueManager.currentSong.canBeLoaded) {
                         var imge = this.shadowRoot.getElementById("music_img");
+                        var imge2 = this.shadowRoot.getElementById("bg");
                         imge.onerror = () => {
                             imge.src = "/resources/icon.ico"
+                            imge2.src = "/resources/icon.ico"
                         }
                         let imgU = "app://data"
                         if (Utils.app.platform == "Android") imgU = "https://mydata";
                         imge.src = imgU + "/Image/" + Utils.queueManager.currentSong.id + ".png"
+                        imge2.src = imgU + "/Image/" + Utils.queueManager.currentSong.id + ".png"
                     }
                 }
                 else {
                     this.shadowRoot.getElementById("music_img").src = Utils.queueManager.currentSong.imgUrl
+                    this.shadowRoot.getElementById("bg").src = Utils.queueManager.currentSong.imgUrl
                 }
             })
             Utils.player.onLoadedMetadata(async () => {

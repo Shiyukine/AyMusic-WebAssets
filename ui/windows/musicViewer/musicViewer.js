@@ -5,6 +5,7 @@ import Singer from "../../../class/music/singer.js";
 import Song from "../../../class/music/song.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
+import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
 import Utils from "../../../class/utils/utils.js";
 import AlbumGrid from "../../components/albumGrid/albumGrid.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
@@ -62,17 +63,17 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 }
             }, { signal: this.controller.signal })
             Utils.libManager.onAddSongToLikedSongs((e) => {
-                if (this.fullObjId != "" && e.detail.objId == this.fullObjId) {
-                    shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isObjectIDIsInLikedSongs(this.fullObjId) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
+                if (this.fullObjId != "" && e.detail.objId == this.object instanceof Song ? "so_" + this.fullObjId : this.fullObjId) {
+                    shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isObjectIDIsInLikedSongs(this.object instanceof Song ? "so_" + this.fullObjId : this.fullObjId) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
                 }
             });
             Utils.libManager.onRemoveSongFromLikedSongs((e) => {
-                if (this.fullObjId != "" && e.detail.objId == this.fullObjId) {
-                    shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isSongIsInLikedSongs(this.fullObjId) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
+                if (this.fullObjId != "" && e.detail.objId == this.object instanceof Song ? "so_" + this.fullObjId : this.fullObjId) {
+                    shadow.getElementById("like").children[0].setAttribute("d", Utils.libManager.isObjectIDIsInLikedSongs(this.object instanceof Song ? "so_" + this.fullObjId : this.fullObjId) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
                 }
             });
             shadow.getElementById("like").onclick = () => {
-                Utils.libManager.addOrRemoveObjectIDLikedSongs(this.fullObjId)
+                Utils.libManager.addOrRemoveObjectIDLikedSongs(this.object instanceof Song ? "so_" + this.fullObjId : this.fullObjId)
             }
             shadow.getElementById("edit_btn").onclick = () => {
                 shadow.getElementById("edit").style.display = ""
@@ -344,9 +345,23 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     id: objectID.split("so_").join("")
                 }, (info) => {
                     this.shadowRoot.getElementById("edit").style.display = ""
-                    this.shadowRoot.getElementById("title").innerText = info["title"]
-                    this.shadowRoot.getElementById("subtitle").innerText = info["singerName"]
-                    this.shadowRoot.getElementById("cover").src = info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico"
+                    if (info["imgUrl"] == "localImg") {
+                        var imge = this.shadowRoot.getElementById("cover");
+                        imge.onerror = () => {
+                            imge.src = "/resources/icon.ico"
+                        }
+                        let imgU = "app://data"
+                        if (Utils.app.platform == "Android") imgU = "https://mydata";
+                        imge.src = imgU + "/Image/" + objectID.split("so_").join("") + ".png"
+                        let si = LocalMusicHandler.getArtistByMusicID(objectID.split("so_").join(""))
+                        this.shadowRoot.getElementById("title").innerText = info["title"]
+                        this.shadowRoot.getElementById("subtitle").innerText = si.name
+                    }
+                    else {
+                        this.shadowRoot.getElementById("title").innerText = info["title"]
+                        this.shadowRoot.getElementById("subtitle").innerText = info["singerName"]
+                        this.shadowRoot.getElementById("cover").src = info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico"
+                    }
                     /**
                      * @type {TextBox}
                      */

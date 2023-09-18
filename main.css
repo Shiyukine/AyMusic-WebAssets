@@ -25,17 +25,26 @@ body {
     overflow: hidden;
 }
 
-#bgImg {
+#bgImgContainer {
     position: absolute;
     width: 100%;
     height: 100%;
-    object-position: center;
-    object-fit: cover;
+    overflow: hidden;
+}
+
+#bgImg {
+    background-image: url("/resources/background.jpg");
+    background-position: center;
+    background-size: cover;
     transition: 0.4s;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
 }
 
 #bgImg.blur {
     filter: blur(20px);
+    transform: scale(1.2);
 }
 
 h1,

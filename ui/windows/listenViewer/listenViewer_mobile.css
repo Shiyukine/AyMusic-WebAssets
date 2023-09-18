@@ -1,3 +1,11 @@
+#bg {
+    background-image: url("/resources/background.jpg");
+    filter: blur(20px);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
 .listen svg {
     color: white;
     margin: auto;
@@ -18,7 +26,6 @@
     background-color: rgba(31, 31, 31, 0.73);
     padding: 10px;
     padding-bottom: 0px;
-    backdrop-filter: blur(20px);
     z-index: 2;
     display: grid;
     align-content: center;
