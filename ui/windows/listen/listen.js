@@ -35,7 +35,7 @@ export default class ListenWindow extends HTMLDivElement {
         this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "78px" : "0"
         this.style.left = "0"
         this.style.right = "0"
-        this.style.zIndex = "1"
+        this.style.zIndex = "2"
         Import.getData("/ui/windows/listen/listen" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
