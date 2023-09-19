@@ -10,6 +10,7 @@ import ThemeColor from "../../../class/themeColor.js";
 import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
 import PlatformHandler from "../../../class/player/platformHandler.js";
+import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 
 export default class SongGrid extends HTMLDivElement {
 
@@ -83,7 +84,8 @@ export default class SongGrid extends HTMLDivElement {
             }
         }
         else {
-            this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + this.song.imgUrl + "')"
+            let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(song.id, this.song.imgUrl)
+            this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + iUrl + "')"
         }
         if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
             if (song.imgUrl === "localImg") {

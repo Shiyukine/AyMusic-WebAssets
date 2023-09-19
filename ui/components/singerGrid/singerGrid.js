@@ -1,3 +1,4 @@
+import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 import Import from "../../../class/import.js";
 import Singer from "../../../class/music/singer.js";
 import ThemeColor from "../../../class/themeColor.js";
@@ -25,7 +26,8 @@ export default class SingerGrid extends HTMLDivElement {
             //new Translations(shadow.children[1])
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.shadowRoot.getElementById("title").innerText = singer.aliasName ? singer.aliasName : this.singer.name
-                this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + this.singer.imgUrl + "')"
+                let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(singer.id, this.singer.imgUrl)
+                this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + iUrl + "')"
                 this.addEventListener("mouseover", function () {
                     this.shadowRoot.getElementById("img").style.transform = "scale(1.1)"
                     this.shadowRoot.getElementById("cache").style.opacity = "1"

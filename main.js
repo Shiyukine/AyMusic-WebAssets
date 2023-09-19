@@ -12,6 +12,7 @@ import ThemeColor from "./class/themeColor.js";
 import MusicViewerWindow from "./ui/windows/musicViewer/musicViewer.js";
 import TaskHandler from "./class/taskHandler.js";
 import Adblock from "./class/adblock.js";
+import ImageCacheHandler from "./class/imageCacheHandler.js";
 
 async function main() {
     window.app = Utils.app;
@@ -78,6 +79,7 @@ async function main() {
                 //
                 //await Adblock.init()
                 await TaskHandler.init()
+                await ImageCacheHandler.init()
                 //
                 Update.searchUpdate(loadPanel);
                 //loadPanel.changeText("Connecting to your account...", "Please wait...");

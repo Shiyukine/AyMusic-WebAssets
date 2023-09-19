@@ -1,3 +1,4 @@
+import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 import Import from "../../../class/import.js";
 import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
@@ -73,8 +74,9 @@ export default class ListenViewerWindow extends HTMLDivElement {
                     }
                 }
                 else {
-                    this.shadowRoot.getElementById("music_img").src = Utils.queueManager.currentSong.imgUrl
-                    this.shadowRoot.getElementById("bg").style.backgroundImage = "url(" + Utils.queueManager.currentSong.imgUrl + ")"
+                    let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(Utils.queueManager.currentSong.id, Utils.queueManager.currentSong.imgUrl)
+                    this.shadowRoot.getElementById("music_img").src = iUrl
+                    this.shadowRoot.getElementById("bg").style.backgroundImage = "url(" + iUrl + ")"
                 }
             })
             Utils.player.onLoadedMetadata(async () => {

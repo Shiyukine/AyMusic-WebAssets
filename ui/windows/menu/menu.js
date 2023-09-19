@@ -60,20 +60,22 @@ export default class MenuWindow extends HTMLDivElement {
     }
 
     changeAccountAvatar() {
-        this.shadowRoot.getElementById("acc_pp").onload = () => {
-            let i = this.shadowRoot.getElementById("acc_pp")
-            var cnv = this.shadowRoot.getElementById("acc_ppstatic")
-            var scale = 2
-            var c1 = this.scaleIt(i, scale, scale)
-            var ctx = cnv.getContext('2d')
-            cnv.height = c1.height * (1 / scale)
-            cnv.width = c1.width * (1 / scale)
-            ctx.drawImage(c1, 0, 0, cnv.width, cnv.height)
+        if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
+            this.shadowRoot.getElementById("acc_pp").onload = () => {
+                let i = this.shadowRoot.getElementById("acc_pp")
+                var cnv = this.shadowRoot.getElementById("acc_ppstatic")
+                var scale = 2
+                var c1 = this.scaleIt(i, scale, scale)
+                var ctx = cnv.getContext('2d')
+                cnv.height = c1.height * (1 / scale)
+                cnv.width = c1.width * (1 / scale)
+                ctx.drawImage(c1, 0, 0, cnv.width, cnv.height)
+            }
+            this.shadowRoot.getElementById("acc_pp").onerror = () => {
+                this.shadowRoot.getElementById("acc_pp").src = "/resources/noavatar.png"
+            }
+            this.accountEl.src = Utils.actualAccount.avatarUrl.split("?")[0];
         }
-        this.shadowRoot.getElementById("acc_pp").onerror = () => {
-            this.shadowRoot.getElementById("acc_pp").src = "/resources/noavatar.png"
-        }
-        this.accountEl.src = Utils.actualAccount.avatarUrl.split("?")[0];
     }
 
     UserWindows = Object.freeze({ "Home": 1, "Search": 2, "Library": 3, "Settings": 4 })

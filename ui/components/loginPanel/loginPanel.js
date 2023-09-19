@@ -85,7 +85,7 @@ export default class LoginPanel extends HTMLDivElement {
                             id: value(3),
                             email: value(0),
                             apiKey: value(7),
-                            avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif?date=" + Date.now().toString()
+                            avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif" + (Utils.app.platform != "Android" && Utils.app.platform != "iOS" ? "?date=" + Date.now().toString() : "")
                         }
                         Utils.apiManager.refreshApiKey()
                         console.log("Welcome " + Utils.actualAccount.id + " to AyMusic !")

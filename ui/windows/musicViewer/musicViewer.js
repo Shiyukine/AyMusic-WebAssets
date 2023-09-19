@@ -1,3 +1,4 @@
+import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 import Import from "../../../class/import.js";
 import Album from "../../../class/music/album.js";
 import Playlist from "../../../class/music/playlist.js";
@@ -242,10 +243,11 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     act: "getPlaylistInfo",
                     id: objectID.split("pl_").join(""),
                     offset: 0
-                }, (info) => {
+                }, async (info) => {
                     this.shadowRoot.getElementById("title").innerText = info["playlistInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = "By " + info["playlistInfo"]["userID"]
-                    this.shadowRoot.getElementById("cover").src = info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico"
+                    let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(objectID, info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico")
+                    this.shadowRoot.getElementById("cover").src = iUrl
                     let div = this.addList("Songs in this playlist:")
                     let songs = info["songs"]["songs"]
                     let counterSongNotLoaded = 0
@@ -269,7 +271,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     act: "getAlbumInfo",
                     id: objectID.split("al_").join(""),
                     offset: 0
-                }, (info) => {
+                }, async (info) => {
                     this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = "By " + info["albumInfo"]["singerID"]
                     this.shadowRoot.getElementById("subtitle").onclick = () => {
@@ -277,7 +279,8 @@ export default class MusicViewerWindow extends HTMLDivElement {
                             Utils.musicViewer.changeView("si_" + info["albumInfo"]["singerID"])
                         }
                     }
-                    this.shadowRoot.getElementById("cover").src = info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico"
+                    let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(objectID, info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico")
+                    this.shadowRoot.getElementById("cover").src = iUrl
                     let div = this.addList("Songs in this album added on AyMusic's database:")
                     let songs = info["songs"]["songs"]
                     let counterSongNotLoaded = 0
@@ -305,10 +308,11 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     act: "getSingerInfo",
                     id: objectID.split("si_").join(""),
                     offset: 0
-                }, (info) => {
+                }, async (info) => {
                     this.shadowRoot.getElementById("title").innerText = info["singerInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = info["singerInfo"]["aliasName"] && info["singerInfo"]["aliasName"] != "" ? info["singerInfo"]["aliasName"] : "Artist"
-                    this.shadowRoot.getElementById("cover").src = info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico"
+                    let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(objectID, info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico")
+                    this.shadowRoot.getElementById("cover").src = iUrl
                     let div = this.addList("Latest added song on AyMusic's database of this artist:")
                     let songs = info["songs"]
                     let pl = new Singer(info["singerInfo"]["id"], info["singerInfo"]["name"], info["singerInfo"]["imgUrl"], info["singerInfo"]["aliasName"])
@@ -343,7 +347,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 Utils.apiManager.fetchAPI({
                     act: "getSongInfo",
                     id: objectID.split("so_").join("")
-                }, (info) => {
+                }, async (info) => {
                     this.shadowRoot.getElementById("edit").style.display = ""
                     if (info["imgUrl"] == "localImg") {
                         var imge = this.shadowRoot.getElementById("cover");
@@ -360,7 +364,8 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     else {
                         this.shadowRoot.getElementById("title").innerText = info["title"]
                         this.shadowRoot.getElementById("subtitle").innerText = info["singerName"]
-                        this.shadowRoot.getElementById("cover").src = info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico"
+                        let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(objectID, info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico")
+                        this.shadowRoot.getElementById("cover").src = iUrl
                     }
                     /**
                      * @type {TextBox}
