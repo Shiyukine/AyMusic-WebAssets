@@ -7,28 +7,45 @@ export default class PlatformHandler {
 
     static searchPlatforms() {
         return new Promise((resolve) => {
-            if (!this.platforms) {
-                let result = Utils.app.remoteClient.httpRequestGET(Utils.servURL + "dl/AyMusic/scripts/servers.json")
-                if (result.then) {
-                    result.then((result) => {
+            try {
+                if (!this.platforms) {
+                    let result = Utils.app.remoteClient.httpRequestGET(Utils.servURL + "dl/AyMusic/scripts/servers.json")
+                    if (result.then) {
+                        result.then((result) => {
+                            try {
+                                this.platforms = JSON.parse(result)
+                                resolve(this.platforms)
+                            }
+                            catch (e) {
+                                console.error(e)
+                                resolve(null)
+                            }
+                        })
+                    }
+                    else {
                         this.platforms = JSON.parse(result)
-                        resolve(this.platforms)
-                    })
+                        resolve(JSON.parse(result))
+                    }
                 }
                 else {
-                    this.platforms = JSON.parse(result)
-                    resolve(JSON.parse(result))
+                    resolve(this.platforms)
                 }
             }
-            else {
-                resolve(this.platforms)
+            catch (e) {
+                console.error(e)
+                resolve(null)
             }
         })
     }
 
     static async getAvailablePlatforms() {
         var platforms = await this.searchPlatforms()
-        return platforms["AvailableServers"]
+        if (platforms) {
+            return platforms["AvailableServers"]
+        }
+        else {
+            return []
+        }
     }
 
     static async getPlatformSettings(platform) {
@@ -48,16 +65,21 @@ export default class PlatformHandler {
             SmallVolumeInSongUrl: false
         }
         var platforms = await this.searchPlatforms()
-        var settingsOverrided = platforms["Servers"][platform]["OverrideSettings"]
-        for (var set in settingsOverrided) {
-            settings[set] = settingsOverrided[set]
+        if (platforms) {
+            var settingsOverrided = platforms["Servers"][platform]["OverrideSettings"]
+            for (var set in settingsOverrided) {
+                settings[set] = settingsOverrided[set]
+            }
+            return settings
         }
-        return settings
+        else {
+            return settings
+        }
     }
 
     static async getPlatformControl(platform, control, value = "") {
         var platforms = await this.searchPlatforms()
-        if (platform) {
+        if (platforms) {
             return platforms["Servers"][platform]["Controls"][control].split("%VALUE%").join(value)
         }
         else return ""
@@ -65,7 +87,9 @@ export default class PlatformHandler {
 
     static async setPlatformSetting(platform, setting, value) {
         var platforms = await this.searchPlatforms()
-        this.platforms["Servers"][platform]["OverrideSettings"][setting] = value
+        if (platforms) {
+            platforms["Servers"][platform]["OverrideSettings"][setting] = value
+        }
     }
 
     static async getPlatformUrl(platform, url) {
@@ -73,9 +97,12 @@ export default class PlatformHandler {
         /**
          * @type {String}
          */
-        var u = platforms["Servers"][platform]["URLs"][url]
-        if (u.startsWith("https://") || u.startsWith("http://")) return u
-        else return this.getPlatformPath(platform) + u
+        if (platforms) {
+            var u = platforms["Servers"][platform]["URLs"][url]
+            if (u.startsWith("https://") || u.startsWith("http://")) return u
+            else return this.getPlatformPath(platform) + u
+        }
+        else return ""
     }
 
     static getPlatformPath(platform) {
@@ -84,9 +111,11 @@ export default class PlatformHandler {
 
     static async getPlatformBySongUrl(url) {
         let platforms = await this.searchPlatforms()
-        for (let platform of platforms["AvailableServers"]) {
-            if (url.includes(await PlatformHandler.getPlatformUrl(platform, "ListenUrl")) || url.includes(await PlatformHandler.getPlatformUrl(platform, "BaseSongUrl"))) {
-                return platform
+        if (platforms) {
+            for (let platform of platforms["AvailableServers"]) {
+                if (url.includes(await PlatformHandler.getPlatformUrl(platform, "ListenUrl")) || url.includes(await PlatformHandler.getPlatformUrl(platform, "BaseSongUrl"))) {
+                    return platform
+                }
             }
         }
         return ""

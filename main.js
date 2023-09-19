@@ -78,7 +78,6 @@ async function main() {
                 await Utils.apiManager.init()
                 //
                 //await Adblock.init()
-                await TaskHandler.init()
                 await ImageCacheHandler.init()
                 //
                 Update.searchUpdate(loadPanel);

@@ -7,10 +7,12 @@ export default class TaskHandler {
     static allowBgTask = true;
     static blockAdsContent = "";
 
-    static async init() {
+    static async addAdblock() {
         console.log("Loading adblock injecter")
         let script = ""
-        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") script = Utils.app.remoteClient.httpRequestGET(Utils.servURL + "/dl/AyMusic/scripts/adblock_content.js")
+        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+            script = Utils.app.remoteClient.httpRequestGET(Utils.servURL + "/dl/AyMusic/scripts/adblock_content.js")
+        }
         else script = await Utils.app.remoteClient.httpRequestGET(Utils.servURL + "/dl/AyMusic/scripts/adblock_content.js", {
             headers: {
                 "pragma": "no-cache",
@@ -54,6 +56,7 @@ export default class TaskHandler {
         var iscf = false;
         let origin = "app://root"
         if (Utils.app.platform == "Android") origin = "https://myapp"
+        if (this.blockAdsContent == "") await this.addAdblock()
         Utils.app.remoteClient.registerIframeUrl(wt.url, `(async () => {\n`
             + this.blockAdsContent + `\n
             let func = async () => { var wtId = ` + wt.id + `; ` + wt.script.split("app://root").join(origin) + `}

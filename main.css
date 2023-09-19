@@ -380,6 +380,6 @@ img:hover {
 }
 
 .infoShown {
-    top: 40px !important;
-    height: calc(100% - 40px) !important;
+    top: 35px !important;
+    height: calc(100% - 35px) !important;
 }

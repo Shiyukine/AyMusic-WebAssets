@@ -84,7 +84,7 @@ export default class Utils {
         document.getElementById("miniInfo").classList.add("showInfo")
         document.getElementById("main").classList.add("infoShown")
         document.getElementById("iframes").style.height = "calc(100% - 75px)"
-        document.getElementById("bgImgContainer").style.height = "calc(100% - 75px)"
+        document.getElementById("bgImgContainer").classList.add("infoShown")
         Utils.currentMiniErrorID = miniErrorID
         if (temp) {
             setTimeout(() => {
@@ -100,7 +100,7 @@ export default class Utils {
             document.getElementById("miniInfoP").style.color = ""
             document.getElementById("miniInfo").style.backgroundColor = ""
             document.getElementById("iframes").style.height = "calc(100% - 36px)"
-            document.getElementById("bgImgContainer").style.height = ""
+            document.getElementById("bgImgContainer").classList.remove("infoShown")
         }
     }
 
