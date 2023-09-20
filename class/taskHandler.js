@@ -9,16 +9,7 @@ export default class TaskHandler {
 
     static async addAdblock() {
         console.log("Loading adblock injecter")
-        let script = ""
-        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-            script = Utils.app.remoteClient.httpRequestGET(Utils.servURL + "/dl/AyMusic/scripts/adblock_content.js")
-        }
-        else script = await Utils.app.remoteClient.httpRequestGET(Utils.servURL + "/dl/AyMusic/scripts/adblock_content.js", {
-            headers: {
-                "pragma": "no-cache",
-                "cache-control": "no-cache"
-            }
-        })
+        let script = await Utils.app.httpRequestGET(Utils.servURL + "/dl/AyMusic/scripts/adblock_content.js")
         this.blockAdsContent = script
         console.log("Adblock injecter loaded")
     }

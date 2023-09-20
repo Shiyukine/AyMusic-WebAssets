@@ -40,18 +40,20 @@ export default class MenuWindow extends HTMLDivElement {
                         this.changeWindow(this.UserWindows[el.id], el.id)
                     }
                 })
-                shadow.getElementById("acc_link").onclick = () => {
-                    let win = this.changeWindow(this.UserWindows.Settings, "Settings")
-                    if (win) win.changeView(2)
-                }
                 this.changeWindow(this.UserWindows.Home, "Home")
-                shadow.getElementById("acc_link").onmouseenter = () => {
-                    shadow.getElementById("acc_pp").style.visibility = "visible"
-                    shadow.getElementById("acc_ppstatic").style.visibility = "hidden"
-                }
-                shadow.getElementById("acc_link").onmouseleave = () => {
-                    shadow.getElementById("acc_pp").style.visibility = "hidden"
-                    shadow.getElementById("acc_ppstatic").style.visibility = "visible"
+                if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
+                    shadow.getElementById("acc_link").onclick = () => {
+                        let win = this.changeWindow(this.UserWindows.Settings, "Settings")
+                        if (win) win.changeView(2)
+                    }
+                    shadow.getElementById("acc_link").onmouseenter = () => {
+                        shadow.getElementById("acc_pp").style.visibility = "visible"
+                        shadow.getElementById("acc_ppstatic").style.visibility = "hidden"
+                    }
+                    shadow.getElementById("acc_link").onmouseleave = () => {
+                        shadow.getElementById("acc_pp").style.visibility = "hidden"
+                        shadow.getElementById("acc_ppstatic").style.visibility = "visible"
+                    }
                 }
                 new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])

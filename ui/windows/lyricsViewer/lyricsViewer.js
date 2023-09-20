@@ -102,14 +102,7 @@ export default class LyricsViewerWindow extends HTMLDivElement {
             this.refreshing = true
             this.shadowRoot.getElementById("lyrics").innerText = '{lv.fetching}'
             console.log("Refreshing lyricsViewer")
-            let script = "";
-            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") script = Utils.app.remoteClient.httpRequestGET(Utils.servURL + "/dl/AyMusic/scripts/MusixMatch/google.js")
-            else script = await Utils.app.remoteClient.httpRequestGET(Utils.servURL + "/dl/AyMusic/scripts/MusixMatch/google.js", {
-                headers: {
-                    "pragma": "no-cache",
-                    "cache-control": "no-cache"
-                }
-            })
+            let script = Utils.app.httpRequestGET(Utils.servURL + "/dl/AyMusic/scripts/MusixMatch/google.js")
             let title = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
             let artist = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
             title = title.split("(")[0]

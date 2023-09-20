@@ -109,6 +109,24 @@ export default class App {
         this.#eventEl.addEventListener(event, callback)
     }
 
+    async httpRequestGET(url) {
+        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+            return new Promise(r => {
+                window.listeners.httpRequestCallback = (data) => {
+                    window.listeners.httpRequestCallback = (data) => { }
+                    r(data)
+                }
+                Utils.app.remoteClient.httpRequestGET(url)
+            })
+        }
+        else return await Utils.app.remoteClient.httpRequestGET(url, {
+            headers: {
+                "pragma": "no-cache",
+                "cache-control": "no-cache"
+            }
+        })
+    }
+
     /**
      * Forward touch events to the main window
      * Deprecated

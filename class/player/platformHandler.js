@@ -9,7 +9,7 @@ export default class PlatformHandler {
         return new Promise((resolve) => {
             try {
                 if (!this.platforms) {
-                    let result = Utils.app.remoteClient.httpRequestGET(Utils.servURL + "dl/AyMusic/scripts/servers.json")
+                    let result = Utils.app.httpRequestGET(Utils.servURL + "dl/AyMusic/scripts/servers.json")
                     if (result.then) {
                         result.then((result) => {
                             try {

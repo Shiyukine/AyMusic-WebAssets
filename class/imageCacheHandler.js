@@ -24,10 +24,17 @@ export default class ImageCacheHandler {
     static async getImgUrlCachedForObjectID(id, defaultUrl) {
         if (this.haveCacheForObjectID(id)) {
             if (this.cache[id][2] != defaultUrl) {
+                if (Utils.app.platform == "Android") Utils.app.remoteClient.addBypassWebRequest(defaultUrl)
                 let raw = await fetch(defaultUrl)
                 let rep = await raw.arrayBuffer()
-                Utils.app.remoteClient.saveCache("Image/" + this.cache[id][0], rep)
+                let view = new Uint8Array(rep)
+                let arr = []
+                for (let i = 0; i < view.length; i++) {
+                    arr[i] = view[i]
+                }
                 this.cache[id] = [this.cache[id][0], Date.now(), defaultUrl]
+                if (Utils.app.platform == "Android") Utils.app.remoteClient.saveCache("Image/" + this.cache[id][0], arr)
+                else await Utils.app.remoteClient.saveCache("Image/" + this.cache[id][0], arr)
                 Utils.app.remoteClient.saveCache("Image/index", new TextEncoder("utf-8").encode(JSON.stringify(this.cache)))
                 return this.origin + "/Image/" + this.cache[id][0]
             }
@@ -36,12 +43,20 @@ export default class ImageCacheHandler {
             }
         }
         else {
-            this.cache[id] = [(Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2), Date.now(), defaultUrl]
+            let rdm = (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Utils.app.platform == "Android" ? ".jpg" : "")
+            if (Utils.app.platform == "Android") Utils.app.remoteClient.addBypassWebRequest(defaultUrl)
             let raw = await fetch(defaultUrl)
             let rep = await raw.arrayBuffer()
-            await Utils.app.remoteClient.saveCache("Image/" + this.cache[id][0], rep)
+            let view = new Uint8Array(rep)
+            let arr = []
+            for (let i = 0; i < view.length; i++) {
+                arr[i] = view[i]
+            }
+            if (Utils.app.platform == "Android") Utils.app.remoteClient.saveCache("Image/" + rdm, arr)
+            else await Utils.app.remoteClient.saveCache("Image/" + rdm, arr)
+            this.cache[id] = [rdm, Date.now(), defaultUrl]
             Utils.app.remoteClient.saveCache("Image/index", new TextEncoder("utf-8").encode(JSON.stringify(this.cache)))
-            return this.origin + "/Image/" + this.cache[id][0]
+            return this.origin + "/Image/" + rdm
         }
     }
 }
