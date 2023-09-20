@@ -29,11 +29,7 @@ export default class ImageCacheHandler {
                 let rep = await raw.arrayBuffer()
                 if (Utils.app.platform == "Android") {
                     let view = new Uint8Array(rep)
-                    let arr = []
-                    for (let i = 0; i < view.length; i++) {
-                        arr[i] = view[i]
-                    }
-                    Utils.app.remoteClient.saveCache("Image/" + this.cache[id][0], arr)
+                    Utils.app.remoteClient.saveCache("Image/" + this.cache[id][0], view)
                 }
                 else await Utils.app.remoteClient.saveCache("Image/" + this.cache[id][0], rep)
                 this.cache[id] = [this.cache[id][0], Date.now(), defaultUrl]
@@ -51,11 +47,7 @@ export default class ImageCacheHandler {
             let rep = await raw.arrayBuffer()
             if (Utils.app.platform == "Android") {
                 let view = new Uint8Array(rep)
-                let arr = []
-                for (let i = 0; i < view.length; i++) {
-                    arr[i] = view[i]
-                }
-                Utils.app.remoteClient.saveCache("Image/" + rdm, arr)
+                Utils.app.remoteClient.saveCache("Image/" + rdm, view)
             }
             else await Utils.app.remoteClient.saveCache("Image/" + rdm, rep)
             this.cache[id] = [rdm, Date.now(), defaultUrl]
