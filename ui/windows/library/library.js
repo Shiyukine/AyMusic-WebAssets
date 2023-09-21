@@ -4,6 +4,7 @@ import Album from "../../../class/music/album.js";
 import Playlist from "../../../class/music/playlist.js";
 import Singer from "../../../class/music/singer.js";
 import Song from "../../../class/music/song.js";
+import OverscrollHandler from "../../../class/overscrollHandler.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
@@ -161,6 +162,7 @@ export default class LibraryWindow extends HTMLDivElement {
                         this.changeViewMyLib(this.selectedIndexMyLib - 1)
                     }
                 })
+                //new OverscrollHandler(shadow.getElementById("mylib_list"))
                 window.addEventListener("popstate", (e) => {
                     if (e.state.where == "library") this.changeView(e.state.index, false)
                     if (e.state.where == "menu" && e.state.menu == "Library") this.changeView(0, false)

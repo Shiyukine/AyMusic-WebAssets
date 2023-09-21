@@ -50,7 +50,7 @@ export default class ProgressBar extends HTMLDivElement {
                 left = left / (this.shadowRoot.getElementById("pbInfo").clientWidth - 18) * parseFloat(this.max)
                 this.changeValue(left)
             }
-            window.addEventListener("mousemove", (e) => {
+            window.addEventListener("pointermove", (e) => {
                 if (mouseState.down) {
                     let left = e.x - this.shadowRoot.getElementById("pbInfo").getClientRects()[0].x - this.shadowRoot.getElementById("stateThumb").clientWidth / 2
                     if (left < 0)
@@ -61,7 +61,7 @@ export default class ProgressBar extends HTMLDivElement {
                     this.changeValue(left)
                 }
             })
-            window.addEventListener("mouseup", (e) => {
+            window.addEventListener("pointerup", (e) => {
                 if (mouseState.down) {
                     let left = e.x - this.shadowRoot.getElementById("pbInfo").getClientRects()[0].x - this.shadowRoot.getElementById("stateThumb").clientWidth / 2
                     if (left < 0)
