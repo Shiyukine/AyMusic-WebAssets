@@ -23,7 +23,8 @@ export default class Update {
                     maxUpdate = state.max
                 }
                 if (state.step == 4) {
-                    document.getElementById("main").appendChild(Update.infoPanel);
+                    if (Update.infoPanel.parentElement == null)
+                        document.getElementById("main").appendChild(Update.infoPanel);
                     Update.infoPanel.changeText("Updating...", "Downloading update " + curUpdate + "/" + maxUpdate + "\n" + Math.floor(state.cur / 1000 / 1000) + " MB/" + Math.floor(state.max / 1000 / 1000) + " MB")
                     //Update.infoPanel.showDialog()
                 }
