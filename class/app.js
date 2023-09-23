@@ -15,7 +15,8 @@ export default class App {
         shuffle: false,
         repeat: 0,
         mute: false,
-        firstOpen: true
+        firstOpen: true,
+        other_hwacc: true
     }
     registered = false;
     haveCallback = null;
@@ -48,7 +49,8 @@ export default class App {
                     shuffle: false,
                     repeat: 0,
                     mute: false,
-                    firstOpen: true
+                    firstOpen: true,
+                    other_hwacc: true
                 }
                 this.platform = platform;
                 this.versionName = versionName + (!isRelease ? "+debug" : "");

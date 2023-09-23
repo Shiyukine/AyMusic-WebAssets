@@ -112,6 +112,9 @@
         "{mv.endOfSong}": "End of song",
         "{settings.aketsukyWebsite}": "Our website",
         "{settings.privacyPolicy}": "Privacy Policy",
-        "{settings.tos}": "Terms of Service"
+        "{settings.tos}": "Terms of Service",
+        "{set.other}": "Other settings",
+        "{set.other.hwacc}": "Disable hardware acceleration",
+        "{set.other.hwacc.info}": "Use it if you have some glitches with the app. You need to restart manually the app to apply this setting"
     }
 }

@@ -113,37 +113,39 @@ export default class SettingsWindow extends HTMLDivElement {
                 shadow.getElementById("music_add").onclick = () => {
                     LocalMusicHandler.addMusic()
                 }
-                for (let platform of await PlatformHandler.getAvailablePlatforms()) {
-                    /*<div class="set">
-                        <p>{set.music.addSpotify}</p>
-                        <button id="acc_spotify">{set.music.addAccount}</button>
-                        <button id="acc_spotify_rm">{set.music.rmAccount}</button>
-                    </div>*/
-                    let div = document.createElement("div")
-                    div.classList.add("set")
-                    let p = document.createElement("p")
-                    p.innerHTML = "<span>{set.music.addAccountPlatform}</span><span> " + platform + "</span>"
-                    div.appendChild(p)
-                    let btn1 = document.createElement("button")
-                    btn1.innerText = "{set.music.addAccount}"
-                    btn1.onclick = async () => {
-                        await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
-                            await PlatformHandler.getPlatformUrl(platform, "BaseUrl"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
-                        Utils.newError("Information", "If the window has closed by itself, it means that you've been connected!")
+                PlatformHandler.getAvailablePlatforms().then(platforms => {
+                    for (let platform of platforms) {
+                        /*<div class="set">
+                            <p>{set.music.addSpotify}</p>
+                            <button id="acc_spotify">{set.music.addAccount}</button>
+                            <button id="acc_spotify_rm">{set.music.rmAccount}</button>
+                        </div>*/
+                        let div = document.createElement("div")
+                        div.classList.add("set")
+                        let p = document.createElement("p")
+                        p.innerHTML = "<span>{set.music.addAccountPlatform}</span><span> " + platform + "</span>"
+                        div.appendChild(p)
+                        let btn1 = document.createElement("button")
+                        btn1.innerText = "{set.music.addAccount}"
+                        btn1.onclick = async () => {
+                            await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
+                                await PlatformHandler.getPlatformUrl(platform, "BaseUrl"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
+                            Utils.newError("Information", "If the window has closed by itself, it means that you've been connected!")
+                        }
+                        div.appendChild(btn1)
+                        let btn2 = document.createElement("button")
+                        btn2.innerText = "{set.music.rmAccount}"
+                        btn2.onclick = async () => {
+                            await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LogoutUrl"),
+                                await PlatformHandler.getPlatformUrl(platform, "LogoutUrlCallback"))
+                            /*await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
+                                await PlatformHandler.getPlatformUrl(platform, "BaseUrl"))*/
+                            Utils.newError("Information", "If the window has closed by itself, it means that you've been disconnected!")
+                        }
+                        div.appendChild(btn2)
+                        shadow.getElementById("music_panel").insertBefore(div, shadow.getElementById("music_import"))
                     }
-                    div.appendChild(btn1)
-                    let btn2 = document.createElement("button")
-                    btn2.innerText = "{set.music.rmAccount}"
-                    btn2.onclick = async () => {
-                        await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LogoutUrl"),
-                            await PlatformHandler.getPlatformUrl(platform, "LogoutUrlCallback"))
-                        /*await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
-                            await PlatformHandler.getPlatformUrl(platform, "BaseUrl"))*/
-                        Utils.newError("Information", "If the window has closed by itself, it means that you've been disconnected!")
-                    }
-                    div.appendChild(btn2)
-                    shadow.getElementById("music_panel").insertBefore(div, shadow.getElementById("music_import"))
-                }
+                })
                 /*shadow.getElementById("experimental_popout").onclick = async () => {
                     await Utils.app.remoteClient.popoutChrome()
                 }*/

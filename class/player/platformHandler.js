@@ -62,7 +62,12 @@ export default class PlatformHandler {
             UseIncludeUrlFilter: true,
             NoMute: false,
             AddParamsInSongUrl: true,
-            SmallVolumeInSongUrl: false
+            SmallVolumeInSongUrl: false,
+            SupportsLogin: true,
+            SupportsPlaylistsImport: false,
+            MinVersion: 0,
+            CookieName: "",
+            CookieUrl: ""
         }
         var platforms = await this.searchPlatforms()
         if (platforms) {

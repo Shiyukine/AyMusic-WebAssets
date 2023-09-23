@@ -58,6 +58,11 @@ export default class LoginPanel extends HTMLDivElement {
                 new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
             }
+            this.shadowRoot.getElementById("loginBG").onclick = () => {
+                if (isForModification == "modify") {
+                    this.close(false)
+                }
+            }
             let loaded = false;
             this.addScript()
             this.#iframe.onload = async () => {
