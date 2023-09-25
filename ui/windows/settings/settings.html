@@ -7,8 +7,8 @@
         <div id="menu">
             <p>{set.general}</p>
             <p>{set.music}</p>
-            <p>{set.other}</p>
             <p>{set.account}</p>
+            <p>{set.other}</p>
             <p>{set.about}</p>
             <!--<p>{set.experimentalTitle}</p>-->
         </div>
@@ -32,10 +32,15 @@
                             </select>
                         </div>
                     </div>
-                    <div class="set last">
+                    <div class="set">
                         <p><span>{set.general.discordRPC}</span><br><span
                                 class="sinfo">{set.general.discordRPC.info}</span></p>
                         <input type="range" min="0" max="1" value="1" class="slider" id="gen_discordRPC">
+                    </div>
+                    <div class="set last">
+                        <p><span>{set.general.clearCache}</span><br><span
+                                class="sinfo">{set.general.clearCache.info}</span></p>
+                        <button id="clear_cache">{set.general.clearCache.btn}</button>
                     </div>
                     <div class="set hidden last">
                         <p>{set.general.logs}</p>
@@ -69,15 +74,6 @@
                 </div>
             </div>
             <div class="panel">
-                <p>{set.other}</p>
-                <div class="sub">
-                    <div class="set last">
-                        <p><span>{set.other.hwacc}</span><br><span class="sinfo">{set.other.hwacc.info}</span></p>
-                        <input type="range" min="0" max="1" value="1" class="slider" id="other_hwacc">
-                    </div>
-                </div>
-            </div>
-            <div class="panel">
                 <p>{set.account}</p>
                 <div class="sub">
                     <div class="set havesub last account">
@@ -95,6 +91,15 @@
                         <div class="account-2">
                             <img src="/resources/noavatar.png" alt="" id="acc_img">
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <p>{set.other}</p>
+                <div class="sub">
+                    <div class="set last">
+                        <p><span>{set.other.hwacc}</span><br><span class="sinfo">{set.other.hwacc.info}</span></p>
+                        <input type="range" min="0" max="1" value="1" class="slider" id="other_hwacc">
                     </div>
                 </div>
             </div>

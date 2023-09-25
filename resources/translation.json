@@ -114,7 +114,10 @@
         "{settings.privacyPolicy}": "Privacy Policy",
         "{settings.tos}": "Terms of Service",
         "{set.other}": "Other settings",
-        "{set.other.hwacc}": "Disable hardware acceleration",
-        "{set.other.hwacc.info}": "Use it if you have some glitches with the app. You need to restart manually the app to apply this setting"
+        "{set.other.hwacc}": "Enable hardware acceleration",
+        "{set.other.hwacc.info}": "Deactivate it if you have some glitches with the app.\nYou need to restart manually the app to apply this setting",
+        "{set.general.clearCache}": "Clear the cache",
+        "{set.general.clearCache.btn}": "Clear",
+        "{set.general.clearCache.info}": "Useful if you run out of space"
     }
 }

@@ -1,3 +1,4 @@
+import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 import Import from "../../../class/import.js";
 import PlatformHandler from "../../../class/player/platformHandler.js";
 import ThemeColor from "../../../class/themeColor.js";
@@ -64,6 +65,13 @@ export default class SettingsWindow extends HTMLDivElement {
                 }
                 shadow.getElementById("about_tos").onclick = () => {
                     Utils.app.remoteClient.openLink(Utils.servURL + "cgu.php")
+                }
+                shadow.getElementById("clear_cache").onclick = async () => {
+                    console.log(await Utils.app.remoteClient.removeCache("Image/"))
+                    ImageCacheHandler.cache = {}
+                    console.log(await Utils.app.remoteClient.removeCache("API/"))
+                    Utils.apiManager.cache = {}
+                    Utils.showMiniError("rm_cache", "Cache cleared!", true, "rgb(0, 204, 255)", "#000")
                 }
                 shadow.querySelectorAll("*").forEach((x) => {
                     if (typeof Utils.app.settings[x.id] !== "undefined") {
