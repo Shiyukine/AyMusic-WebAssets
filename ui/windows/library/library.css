@@ -22,9 +22,10 @@ p {
     padding: 10px;
     margin-left: 15px;
     float: left;
-    height: calc(100% - 103px - 15px);
+    height: calc(100% - 87px - 15px);
     overflow-y: auto;
     overflow-x: hidden;
+    margin-top: -16px;
 }
 
 #menu p,
