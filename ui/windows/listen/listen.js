@@ -76,8 +76,8 @@ export default class ListenWindow extends HTMLDivElement {
                                 {
                                     navigator.mediaSession.setPositionState({
                                         playbackRate: e.data.inData.pR,
-                                        position: e.data.inData.cur,
-                                        duration: e.data.inData.dur
+                                        position: e.data.inData.cur / 1000,
+                                        duration: e.data.inData.dur / 1000
                                     });
                                 }
                                 if(e.data.message == 'setActionHandler')
@@ -276,8 +276,8 @@ export default class ListenWindow extends HTMLDivElement {
                         if (Utils.app.platform != "Android") {
                             navigator.mediaSession.setPositionState({
                                 playbackRate: 1,
-                                position: cur,
-                                duration: pb.getMax()
+                                position: cur / 1000,
+                                duration: pb.getMax() / 1000
                             });
                         }
                         else {
