@@ -241,6 +241,11 @@ export default class ListenWindow extends HTMLDivElement {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                        this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
+                            pR: 1,
+                            cur: pb.getValue(),
+                            dur: pb.getMax()
+                        })
                     }
                     else {
                         if (Utils.app.platform == "Android") {
@@ -266,11 +271,11 @@ export default class ListenWindow extends HTMLDivElement {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         //this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         //this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                        this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
+                        /*this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                             pR: 1,
                             cur: cur,
                             dur: pb.getMax()
-                        })
+                        })*/
                     }
                     else {
                         if (Utils.app.platform != "Android") {
@@ -383,6 +388,11 @@ export default class ListenWindow extends HTMLDivElement {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                        this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
+                            pR: 1,
+                            cur: pb.getValue(),
+                            dur: pb.getMax()
+                        })
                     }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
                     if (Utils.app.platform != "Android") {
@@ -398,6 +408,11 @@ export default class ListenWindow extends HTMLDivElement {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                        this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
+                            pR: 1,
+                            cur: pb.getValue(),
+                            dur: pb.getMax()
+                        })
                     }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Play"])
                     if (Utils.app.platform != "Android") {
@@ -690,7 +705,7 @@ export default class ListenWindow extends HTMLDivElement {
                             Utils.player.pause()
                         }
                         if (e.data.action == "seekto") {
-                            if (e.data.event.seekTime) Utils.player.seek(e.data.event.seekTime)
+                            if (e.data.event.seekTime) Utils.player.seek(e.data.event.seekTime * 1000)
                         }
                     }
                 })
