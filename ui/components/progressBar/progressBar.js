@@ -21,6 +21,11 @@ export default class ProgressBar extends HTMLDivElement {
                 //shadow.getElementById("progressBar").style.width = (shadow.getElementById("pbInfo").offsetWidth - 18) + "px"
                 //shadow.getElementById("progressBar").style.position = "absolute"
                 new ThemeColor(shadow.children[1])
+                if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                    shadow.getElementById("stateThumb").style.visibility = "visible"
+                    shadow.getElementById("state").style.backgroundColor = "white"
+                    shadow.getElementById("stateThumb").style.backgroundColor = "white"
+                }
             }
             this.changeMax(this.getAttribute("max") ? this.getAttribute("max") : this.getMax())
             if (this.changeValueInitialized) {
@@ -38,7 +43,7 @@ export default class ProgressBar extends HTMLDivElement {
                 hover: false,
                 x: 0
             }
-            this.shadowRoot.getElementById("pbInfo").onmousedown = (e) => {
+            this.shadowRoot.getElementById("pbInfo").onpointerdown = (e) => {
                 this.#eventEl.dispatchEvent(new CustomEvent("changing"));
                 mouseState.down = true
                 mouseState.x = e.x - this.shadowRoot.getElementById("stateThumb").getClientRects()[0].x
@@ -69,9 +74,11 @@ export default class ProgressBar extends HTMLDivElement {
                     if (left > this.shadowRoot.getElementById("pbInfo").clientWidth - 18)
                         left = this.shadowRoot.getElementById("pbInfo").clientWidth - 18
                     left = left / (this.shadowRoot.getElementById("pbInfo").clientWidth - 18) * parseFloat(this.max)
-                    if (!mouseState.hover) {
-                        shadow.getElementById("stateThumb").style.visibility = "hidden"
-                        shadow.getElementById("state").style.backgroundColor = "white"
+                    if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
+                        if (!mouseState.hover) {
+                            shadow.getElementById("stateThumb").style.visibility = "hidden"
+                            shadow.getElementById("state").style.backgroundColor = "white"
+                        }
                     }
                     this.changeValue(left)
                     this.#eventEl.dispatchEvent(new CustomEvent("release"));
@@ -79,15 +86,19 @@ export default class ProgressBar extends HTMLDivElement {
                 }
             })
             this.shadowRoot.getElementById("pbInfo").onmouseenter = function () {
-                mouseState.hover = true
-                shadow.getElementById("stateThumb").style.visibility = "visible"
-                shadow.getElementById("state").style.backgroundColor = "#10a2e6"
+                if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
+                    mouseState.hover = true
+                    shadow.getElementById("stateThumb").style.visibility = "visible"
+                    shadow.getElementById("state").style.backgroundColor = "#10a2e6"
+                }
             }
             this.shadowRoot.getElementById("pbInfo").onmouseleave = function () {
-                mouseState.hover = false
-                if (!mouseState.down) {
-                    shadow.getElementById("stateThumb").style.visibility = "hidden"
-                    shadow.getElementById("state").style.backgroundColor = "white"
+                if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
+                    mouseState.hover = false
+                    if (!mouseState.down) {
+                        shadow.getElementById("stateThumb").style.visibility = "hidden"
+                        shadow.getElementById("state").style.backgroundColor = "white"
+                    }
                 }
             }
         })

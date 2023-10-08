@@ -271,11 +271,13 @@ export default class ListenWindow extends HTMLDivElement {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         //this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         //this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                        /*this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
-                            pR: 1,
-                            cur: cur,
-                            dur: pb.getMax()
-                        })*/
+                        if (Utils.app.platform == "Android") {
+                            this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
+                                pR: 1,
+                                cur: cur,
+                                dur: pb.getMax()
+                            })
+                        }
                     }
                     else {
                         if (Utils.app.platform != "Android") {
@@ -384,13 +386,14 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                 })
                 Utils.player.onPlay(async () => {
+                    let cur = await Utils.player.getCurrentTime()
                     if (!Utils.player.isLocalMusic) {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                             pR: 1,
-                            cur: pb.getValue(),
+                            cur: cur,
                             dur: pb.getMax()
                         })
                     }
@@ -404,13 +407,14 @@ export default class ListenWindow extends HTMLDivElement {
                     this.updateDiscordRPC(pb, false)
                 })
                 Utils.player.onPause(async () => {
+                    let cur = await Utils.player.getCurrentTime()
                     if (!Utils.player.isLocalMusic) {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                             pR: 1,
-                            cur: pb.getValue(),
+                            cur: cur,
                             dur: pb.getMax()
                         })
                     }

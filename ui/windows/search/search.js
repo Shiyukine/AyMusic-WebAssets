@@ -146,37 +146,43 @@ export default class SearchWindow extends HTMLDivElement {
     }
 
     async launchSearch() {
-        this.anSearch = null
-        SearchWindow.lastSearchTextCache = this.shadowRoot.getElementById("tb_search").value
-        if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
-        this.elementFocus = null
-        this.shadowRoot.getElementById("suggest").style.display = "none"
-        if (this.platformsBusy.length == 0) {
-            while (this.shadowRoot.getElementById("songs").children.length > 0) {
-                this.shadowRoot.getElementById("songs").removeChild(this.shadowRoot.getElementById("songs").children[0])
-            }
-            while (this.shadowRoot.getElementById("artists").children.length > 0) {
-                this.shadowRoot.getElementById("artists").removeChild(this.shadowRoot.getElementById("artists").children[0])
-            }
-            while (this.shadowRoot.getElementById("albums").children.length > 0) {
-                this.shadowRoot.getElementById("albums").removeChild(this.shadowRoot.getElementById("albums").children[0])
-            }
-            while (this.shadowRoot.getElementById("playlists").children.length > 0) {
-                this.shadowRoot.getElementById("playlists").removeChild(this.shadowRoot.getElementById("playlists").children[0])
-            }
-            if (this.selectedServer != "icon") {
-                await this.searchForAPlatform(this.capitalizeFirstLetter(this.selectedServer), false)
+        if (this.shadowRoot.getElementById("tb_search").value != "") {
+            this.anSearch = null
+            SearchWindow.lastSearchTextCache = this.shadowRoot.getElementById("tb_search").value
+            if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
+            this.elementFocus = null
+            this.shadowRoot.getElementById("suggest").style.display = "none"
+            if (this.platformsBusy.length == 0) {
+                while (this.shadowRoot.getElementById("songs").children.length > 0) {
+                    this.shadowRoot.getElementById("songs").removeChild(this.shadowRoot.getElementById("songs").children[0])
+                }
+                while (this.shadowRoot.getElementById("artists").children.length > 0) {
+                    this.shadowRoot.getElementById("artists").removeChild(this.shadowRoot.getElementById("artists").children[0])
+                }
+                while (this.shadowRoot.getElementById("albums").children.length > 0) {
+                    this.shadowRoot.getElementById("albums").removeChild(this.shadowRoot.getElementById("albums").children[0])
+                }
+                while (this.shadowRoot.getElementById("playlists").children.length > 0) {
+                    this.shadowRoot.getElementById("playlists").removeChild(this.shadowRoot.getElementById("playlists").children[0])
+                }
+                if (this.selectedServer != "icon") {
+                    await this.searchForAPlatform(this.capitalizeFirstLetter(this.selectedServer), false)
+                }
+                else {
+                    for (let plat of await PlatformHandler.getAvailablePlatforms()) {
+                        await this.searchForAPlatform(plat, false)
+                    }
+                }
+                this.shadowRoot.getElementById("bottom").style.display = "block"
             }
             else {
-                for (let plat of await PlatformHandler.getAvailablePlatforms()) {
-                    await this.searchForAPlatform(plat, false)
-                }
+                let id = "search"
+                Utils.showMiniError(id, "Already searching! Please wait...", true)
             }
-            this.shadowRoot.getElementById("bottom").style.display = "block"
         }
         else {
-            let id = "search"
-            Utils.showMiniError(id, "Already searching! Please wait...", true)
+            let id = "search2"
+            Utils.showMiniError(id, "Please put something to search!", true)
         }
     }
 
