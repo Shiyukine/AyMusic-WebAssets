@@ -56,9 +56,26 @@ export default class SearchWindow extends HTMLDivElement {
                     if (!dontHide && shadow.querySelectorAll(":hover")[shadow.querySelectorAll(":hover").length - 1].tagName != "LI" && !this.elementFocus) shadow.getElementById("suggest").style.display = "none"
                     dontHide = false
                 })
+                window.addEventListener("click", () => {
+                    this.anSearch = null
+                    if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
+                    this.elementFocus = null
+                    this.shadowRoot.getElementById("suggest").style.display = "none"
+                }, { signal: this.controller.signal })
+                window.addEventListener("keydown", (e) => {
+                    if (e.key == "Escape") {
+                        this.anSearch = null
+                        if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
+                        this.elementFocus = null
+                        this.shadowRoot.getElementById("suggest").style.display = "none"
+                    }
+                }, { signal: this.controller.signal })
                 shadow.getElementById("tb_search").addEventListener("keyup", async (e) => {
                     if (e.key == "Enter") {
                         this.launchSearch()
+                    }
+                    else if (e.key == "Escape") {
+                        //do nothing
                     }
                     else if (e.key == "ArrowDown") {
                         if (this.elementFocus == null) {
@@ -100,10 +117,13 @@ export default class SearchWindow extends HTMLDivElement {
                                 let li = document.createElement("li")
                                 li.innerText = suggest[0]
                                 li.tabIndex = "0"
-                                li.onclick = () => {
+                                li.onclick = (e) => {
                                     shadow.getElementById("tb_search").value = li.innerText
                                     shadow.getElementById("suggest").style.display = "none"
                                     this.launchSearch()
+                                    e.preventDefault()
+                                    e.stopImmediatePropagation()
+                                    e.stopPropagation()
                                 }
                                 li.onfocus = () => {
                                     shadow.getElementById("tb_search").value = li.innerText

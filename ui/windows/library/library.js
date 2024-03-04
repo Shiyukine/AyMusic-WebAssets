@@ -222,7 +222,7 @@ export default class LibraryWindow extends HTMLDivElement {
                         let pl = Utils.libManager.userPlaylists[i]
                         if (pl.id == this.shadowRoot.getElementById("menu").children[newIndex].dataset["plid"]) {
                             this.selectedPl = pl
-                            let isPlay = Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && Utils.player.getState()
+                            let isPlay = Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                             this.shadowRoot.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                             this.shadowRoot.getElementById("playlist_name").innerText = pl.name
                             let songsList = this.shadowRoot.getElementById("playlist_songs")

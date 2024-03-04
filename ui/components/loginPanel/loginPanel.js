@@ -2,6 +2,7 @@ import Utils from "../../../class/utils/utils.js";
 import Import from "../../../class/import.js";
 import Translations from "../../../class/translations.js";
 import ThemeColor from "../../../class/themeColor.js";
+import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 
 export default class LoginPanel extends HTMLDivElement {
     /**
@@ -72,6 +73,10 @@ export default class LoginPanel extends HTMLDivElement {
                     this.#iframe.contentWindow.postMessage({ message: "html", id: this.messID }, Utils.servURL)
                 }
                 if (url.includes("/login/index.php") && isForModification == "logout") {
+                    console.log(await Utils.app.remoteClient.removeCache("Image/"))
+                    ImageCacheHandler.cache = {}
+                    console.log(await Utils.app.remoteClient.removeCache("API/"))
+                    Utils.apiManager.cache = {}
                     location.reload()
                 }
                 if ((url.includes("login/?inapp=1") || url.includes("confirm.php")) && isForModification == "") {

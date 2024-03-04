@@ -42,6 +42,7 @@ export default class ContextMenu extends HTMLDivElement {
                     let y = testy
                         ? event.y
                         : document.body.clientHeight - this.clientHeight - 10
+                    if (Utils.currentMiniErrorID != -1) y -= 75
                     if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                         this.style.bottom = "0"
                         this.style.left = "0"

@@ -321,9 +321,10 @@ export default class ListenWindow extends HTMLDivElement {
                 pb.onChanging(() => {
                     mouseDownPb = true;
                 })
-                pb.onRelease(() => {
+                pb.onRelease(async () => {
                     mouseDownPb = false;
-                    Utils.player.seek(pb.getValue());
+                    await Utils.player.seek(pb.getValue());
+                    this.updateDiscordRPC(pb, false)
                 })
                 Utils.musicViewer.onSongChange((e) => {
                     if (e.detail.objId.startsWith("so_") && Utils.queueManager.currentSong.id == e.detail.objId.replace("so_", "")) {
@@ -575,9 +576,11 @@ export default class ListenWindow extends HTMLDivElement {
                         })
                     }
                     cm.beforeShow = () => {
-                        cm.addElement("{lib.openLink}", () => {
-                            Utils.app.remoteClient.openLink(Utils.queueManager.currentSong.url)
-                        })
+                        if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                            cm.addElement("{lib.openLink}", () => {
+                                Utils.app.remoteClient.openLink(Utils.queueManager.currentSong.url)
+                            })
+                        }
                         cm.addElement("{lib.modifySong}", () => {
                             Utils.musicViewer.changeView("so_" + Utils.queueManager.currentSong.id)
                         })

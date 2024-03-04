@@ -238,9 +238,11 @@ export default class ListenViewerWindow extends HTMLDivElement {
                     })
                 }
                 cm.beforeShow = () => {
-                    cm.addElement("{lib.openLink}", () => {
-                        Utils.app.remoteClient.openLink(Utils.queueManager.currentSong.url)
-                    })
+                    if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                        cm.addElement("{lib.openLink}", () => {
+                            Utils.app.remoteClient.openLink(Utils.queueManager.currentSong.url)
+                        })
+                    }
                     cm.addElement("{lib.modifySong}", () => {
                         history.back()
                         this.goToMusicViewer = "so_" + Utils.queueManager.currentSong.id

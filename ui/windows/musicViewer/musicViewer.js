@@ -228,6 +228,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
             this.object = null
             this.shadowRoot.getElementById("edit").style.display = "none"
             this.shadowRoot.getElementById("edit_btn").style.display = "none"
+            this.shadowRoot.getElementById("subtitle").onclick = () => { }
             for (let el of this.shadowRoot.getElementById("editor").children) {
                 el.style.display = ""
             }

@@ -95,12 +95,16 @@ export default class Utils {
 
     static async hideMiniError(miniErrorID) {
         if (miniErrorID == Utils.currentMiniErrorID) {
+            document.getElementById("miniInfo").ontransitionend = () => {
+                document.getElementById("miniInfoP").style.color = ""
+                document.getElementById("miniInfo").style.backgroundColor = ""
+                document.getElementById("iframes").style.height = "calc(100% - 36px)"
+                document.getElementById("miniInfo").ontransitionend = () => { }
+            }
             document.getElementById("miniInfo").classList.remove("showInfo")
             document.getElementById("main").classList.remove("infoShown")
-            document.getElementById("miniInfoP").style.color = ""
-            document.getElementById("miniInfo").style.backgroundColor = ""
-            document.getElementById("iframes").style.height = "calc(100% - 36px)"
             document.getElementById("bgImgContainer").classList.remove("infoShown")
+            Utils.currentMiniErrorID = -1
         }
     }
 
