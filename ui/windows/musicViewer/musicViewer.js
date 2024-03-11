@@ -237,7 +237,6 @@ export default class MusicViewerWindow extends HTMLDivElement {
             }
             this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.libManager.isObjectIDIsInLikedSongs(this.fullObjId) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
             let isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id && await Utils.player.getState()
-            this.shadowRoot.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
             if (objectID.startsWith("pl_")) {
                 if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
                 Utils.apiManager.fetchAPI({
@@ -342,6 +341,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 })
             }
             if (objectID.startsWith("so_")) {
+                isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == "so_" + Utils.queueManager.currentObject.id && await Utils.player.getState()
                 this.shadowRoot.getElementById("editTitle").innerText = "{mv.modifySong}"
                 this.shadowRoot.getElementById("editHelp").innerText = "{mv.modifySongHelp}"
                 if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
@@ -391,6 +391,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     this.fullObjId = this.fullObjId.split("so_").join("")
                 })
             }
+            this.shadowRoot.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
             this.loaded = true
         }
         if (updateHistory) window.history.pushState({ where: "musicViewer", objId: objectID, panel: "main" }, "", "/index.html")

@@ -49,22 +49,15 @@ export default class TaskHandler {
         if (Utils.app.platform == "Android") origin = "https://myapp"
         if (this.blockAdsContent == "") await this.addAdblock()
         Utils.app.remoteClient.registerIframeUrl(wt.url, `(async () => {\n`
-            + this.blockAdsContent + `\n
-            let func = async () => { var wtId = ` + wt.id + `; ` + wt.script.split("app://root").join(origin) + `}
+            + this.blockAdsContent + `;\n
+            let func = async () => { var wtId = ` + wt.id + `; ` + wt.script.split("app://root").join(origin) + `; }
             let retData = null;
-            if("` + Utils.app.platform + `" == "Android") {
-                try {
-                    retData = await func()
-                }
-                catch(e) {
-                    console.warn("Error when evaluating JS");
-                    console.warn(e)
-                    addEventListener("DOMContentLoaded", async () => {
-                        retData = await func()
-                    })
-                }
+            try {
+                retData = await func()
             }
-            else {
+            catch(e) {
+                console.error(e);
+                console.error("Error when evaluating JS without waiting. Retrying...");
                 addEventListener("DOMContentLoaded", async () => {
                     retData = await func()
                 })
@@ -75,17 +68,17 @@ export default class TaskHandler {
                     {
                         if(e.data.message == 'js')
                         {
-                            parent.postMessage({message: 'callback', data: retData ? retData : await func(), id: e.data.id}, '` + origin + `')
+                            parent.postMessage({message: 'callback', data: retData, id: e.data.id}, '` + origin + `')
                         }
                         if(e.data.message == 'execjs')
                         {
                             try {
                                 eval(e.data.js)().then((result) => {
-                                    parent.postMessage({message: 'jscb', data:result, id: e.data.id}, '` + origin + `')
+                                    parent.postMessage({message: 'jscb', data: result, id: e.data.id}, '` + origin + `')
                                 })
                             } catch (ex) {
                                 console.error(ex)
-                                parent.postMessage({message: 'jscb', data:null, id: e.data.id}, '` + origin + `')
+                                parent.postMessage({message: 'jscb', data: null, id: e.data.id}, '` + origin + `')
                             }
                         }
                     }

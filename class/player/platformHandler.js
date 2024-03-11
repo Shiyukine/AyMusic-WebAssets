@@ -70,7 +70,7 @@ export default class PlatformHandler {
             CookieUrl: ""
         }
         var platforms = await this.searchPlatforms()
-        if (platforms) {
+        if (platform && platforms) {
             var settingsOverrided = platforms["Servers"][platform]["OverrideSettings"]
             for (var set in settingsOverrided) {
                 settings[set] = settingsOverrided[set]
@@ -84,7 +84,7 @@ export default class PlatformHandler {
 
     static async getPlatformControl(platform, control, value = "") {
         var platforms = await this.searchPlatforms()
-        if (platforms) {
+        if (platform && platforms) {
             return platforms["Servers"][platform]["Controls"][control].split("%VALUE%").join(value)
         }
         else return ""
@@ -92,7 +92,7 @@ export default class PlatformHandler {
 
     static async setPlatformSetting(platform, setting, value) {
         var platforms = await this.searchPlatforms()
-        if (platforms) {
+        if (platform && platforms) {
             platforms["Servers"][platform]["OverrideSettings"][setting] = value
         }
     }
@@ -102,7 +102,7 @@ export default class PlatformHandler {
         /**
          * @type {String}
          */
-        if (platforms) {
+        if (platform && platforms) {
             var u = platforms["Servers"][platform]["URLs"][url]
             if (u.startsWith("https://") || u.startsWith("http://")) return u
             else return this.getPlatformPath(platform) + u
