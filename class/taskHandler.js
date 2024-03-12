@@ -50,14 +50,21 @@ export default class TaskHandler {
         if (this.blockAdsContent == "") await this.addAdblock()
         Utils.app.remoteClient.registerIframeUrl(wt.url, `(async () => {\n`
             + this.blockAdsContent + `;\n
-            let func = async () => { var wtId = ` + wt.id + `; ` + wt.script.split("app://root").join(origin) + `; }
+            let func = async () => { var wtId = ` + wt.id + `; ` + wt.script.split("app://root").join(origin) + `}
             let retData = null;
-            try {
-                retData = await func()
+            if("` + Utils.app.platform + `" == "Android") {
+                try {
+                    retData = await func()
+                }
+                catch(e) {
+                    console.warn("Error when evaluating JS");
+                    console.warn(e)
+                    addEventListener("DOMContentLoaded", async () => {
+                        retData = await func()
+                    })
+                }
             }
-            catch(e) {
-                console.error(e);
-                console.error("Error when evaluating JS without waiting. Retrying...");
+            else {
                 addEventListener("DOMContentLoaded", async () => {
                     retData = await func()
                 })
@@ -68,7 +75,7 @@ export default class TaskHandler {
                     {
                         if(e.data.message == 'js')
                         {
-                            parent.postMessage({message: 'callback', data: retData, id: e.data.id}, '` + origin + `')
+                            parent.postMessage({message: 'callback', data: retData ? retData : await func(), id: e.data.id}, '` + origin + `')
                         }
                         if(e.data.message == 'execjs')
                         {
