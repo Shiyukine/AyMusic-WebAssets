@@ -26,7 +26,7 @@ export default class SingerGrid extends HTMLDivElement {
             //new Translations(shadow.children[1])
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.shadowRoot.getElementById("title").innerText = singer.aliasName ? singer.aliasName : this.singer.name
-                let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(singer.id, this.singer.imgUrl)
+                let iUrl = await ImageCacheHandler.getCacheForImageUrl(this.singer.imgUrl)
                 this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + iUrl + "')"
                 this.addEventListener("mouseover", function () {
                     this.shadowRoot.getElementById("img").style.transform = "scale(1.1)"

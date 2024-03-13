@@ -84,7 +84,7 @@ export default class SongGrid extends HTMLDivElement {
             }
         }
         else {
-            let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(song.id, this.song.imgUrl)
+            let iUrl = await ImageCacheHandler.getCacheForImageUrl(this.song.imgUrl)
             this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + iUrl + "')"
         }
         if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {

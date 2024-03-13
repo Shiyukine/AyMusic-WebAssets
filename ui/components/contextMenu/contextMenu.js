@@ -163,7 +163,7 @@ export default class ContextMenu extends HTMLDivElement {
                     }
                 }
                 else {
-                    div.onmouseenter = () => {
+                    div.onmousemove = () => {
                         if (!this.isHidded) {
                             let rect = this.getBoundingClientRect();
                             context.show(new MouseEvent("contextmenu", {

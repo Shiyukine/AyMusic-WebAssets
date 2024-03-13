@@ -74,7 +74,7 @@ export default class ListenViewerWindow extends HTMLDivElement {
                     }
                 }
                 else {
-                    let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(Utils.queueManager.currentSong.id, Utils.queueManager.currentSong.imgUrl)
+                    let iUrl = await ImageCacheHandler.getCacheForImageUrl(Utils.queueManager.currentSong.imgUrl)
                     this.shadowRoot.getElementById("music_img").src = iUrl
                     this.shadowRoot.getElementById("bg").style.backgroundImage = "url(" + iUrl + ")"
                 }

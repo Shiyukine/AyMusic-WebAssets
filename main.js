@@ -72,13 +72,14 @@ async function main() {
                 await Utils.app.remoteClient.changeServURL(Utils.servURL)
                 console.log("Server URL : " + Utils.servURL);
                 //
+                await ImageCacheHandler.init()
+                //
                 LocalMusicHandler.init()
                 await LocalMusicHandler.getLocalLibrary()
                 //
                 await Utils.apiManager.init()
                 //
                 //await Adblock.init()
-                await ImageCacheHandler.init()
                 //
                 Update.searchUpdate(loadPanel);
                 //loadPanel.changeText("Connecting to your account...", "Please wait...");

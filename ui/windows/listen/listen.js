@@ -177,7 +177,7 @@ export default class ListenWindow extends HTMLDivElement {
                         }
                     }
                     else {
-                        let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(Utils.queueManager.currentSong.id, Utils.queueManager.currentSong.imgUrl)
+                        let iUrl = await ImageCacheHandler.getCacheForImageUrl(Utils.queueManager.currentSong.imgUrl)
                         this.shadowRoot.getElementById("music_img").src = iUrl
                         if (Utils.app.platform != "Android") {
                             navigator.mediaSession.metadata = new window.MediaMetadata({

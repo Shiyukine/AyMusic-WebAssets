@@ -17,6 +17,30 @@ export default class ImageCacheHandler {
         console.log("Image cache handler loaded")
     }
 
+    static haveCacheForImageUrl(url) {
+        return url in this.this.cache
+    }
+
+    static async getCacheForImageUrl(url) {
+        if (this.haveCacheForImageUrl(url)) {
+            return this.origin + "/Image/" + this.cache[url][0]
+        }
+        else {
+            let rdm = (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Utils.app.platform == "Android" ? ".jpg" : "")
+            if (Utils.app.platform == "Android") Utils.app.remoteClient.addBypassWebRequest(url)
+            let raw = await fetch(url)
+            let rep = await raw.arrayBuffer()
+            if (Utils.app.platform == "Android") {
+                let view = new Uint8Array(rep)
+                Utils.app.remoteClient.saveCache("Image/" + rdm, view)
+            }
+            else await Utils.app.remoteClient.saveCache("Image/" + rdm, rep)
+            this.cache[url] = [rdm, Date.now()]
+            Utils.app.remoteClient.saveCache("Image/index", new TextEncoder("utf-8").encode(JSON.stringify(this.cache)))
+            return this.origin + "/Image/" + rdm
+        }
+    }
+
     static haveCacheForObjectID(id) {
         return id in this.cache
     }

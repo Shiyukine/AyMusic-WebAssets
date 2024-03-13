@@ -26,7 +26,7 @@ export default class PlaylistGrid extends HTMLDivElement {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.shadowRoot.getElementById("title").innerText = this.playlist.name
-                let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(playlist.id, this.playlist.imgUrl)
+                let iUrl = await ImageCacheHandler.getCacheForImageUrl(this.playlist.imgUrl)
                 this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + iUrl + "')"
                 this.addEventListener("mouseover", function () {
                     this.shadowRoot.getElementById("img").style.transform = "scale(1.1)"

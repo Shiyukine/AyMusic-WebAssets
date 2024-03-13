@@ -25,7 +25,7 @@ export default class AlbumGrid extends HTMLDivElement {
             //new Translations(shadow.children[1])
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.shadowRoot.getElementById("title").innerText = this.album.name
-                let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(album.id, this.album.imgUrl)
+                let iUrl = await ImageCacheHandler.getCacheForImageUrl(this.album.imgUrl)
                 this.shadowRoot.getElementById("img").style.backgroundImage = "url('" + iUrl + "')"
                 this.addEventListener("mouseover", function () {
                     this.shadowRoot.getElementById("img").style.transform = "scale(1.1)"

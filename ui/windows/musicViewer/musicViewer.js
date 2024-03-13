@@ -246,7 +246,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 }, async (info) => {
                     this.shadowRoot.getElementById("title").innerText = info["playlistInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = "By " + info["playlistInfo"]["userID"]
-                    let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(objectID, info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico")
+                    let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico")
                     this.shadowRoot.getElementById("cover").src = iUrl
                     let div = this.addList("Songs in this playlist:")
                     let songs = info["songs"]["songs"]
@@ -279,7 +279,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                             Utils.musicViewer.changeView("si_" + info["albumInfo"]["singerID"])
                         }
                     }
-                    let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(objectID, info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico")
+                    let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico")
                     this.shadowRoot.getElementById("cover").src = iUrl
                     let div = this.addList("Songs in this album added on AyMusic's database:")
                     let songs = info["songs"]["songs"]
@@ -311,7 +311,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 }, async (info) => {
                     this.shadowRoot.getElementById("title").innerText = info["singerInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = info["singerInfo"]["aliasName"] && info["singerInfo"]["aliasName"] != "" ? info["singerInfo"]["aliasName"] : "Artist"
-                    let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(objectID, info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico")
+                    let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico")
                     this.shadowRoot.getElementById("cover").src = iUrl
                     let div = this.addList("Latest added song on AyMusic's database of this artist:")
                     let songs = info["songs"]
@@ -365,7 +365,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     else {
                         this.shadowRoot.getElementById("title").innerText = info["title"]
                         this.shadowRoot.getElementById("subtitle").innerText = info["singerName"]
-                        let iUrl = await ImageCacheHandler.getImgUrlCachedForObjectID(objectID, info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico")
+                        let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico")
                         this.shadowRoot.getElementById("cover").src = iUrl
                     }
                     /**
