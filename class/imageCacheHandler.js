@@ -18,7 +18,7 @@ export default class ImageCacheHandler {
     }
 
     static haveCacheForImageUrl(url) {
-        return url in this.this.cache
+        return url in this.cache
     }
 
     static async getCacheForImageUrl(url) {
