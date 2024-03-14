@@ -296,7 +296,7 @@ export default class ListenWindow extends HTMLDivElement {
                             Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR)
                         }
                     }
-                    if (cur >= 0 && cur < 1000 && await Utils.player.getState()) {
+                    if ((cur - Utils.queueManager.currentSong.cropStart) >= 0 && (cur - Utils.queueManager.currentSong.cropStart) < 1000 && await Utils.player.getState()) {
                         this.updateDiscordRPC(pb, false)
                     }
                 })
@@ -332,6 +332,7 @@ export default class ListenWindow extends HTMLDivElement {
                         shadow.getElementById("music_artist").innerText = e.detail.aliasSongSingerName ? e.detail.aliasSongSingerName : (Utils.queueManager.currentSong.aliasSingerName ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName)
                         Utils.queueManager.currentSong.cropStart = e.detail.cropStart
                         Utils.queueManager.currentSong.cropEnd = e.detail.cropEnd
+                        this.updateDiscordRPC(pb, true)
                     }
                 })
                 Utils.player.onShuffleChange(async () => {
@@ -803,7 +804,7 @@ export default class ListenWindow extends HTMLDivElement {
                 let out = {
                     details: "Listening " + (Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title),
                     state: "By " + (Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName),
-                    endTimestamp: Date.now() + (pb.getMax() - pb.getValue()),
+                    endTimestamp: Date.now() + ((Utils.queueManager.currentSong.cropEnd != -1 ? Utils.queueManager.currentSong.cropEnd : pb.getMax()) - pb.getValue()),
                     largeImageKey: "icon",
                     largeImageText: "AyMusic by Aketsuky",
                     smallImageKey: plat,
