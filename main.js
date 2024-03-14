@@ -84,13 +84,6 @@ async function main() {
                 Update.searchUpdate(loadPanel);
                 //loadPanel.changeText("Connecting to your account...", "Please wait...");
                 //loadPanel.changeloading(true)
-                var logP = new LoginPanel("");
-                logP.style.width = logP.style.height = "100%";
-                logP.style.position = "absolute";
-                document.getElementById("main").appendChild(logP);
-                logP.notConnected = () => {
-                    loadPanel.hide();
-                }
                 var cb = async () => {
                     if (Utils.app.platform == "Android") {
                         Utils.app.remoteClient.syncCookies()
@@ -127,6 +120,13 @@ async function main() {
                     cb()
                 }
                 else {
+                    var logP = new LoginPanel("");
+                    logP.style.width = logP.style.height = "100%";
+                    logP.style.position = "absolute";
+                    document.getElementById("main").appendChild(logP);
+                    logP.notConnected = () => {
+                        loadPanel.hide();
+                    }
                     logP.logged = () => {
                         cb()
                     }
