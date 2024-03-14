@@ -40,6 +40,9 @@ export default class ListenWindow extends HTMLDivElement {
         Import.getData("/ui/windows/listen/listen" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
+                new Translations(shadow.children[1])
+                new ThemeColor(shadow.children[1])
+                this.style.opacity = "1"
                 /**
                  * @type {ProgressBar}
                  */
@@ -727,9 +730,6 @@ export default class ListenWindow extends HTMLDivElement {
                         }
                     }
                 })
-                new Translations(shadow.children[1])
-                new ThemeColor(shadow.children[1])
-                this.style.opacity = "1"
             }
         })
     }
