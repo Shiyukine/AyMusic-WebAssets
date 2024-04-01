@@ -136,6 +136,9 @@ export default class ApiManager {
                                     var logP = new LoginPanel("refresh");
                                     logP.style.display = "none"
                                     document.getElementById("main").appendChild(logP);
+                                    logP.notConnected = () => {
+                                        logP.style.display = ""
+                                    }
                                     logP.logged = async () => {
                                         resolve(await this.doPostRequest(content))
                                     };

@@ -79,7 +79,7 @@ export default class LoginPanel extends HTMLDivElement {
                     Utils.apiManager.cache = {}
                     location.reload()
                 }
-                if ((url.includes("login/?inapp=1") || url.includes("confirm.php")) && isForModification == "") {
+                if ((url.includes("login/?inapp=1") || url.includes("confirm.php")) && (isForModification == "" || isForModification == "refresh")) {
                     this.#eventEl.dispatchEvent(new CustomEvent("notconnected"));
                     this.style.opacity = "1"
                 }
