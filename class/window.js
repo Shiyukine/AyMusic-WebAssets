@@ -7,10 +7,6 @@ export default class Window {
         topbar.classList.add("windowTopBar")
         if (Utils.app.platform == "Windows") {
             topbar.classList.add("colorTopBar")
-            var appName = document.createElement("p")
-            appName.innerText = "AyMusic"
-            appName.classList.add("center")
-            topbar.appendChild(appName)
             var icon = document.createElement("img")
             icon.src = "/resources/icon.ico"
             icon.classList.add("left")
@@ -28,6 +24,7 @@ export default class Window {
             var wclose = document.createElement("img")
             wclose.addEventListener("click", () => Utils.app.remoteClient.closeWindow());
             wclose.src = "/resources/wclose.png"
+            wclose.classList.add("clickable")
             var wchange = document.createElement("img")
             wchange.src = "/resources/wchange.png"
             wchange.addEventListener("click", async () => {
@@ -39,9 +36,11 @@ export default class Window {
                     Utils.app.remoteClient.normalWindow()
                 }
             });
+            wchange.classList.add("clickable")
             var wmin = document.createElement("img")
             wmin.src = "/resources/wmin.png"
             wmin.addEventListener("click", () => Utils.app.remoteClient.hideWindow());
+            wmin.classList.add("clickable")
             topbar.appendChild(wclose)
             topbar.appendChild(wchange)
             topbar.appendChild(wmin)
@@ -49,9 +48,18 @@ export default class Window {
         var back = await Utils.createSVGPath("Back", "white", () => history.back(), 29)
         var forward = await Utils.createSVGPath("Forward", "white", () => history.forward(), 29)
         back.classList.add("left")
+        back.classList.add("clickable")
         forward.classList.add("left")
+        forward.classList.add("clickable")
         topbar.appendChild(back)
         topbar.appendChild(forward)
+        if (Utils.app.platform == "Windows") {
+            var appName = document.createElement("p")
+            appName.innerText = ""
+            appName.id = "curPageName"
+            appName.classList.add("left")
+            topbar.appendChild(appName)
+        }
         document.body.appendChild(topbar)
         new ThemeColor(topbar)
     }

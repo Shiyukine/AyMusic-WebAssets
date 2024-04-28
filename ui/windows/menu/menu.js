@@ -93,22 +93,27 @@ export default class MenuWindow extends HTMLDivElement {
         let menu = this.shadowRoot.getElementById(menuId)
         if (!this.anWindow || newWindow != this.anWindow.enum) {
             let awindow;
+            let winName;
             if (newWindow == this.UserWindows.Home) {
                 awindow = new HomeWindow();
                 awindow.classList.add("home")
                 document.getElementById("bgImg").classList.remove("blur")
+                winName = ""
             }
             if (newWindow == this.UserWindows.Library) {
                 awindow = new LibraryWindow()
                 document.getElementById("bgImg").classList.add("blur")
+                winName = "{library}"
             }
             if (newWindow == this.UserWindows.Search) {
                 awindow = new SearchWindow()
                 document.getElementById("bgImg").classList.add("blur")
+                winName = "{search}"
             }
             if (newWindow == this.UserWindows.Settings) {
                 awindow = new SettingsWindow()
                 document.getElementById("bgImg").classList.add("blur")
+                winName = "{settings}"
             }
             awindow.classList.add("aWindow")
             if (Utils.app.platform == "Windows") awindow.classList.add("windows")
@@ -127,6 +132,7 @@ export default class MenuWindow extends HTMLDivElement {
             awindow.classList.add("loaded")
             menu.classList.add("activated")
             this.anWindow = { win: awindow, enum: newWindow, menu: menuId }
+            document.getElementById("curPageName").innerText = winName
             return awindow
         }
         return this.anWindow.win

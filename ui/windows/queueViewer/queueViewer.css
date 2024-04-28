@@ -10,7 +10,7 @@ h3 {
     backdrop-filter: blur(20px);
     background-color: rgba(0, 0, 0, 0.5);
     margin-right: 0px;
-    width: calc(100% - 100px);
+    width: calc(100% - 105px);
     border-radius: 15px;
     height: 100%;
     overflow: hidden;

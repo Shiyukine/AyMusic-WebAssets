@@ -22,10 +22,10 @@ p {
     padding: 10px;
     margin-left: 15px;
     float: left;
-    height: calc(100% - 87px - 15px);
+    height: calc(100% - 39px - 15px);
+    margin-top: -16px;
     overflow-y: auto;
     overflow-x: hidden;
-    margin-top: -16px;
 }
 
 #menu p,
@@ -56,10 +56,10 @@ p {
 
 #view {
     margin-left: 272px;
-    margin-top: 25px;
+    margin-top: 35px;
     border-radius: 15px;
     position: relative;
-    height: calc(100% - 146.6px);
+    height: calc(100% - 84px - 15px);
 }
 
 .panel {
@@ -286,17 +286,15 @@ button:active {
 button {
     background-position: center;
     transition: background 0.6s;
-    border-radius: 10px;
-    padding: 5px 10px;
+    border-radius: 25px;
+    padding: 5px 15px;
     font-size: 18px;
     cursor: pointer;
-    color: #67b7fd;
-    background-color: transparent;
-    border: #67b7fd solid 2px;
+    color: white;
+    background-color: rgb(0 151 255);
+    border: none;
     outline: none;
     font-family: "Quicksand";
-    box-shadow: 0px 0px 5px 1px #000000a1;
-    font-weight: normal;
     margin-left: 5px;
     margin-bottom: 5px;
 }
