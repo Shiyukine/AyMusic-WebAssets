@@ -1,0 +1,20 @@
+<style type="text/css" id="cssImport">
+    @import url("/ui/windows/playlistImporter/playlistImporter.css");
+    /* @import url("playlistImporter.css"); */
+</style>
+<div id="panelInfoBG" style="opacity: 0%;">
+    <div id="panelInfo">
+        <p id="text">{playlistImporter.title}</p>
+        <p id="subtext">{playlistImporter.info}</p>
+        <div id="plList">
+        </div>
+        <svg height="46" width="46" id="svg" class="svg rotate">
+            <circle cx="23" cy="23" r="21" stroke="white" stroke-width="4" fill="#0000" stroke-linecap="round" />
+        </svg>
+        <div id="btnList">
+            <button id="cancel" class="negative">{cancel}</button>
+            <button id="next">{next}</button>
+        </div>
+        <div id="progressBar" class="progressBar hidden"></div>
+    </div>
+</div>

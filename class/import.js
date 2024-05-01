@@ -17,6 +17,7 @@ import ContextMenu from "../ui/components/contextMenu/contextMenu.js";
 import ProgressBar from "../ui/components/progressBar/progressBar.js";
 import ListenViewerWindow from "../ui/windows/listenViewer/listenViewer.js";
 import LyricsViewerWindow from "../ui/windows/lyricsViewer/lyricsViewer.js";
+import PlaylistImporter from "../ui/windows/playlistImporter/playlistImporter.js";
 
 export default class Import {
     static loadCustomElements() {
@@ -39,6 +40,7 @@ export default class Import {
         customElements.define("context-menu", ContextMenu, { extends: "div" });
         customElements.define("queue-viewer", QueueViewerWindow, { extends: "div" })
         customElements.define("lyrics-viewer", LyricsViewerWindow, { extends: "div" })
+        customElements.define("playlist-importer", PlaylistImporter, { extends: "div" })
     }
 
     static cache = [[], []]

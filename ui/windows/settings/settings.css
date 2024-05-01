@@ -311,6 +311,11 @@ button:disabled {
     font-size: 18px;
 }
 
+.link.inline {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 .link:hover {
     text-decoration: underline;
 }

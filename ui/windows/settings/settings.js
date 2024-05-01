@@ -7,6 +7,7 @@ import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
 import Utils from "../../../class/utils/utils.js";
 import InfoPanel from "../../components/infoPanel/infoPanel.js";
 import LoginPanel from "../../components/loginPanel/loginPanel.js";
+import PlaylistImporter from "../playlistImporter/playlistImporter.js";
 
 export default class SettingsWindow extends HTMLDivElement {
     selectedIndex = 0;
@@ -121,7 +122,7 @@ export default class SettingsWindow extends HTMLDivElement {
                 shadow.getElementById("music_add").onclick = () => {
                     LocalMusicHandler.addMusic()
                 }
-                PlatformHandler.getAvailablePlatforms().then(platforms => {
+                PlatformHandler.getAvailablePlatforms().then(async platforms => {
                     for (let platform of platforms) {
                         /*<div class="set">
                             <p>{set.music.addSpotify}</p>
@@ -133,7 +134,9 @@ export default class SettingsWindow extends HTMLDivElement {
                         let p = document.createElement("p")
                         p.innerHTML = "<span>{set.music.addAccountPlatform}</span><span> " + platform + "</span>"
                         div.appendChild(p)
-                        let btn1 = document.createElement("button")
+                        let btn1 = document.createElement("p")
+                        btn1.classList.add("link")
+                        btn1.classList.add("inline")
                         btn1.innerText = "{set.music.addAccount}"
                         btn1.onclick = async () => {
                             await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
@@ -141,7 +144,9 @@ export default class SettingsWindow extends HTMLDivElement {
                             Utils.newError("Information", "If the window has closed by itself, it means that you've been connected!")
                         }
                         div.appendChild(btn1)
-                        let btn2 = document.createElement("button")
+                        let btn2 = document.createElement("p")
+                        btn2.classList.add("link")
+                        btn2.classList.add("inline")
                         btn2.innerText = "{set.music.rmAccount}"
                         btn2.onclick = async () => {
                             await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LogoutUrl"),
@@ -151,6 +156,18 @@ export default class SettingsWindow extends HTMLDivElement {
                             Utils.newError("Information", "If the window has closed by itself, it means that you've been disconnected!")
                         }
                         div.appendChild(btn2)
+                        if ((await PlatformHandler.getPlatformSettings(platform)).SupportsPlaylistsImport) {
+                            let btn3 = document.createElement("p")
+                            btn3.classList.add("link")
+                            btn3.classList.add("inline")
+                            btn3.innerText = "{set.music.importPlaylist}"
+                            btn3.onclick = async () => {
+                                let plImport = new PlaylistImporter(platform)
+                                document.getElementById("main").appendChild(plImport)
+                                plImport.showDialog()
+                            }
+                            div.appendChild(btn3)
+                        }
                         shadow.getElementById("music_panel").insertBefore(div, shadow.getElementById("music_import"))
                     }
                 })
