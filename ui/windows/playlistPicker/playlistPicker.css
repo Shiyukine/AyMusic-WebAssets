@@ -85,10 +85,6 @@ p {
     margin-left: 20px;
 }
 
-#next:disabled {
-    opacity: 0.5;
-}
-
 #subtext {
     margin-top: 10px;
     color: white;
