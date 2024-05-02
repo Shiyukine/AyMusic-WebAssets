@@ -121,7 +121,7 @@ export default class LibraryManager {
         }
     }
 
-    async addSongToAPlaylist(plId, objId) {
+    async addSongToAPlaylist(plId, objId, silent = false) {
         console.log("Adding song in playlist")
         let result = await Utils.apiManager.doPostRequest({
             act: "addSongInUserPlaylist",
@@ -137,7 +137,7 @@ export default class LibraryManager {
             }));
             console.log("Song added in playlist successfully")
         }
-        else
+        else if (silent)
             Utils.newError("Can't add song to this playlist", "This song is already added or there is an internal error.")
         return result == "OK"
     }
@@ -178,8 +178,8 @@ export default class LibraryManager {
      * 
      * @param {String} objId 
      */
-    async addObjToLikedSongs(objId) {
-        var result = await this.addSongToAPlaylist(this.userInfo.likedSongsPlId, objId)
+    async addObjToLikedSongs(objId, silent = false) {
+        var result = await this.addSongToAPlaylist(this.userInfo.likedSongsPlId, objId, silent)
         if (result) {
             this.userLikedObjects.push(objId)
             this.#eventEl.dispatchEvent(new CustomEvent("addsongtolikedsongs", {

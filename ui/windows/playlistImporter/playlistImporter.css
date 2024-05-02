@@ -69,7 +69,7 @@ p {
     animation-play-state: paused;
     visibility: collapse;
     margin-left: 20px;
-    margin-bottom: 75px;
+    margin-bottom: 11px;
 }
 
 #panelInfo svg.playSVG {
@@ -95,7 +95,7 @@ p {
     overflow-y: auto;
     font-size: 12px;
     margin-left: 20px;
-    margin-right: 5px;
+    margin-right: 20px;
     overflow-wrap: break-word;
     user-select: text;
     margin-bottom: 20px;

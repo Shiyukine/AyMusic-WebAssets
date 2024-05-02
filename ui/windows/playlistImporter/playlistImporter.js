@@ -1,5 +1,6 @@
 import Import from "../../../class/import.js";
 import Playlist from "../../../class/music/playlist.js";
+import Song from "../../../class/music/song.js";
 import PlatformHandler from "../../../class/player/platformHandler.js";
 import TaskHandler from "../../../class/taskHandler.js";
 import ThemeColor from "../../../class/themeColor.js";
@@ -36,8 +37,15 @@ export default class PlaylistImporter extends HTMLDivElement {
     platform = null;
     selectedDiv = null;
     selectedPlaylist = null;
+    /**
+     * @type {Playlist}
+     */
+    selectedPlaylistPicker = null;
     step = 0;
     curTaskUrl = "";
+
+    urlsExist = [];
+    errors = false;
 
     constructor(platform) {
         super(platform);
@@ -60,6 +68,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                 new Translations(this.shadowRoot.children[1])
                 new ThemeColor(this.shadowRoot.children[1])
                 this.beginImport(platform)
+                this.errors = false;
                 this.shadowRoot.getElementById("next").onclick = async () => {
                     if (this.step == 1) {
                         this.shadowRoot.getElementById("plList").innerHTML = ""
@@ -72,6 +81,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                         let pl = await plPicker.showDialog()
                         if (pl != "canceled") {
                             this.step = 3
+                            this.selectedPlaylistPicker = pl;
                             this.changeText("{playlistImporter.title}", "{playlistImporter.importing}");
                             this.changeloading(true);
                             this.shadowRoot.getElementById("next").innerText = "{playlistImporter.wait}"
@@ -84,6 +94,10 @@ export default class PlaylistImporter extends HTMLDivElement {
                                 url = url.split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
                             }
                             this.curTaskUrl = url;
+                            this.urlsExist = await Utils.apiManager.doPostRequest({
+                                act: "getSongsUrl",
+                                filter: (await PlatformHandler.getPlatformSettings(platform)).FilterSearch
+                            })
                             let script = await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "GetPlaylistItemsScript"))
                             TaskHandler.addTask(url, script, false, true, true, async (data) => {
                             }, false)
@@ -96,15 +110,46 @@ export default class PlaylistImporter extends HTMLDivElement {
                 this.shadowRoot.getElementById("cancel").onclick = () => {
                     this.close();
                 }
-                window.addEventListener("message", (e) => {
+                window.addEventListener("message", async (e) => {
                     if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcbdata") {
                         if (e.data.cb == "progressupdate") {
-                            console.log(e.data.data)
-                            // add songs to db
-                            // and add songs to requested pl
+                            console.log("recevied items from " + platform)
+                            var songsToAdd = []
+                            var songsIDs = []
+                            for (let song of e.data.data.items) {
+                                let songID = null
+                                for (let songDB of this.urlsExist) {
+                                    if (songDB["url"] == song.url) {
+                                        songID = songDB["songID"]
+                                        let id = songDB["songID"]
+                                        if (this.selectedPlaylistPicker.id == Utils.libManager.userLikedPl.id) this.errors ||= ! await Utils.libManager.addObjToLikedSongs("so_" + id)
+                                        else this.errors ||= ! await Utils.libManager.addSongToAPlaylist(this.selectedPlaylistPicker.id, "so_" + id)
+                                    }
+                                }
+                                if (!songID) {
+                                    songsToAdd.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
+                                    song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
+                                }
+                                else {
+                                    songsIDs.push(songID)
+                                }
+                            }
+                            if (songsToAdd.length > 0) {
+                                let nsongsID = await Utils.apiManager.doPostRequest({
+                                    act: "addMultipleSongsDB",
+                                    songs: songsToAdd
+                                })
+                                for (let i in nsongsID) {
+                                    let id = nsongsID[i]["songID"]
+                                    if (this.selectedPlaylistPicker.id == Utils.libManager.userLikedPl.id) this.errors ||= ! await Utils.libManager.addObjToLikedSongs("so_" + id)
+                                    else this.errors ||= ! await Utils.libManager.addSongToAPlaylist(this.selectedPlaylistPicker.id, "so_" + id)
+                                }
+                            }
+                            this.changeloading(e.data.data.itemNumber / this.selectedPlaylist.songs * 100)
                             if (e.data.data.itemNumber == this.selectedPlaylist.songs) {
                                 TaskHandler.stopWebTaskManually(this.curTaskUrl, true)
-                                this.changeText("{playlistImporter.title}", "{playlistImporter.imported}");
+                                if (!this.errors) this.changeText("{playlistImporter.title}", "{playlistImporter.importedSuccess}");
+                                else this.changeText("{playlistImporter.title}", "{playlistImporter.importedWithErrors}");
                                 this.changeloading(false);
                                 this.shadowRoot.getElementById("next").innerText = "{close}"
                                 this.shadowRoot.getElementById("next").disabled = false
@@ -190,7 +235,7 @@ export default class PlaylistImporter extends HTMLDivElement {
             if (subtext != null) this.#subtextEl.innerHTML = subtext.toString().split("\n").join("<br>");
         }
         catch {
-            console.error("Info panel not initialized !")
+            console.error("PlaylistImporter not initialized !")
         }
     }
 
@@ -219,7 +264,7 @@ export default class PlaylistImporter extends HTMLDivElement {
             }
         }
         catch {
-            console.error("Info panel not initialized !")
+            console.error("PlaylistImporter not initialized !")
         }
     }
 
@@ -231,7 +276,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                 document.getElementById("menu_win").style.zIndex = ""
         }
         catch {
-            console.error("Info panel not initialized !")
+            console.error("PlaylistImporter not initialized !")
         }
     }
 

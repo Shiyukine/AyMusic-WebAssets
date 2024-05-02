@@ -305,19 +305,17 @@ export default class ListenWindow extends HTMLDivElement {
                 })
                 let lastTime = /*await Utils.player.getCurrentTime()*/0;
                 setInterval(async () => {
-                    if (document.visibilityState == "visible") {
-                        let cur = await Utils.player.getCurrentTime()
-                        if (cur != lastTime && await Utils.player.getDuration()) {
-                            Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
-                            Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
-                            await Utils.apiManager.doPostRequest({
-                                act: "updateUserInfo",
-                                curTime: cur,
-                                curMusic: Utils.libManager.userInfo.curMusic,
-                                curObject: Utils.libManager.userInfo.curObject
-                            })
-                            lastTime = cur
-                        }
+                    let cur = await Utils.player.getCurrentTime()
+                    if (cur != lastTime && await Utils.player.getDuration()) {
+                        Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
+                        Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
+                        await Utils.apiManager.doPostRequest({
+                            act: "updateUserInfo",
+                            curTime: cur,
+                            curMusic: Utils.libManager.userInfo.curMusic,
+                            curObject: Utils.libManager.userInfo.curObject
+                        })
+                        lastTime = cur
                     }
                 }, 15000)
                 let mouseDownPb = false;
@@ -756,26 +754,28 @@ export default class ListenWindow extends HTMLDivElement {
             }
             catch { }
             ifr.forEach((x) => {
-                if (part == "changeMediaMetadata") {
-                    x.postMessage({
-                        message: part, inData: {
-                            title: navigator.mediaSession.metadata.title,
-                            album: navigator.mediaSession.metadata.album,
-                            artist: navigator.mediaSession.metadata.artist,
-                            artwork: JSON.stringify(navigator.mediaSession.metadata.artwork),
-                        }, platform: platform
-                    }, url)
-                }
-                if (part == "changePositionState") {
-                    x.postMessage({ message: part, inData: data, platform: platform }, url)
-                }
-                if (part == "setActionHandler") {
-                    let id = Date.now() + (Math.random() + 1).toString(36).substring(7);
-                    if (Utils.queueManager.canPrevious()) x.postMessage({ message: part, inData: { action: "previoustrack" }, id: id, platform: platform }, url)
-                    if (Utils.queueManager.canNext()) x.postMessage({ message: part, inData: { action: "nexttrack" }, id: id, platform: platform }, url)
-                    x.postMessage({ message: part, inData: { action: "play" }, id: id, platform: platform }, url)
-                    x.postMessage({ message: part, inData: { action: "pause" }, id: id, platform: platform }, url)
-                    x.postMessage({ message: part, inData: { action: "seekto" }, id: id, platform: platform }, url)
+                if (typeof x != "undefined") {
+                    if (part == "changeMediaMetadata") {
+                        x.postMessage({
+                            message: part, inData: {
+                                title: navigator.mediaSession.metadata.title,
+                                album: navigator.mediaSession.metadata.album,
+                                artist: navigator.mediaSession.metadata.artist,
+                                artwork: JSON.stringify(navigator.mediaSession.metadata.artwork),
+                            }, platform: platform
+                        }, url)
+                    }
+                    if (part == "changePositionState") {
+                        x.postMessage({ message: part, inData: data, platform: platform }, url)
+                    }
+                    if (part == "setActionHandler") {
+                        let id = Date.now() + (Math.random() + 1).toString(36).substring(7);
+                        if (Utils.queueManager.canPrevious()) x.postMessage({ message: part, inData: { action: "previoustrack" }, id: id, platform: platform }, url)
+                        if (Utils.queueManager.canNext()) x.postMessage({ message: part, inData: { action: "nexttrack" }, id: id, platform: platform }, url)
+                        x.postMessage({ message: part, inData: { action: "play" }, id: id, platform: platform }, url)
+                        x.postMessage({ message: part, inData: { action: "pause" }, id: id, platform: platform }, url)
+                        x.postMessage({ message: part, inData: { action: "seekto" }, id: id, platform: platform }, url)
+                    }
                 }
             })
         }

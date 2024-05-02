@@ -129,24 +129,22 @@ export default class ApiManager {
                     else {
                         //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
                         //console.error(result)
-                        this.countFailed += 1
-                        if (this.countFailed < 3) {
+                        if (this.countFailed == 0) {
                             if (result["reason"].includes("Bad API key")) {
+                                this.countFailed += 1
                                 return new Promise((resolve) => {
                                     var logP = new LoginPanel("refresh");
                                     logP.style.display = "none"
                                     document.getElementById("main").appendChild(logP);
                                     logP.notConnected = () => {
-                                        logP.style.display = ""
+                                        location.reload()
                                     }
                                     logP.logged = async () => {
+                                        this.countFailed == 0
                                         resolve(await this.doPostRequest(content))
                                     };
                                 })
                             }
-                        }
-                        else {
-                            location.reload()
                         }
                     }
                 }

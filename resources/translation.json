@@ -23,6 +23,7 @@
         "{set.music.addAccount}": "Add",
         "{set.music.rmAccount}": "Remove",
         "{set.music.addAccountPlatform}": "Manage account on ",
+        "{set.music.importPlaylist}": "Import playlist",
         "{set.account.name}": "Username",
         "{set.account.email}": "E-mail",
         "{set.account}": "Account",
@@ -118,6 +119,21 @@
         "{set.other.hwacc.info}": "Deactivate it if you have some glitches with the app.\nYou need to restart manually the app to apply this setting",
         "{set.general.clearCache}": "Clear the cache",
         "{set.general.clearCache.btn}": "Clear",
-        "{set.general.clearCache.info}": "Useful if you run out of space"
+        "{set.general.clearCache.info}": "Useful if you run out of space",
+        "{playlistImporter.title}": "Playlist importer",
+        "{playlistImporter.choosePl}": "Choose a playlist to import songs of it and copy these songs to one of your playlist on AyMusic. For some platforms, you must be logged to continue.",
+        "{playlistImporter.wait}": "Please wait...",
+        "{playlistImporter.importing}": "Importing",
+        "{playlistImporter.importedSuccess}": "Success!",
+        "{playlistImporter.importedWithErrors}": "Import finished with some errors because a song may already be in your playlist.",
+        "{cancel}": "Cancel",
+        "{next}": "Next",
+        "{close}": "Close",
+        "{spotify.likedSongs}": "Liked Songs",
+        "{playlistPicker.title}": "Choose a playlist",
+        "{playlistPicker.wait}": "Please wait...",
+        "{playlistPicker.choosePl}": "Please choose a playlist to put your songs in.",
+        "{playlistPicker.noAvailPlaylists}": "You have no playlists. Please create a playlist to continue.",
+        "{playlistPicker.choose}": "Choose"
     }
 }

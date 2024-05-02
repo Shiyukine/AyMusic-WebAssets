@@ -55,7 +55,7 @@ export default class PlaylistPicker extends HTMLDivElement {
                 this.#loaded = true;
                 new Translations(this.shadowRoot.children[1])
                 new ThemeColor(this.shadowRoot.children[1])
-                this.changeText("{playlistImporter.title}", "{playlistImporter.choosePl}");
+                this.changeText("{playlistPicker.title}", "{playlistPicker.choosePl}");
                 this.changeloading(false);
                 let havePl = false;
                 for (let pl of Utils.libManager.userPlaylists) {
@@ -85,7 +85,7 @@ export default class PlaylistPicker extends HTMLDivElement {
                     }
                 }
                 if (!havePl) {
-                    this.changeText("{playlistImporter.title}", "{playlistImporter.noAvailPlaylists}");
+                    this.changeText("{playlistPicker.title}", "{playlistPicker.noAvailPlaylists}");
                 }
                 this.shadowRoot.getElementById("next").onclick = () => {
                     if (this.step == 1) {
@@ -140,7 +140,7 @@ export default class PlaylistPicker extends HTMLDivElement {
             if (subtext != null) this.#subtextEl.innerHTML = subtext.toString().split("\n").join("<br>");
         }
         catch {
-            console.error("Info panel not initialized !")
+            console.error("PlaylistPicker not initialized !")
         }
     }
 
@@ -169,7 +169,7 @@ export default class PlaylistPicker extends HTMLDivElement {
             }
         }
         catch {
-            console.error("Info panel not initialized !")
+            console.error("PlaylistPicker not initialized !")
         }
     }
 
@@ -181,7 +181,7 @@ export default class PlaylistPicker extends HTMLDivElement {
                 document.getElementById("menu_win").style.zIndex = ""
         }
         catch {
-            console.error("Info panel not initialized !")
+            console.error("PlaylistPicker not initialized !")
         }
     }
 
