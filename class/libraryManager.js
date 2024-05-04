@@ -137,8 +137,11 @@ export default class LibraryManager {
             }));
             console.log("Song added in playlist successfully")
         }
-        else if (silent)
-            Utils.newError("Can't add song to this playlist", "This song is already added or there is an internal error.")
+        else {
+            if (!silent)
+                Utils.newError("Can't add song to this playlist", "This song is already added or there is an internal error.")
+            else console.error("Can't add song to this playlist", result)
+        }
         return result == "OK"
     }
 

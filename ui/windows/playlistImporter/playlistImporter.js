@@ -45,6 +45,10 @@ export default class PlaylistImporter extends HTMLDivElement {
     curTaskUrl = "";
 
     urlsExist = [];
+    songsToAdd = []
+    songsToAddPl = []
+    songsIDs = []
+    currentItemNumber = 0
     errors = false;
 
     constructor(platform) {
@@ -69,6 +73,9 @@ export default class PlaylistImporter extends HTMLDivElement {
                 new ThemeColor(this.shadowRoot.children[1])
                 this.beginImport(platform)
                 this.errors = false;
+                this.songsToAdd = []
+                this.currentItemNumber = 0
+                this.songsIDs = []
                 this.shadowRoot.getElementById("next").onclick = async () => {
                     if (this.step == 1) {
                         this.shadowRoot.getElementById("plList").innerHTML = ""
@@ -79,7 +86,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                          * @type {Playlist|string}
                          */
                         let pl = await plPicker.showDialog()
-                        if (pl != "canceled") {
+                        if (pl != null) {
                             this.step = 3
                             this.selectedPlaylistPicker = pl;
                             this.changeText("{playlistImporter.title}", "{playlistImporter.importing}");
@@ -102,6 +109,9 @@ export default class PlaylistImporter extends HTMLDivElement {
                             TaskHandler.addTask(url, script, false, true, true, async (data) => {
                             }, false)
                         }
+                        else {
+                            this.close()
+                        }
                     }
                     if (this.step == 4) {
                         this.close()
@@ -114,40 +124,46 @@ export default class PlaylistImporter extends HTMLDivElement {
                     if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcbdata") {
                         if (e.data.cb == "progressupdate") {
                             console.log("recevied items from " + platform)
-                            var songsToAdd = []
-                            var songsIDs = []
                             for (let song of e.data.data.items) {
                                 let songID = null
                                 for (let songDB of this.urlsExist) {
                                     if (songDB["url"] == song.url) {
                                         songID = songDB["songID"]
-                                        let id = songDB["songID"]
-                                        if (this.selectedPlaylistPicker.id == Utils.libManager.userLikedPl.id) this.errors ||= ! await Utils.libManager.addObjToLikedSongs("so_" + id)
-                                        else this.errors ||= ! await Utils.libManager.addSongToAPlaylist(this.selectedPlaylistPicker.id, "so_" + id)
                                     }
                                 }
                                 if (!songID) {
-                                    songsToAdd.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
-                                    song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
+                                    // 2 last items in list: id, index
+                                    this.songsToAdd.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
+                                    song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl, null, this.currentItemNumber])
                                 }
                                 else {
-                                    songsIDs.push(songID)
+                                    this.songsIDs.push([songID, this.currentItemNumber])
                                 }
+                                this.currentItemNumber++
                             }
-                            if (songsToAdd.length > 0) {
-                                let nsongsID = await Utils.apiManager.doPostRequest({
-                                    act: "addMultipleSongsDB",
-                                    songs: songsToAdd
-                                })
-                                for (let i in nsongsID) {
-                                    let id = nsongsID[i]["songID"]
-                                    if (this.selectedPlaylistPicker.id == Utils.libManager.userLikedPl.id) this.errors ||= ! await Utils.libManager.addObjToLikedSongs("so_" + id)
-                                    else this.errors ||= ! await Utils.libManager.addSongToAPlaylist(this.selectedPlaylistPicker.id, "so_" + id)
-                                }
-                            }
-                            this.changeloading(e.data.data.itemNumber / this.selectedPlaylist.songs * 100)
+                            this.changeloading(e.data.data.itemNumber / this.selectedPlaylist.songs * 50)
                             if (e.data.data.itemNumber == this.selectedPlaylist.songs) {
                                 TaskHandler.stopWebTaskManually(this.curTaskUrl, true)
+                                if (this.songsToAdd.length > 0) {
+                                    let nsongsID = await Utils.apiManager.doPostRequest({
+                                        act: "addMultipleSongsDB",
+                                        songs: this.songsToAdd
+                                    })
+                                    for (let i in nsongsID) {
+                                        let id = nsongsID[i]["songID"]
+                                        this.songsToAdd[i][this.songsToAdd[i].length - 2] = id
+                                    }
+                                }
+                                let allSongs = this.songsToAdd.concat(this.songsIDs)
+                                allSongs.sort((a, b) => a[a.length - 1] - b[b.length - 1])
+                                for (let i in allSongs) {
+                                    let song = allSongs[i]
+                                    let id = song[song.length - 2]
+                                    if (this.selectedPlaylistPicker.id == Utils.libManager.userLikedPl.id) this.errors = !(await Utils.libManager.addObjToLikedSongs("so_" + id, true)) || this.errors
+                                    else this.errors = !(await Utils.libManager.addSongToAPlaylist(this.selectedPlaylistPicker.id, "so_" + id, true)) || this.errors
+                                    await Utils.delay(50)
+                                    this.changeloading(50 + (i / allSongs.length * 50))
+                                }
                                 if (!this.errors) this.changeText("{playlistImporter.title}", "{playlistImporter.importedSuccess}");
                                 else this.changeText("{playlistImporter.title}", "{playlistImporter.importedWithErrors}");
                                 this.changeloading(false);

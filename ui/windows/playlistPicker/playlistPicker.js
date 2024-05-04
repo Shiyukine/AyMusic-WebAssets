@@ -126,7 +126,7 @@ export default class PlaylistPicker extends HTMLDivElement {
                         this.close()
                     }
                     else {
-                        resolve()
+                        resolve(null)
                     }
                     return;
                 }

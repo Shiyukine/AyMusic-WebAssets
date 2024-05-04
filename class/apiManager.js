@@ -145,7 +145,9 @@ export default class ApiManager {
                                     };
                                 })
                             }
+                            else return result["reason"]
                         }
+                        else return result["reason"]
                     }
                 }
                 catch (e) {
