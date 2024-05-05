@@ -13,7 +13,7 @@ export default class MenuWindow extends HTMLDivElement {
         super();
         var shadow = this.attachShadow({ mode: "open" });
         this.style.opacity = "0%"
-        this.style.transition = "opacity 0.7s"
+        this.style.transition = "opacity 0.4s"
         this.id = "menu_win"
         Import.getData("/ui/windows/menu/menu" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html;

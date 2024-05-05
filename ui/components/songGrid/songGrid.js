@@ -272,7 +272,7 @@ export default class SongGrid extends HTMLDivElement {
                         }
                     })
                     Utils.libManager.onRemoveSongFromPlaylist((e) => {
-                        if (e.detail.objId == "so_" + song.id && e.detail.playlistId == this.object.id && this.parentElement) {
+                        if (e.detail.objId == "so_" + song.id && this.object != null && e.detail.playlistId == this.object.id && this.parentElement) {
                             this.parentElement.removeChild(this)
                         }
                     });

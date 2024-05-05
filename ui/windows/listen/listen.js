@@ -31,7 +31,7 @@ export default class ListenWindow extends HTMLDivElement {
         super();
         var shadow = this.attachShadow({ mode: "open" })
         this.style.opacity = "0%"
-        this.style.transition = "opacity 0.7s"
+        this.style.transition = "opacity 0.4s"
         this.style.position = "absolute"
         this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "78px" : "0"
         this.style.left = "0"

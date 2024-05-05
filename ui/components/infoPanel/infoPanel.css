@@ -44,7 +44,7 @@ p {
     background-color: rgba(71, 71, 71, 0.5);
     width: 100%;
     height: calc(100% - 35px);
-    transition: opacity 0.7s;
+    transition: opacity 0.4s;
     position: absolute;
     padding-top: 35px;
     top: 0;

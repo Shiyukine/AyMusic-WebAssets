@@ -44,7 +44,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
             this.style.marginTop = "0px"
             this.style.height = "calc(100% - 125px)"
         }
-        this.style.transition = "opacity 0.7s"
+        this.style.transition = "opacity 0.4s"
         Import.getData("/ui/windows/musicViewer/musicViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             new Translations(shadow.children[1])

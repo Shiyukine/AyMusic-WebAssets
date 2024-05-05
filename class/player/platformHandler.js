@@ -67,7 +67,8 @@ export default class PlatformHandler {
             SupportsPlaylistsImport: false,
             MinVersion: 0,
             CookieName: "",
-            CookieUrl: ""
+            CookieUrl: "",
+            NeedDisconnectBeforeChangeSong: false
         }
         var platforms = await this.searchPlatforms()
         if (platform && platforms) {

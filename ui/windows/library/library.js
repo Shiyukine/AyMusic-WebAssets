@@ -34,7 +34,7 @@ export default class LibraryWindow extends HTMLDivElement {
         super();
         var shadow = this.attachShadow({ mode: "open" })
         this.style.opacity = "0%"
-        this.style.transition = "opacity 0.7s"
+        this.style.transition = "opacity 0.4s"
         Import.getData("/ui/windows/library/library" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {

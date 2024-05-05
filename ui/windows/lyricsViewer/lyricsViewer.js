@@ -68,7 +68,7 @@ export default class LyricsViewerWindow extends HTMLDivElement {
                 window.addEventListener("pointerup", (e) => {
                     if (dragInfo.drag && !this.isClosed) {
                         if (e.y - dragInfo.yBase > 100) {
-                            this.style.transition = "0.7s"
+                            this.style.transition = "0.4s"
                             this.hide()
                         }
                         else {

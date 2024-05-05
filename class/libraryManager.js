@@ -140,7 +140,33 @@ export default class LibraryManager {
         else {
             if (!silent)
                 Utils.newError("Can't add song to this playlist", "This song is already added or there is an internal error.")
-            else console.error("Can't add song to this playlist", result)
+            console.error("Can't add song to this playlist", result)
+        }
+        return result == "OK"
+    }
+
+    async addBatchSongsToAPlaylist(plId, objsId, silent = false) {
+        console.log("Adding songs in playlist")
+        let result = await Utils.apiManager.doPostRequest({
+            act: "addBatchSongsInUserPlaylist",
+            playlistID: plId,
+            objectsID: objsId,
+        })
+        if (result == "OK") {
+            for (let objId of objsId) {
+                this.#eventEl.dispatchEvent(new CustomEvent("addsongtoplaylist", {
+                    detail: {
+                        playlistId: plId,
+                        objId: objId
+                    }
+                }));
+            }
+            console.log("Songs added in playlist successfully")
+        }
+        else {
+            if (!silent)
+                Utils.newError("Can't add songs to this playlist", "These songs are already added or there is an internal error.")
+            console.error("Can't add songs to this playlist", result)
         }
         return result == "OK"
     }
@@ -190,6 +216,25 @@ export default class LibraryManager {
                     objId: objId
                 }
             }));
+        }
+        return result
+    }
+
+    /**
+     * 
+     * @param {Array} objsId 
+     */
+    async addBatchObjsToLikedSongs(objsId, silent = false) {
+        var result = await this.addBatchSongsToAPlaylist(this.userInfo.likedSongsPlId, objsId, silent)
+        if (result) {
+            for (let objId of objsId) {
+                this.userLikedObjects.push(objId)
+                this.#eventEl.dispatchEvent(new CustomEvent("addsongtolikedsongs", {
+                    detail: {
+                        objId: objId
+                    }
+                }));
+            }
         }
         return result
     }

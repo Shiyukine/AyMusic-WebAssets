@@ -23,7 +23,7 @@ export default class ListenViewerWindow extends HTMLDivElement {
         super();
         var shadow = this.attachShadow({ mode: "open" })
         this.style.opacity = "0%"
-        this.style.transition = "opacity 0.7s"
+        this.style.transition = "opacity 0.4s"
         this.style.position = "absolute"
         this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "0" : "78px"
         this.style.left = "0"

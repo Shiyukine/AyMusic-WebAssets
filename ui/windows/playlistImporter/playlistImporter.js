@@ -156,14 +156,18 @@ export default class PlaylistImporter extends HTMLDivElement {
                                 }
                                 let allSongs = this.songsToAdd.concat(this.songsIDs)
                                 allSongs.sort((a, b) => a[a.length - 1] - b[b.length - 1])
-                                for (let i in allSongs) {
-                                    let song = allSongs[i]
-                                    let id = song[song.length - 2]
-                                    if (this.selectedPlaylistPicker.id == Utils.libManager.userLikedPl.id) this.errors = !(await Utils.libManager.addObjToLikedSongs("so_" + id, true)) || this.errors
-                                    else this.errors = !(await Utils.libManager.addSongToAPlaylist(this.selectedPlaylistPicker.id, "so_" + id, true)) || this.errors
-                                    await Utils.delay(50)
+                                for (let i = 0; i < allSongs.length; i += 50) {
+                                    let songsIdsTmp = [];
+                                    for (let song of allSongs.slice(i, i + 50)) {
+                                        let id = song[song.length - 2]
+                                        songsIdsTmp.push("so_" + id)
+                                    }
+                                    if (this.selectedPlaylistPicker.id == Utils.libManager.userLikedPl.id) this.errors = !(await Utils.libManager.addBatchObjsToLikedSongs(songsIdsTmp, true)) || this.errors
+                                    else this.errors = !(await Utils.libManager.addBatchSongsToAPlaylist(this.selectedPlaylistPicker.id, songsIdsTmp, true)) || this.errors
                                     this.changeloading(50 + (i / allSongs.length * 50))
+                                    await Utils.delay(100)
                                 }
+                                this.changeloading(100)
                                 if (!this.errors) this.changeText("{playlistImporter.title}", "{playlistImporter.importedSuccess}");
                                 else this.changeText("{playlistImporter.title}", "{playlistImporter.importedWithErrors}");
                                 this.changeloading(false);
