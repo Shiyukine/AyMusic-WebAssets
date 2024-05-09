@@ -84,7 +84,7 @@ export default class LoginPanel extends HTMLDivElement {
                     this.style.opacity = "1"
                 }
             }
-            window.addEventListener("message", (e) => {
+            window.addEventListener("message", async (e) => {
                 if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == this.messID) {
                     if (e.data.message == "callbackHTML") {
                         let text = e.data.data.split("<br>").join("\n");
@@ -95,20 +95,21 @@ export default class LoginPanel extends HTMLDivElement {
                             id: value(3),
                             email: value(0),
                             apiKey: value(7),
-                            avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif" + (Utils.app.platform != "Android" && Utils.app.platform != "iOS" ? "?date=" + Date.now().toString() : "")
+                            avatarUrl: await ImageCacheHandler.getCacheForImageUrl(Utils.servURL + "account/" + value(3) + "/pp.gif", isForModification == "modify")
                         }
                         Utils.apiManager.refreshApiKey()
                         console.log("Welcome " + Utils.actualAccount.id + " to AyMusic !")
                         if (isForModification == "modify") {
                             document.getElementById("menu_win").changeAccountAvatar()
                             document.getElementById("menu_win").anWindow.win.changeAccount();
+                            this.#eventEl.dispatchEvent(new CustomEvent("changedinfos"));
                         }
                         this.close()
                     }
                 }
             }, { signal: this.controller.signal })
             setTimeout(() => {
-                if (!loaded) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
+                if (!loaded && !this.isClosed) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
             }, 21500)
             if (isForModification == "" || isForModification == "refresh") {
                 this.#iframe.src = Utils.servURL + "login/?inapp=1&" + (Utils.app.platform == "Android" ? "injectscript=1" : "") + "&date=" + Date.now().toString()
@@ -130,6 +131,10 @@ export default class LoginPanel extends HTMLDivElement {
 
     set notConnected(callback) {
         this.#eventEl.addEventListener("notconnected", callback)
+    }
+
+    set onChangedInfos(callback) {
+        this.#eventEl.addEventListener("changedinfos", callback)
     }
 
     close(triggerEvent = true) {

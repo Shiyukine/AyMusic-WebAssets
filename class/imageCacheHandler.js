@@ -21,8 +21,8 @@ export default class ImageCacheHandler {
         return url in this.cache
     }
 
-    static async getCacheForImageUrl(url) {
-        if (this.haveCacheForImageUrl(url)) {
+    static async getCacheForImageUrl(url, renew = false) {
+        if (!renew && this.haveCacheForImageUrl(url)) {
             return this.origin + "/Image/" + this.cache[url][0]
         }
         else {
