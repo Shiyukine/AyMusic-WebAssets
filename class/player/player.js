@@ -69,14 +69,18 @@ export default class Player {
         this.currentTime - 1
         this.state = null
         if (this.objurl != "") URL.revokeObjectURL(this.objurl)
-        console.log("begin to play song " + song.url)
         if (this.audioElement != null) {
             this.audioElement.pause()
             this.audioElement = null;
         }
         try {
+            if (this.currentPlatform != null && (await PlatformHandler.getPlatformSettings(this.currentPlatform)).NeedDisconnectBeforeChangeSong) {
+                await this.disconnect()
+            }
             TaskHandler.stopWebTaskManually(this.currentUrl, true)
         } catch (e) { }
+        this.currentSongUrl = ""
+        console.log("begin to play song " + song.url)
         if (song.imgUrl == "localImg") {
             this.isLocalMusic = true;
             this.audioElement = new Audio()
@@ -395,6 +399,21 @@ export default class Player {
         else {
             let result = await TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "GetState"))
             return result
+        }
+    }
+
+    async disconnect() {
+        console.log("disconnecting...")
+        if (this.isLocalMusic) {
+            return true
+        }
+        else {
+            if (this.currentPlatform != null && (await PlatformHandler.getPlatformSettings(this.currentPlatform)).NeedDisconnectBeforeChangeSong) {
+                let result = await TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "Disconnect"))
+                console.log("disconnect result: " + result)
+                return result
+            }
+            else return true
         }
     }
 }
