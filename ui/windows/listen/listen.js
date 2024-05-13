@@ -353,10 +353,10 @@ export default class ListenWindow extends HTMLDivElement {
                 })
                 Utils.musicViewer.onSongChange((e) => {
                     if (e.detail.objId.startsWith("so_") && Utils.queueManager.currentSong.id == e.detail.objId.replace("so_", "")) {
-                        shadow.getElementById("music_title").innerText = e.detail.aliasTitle ? e.detail.aliasTitle : Utils.queueManager.currentSong.title
+                        shadow.getElementById("music_title").innerText = e.detail.aliasTitle != "" ? e.detail.aliasTitle : Utils.queueManager.currentSong.title
                         shadow.getElementById("music_artist").innerText = ""
                         let span = document.createElement("span")
-                        span.innerText = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+                        span.innerText = e.detail.aliasSongSingerName != "" ? e.detail.aliasSongSingerName : Utils.queueManager.currentSong.singerName
                         span.classList.add("link")
                         span.onclick = async function () {
                             if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
