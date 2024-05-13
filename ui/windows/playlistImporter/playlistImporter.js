@@ -71,6 +71,14 @@ export default class PlaylistImporter extends HTMLDivElement {
                 this.#loaded = true;
                 new Translations(this.shadowRoot.children[1])
                 new ThemeColor(this.shadowRoot.children[1])
+                window.addEventListener("popstate", (e) => {
+                    if (e.state.where == "playlistImporter") {
+                    }
+                    else {
+                        if (this.shadowRoot.getElementById("cancel").style.display != "none")
+                            this.close()
+                    }
+                }, { signal: this.controller.signal })
                 this.beginImport(platform)
                 this.errors = false;
                 this.songsToAdd = []
@@ -110,15 +118,15 @@ export default class PlaylistImporter extends HTMLDivElement {
                             }, false)
                         }
                         else {
-                            this.close()
+                            history.back()
                         }
                     }
                     if (this.step == 4) {
-                        this.close()
+                        history.back()
                     }
                 }
                 this.shadowRoot.getElementById("cancel").onclick = () => {
-                    this.close();
+                    history.back()
                 }
                 window.addEventListener("message", async (e) => {
                     if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcbdata") {
@@ -246,6 +254,7 @@ export default class PlaylistImporter extends HTMLDivElement {
         return new Promise(resolve => {
             this.show();
             this.style.zIndex = "101";
+            window.history.pushState({ where: "playlistImporter" }, "", "/index.html")
         });
     }
 

@@ -55,6 +55,16 @@ export default class PlaylistPicker extends HTMLDivElement {
                 this.#loaded = true;
                 new Translations(this.shadowRoot.children[1])
                 new ThemeColor(this.shadowRoot.children[1])
+                window.addEventListener("popstate", (e) => {
+                    if (e.state.where == "playlistPicker") {
+                    }
+                    else {
+                        if (this.shadowRoot.getElementById("cancel").style.display != "none") {
+                            this.playlistReturn = "canceled"
+                            this.close()
+                        }
+                    }
+                }, { signal: this.controller.signal })
                 this.changeText("{playlistPicker.title}", "{playlistPicker.choosePl}");
                 this.changeloading(false);
                 let havePl = false;
@@ -93,8 +103,7 @@ export default class PlaylistPicker extends HTMLDivElement {
                     }
                 }
                 this.shadowRoot.getElementById("cancel").onclick = () => {
-                    this.playlistReturn = "canceled"
-                    this.close();
+                    history.back()
                 }
                 window.addEventListener("message", (e) => {
                     if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcbdata") {
@@ -119,11 +128,12 @@ export default class PlaylistPicker extends HTMLDivElement {
         return new Promise(resolve => {
             this.show();
             this.style.zIndex = "101";
+            window.history.pushState({ where: "playlistImporter" }, "", "/index.html")
             setInterval(() => {
                 if (this.playlistReturn != null) {
                     if (this.playlistReturn != "canceled") {
                         resolve(this.playlistReturn);
-                        this.close()
+                        this.close();
                     }
                     else {
                         resolve(null)
