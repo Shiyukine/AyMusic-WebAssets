@@ -4,6 +4,7 @@ import Utils from "../utils/utils.js";
 export default class PlatformHandler {
 
     static platforms = null;
+    static searchingTokenForPlatform = [];
 
     static searchPlatforms() {
         return new Promise((resolve) => {
@@ -128,33 +129,41 @@ export default class PlatformHandler {
     }
 
     static async refreshTokenForPlatform(platform) {
-        return new Promise((resolve) => {
-            Utils.app.remoteClient.removeClientToken(platform)
-            PlatformHandler.getPlatformUrl(platform, "BaseUrl").then((url) => {
-                if (Utils.app.platform == "Android") {
-                    var intv = setInterval(async () => {
-                        if (Utils.app.remoteClient.getClientToken(platform)) {
-                            await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
-                            clearInterval(intv)
-                            TaskHandler.stopWebTaskManually(url, true)
-                            resolve()
-                        }
-                    }, 1000)
-                    Utils.app.remoteClient.loadBackgroundWeb(url)
-                }
-                else {
-                    TaskHandler.addTask(url, "", false, true, true, () => {
+        return new Promise((resolve, reject) => {
+            if (!this.searchingTokenForPlatform.includes(platform)) {
+                this.searchingTokenForPlatform.push(platform)
+                Utils.app.remoteClient.removeClientToken(platform)
+                PlatformHandler.getPlatformUrl(platform, "BaseUrl").then((url) => {
+                    if (Utils.app.platform == "Android") {
                         var intv = setInterval(async () => {
                             if (Utils.app.remoteClient.getClientToken(platform)) {
                                 await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
                                 clearInterval(intv)
                                 TaskHandler.stopWebTaskManually(url, true)
+                                this.searchingTokenForPlatform.splice(this.searchingTokenForPlatform.indexOf(platform), 1)
                                 resolve()
                             }
                         }, 1000)
-                    })
-                }
-            })
+                        Utils.app.remoteClient.loadBackgroundWeb(url)
+                    }
+                    else {
+                        TaskHandler.addTask(url, "", false, true, true, () => {
+                            var intv = setInterval(async () => {
+                                if (Utils.app.remoteClient.getClientToken(platform)) {
+                                    await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
+                                    clearInterval(intv)
+                                    TaskHandler.stopWebTaskManually(url, true)
+                                    this.searchingTokenForPlatform.splice(this.searchingTokenForPlatform.indexOf(platform), 1)
+                                    resolve()
+                                }
+                            }, 1000)
+                        })
+                    }
+                })
+            }
+            else {
+                reject("Already refreshing token for " + platform + "!")
+            }
         })
     }
 }
