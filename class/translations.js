@@ -66,6 +66,5 @@ export default class Translations {
             trl = this.allTranslations["English"]
         }
         this.translate(trl)
-        console.log("Translations complete")
     }
 }
