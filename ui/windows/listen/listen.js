@@ -94,7 +94,31 @@ export default class ListenWindow extends HTMLDivElement {
                         })`)
                     }
                     shadow.getElementById("music_title").innerText = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
-                    shadow.getElementById("music_artist").innerText = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+                    shadow.getElementById("music_artist").innerText = ""
+                    let span = document.createElement("span")
+                    span.innerText = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+                    span.classList.add("link")
+                    span.onclick = async function () {
+                        if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                            Utils.musicViewer.changeView("si_" + Utils.queueManager.currentSong.singerID)
+                        }
+                    }
+                    this.shadowRoot.getElementById("music_artist").appendChild(span)
+                    if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                        for (let sing of Utils.queueManager.currentSong.additionalSingers) {
+                            let sep = document.createElement("span")
+                            sep.innerText = " • "
+                            this.shadowRoot.getElementById("music_artist").appendChild(sep)
+                            let span2 = document.createElement("span")
+                            span2.innerText = sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName
+                            span2.classList.add("link")
+                            span2.onclick = async function () {
+                                Utils.musicViewer.changeView("si_" + sing.singerID)
+                            }
+                            this.shadowRoot.getElementById("music_artist").appendChild(span2)
+                        }
+                    }
+                    document.title = shadow.getElementById("music_title").innerText + " • " + shadow.getElementById("music_artist").innerText.replace(" • ", ", ") + " - AyMusic"
                     if (Utils.player.isLocalMusic) {
                         if (!this.shadowRoot.getElementById("music_title").classList.contains("nohover")) this.shadowRoot.getElementById("music_title").classList.add("nohover")
                         if (!this.shadowRoot.getElementById("music_artist").classList.contains("nohover")) this.shadowRoot.getElementById("music_artist").classList.add("nohover")
@@ -330,7 +354,31 @@ export default class ListenWindow extends HTMLDivElement {
                 Utils.musicViewer.onSongChange((e) => {
                     if (e.detail.objId.startsWith("so_") && Utils.queueManager.currentSong.id == e.detail.objId.replace("so_", "")) {
                         shadow.getElementById("music_title").innerText = e.detail.aliasTitle ? e.detail.aliasTitle : Utils.queueManager.currentSong.title
-                        shadow.getElementById("music_artist").innerText = e.detail.aliasSongSingerName ? e.detail.aliasSongSingerName : (Utils.queueManager.currentSong.aliasSingerName ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName)
+                        shadow.getElementById("music_artist").innerText = ""
+                        let span = document.createElement("span")
+                        span.innerText = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+                        span.classList.add("link")
+                        span.onclick = async function () {
+                            if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                                Utils.musicViewer.changeView("si_" + Utils.queueManager.currentSong.singerID)
+                            }
+                        }
+                        this.shadowRoot.getElementById("music_artist").appendChild(span)
+                        if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                            for (let sing of Utils.queueManager.currentSong.additionalSingers) {
+                                let sep = document.createElement("span")
+                                sep.innerText = " • "
+                                this.shadowRoot.getElementById("music_artist").appendChild(sep)
+                                let span2 = document.createElement("span")
+                                span2.innerText = sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName
+                                span2.classList.add("link")
+                                span2.onclick = async function () {
+                                    Utils.musicViewer.changeView("si_" + sing.singerID)
+                                }
+                                this.shadowRoot.getElementById("music_artist").appendChild(span2)
+                            }
+                        }
+                        document.title = shadow.getElementById("music_title").innerText + " • " + shadow.getElementById("music_artist").innerText.replace(" • ", ", ") + " - AyMusic"
                         Utils.queueManager.currentSong.cropStart = e.detail.cropStart
                         Utils.queueManager.currentSong.cropEnd = e.detail.cropEnd
                         this.updateDiscordRPC(pb, true)
@@ -491,11 +539,16 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                 })
                 Utils.player.onNeedTokenChange(async () => {
-                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                    console.log("Platform need refresh token")
-                    await PlatformHandler.refreshTokenForPlatform(platform)
-                    console.log("Platform token refreshed")
-                    Utils.player.playSong(Utils.queueManager.currentSong)
+                    try {
+                        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                        console.log("Platform need refresh token")
+                        await PlatformHandler.refreshTokenForPlatform(platform)
+                        console.log("Platform token refreshed")
+                        Utils.player.playSong(Utils.queueManager.currentSong)
+                    }
+                    catch (e) {
+                        console.warn(e)
+                    }
                 })
                 Utils.player.onSkipAds(async () => {
                     Utils.player.playSong(Utils.queueManager.currentSong)
@@ -640,11 +693,6 @@ export default class ListenWindow extends HTMLDivElement {
                             Utils.musicViewer.changeView("al_" + Utils.queueManager.currentSong.albumID)
                         }
                     }
-                    shadow.getElementById("music_artist").onclick = () => {
-                        if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
-                            Utils.musicViewer.changeView("si_" + Utils.queueManager.currentSong.singerID)
-                        }
-                    }
                 }
                 if (Utils.libManager.userInfo.curMusic != null) {
                     if (Utils.libManager.userInfo.curObject.startsWith("pl_")) {
@@ -663,7 +711,7 @@ export default class ListenWindow extends HTMLDivElement {
                             offset: 0
                         }, async (result) => {
                             let al = result["albumInfo"]
-                            await Utils.queueManager.changeQueue(new Album(al.id, al.name, al.singerID, al.type, al.imgUrl), Utils.libManager.userInfo.curMusic, false)
+                            await Utils.queueManager.changeQueue(new Album(al.id, al.name, al.singerID, al.type, al.imgUrl, al.albumUrl), Utils.libManager.userInfo.curMusic, false)
                         })
                     }
                     else if (Utils.libManager.userInfo.curObject.startsWith("si_")) {
@@ -672,7 +720,7 @@ export default class ListenWindow extends HTMLDivElement {
                             id: Utils.libManager.userInfo.curObject.replace("si_", "")
                         }, async (result) => {
                             let al = result["singerInfo"]
-                            await Utils.queueManager.changeQueue(new Singer(al.id, al.name, al.imgUrl, al.aliasName), Utils.libManager.userInfo.curMusic, false)
+                            await Utils.queueManager.changeQueue(new Singer(al.id, al.name, al.imgUrl, al.singerUrl, al.aliasName), Utils.libManager.userInfo.curMusic, false)
                         })
                     }
                     else {
@@ -680,13 +728,14 @@ export default class ListenWindow extends HTMLDivElement {
                             act: "getSongInfo",
                             id: Utils.libManager.userInfo.curMusic.replace("so_", "")
                         }, async (obj) => {
-                            await Utils.queueManager.changeQueue(new Song(obj.songID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName), Utils.libManager.userInfo.curMusic, false)
+                            await Utils.queueManager.changeQueue(new Song(obj.songID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName), Utils.libManager.userInfo.curMusic, false)
                         })
                     }
                 }
                 pbVol.changeValue(parseInt(Utils.app.getSetting("music_vol")))
                 if (Utils.app.getSetting("mute")) Utils.player.setMute(true)
                 window.listeners.player.previous = () => Utils.player.previous()
+                window.listeners.player.disconnect = () => Utils.player.disconnect()
                 window.listeners.player.next = () => Utils.player.next()
                 let audioPrio = false;
                 window.listeners.player.play = () => {
@@ -801,9 +850,13 @@ export default class ListenWindow extends HTMLDivElement {
                 buttons.push({ label: "Download AyMusic", url: Utils.realServURL + "projects/AyMusic.php" })
                 let plat = Utils.player.isLocalMusic ? "icon" : (await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)).toLowerCase()
                 let platName = Utils.player.isLocalMusic ? "their PC" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+                for (let sing of Utils.queueManager.currentSong.additionalSingers) {
+                    singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
+                }
                 let out = {
                     details: "Listening " + (Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title),
-                    state: "By " + (Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName),
+                    state: "By " + (singer),
                     endTimestamp: Date.now() + ((Utils.queueManager.currentSong.cropEnd != -1 ? Utils.queueManager.currentSong.cropEnd : pb.getMax()) - pb.getValue()),
                     largeImageKey: "icon",
                     largeImageText: "AyMusic by Aketsuky",

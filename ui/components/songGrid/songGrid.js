@@ -55,7 +55,30 @@ export default class SongGrid extends HTMLDivElement {
      */
     async updateGrid(song) {
         this.shadowRoot.getElementById("title").innerText = this.song.aliasTitle != null ? song.aliasTitle : this.song.title
-        this.shadowRoot.getElementById("artist").innerText = this.song.aliasSingerName != null ? song.aliasSingerName : this.song.singerName
+        this.shadowRoot.getElementById("artist").innerHTML = ""
+        let span = document.createElement("span")
+        span.innerText = this.song.aliasSingerName != null ? song.aliasSingerName : this.song.singerName
+        span.classList.add("link")
+        span.onclick = async function () {
+            if (song.imgUrl !== "localImg") {
+                Utils.musicViewer.changeView("si_" + song.singerID)
+            }
+        }
+        this.shadowRoot.getElementById("artist").appendChild(span)
+        if (song.imgUrl !== "localImg") {
+            for (let sing of song.additionalSingers) {
+                let sep = document.createElement("span")
+                sep.innerText = " • "
+                this.shadowRoot.getElementById("artist").appendChild(sep)
+                let span2 = document.createElement("span")
+                span2.innerText = sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName
+                span2.classList.add("link")
+                span2.onclick = async function () {
+                    Utils.musicViewer.changeView("si_" + sing.singerID)
+                }
+                this.shadowRoot.getElementById("artist").appendChild(span2)
+            }
+        }
         this.shadowRoot.getElementById("time").innerText = this.song.time == -1 ? "--:--:--" : Utils.msToTime(this.song.time)
         if (Utils.libManager.isSongIsInLikedSongs(song)) {
             this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.pathsData["Heart"])
@@ -95,11 +118,6 @@ export default class SongGrid extends HTMLDivElement {
             this.shadowRoot.getElementById("title").addEventListener("click", async function () {
                 if (song.imgUrl !== "localImg") {
                     Utils.musicViewer.changeView("al_" + song.albumID)
-                }
-            });
-            this.shadowRoot.getElementById("artist").addEventListener("click", async function () {
-                if (song.imgUrl !== "localImg") {
-                    Utils.musicViewer.changeView("si_" + song.singerID)
                 }
             });
         }

@@ -232,11 +232,8 @@ export default class MusicViewerWindow extends HTMLDivElement {
             for (let el of this.shadowRoot.getElementById("editor").children) {
                 el.style.display = ""
             }
-            while (this.shadowRoot.getElementById("list").firstChild) {
-                this.shadowRoot.getElementById("list").removeChild(this.shadowRoot.getElementById("list").lastChild);
-            }
             this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.libManager.isObjectIDIsInLikedSongs(this.fullObjId) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
-            let isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id && await Utils.player.getState()
+            let isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id && Utils.player.state != null && await Utils.player.getState()
             if (objectID.startsWith("pl_")) {
                 if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
                 Utils.apiManager.fetchAPI({
@@ -244,6 +241,9 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     id: objectID.split("pl_").join(""),
                     offset: 0
                 }, async (info) => {
+                    while (this.shadowRoot.getElementById("list").firstChild) {
+                        this.shadowRoot.getElementById("list").removeChild(this.shadowRoot.getElementById("list").lastChild);
+                    }
                     this.shadowRoot.getElementById("title").innerText = info["playlistInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = "By " + info["playlistInfo"]["userID"]
                     let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico")
@@ -255,7 +255,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     this.object = pl
                     for (let i in songs) {
                         let obj = songs[i]
-                        let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
+                        let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                         if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
                         else counterSongNotLoaded++
                     }
@@ -272,13 +272,11 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     id: objectID.split("al_").join(""),
                     offset: 0
                 }, async (info) => {
-                    this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
-                    this.shadowRoot.getElementById("subtitle").innerText = "By " + info["albumInfo"]["singerID"]
-                    this.shadowRoot.getElementById("subtitle").onclick = () => {
-                        if (!Utils.queueManager.currentSong.imgUrl !== "localImg") {
-                            Utils.musicViewer.changeView("si_" + info["albumInfo"]["singerID"])
-                        }
+                    while (this.shadowRoot.getElementById("list").firstChild) {
+                        this.shadowRoot.getElementById("list").removeChild(this.shadowRoot.getElementById("list").lastChild);
                     }
+                    this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
+                    this.shadowRoot.getElementById("subtitle").innerHTML = "<span>By </span><span>" + info["albumInfo"]["singerID"] + "</span>"
                     let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico")
                     this.shadowRoot.getElementById("cover").src = iUrl
                     let div = this.addList("Songs in this album added on AyMusic's database:")
@@ -286,10 +284,29 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     let counterSongNotLoaded = 0
                     let pl = new Album(info["albumInfo"]["id"], info["albumInfo"]["name"], info["albumInfo"]["singerID"], info["albumInfo"]["type"], info["albumInfo"]["imgUrl"])
                     this.object = pl
+                    if (songs.length > 0) {
+                        let span = this.shadowRoot.getElementById("subtitle").children[1]
+                        span.innerText = songs[0].aliasSingerName != null ? songs[0].aliasSingerName : songs[0].singerName
+                        span.classList.add("link")
+                        span.onclick = async function () {
+                            Utils.musicViewer.changeView("si_" + songs[0].singerID)
+                        }
+                        for (let sing of info.albumInfo.additionalAlbumSingers) {
+                            let sep = document.createElement("span")
+                            sep.innerText = " • "
+                            this.shadowRoot.getElementById("subtitle").appendChild(sep)
+                            let span2 = document.createElement("span")
+                            span2.innerText = sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName
+                            span2.classList.add("link")
+                            span2.onclick = async function () {
+                                Utils.musicViewer.changeView("si_" + sing.singerID)
+                            }
+                            this.shadowRoot.getElementById("subtitle").appendChild(span2)
+                        }
+                    }
                     for (let i in songs) {
                         let obj = songs[i]
-                        this.shadowRoot.getElementById("subtitle").innerText = "By " + obj.singerName
-                        let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, pl.name, pl.id, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
+                        let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, pl.name, pl.id, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                         if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
                         else counterSongNotLoaded++
                     }
@@ -309,24 +326,27 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     id: objectID.split("si_").join(""),
                     offset: 0
                 }, async (info) => {
+                    while (this.shadowRoot.getElementById("list").firstChild) {
+                        this.shadowRoot.getElementById("list").removeChild(this.shadowRoot.getElementById("list").lastChild);
+                    }
                     this.shadowRoot.getElementById("title").innerText = info["singerInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = info["singerInfo"]["aliasName"] && info["singerInfo"]["aliasName"] != "" ? info["singerInfo"]["aliasName"] : "Artist"
                     let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico")
                     this.shadowRoot.getElementById("cover").src = iUrl
                     let div = this.addList("Latest added song on AyMusic's database of this artist:")
                     let songs = info["songs"]
-                    let pl = new Singer(info["singerInfo"]["id"], info["singerInfo"]["name"], info["singerInfo"]["imgUrl"], info["singerInfo"]["aliasName"])
+                    let pl = new Singer(info["singerInfo"]["id"], info["singerInfo"]["name"], info["singerInfo"]["imgUrl"], info["singerInfo"]["aliasName"], info["singerInfo"]["url"])
                     this.object = pl
                     for (let i in songs) {
                         let obj = songs[i]
-                        let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, pl.id, pl.name, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
+                        let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                         if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
                     }
                     let div2 = this.addList("Albums of this artist added on AyMusic's database:", false)
                     let als = info["singerAlbums"]
                     for (let i in als) {
                         let obj = als[i]
-                        let al = new Album(obj.id, obj.name, pl.id, obj.type, obj.imgUrl)
+                        let al = new Album(obj.id, obj.name, pl.id, obj.type, obj.imgUrl, obj.albumUrl)
                         div2.appendChild(new AlbumGrid(al))
                     }
                     /**
@@ -344,11 +364,14 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == "so_" + Utils.queueManager.currentObject.id && await Utils.player.getState()
                 this.shadowRoot.getElementById("editTitle").innerText = "{mv.modifySong}"
                 this.shadowRoot.getElementById("editHelp").innerText = "{mv.modifySongHelp}"
-                if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
+                if (this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.remove("nohover")
                 Utils.apiManager.fetchAPI({
                     act: "getSongInfo",
                     id: objectID.split("so_").join("")
                 }, async (info) => {
+                    while (this.shadowRoot.getElementById("list").firstChild) {
+                        this.shadowRoot.getElementById("list").removeChild(this.shadowRoot.getElementById("list").lastChild);
+                    }
                     this.shadowRoot.getElementById("edit").style.display = ""
                     if (info["imgUrl"] == "localImg") {
                         var imge = this.shadowRoot.getElementById("cover");
@@ -364,7 +387,27 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     }
                     else {
                         this.shadowRoot.getElementById("title").innerText = info["title"]
-                        this.shadowRoot.getElementById("subtitle").innerText = info["singerName"]
+                        this.shadowRoot.getElementById("subtitle").innerHTML = ""
+                        let span = document.createElement("span")
+                        let song = info
+                        span.innerText = song.aliasSingerName != null ? song.aliasSingerName : song.singerName
+                        span.classList.add("link")
+                        span.onclick = async function () {
+                            Utils.musicViewer.changeView("si_" + song.singerID)
+                        }
+                        this.shadowRoot.getElementById("subtitle").appendChild(span)
+                        for (let sing of info.additionalSingers) {
+                            let sep = document.createElement("span")
+                            sep.innerText = " • "
+                            this.shadowRoot.getElementById("subtitle").appendChild(sep)
+                            let span2 = document.createElement("span")
+                            span2.innerText = sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName
+                            span2.classList.add("link")
+                            span2.onclick = async function () {
+                                Utils.musicViewer.changeView("si_" + sing.singerID)
+                            }
+                            this.shadowRoot.getElementById("subtitle").appendChild(span2)
+                        }
                         let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico")
                         this.shadowRoot.getElementById("cover").src = iUrl
                     }
@@ -420,7 +463,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                                  * @type {SongGrid}
                                  */
                                 let grid = list.children[offset * 50 + i]
-                                grid.changeSong(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName))
+                                grid.changeSong(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName))
                                 i++;
                             }
                         })
@@ -437,7 +480,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                                  * @type {SongGrid}
                                  */
                                 let grid = list.children[offset * 50 + i]
-                                grid.changeSong(new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName))
+                                grid.changeSong(new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName))
                                 i++;
                             }
                         })
@@ -454,6 +497,8 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 this.ontransitionend = () => { };
             };
             this.style.opacity = "0%"
+            // it's okay to view the new content of something after panel closed
+            this.fullObjId = ""
             //this.controller.abort()
         }
     }

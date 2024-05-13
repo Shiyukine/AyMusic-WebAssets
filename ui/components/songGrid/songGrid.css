@@ -91,7 +91,11 @@
     overflow: hidden;
 }
 
-.panel_ep .epName p:hover {
+.panel_ep #title:hover {
+    text-decoration: underline;
+}
+
+.panel_ep p:not(.nohover) .link:hover {
     text-decoration: underline;
 }
 

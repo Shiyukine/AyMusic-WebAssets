@@ -1,5 +1,4 @@
 import LocalMusicHandler from "../utils/localMusicHandler.js"
-import * as id3 from "../../plugins/id3/id3.js"
 
 export default class Song {
 
@@ -22,8 +21,11 @@ export default class Song {
     aliasSingerName = ""
     aliasSongSingerName = ""
     canBeLoaded = true
+    singerUrl = ""
+    albumurl = ""
+    additionalSingers = []
 
-    constructor(id, url, positionOrDate, title, imgUrl, time, isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, aliasTitle = "", aliasSongSingerName = "", aliasSingerName = "") {
+    constructor(id, url, positionOrDate, title, imgUrl, time, isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, albumUrl, singerUrl, additionalSingers = [], aliasTitle = "", aliasSongSingerName = "", aliasSingerName = "") {
         this.id = id;
         this.url = url;
         this.positionOrDate = positionOrDate;
@@ -39,6 +41,9 @@ export default class Song {
         this.albumName = albumName;
         this.albumID = albumID;
         this.aliasTitle = aliasTitle;
+        this.singerUrl = singerUrl;
+        this.albumUrl = albumUrl;
+        this.additionalSingers = additionalSingers;
         if (aliasTitle == "") this.aliasTitle = null
         this.aliasSingerName = aliasSingerName;
         if (aliasSingerName == "") this.aliasSingerName = null

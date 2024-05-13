@@ -53,7 +53,7 @@ export default class SearchWindow extends HTMLDivElement {
                 })*/
                 let dontHide = false
                 shadow.getElementById("tb_search").addEventListener("blur", () => {
-                    if (!dontHide && shadow.querySelectorAll(":hover")[shadow.querySelectorAll(":hover").length - 1].tagName != "LI" && !this.elementFocus) shadow.getElementById("suggest").style.display = "none"
+                    if (!dontHide && shadow.querySelectorAll(":hover").length > 0 && shadow.querySelectorAll(":hover")[shadow.querySelectorAll(":hover").length - 1].tagName != "LI" && !this.elementFocus) shadow.getElementById("suggest").style.display = "none"
                     dontHide = false
                 })
                 window.addEventListener("click", () => {
@@ -265,25 +265,36 @@ export default class SearchWindow extends HTMLDivElement {
             let singerID = song["singerID"]
             let singerName = song["singerName"]
             let singerImgUrl = song["singerImgUrl"]
+            let singerUrl = song["singerUrl"]
+            let additionalSingers = song["additionalSingers"]
             let albumName = song["albumName"]
             let albumID = song["albumID"]
             let albumType = song["albumType"]
             let albumImgUrl = song["albumImgUrl"]
+            let albumUrl = song["albumUrl"]
             let aliasSongSingerName = song["aliasSongSingerName"]
             let aliasSingerName = song["aliasSingerName"]
             let aliasTitle = song["aliasTitle"]
             let sg = new Song(id, url, positionOrDate, title, imgUrl, time,
-                isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, aliasTitle, aliasSongSingerName, aliasSingerName)
+                isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, albumUrl, singerUrl, additionalSingers, aliasTitle, aliasSongSingerName, aliasSingerName)
             SearchWindow.lastSearchCache.push(sg)
             this.shadowRoot.getElementById("songs").appendChild(new SongGrid(sg))
             if (!singersUrlExist.includes(singerID)) {
-                let sing = new Singer(singerID, singerName, singerImgUrl)
+                let sing = new Singer(singerID, singerName, singerImgUrl, singerUrl)
                 SearchWindow.lastSearchCache.push(sing)
                 this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(sing))
                 singersUrlExist.push(singerID)
             }
+            for (let ar of additionalSingers) {
+                if (!singersUrlExist.includes(ar.singerID)) {
+                    let sing = new Singer(ar.singerID, ar.singerName, ar.singerImgUrl, ar.singerUrl)
+                    SearchWindow.lastSearchCache.push(sing)
+                    this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(sing))
+                    singersUrlExist.push(ar.singerID)
+                }
+            }
             if (!albumsUrlExist.includes(albumID)) {
-                let al = new Album(albumID, albumName, singerID, albumType, albumImgUrl)
+                let al = new Album(albumID, albumName, singerID, albumType, albumImgUrl, albumUrl)
                 SearchWindow.lastSearchCache.push(al)
                 this.shadowRoot.getElementById("albums").appendChild(new AlbumGrid(al))
                 albumsUrlExist.push(albumID)
@@ -322,23 +333,43 @@ export default class SearchWindow extends HTMLDivElement {
                                     let cropEnd = song.cropEnd
                                     let singerID = songDB["singerID"]
                                     let singerName = song.singerName
+                                    let singerUrl = song.singerUrl
                                     let singerImgUrl = song.singerImgUrl
                                     let albumName = song.albumName
                                     let albumID = songDB["albumID"]
+                                    let albumUrl = song.albumUrl
                                     let albumType = song.albumType
                                     let albumImgUrl = song.albumImgUrl
+                                    let additionalSingers = [];
+                                    for (let i in song.additionalSingers) {
+                                        let sing = song.additionalSingers[i]
+                                        additionalSingers.push({
+                                            singerName: sing.singerName,
+                                            singerID: songDB["additionalSingersID"][i],
+                                            singerUrl: sing.singerUrl,
+                                            singerImgUrl: sing.singerImgUrl
+                                        })
+                                    }
                                     let sg = new Song(id, url, positionOrDate, title, imgUrl, time,
-                                        isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID)
+                                        isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, albumUrl, singerUrl, additionalSingers)
                                     SearchWindow.lastSearchCache.push(sg)
                                     this.shadowRoot.getElementById("songs").appendChild(new SongGrid(sg))
                                     if (!singersIDAdded.includes(singerID)) {
-                                        let sing = new Singer(singerID, singerName, singerImgUrl)
+                                        let sing = new Singer(singerID, singerName, singerImgUrl, singerUrl)
                                         SearchWindow.lastSearchCache.push(sing)
                                         this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(sing))
                                         singersIDAdded.push(singerID)
                                     }
+                                    for (let ar of additionalSingers) {
+                                        if (!singersIDAdded.includes(ar.singerID)) {
+                                            let sing = new Singer(ar.singerID, ar.singerName, ar.singerImgUrl, ar.singerUrl)
+                                            SearchWindow.lastSearchCache.push(sing)
+                                            this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(sing))
+                                            singersIDAdded.push(ar.singerID)
+                                        }
+                                    }
                                     if (!albumsIDAdded.includes(albumID)) {
-                                        let al = new Album(albumID, albumName, singerID, albumType, albumImgUrl)
+                                        let al = new Album(albumID, albumName, singerID, albumType, albumImgUrl, albumUrl)
                                         SearchWindow.lastSearchCache.push(al)
                                         this.shadowRoot.getElementById("albums").appendChild(new AlbumGrid(al))
                                         albumsIDAdded.push(albumID)
@@ -347,7 +378,7 @@ export default class SearchWindow extends HTMLDivElement {
                             }
                             if (!songID) {
                                 songsToAdd.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
-                                song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
+                                song.albumName, song.albumType, song.albumImgUrl, song.albumUrl, song.singerName, song.singerImgUrl, song.singerUrl, song.additionalSingers, song.additionalAlbumSingers])
                             }
                             else {
                                 songsIDs.push(songID)
@@ -370,24 +401,38 @@ export default class SearchWindow extends HTMLDivElement {
                                 let cropStart = songsToAdd[i][5]
                                 let cropEnd = songsToAdd[i][6]
                                 let singerID = nsongsID[i]["singerID"]
-                                let singerName = songsToAdd[i][10]
-                                let singerImgUrl = songsToAdd[i][11]
+                                let singerName = songsToAdd[i][11]
+                                let singerImgUrl = songsToAdd[i][12]
+                                let singerUrl = songsToAdd[i][13]
                                 let albumName = songsToAdd[i][7]
                                 let albumID = nsongsID[i]["albumID"]
                                 let albumType = songsToAdd[i][8]
                                 let albumImgUrl = songsToAdd[i][9]
+                                let albumUrl = songsToAdd[i][10]
+                                for (let j in songsToAdd[i][14]) {
+                                    songsToAdd[i][14][j]["singerID"] = nsongsID[i]["additionalSingerID"][j]
+                                }
+                                let additionalSingers = songsToAdd[i][14]
                                 let sg = new Song(id, url, positionOrDate, title, imgUrl, time,
-                                    isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID)
+                                    isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, albumUrl, singerUrl, additionalSingers)
                                 SearchWindow.lastSearchCache.push(sg)
                                 this.shadowRoot.getElementById("songs").appendChild(new SongGrid(sg))
                                 if (!singersIDAdded.includes(singerID)) {
-                                    let sing = new Singer(singerID, singerName, singerImgUrl)
+                                    let sing = new Singer(singerID, singerName, singerImgUrl, singerUrl)
                                     SearchWindow.lastSearchCache.push(sing)
                                     this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(sing))
                                     singersIDAdded.push(singerID)
                                 }
+                                for (let ar of additionalSingers) {
+                                    if (!singersIDAdded.includes(ar.singerID)) {
+                                        let sing = new Singer(ar.singerID, ar.singerName, ar.singerImgUrl, ar.singerUrl)
+                                        SearchWindow.lastSearchCache.push(sing)
+                                        this.shadowRoot.getElementById("artists").appendChild(new SingerGrid(sing))
+                                        singersIDAdded.push(ar.singerID)
+                                    }
+                                }
                                 if (!albumsIDAdded.includes(albumID)) {
-                                    let al = new Album(albumID, albumName, singerID, albumType, albumImgUrl)
+                                    let al = new Album(albumID, albumName, singerID, albumType, albumImgUrl, albumUrl)
                                     SearchWindow.lastSearchCache.push(al)
                                     this.shadowRoot.getElementById("albums").appendChild(new AlbumGrid(al))
                                     albumsIDAdded.push(albumID)

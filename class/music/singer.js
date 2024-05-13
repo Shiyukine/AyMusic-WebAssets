@@ -5,13 +5,15 @@ export default class Singer {
     imgUrl = ""
     dateAdded = 0
     aliasName = ""
+    singerUrl = ""
 
-    constructor(id, name, imgUrl, dateAdded = 0, aliasName = "") {
+    constructor(id, name, imgUrl, singerUrl, dateAdded = 0, aliasName = "") {
         this.id = id;
         this.name = name;
         this.imgUrl = imgUrl;
         this.dateAdded = dateAdded;
         this.aliasName = aliasName;
+        this.singerUrl = singerUrl;
         if (this.imgUrl === "")
             this.imgUrl = '/resources/icon.ico';
     }

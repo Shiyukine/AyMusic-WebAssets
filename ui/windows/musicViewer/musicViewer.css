@@ -117,16 +117,16 @@ h3 {
     line-height: 20px;
 }
 
-#subtitle:hover {
-    text-decoration: underline;
-}
-
 #subtitle.nohover {
     cursor: default !important;
 }
 
 #subtitle.nohover:hover {
     text-decoration: none !important;
+}
+
+#subtitle:not(.nohover) .link:hover {
+    text-decoration: underline;
 }
 
 #titles {

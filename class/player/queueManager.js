@@ -52,7 +52,7 @@ export default class QueueManager {
                 let songs = result["songs"]
                 for (let i in songs) {
                     let objs = songs[i]
-                    let sng = new Song(objs.musicID.replace("so_", ""), objs.url, objs.dateAdded, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
+                    let sng = new Song(objs.musicID.replace("so_", ""), objs.url, objs.dateAdded, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID, objs.albumUrl, objs.singerUrl, objs.additionalSingers, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
                     if (sng.canBeLoaded) {
                         this.allSongs.push({ song: sng, obj: obj })
                         this.allSongsIds.push({ song: sng.id, obj: "pl_" + obj.id })
@@ -95,7 +95,7 @@ export default class QueueManager {
                 let songs = result["songs"]["songs"]
                 for (let i in songs) {
                     let objs = songs[i]
-                    let sng = new Song(objs.songID.replace("so_", ""), objs.url, objs.albumPosition, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
+                    let sng = new Song(objs.songID.replace("so_", ""), objs.url, objs.albumPosition, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID, objs.albumUrl, objs.singerUrl, objs.additionalSingers, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
                     if (sng.canBeLoaded) {
                         this.allSongs.push({ song: sng, obj: obj })
                         this.allSongsIds.push({ song: sng.id, obj: "al_" + obj.id })
@@ -130,7 +130,7 @@ export default class QueueManager {
                 let songs = result["songs"]
                 for (let i in songs) {
                     let objs = songs[i]
-                    let sng = new Song(objs.songID.replace("so_", ""), objs.url, objs.albumPosition, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, obj.id, obj.name, objs.albumName, objs.albumID, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
+                    let sng = new Song(objs.songID.replace("so_", ""), objs.url, objs.albumPosition, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID, objs.albumUrl, objs.singerUrl, objs.additionalSingers, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
                     if (sng.canBeLoaded) {
                         this.allSongs.push({ song: sng, obj: obj })
                         this.allSongsIds.push({ song: sng.id, obj: "si_" + obj.id })
