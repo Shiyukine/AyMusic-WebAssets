@@ -378,7 +378,7 @@ export default class SearchWindow extends HTMLDivElement {
                             }
                             if (!songID) {
                                 songsToAdd.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
-                                song.albumName, song.albumType, song.albumImgUrl, song.albumUrl, song.singerName, song.singerImgUrl, song.singerUrl, song.additionalSingers, song.additionalAlbumSingers])
+                                song.albumName, song.albumType, song.albumImgUrl, song.albumUrl, song.singerName, song.singerImgUrl, song.singerUrl, song.singerNameAlias, song.additionalSingers, song.additionalAlbumSingers])
                             }
                             else {
                                 songsIDs.push(songID)
@@ -409,12 +409,13 @@ export default class SearchWindow extends HTMLDivElement {
                                 let albumType = songsToAdd[i][8]
                                 let albumImgUrl = songsToAdd[i][9]
                                 let albumUrl = songsToAdd[i][10]
-                                for (let j in songsToAdd[i][14]) {
-                                    songsToAdd[i][14][j]["singerID"] = nsongsID[i]["additionalSingerID"][j]
+                                let singerNameAlias = songsToAdd[i][14]
+                                for (let j in songsToAdd[i][15]) {
+                                    songsToAdd[i][15][j]["singerID"] = nsongsID[i]["additionalSingerID"][j]
                                 }
-                                let additionalSingers = songsToAdd[i][14]
+                                let additionalSingers = songsToAdd[i][15]
                                 let sg = new Song(id, url, positionOrDate, title, imgUrl, time,
-                                    isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, albumUrl, singerUrl, additionalSingers)
+                                    isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, albumUrl, singerUrl, additionalSingers, "", singerNameAlias)
                                 SearchWindow.lastSearchCache.push(sg)
                                 this.shadowRoot.getElementById("songs").appendChild(new SongGrid(sg))
                                 if (!singersIDAdded.includes(singerID)) {

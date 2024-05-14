@@ -75,7 +75,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                     if (e.state.where == "playlistImporter") {
                     }
                     else {
-                        if (this.shadowRoot.getElementById("cancel").style.display != "none")
+                        if (this.shadowRoot.getElementById("cancel").style.display != "none" || this.step == 4)
                             this.close()
                     }
                 }, { signal: this.controller.signal })
@@ -142,7 +142,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                                 if (!songID) {
                                     // 2 last items in list: id, index
                                     this.songsToAdd.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
-                                    song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl, null, this.currentItemNumber])
+                                    song.albumName, song.albumType, song.albumImgUrl, song.albumUrl, song.singerName, song.singerImgUrl, song.singerUrl, song.singerNameAlias, song.additionalSingers, song.additionalAlbumSingers, null, this.currentItemNumber])
                                 }
                                 else {
                                     this.songsIDs.push([songID, this.currentItemNumber])
@@ -153,13 +153,15 @@ export default class PlaylistImporter extends HTMLDivElement {
                             if (e.data.data.itemNumber == this.selectedPlaylist.songs) {
                                 TaskHandler.stopWebTaskManually(this.curTaskUrl, true)
                                 if (this.songsToAdd.length > 0) {
-                                    let nsongsID = await Utils.apiManager.doPostRequest({
-                                        act: "addMultipleSongsDB",
-                                        songs: this.songsToAdd
-                                    })
-                                    for (let i in nsongsID) {
-                                        let id = nsongsID[i]["songID"]
-                                        this.songsToAdd[i][this.songsToAdd[i].length - 2] = id
+                                    for (let i = 0; i < this.songsToAdd.length; i += 50) {
+                                        let nsongsID = await Utils.apiManager.doPostRequest({
+                                            act: "addMultipleSongsDB",
+                                            songs: this.songsToAdd.slice(i, i + 50)
+                                        })
+                                        for (let j in nsongsID) {
+                                            let id = nsongsID[parseInt(j)]["songID"]
+                                            this.songsToAdd[i + parseInt(j)][this.songsToAdd[i + parseInt(j)].length - 2] = id
+                                        }
                                     }
                                 }
                                 let allSongs = this.songsToAdd.concat(this.songsIDs)
