@@ -132,8 +132,8 @@ export default class PlaylistPicker extends HTMLDivElement {
             setInterval(() => {
                 if (this.playlistReturn != null) {
                     if (this.playlistReturn != "canceled") {
+                        history.back()
                         resolve(this.playlistReturn);
-                        this.close();
                     }
                     else {
                         resolve(null)

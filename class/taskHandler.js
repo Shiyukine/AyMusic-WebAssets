@@ -94,18 +94,19 @@ export default class TaskHandler {
         iframe.onload = async () => {
             wt.callback(await TaskHandler.postJs(iframe, wt), wt.id)
             if (!wt.stopTaskManually) this.switchTask(wt)
+            /* it is really needed ? (can fix bug with Deezer)
             if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS" || Utils.app.platform == "Linux")) {
                 let increment = 0
                 var intv = setInterval(() => {
-                    //5s
+                    //5.1s
                     let mvmt = document.getElementById("win_mvmt")
                     mvmt.style.height = mvmt.style.height == "35px" ? "36px" : "35px";
-                    if (increment >= 50) {
+                    if (increment >= 51) {
                         clearInterval(intv)
                     }
                     increment++
                 }, 100);
-            }
+            } */
         }
         iframe.allow = "encrypted-media"
         /*iframe.style.width = "1920"
