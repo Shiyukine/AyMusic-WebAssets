@@ -84,21 +84,27 @@ export default class SearchWindow extends HTMLDivElement {
                             shadow.getElementById("suggest").children[0].focus()
                         }
                         else {
-                            this.elementFocus.nextElementSibling.focus()
+                            if (this.elementFocus.nextElementSibling == null) {
+                                dontHide = true
+                                shadow.getElementById("suggest").children[0].focus()
+                            }
+                            else this.elementFocus.nextElementSibling.focus()
                         }
                     }
                     else if (e.key == "ArrowUp") {
-                        let el = this.elementFocus.previousElementSibling
-                        if (el == null) {
-                            shadow.getElementById("tb_search").value = this.anSearch
-                            this.anSearch = null
-                            if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
-                            this.elementFocus = null
+                        if (this.elementFocus != null) {
+                            let el = this.elementFocus.previousElementSibling
+                            if (el == null) {
+                                shadow.getElementById("tb_search").value = this.anSearch
+                                this.anSearch = null
+                                if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
+                                this.elementFocus = null
+                            }
+                            else el.focus()
+                            e.preventDefault()
+                            e.stopImmediatePropagation()
+                            e.stopPropagation()
                         }
-                        else el.focus()
-                        e.preventDefault()
-                        e.stopImmediatePropagation()
-                        e.stopPropagation()
                     }
                     else {
                         if (this.elementFocus) this.elementFocus.classList.remove("lifocused")

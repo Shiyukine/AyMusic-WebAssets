@@ -5,36 +5,33 @@ export default class PlatformHandler {
 
     static platforms = null;
     static searchingTokenForPlatform = [];
+    static origin = "app://Cache"
+    static loadedByCache = false;
 
     static searchPlatforms() {
         return new Promise((resolve) => {
-            try {
-                if (!this.platforms) {
-                    let result = Utils.app.httpRequestGET(Utils.servURL + "dl/AyMusic/scripts/servers.json")
-                    if (result.then) {
-                        result.then((result) => {
-                            try {
-                                this.platforms = JSON.parse(result)
-                                resolve(this.platforms)
-                            }
-                            catch (e) {
-                                console.error(e)
-                                resolve(null)
-                            }
-                        })
-                    }
-                    else {
-                        this.platforms = JSON.parse(result)
-                        resolve(JSON.parse(result))
-                    }
-                }
-                else {
+            if (!this.platforms) {
+                if (Utils.app.platform == "Android") Utils.app.remoteClient.addBypassWebRequest(Utils.servURL + "dl/AyMusic/scripts/servers.json")
+                fetch(Utils.servURL + "dl/AyMusic/scripts/servers.json").then(async (result) => {
+                    this.platforms = await result.json()
+                    Utils.app.remoteClient.saveCache("servers.json", new TextEncoder("utf-8").encode(JSON.stringify(this.platforms)))
+                    this.loadedByCache = false
                     resolve(this.platforms)
-                }
+                }).catch(async (e) => {
+                    if (!this.loadedByCache) console.warn("Cannot fetch servers.json, trying to load from cache...", e)
+                    if (Utils.app.platform == "Android") this.origin = "https://mycache"
+                    fetch(this.origin + "/servers.json").then(async (rep) => {
+                        let json = await rep.json()
+                        this.loadedByCache = true
+                        resolve(json)
+                    }).catch((f) => {
+                        console.error(f)
+                        resolve(null)
+                    })
+                })
             }
-            catch (e) {
-                console.error(e)
-                resolve(null)
+            else {
+                resolve(this.platforms)
             }
         })
     }
