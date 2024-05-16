@@ -101,4 +101,11 @@ export default class HomeWindow extends HTMLDivElement {
             this.removeChild(this.lastChild);
         }
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

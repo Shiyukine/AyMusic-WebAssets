@@ -172,4 +172,11 @@ export default class LyricsViewerWindow extends HTMLDivElement {
         }
         this.style.transform = "translateY(" + window.innerHeight + "px)"
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

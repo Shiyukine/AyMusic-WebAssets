@@ -140,4 +140,11 @@ export default class QueueViewerWindow extends HTMLDivElement {
             this.shadowRoot.getElementById("next").removeChild(this.shadowRoot.getElementById("next").lastChild);
         }
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

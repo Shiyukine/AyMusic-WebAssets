@@ -25,6 +25,8 @@ export default class SongGrid extends HTMLDivElement {
 
     changeRequested = false
 
+    abortController = new AbortController()
+
     /**
      * 
      * @param {Song} song 
@@ -40,6 +42,14 @@ export default class SongGrid extends HTMLDivElement {
         }
         //DON'T FORGET TO CHANGE IF NECESSARY!!
         if (!dontShow) this.style.height = "70px"
+    }
+
+    disconnectedCallback() {
+        this.abortController.abort()
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
     }
 
     isMySong() {
@@ -139,20 +149,20 @@ export default class SongGrid extends HTMLDivElement {
                         this.addEventListener("mouseover", function () {
                             this.shadowRoot.getElementById("svg").style.opacity = "1"
                             this.shadowRoot.getElementById("cache").style.opacity = "1"
-                        });
+                        }, { signal: this.abortController.signal });
                         this.addEventListener("mousemove", function () {
                             this.shadowRoot.getElementById("svg").style.opacity = "1"
                             this.shadowRoot.getElementById("cache").style.opacity = "1"
-                        });
+                        }, { signal: this.abortController.signal });
                         this.addEventListener("mouseout", function () {
                             if (!this.isMySong()) {
                                 this.shadowRoot.getElementById("svg").style.opacity = "0"
                                 this.shadowRoot.getElementById("cache").style.opacity = "0"
                             }
-                        });
+                        }, { signal: this.abortController.signal });
                         this.shadowRoot.getElementById("like").addEventListener("click", async function () {
                             Utils.libManager.addOrRemoveSongLikedSongs(song)
-                        });
+                        }, { signal: this.abortController.signal });
                         let pl = this.object;
                         let curThis = this;
                         let elToClick = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? this : this.shadowRoot.getElementById("svg")
@@ -168,7 +178,7 @@ export default class SongGrid extends HTMLDivElement {
                                     else await Utils.queueManager.changeQueue(curThis.song)
                                 }
                             }
-                        });
+                        }, { signal: this.abortController.signal });
                         var cm = new ContextMenu()
                         this.shadowRoot.getElementById("context").onclick = async (e) => {
                             cm.show(e)
@@ -177,7 +187,7 @@ export default class SongGrid extends HTMLDivElement {
                             if (e.button == 2) {
                                 cm.show(e)
                             }
-                        });
+                        }, { signal: this.abortController.signal });
                         cm.beforeShow = async () => {
                             cm.addElement("{wt.addQueue}", () => {
                                 //Utils.newError("Can't do this", "This feature will be added soon :)")
@@ -253,7 +263,7 @@ export default class SongGrid extends HTMLDivElement {
                             this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.pathsData["HeartOutline"])
                         }
                     });
-                    Utils.player.onSongChange(async () => {
+                    Utils.player.addEventListener("songchange", async () => {
                         if (this.isMySong()) {
                             this.shadowRoot.getElementById("title").style.color = "#00ccff"
                             //if (await Utils.player.getState()) this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Pause"])
@@ -266,17 +276,17 @@ export default class SongGrid extends HTMLDivElement {
                             this.shadowRoot.getElementById("svg").style.opacity = "0"
                             this.shadowRoot.getElementById("cache").style.opacity = "0"
                         }
-                    })
-                    Utils.player.onPlay(() => {
+                    }, { signal: this.abortController.signal })
+                    Utils.player.addEventListener("play", () => {
                         if (this.isMySong()) {
                             this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Pause"])
                         }
-                    })
-                    Utils.player.onPause(() => {
+                    }, { signal: this.abortController.signal })
+                    Utils.player.addEventListener("pause", () => {
                         if (this.isMySong()) {
                             this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Play"])
                         }
-                    })
+                    }, { signal: this.abortController.signal })
                     Utils.musicViewer.onSongChange((e) => {
                         if (e.detail.objId.startsWith("so_") && song.id == e.detail.objId.replace("so_", "")) {
                             this.shadowRoot.getElementById("title").innerText = e.detail.aliasTitle ? e.detail.aliasTitle : song.title
@@ -294,11 +304,11 @@ export default class SongGrid extends HTMLDivElement {
                             this.parentElement.removeChild(this)
                         }
                     });
-                    Utils.player.onLoadedMetadata(async () => {
+                    Utils.player.addEventListener("loadedmetadata", async () => {
                         if (this.isMySong() && await Utils.player.getState()) {
                             this.shadowRoot.getElementById("svg").children[0].setAttribute("d", Utils.pathsData["Pause"])
                         }
-                    })
+                    }, { signal: this.abortController.signal })
                     new ThemeColor(this.shadowRoot.children[1])
                 })
             }

@@ -325,4 +325,11 @@ export default class ListenViewerWindow extends HTMLDivElement {
             URL.revokeObjectURL(url)
         }
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

@@ -150,4 +150,11 @@ export default class ProgressBar extends HTMLDivElement {
     onMaxChange(callback) {
         this.#eventEl.addEventListener("maxchange", callback)
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

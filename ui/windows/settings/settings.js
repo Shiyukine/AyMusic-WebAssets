@@ -240,4 +240,11 @@ export default class SettingsWindow extends HTMLDivElement {
         }
         this.controller.abort()
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

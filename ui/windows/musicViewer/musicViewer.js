@@ -506,4 +506,11 @@ export default class MusicViewerWindow extends HTMLDivElement {
     onSongChange(callback) {
         this.#eventEl.addEventListener("songchange", callback)
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

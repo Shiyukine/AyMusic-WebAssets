@@ -333,4 +333,11 @@ export default class PlaylistImporter extends HTMLDivElement {
         btn.addEventListener("click", onclick);
         this.#btnList.appendChild(btn);
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

@@ -464,4 +464,11 @@ export default class SearchWindow extends HTMLDivElement {
             }
         }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenSearching)
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

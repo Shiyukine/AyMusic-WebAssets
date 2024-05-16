@@ -246,4 +246,11 @@ export default class ContextMenu extends HTMLDivElement {
         if ((Utils.app.platform == "Android" || Utils.app.platform == "iOS") && !this.isSub) window.history.pushState({ where: "contextMenu", id: this.id }, "", "/index.html")
         this.loaded = true
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

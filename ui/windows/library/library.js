@@ -169,18 +169,18 @@ export default class LibraryWindow extends HTMLDivElement {
                 })
                 this.addScrollEventForList("playlist_songs")
                 this.addScrollEventForList("mylib_list")
-                Utils.player.onSongChange(async () => {
+                Utils.player.addEventListener("songchange", async () => {
                     let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
-                })
-                Utils.player.onPlay(async () => {
+                }, { signal: this.controller.signal })
+                Utils.player.addEventListener("play", async () => {
                     let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
-                })
-                Utils.player.onPause(async () => {
+                }, { signal: this.controller.signal })
+                Utils.player.addEventListener("pause", async () => {
                     let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
-                })
+                }, { signal: this.controller.signal })
                 shadow.getElementById("plState").onclick = async () => {
                     if (Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id) {
                         if (await Utils.player.getState()) Utils.player.pause()
@@ -369,10 +369,11 @@ export default class LibraryWindow extends HTMLDivElement {
 
     close() {
         this.isClosed = true
-        this.controller.abort()
-        while (this.firstChild) {
-            this.removeChild(this.lastChild);
+        /*this.controller.abort()
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }
+        this.shadowRoot.innerHTML = ""*/
     }
 
     refreshUserPlaylists() {
@@ -454,5 +455,13 @@ export default class LibraryWindow extends HTMLDivElement {
                 })
             }
         })
+    }
+
+    disconnectedCallback() {
+        this.controller.abort()
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
     }
 }

@@ -165,6 +165,16 @@ export default class Player {
         console.log("audio element created")
     }
 
+    /**
+     * 
+     * @param {*} event 
+     * @param {(this: HTMLElement, ev: any)} callback 
+     * @param {boolean | AddEventListenerOptions | undefined} options 
+     */
+    addEventListener(event, callback, options = undefined) {
+        this.#eventEl.addEventListener(event, callback, options)
+    }
+
     onPlay(callback) {
         this.#eventEl.addEventListener("play", callback)
     }

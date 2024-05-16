@@ -47,4 +47,11 @@ export default class TextBox extends HTMLDivElement {
     getColor() {
         return this.cssColor
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

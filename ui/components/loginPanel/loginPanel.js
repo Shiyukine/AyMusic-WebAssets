@@ -180,4 +180,11 @@ export default class LoginPanel extends HTMLDivElement {
             console.warn("Login script already added")
         }
     }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
+    }
 }

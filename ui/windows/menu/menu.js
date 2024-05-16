@@ -122,7 +122,6 @@ export default class MenuWindow extends HTMLDivElement {
                 let thisW = this.anWindow.win
                 thisW.ontransitionend = () => {
                     thisW.close()
-                    thisW.innerHTML = ""
                     document.getElementById("main").removeChild(thisW)
                 }
                 thisW.style.opacity = "0%";
@@ -147,5 +146,12 @@ export default class MenuWindow extends HTMLDivElement {
         c.height = h;
         ctx.drawImage(source, 0, 0, w, h);
         return (c);
+    }
+
+    disconnectedCallback() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        }
+        this.shadowRoot.innerHTML = ""
     }
 }
