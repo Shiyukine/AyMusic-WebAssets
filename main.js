@@ -45,7 +45,8 @@ async function main() {
                 if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                     document.getElementById("main_style").href = "/main_mobile.css";
                 }
-                new Translations(document.body)
+                await Translations.init()
+                this.translation = new Translations(document.body)
                 new ThemeColor(document.body)
                 document.getElementById("version_name").innerText = Utils.app.versionName
                 if (window.forceRestart && Utils.app.isRelease) {

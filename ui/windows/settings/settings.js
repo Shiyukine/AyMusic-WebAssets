@@ -37,7 +37,7 @@ export default class SettingsWindow extends HTMLDivElement {
                 })
                 //
                 this.changeAccount();
-                new Translations(shadow.children[1])
+                this.translation = new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
                 Import.getData("/resources/translation.json").then((trls) => {
                     try {
@@ -242,6 +242,8 @@ export default class SettingsWindow extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        this.translation.end()
+        this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }

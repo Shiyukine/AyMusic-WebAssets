@@ -51,7 +51,7 @@ export default class LibraryWindow extends HTMLDivElement {
                         this.changeViewMyLib(y)
                     }
                 })
-                new Translations(shadow.children[1])
+                this.translation = new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
                 this.changeView(this.selectedIndex, false)
                 this.changeViewMyLib(0)
@@ -458,6 +458,7 @@ export default class LibraryWindow extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        this.translation.end()
         this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);

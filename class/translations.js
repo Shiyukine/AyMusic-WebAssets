@@ -2,7 +2,11 @@ import Import from "./import.js";
 import Utils from "./utils/utils.js";
 
 export default class Translations {
-    allTranslations = "";
+    static allTranslations = {};
+
+    static async init() {
+        Translations.allTranslations = JSON.parse(await Import.getData("/resources/translation.json"));
+    }
 
     /**
      * translate a group of elements
@@ -10,30 +14,27 @@ export default class Translations {
      */
     constructor(rootElement) {
         this.rootElement = rootElement
-        Import.getData("/resources/translation.json").then((trls) => {
-            try {
-                if (trls) {
-                    this.allTranslations = JSON.parse(trls)
-                }
-                else console.error("Unable to load translations file")
-                let trl = this.allTranslations[Utils.app.settings.gen_langs]
-                this.changeLang(trl)
-                let self = this
-                var observer = new MutationObserver(function () {
-                    self.translate(trl);
-                });
-                observer.observe(rootElement, {
-                    childList: true,
-                    subtree: true
-                });
-                Utils.app.addEventListener("langchanged", () => {
-                    this.changeLang(this.allTranslations[Utils.app.settings.gen_langs])
-                })
+        try {
+            if (Translations.allTranslations == {} || Translations.allTranslations == undefined) {
+                console.error("Unable to load translations file")
+                return;
             }
-            catch (e) {
-                Utils.newError("Unable to get translations", e)
-            }
-        });
+            let trl = Translations.allTranslations[Utils.app.settings.gen_langs]
+            this.changeLang(trl)
+            this.observer = new MutationObserver(() => {
+                this.translate(trl);
+            });
+            this.observer.observe(rootElement, {
+                childList: true,
+                subtree: true
+            });
+            Utils.app.addEventListener("langchanged", () => {
+                this.changeLang(Translations.allTranslations[Utils.app.settings.gen_langs])
+            })
+        }
+        catch (e) {
+            Utils.newError("Unable to get translations", e)
+        }
     }
 
     translate(trl) {
@@ -63,8 +64,13 @@ export default class Translations {
     changeLang(trl) {
         if (!trl) {
             Utils.newError("Translations in " + Utils.app.settings.gen_langs + " not found", "Language set to English.")
-            trl = this.allTranslations["English"]
+            trl = Translations.allTranslations["English"]
         }
         this.translate(trl)
+    }
+
+    end() {
+        this.observer.disconnect()
+        this.rootElement = null
     }
 }

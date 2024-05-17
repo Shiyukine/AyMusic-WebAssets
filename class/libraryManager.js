@@ -203,6 +203,10 @@ export default class LibraryManager {
         this.#eventEl.addEventListener("removesongfromlikedsongs", callback)
     }
 
+    addEventListener(event, callback, options) {
+        this.#eventEl.addEventListener(event, callback, options)
+    }
+
     /**
      * 
      * @param {String} objId 

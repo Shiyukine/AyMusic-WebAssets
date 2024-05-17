@@ -56,7 +56,7 @@ export default class LoginPanel extends HTMLDivElement {
                 this.shadowRoot.getElementById("loginBG").ontransitionend = () => { };
                 if (document.getElementById("menu_win"))
                     document.getElementById("menu_win").style.zIndex = "0"
-                new Translations(shadow.children[1])
+                this.translation = new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
             }
             this.shadowRoot.getElementById("loginBG").onclick = () => {
@@ -151,9 +151,6 @@ export default class LoginPanel extends HTMLDivElement {
         if (document.getElementById("menu_win"))
             document.getElementById("menu_win").style.zIndex = ""
         this.isClosed = true
-        while (this.firstChild) {
-            this.removeChild(this.lastChild);
-        }
         this.controller.abort()
     }
 
@@ -182,6 +179,8 @@ export default class LoginPanel extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        this.translation.end()
+        this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }

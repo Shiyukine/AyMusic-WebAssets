@@ -55,7 +55,7 @@ export default class MenuWindow extends HTMLDivElement {
                         shadow.getElementById("acc_ppstatic").style.visibility = "visible"
                     }
                 }
-                new Translations(shadow.children[1])
+                this.translation = new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
             }
         })
@@ -149,6 +149,8 @@ export default class MenuWindow extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        this.translation.end()
+        //this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }

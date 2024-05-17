@@ -13,7 +13,7 @@ export default class TextBox extends HTMLDivElement {
         var shadow = this.attachShadow({ mode: "open" })
         Import.getData("/ui/components/textBox/textBox.html").then((html) => {
             shadow.innerHTML = html
-            new Translations(shadow.children[1])
+            this.translation = new Translations(shadow.children[1])
             new ThemeColor(shadow.children[1])
             this.setLabel(this.getAttribute("label") ? this.getAttribute("label") : label)
             this.setColor(this.getAttribute("cssColor") ? this.getAttribute("cssColor") : cssColor)
@@ -49,6 +49,8 @@ export default class TextBox extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        this.translation.end()
+        //this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }

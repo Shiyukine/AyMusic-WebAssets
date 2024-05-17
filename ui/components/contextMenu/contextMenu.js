@@ -29,7 +29,7 @@ export default class ContextMenu extends HTMLDivElement {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 let event = this.curEvent;
-                new Translations(shadow.children[1])
+                this.translation = new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
                 this.style.opacity = "1"
                 setTimeout(() => {
@@ -248,6 +248,9 @@ export default class ContextMenu extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        this.translation.end()
+        this.controller.abort()
+        this.#eventEl = null
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }

@@ -83,6 +83,10 @@ export default class App {
         }
     }
 
+    recieveEventClient(event) {
+        this.#eventEl.dispatchEvent(new CustomEvent(event));
+    }
+
     set loaded(callback) {
         this.haveCallback = callback;
         this.#eventEl.addEventListener("loaded", callback)
@@ -107,8 +111,8 @@ export default class App {
         this.#eventEl.dispatchEvent(new CustomEvent("themechanged"));
     }
 
-    addEventListener(event, callback) {
-        this.#eventEl.addEventListener(event, callback)
+    addEventListener(event, callback, options) {
+        this.#eventEl.addEventListener(event, callback, options)
     }
 
     async httpRequestGET(url) {

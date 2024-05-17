@@ -3,6 +3,12 @@ import Utils from "./utils/utils.js";
 
 export default class Window {
     static async setTopBarWindow() {
+        Utils.app.addEventListener("maximize", () => {
+            Utils.app.changeSetting("other_maximize", true)
+        })
+        Utils.app.addEventListener("unmaximize", () => {
+            Utils.app.changeSetting("other_maximize", false)
+        })
         var topbar = document.createElement("div")
         topbar.classList.add("windowTopBar")
         if (Utils.app.platform == "Windows") {

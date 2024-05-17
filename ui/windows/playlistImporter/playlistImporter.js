@@ -69,7 +69,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                 this.shadowRoot.getElementById("panelInfoBG").ontransitionend = () => { };
                 this.shadowRoot.getElementById("panelInfoBG").style = "";
                 this.#loaded = true;
-                new Translations(this.shadowRoot.children[1])
+                this.translation = new Translations(this.shadowRoot.children[1])
                 new ThemeColor(this.shadowRoot.children[1])
                 window.addEventListener("popstate", (e) => {
                     if (e.state.where == "playlistImporter") {
@@ -335,6 +335,8 @@ export default class PlaylistImporter extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        this.translation.end()
+        this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }

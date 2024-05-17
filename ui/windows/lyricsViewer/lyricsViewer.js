@@ -38,7 +38,7 @@ export default class LyricsViewerWindow extends HTMLDivElement {
         Import.getData("/ui/windows/lyricsViewer/lyricsViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
-                new Translations(shadow.children[1])
+                this.translation = new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
                 Utils.player.onSongChange(() => {
                     this.refresh()
@@ -174,9 +174,12 @@ export default class LyricsViewerWindow extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        /* no close function, so do not do this
+        this.translation.end()
+        //this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }
-        this.shadowRoot.innerHTML = ""
+        this.shadowRoot.innerHTML = ""*/
     }
 }

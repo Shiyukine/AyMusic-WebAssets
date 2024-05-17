@@ -253,7 +253,7 @@ export default class ListenViewerWindow extends HTMLDivElement {
                     cm.show(e)
                 }
                 //changed child index 1 to 2 with bg !
-                new Translations(shadow.children[2])
+                this.translation = new Translations(shadow.children[2])
                 new ThemeColor(shadow.children[2])
             }
         })
@@ -327,9 +327,12 @@ export default class ListenViewerWindow extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        /* no close function, so do not do this
+        this.translation.end()
+        this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }
-        this.shadowRoot.innerHTML = ""
+        this.shadowRoot.innerHTML = ""*/
     }
 }

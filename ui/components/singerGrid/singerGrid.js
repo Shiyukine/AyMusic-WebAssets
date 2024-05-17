@@ -12,6 +12,7 @@ export default class SingerGrid extends HTMLDivElement {
      */
     singer = null;
 
+    controller = new AbortController()
 
     /**
      * 
@@ -31,34 +32,34 @@ export default class SingerGrid extends HTMLDivElement {
                 this.addEventListener("mouseover", function () {
                     this.shadowRoot.getElementById("img").style.transform = "scale(1.1)"
                     this.shadowRoot.getElementById("cache").style.opacity = "1"
-                });
+                }, { signal: this.controller.signal });
                 this.addEventListener("mouseout", function () {
                     this.shadowRoot.getElementById("img").style.transform = "scale(1)"
                     if (Utils.queueManager.currentObject != null && "si_" + singer.id != Utils.queueManager.currentObject.id) this.shadowRoot.getElementById("cache").style.opacity = "0"
-                });
+                }, { signal: this.controller.signal });
                 this.addEventListener("click", function () {
                     if (!this.shadowRoot.getElementById("svg").matches(':hover')) Utils.musicViewer.changeView("si_" + singer.id)
-                });
-                Utils.player.onSongChange(async () => {
+                }, { signal: this.controller.signal });
+                Utils.player.addEventListener("songchange", async () => {
                     let isPlay = Utils.queueManager.currentObject != null && "si_" + singer.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("svg").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                     this.shadowRoot.getElementById("cache").style.opacity = Utils.queueManager.currentObject != null && "si_" + singer.id == Utils.queueManager.currentObject.id ? "1" : "0"
-                })
-                Utils.player.onPlay(async () => {
+                }, { signal: this.controller.signal })
+                Utils.player.addEventListener("play", async () => {
                     let isPlay = Utils.queueManager.currentObject != null && "si_" + singer.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("svg").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                     this.shadowRoot.getElementById("cache").style.opacity = Utils.queueManager.currentObject != null && "si_" + singer.id == Utils.queueManager.currentObject.id ? "1" : "0"
-                })
-                Utils.player.onPause(async () => {
+                }, { signal: this.controller.signal })
+                Utils.player.addEventListener("pause", async () => {
                     let isPlay = Utils.queueManager.currentObject != null && "si_" + singer.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("svg").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                     this.shadowRoot.getElementById("cache").style.opacity = Utils.queueManager.currentObject != null && "si_" + singer.id == Utils.queueManager.currentObject.id ? "1" : "0"
-                })
-                Utils.musicViewer.onSongChange((e) => {
+                }, { signal: this.controller.signal })
+                Utils.musicViewer.addEventListener("songchange", (e) => {
                     if (e.detail.objId.startsWith("si_") && singer.id == e.detail.objId.replace("si_", "")) {
                         this.shadowRoot.getElementById("title").innerText = e.detail.aliasName ? e.detail.aliasName : this.singer.name
                     }
-                })
+                }, { signal: this.controller.signal })
                 shadow.getElementById("svg").addEventListener("click", async () => {
                     if (Utils.queueManager.currentObject != null && "si_" + singer.id == Utils.queueManager.currentObject.id) {
                         if (await Utils.player.getState()) Utils.player.pause()
@@ -67,7 +68,7 @@ export default class SingerGrid extends HTMLDivElement {
                     else {
                         Utils.queueManager.changeQueue(singer)
                     }
-                })
+                }, { signal: this.controller.signal })
                 let isPlay = Utils.queueManager.currentObject != null && "si_" + singer.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                 shadow.getElementById("svg").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                 this.shadowRoot.getElementById("cache").style.opacity = Utils.queueManager.currentObject != null && "si_" + singer.id == Utils.queueManager.currentObject.id ? "1" : "0"
@@ -77,6 +78,8 @@ export default class SingerGrid extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        this.translation.end()
+        this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }

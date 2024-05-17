@@ -47,7 +47,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
         this.style.transition = "opacity 0.4s"
         Import.getData("/ui/windows/musicViewer/musicViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
-            new Translations(shadow.children[1])
+            this.translation = new Translations(shadow.children[1])
             new ThemeColor(shadow.children[1])
             window.addEventListener("popstate", (e) => {
                 if (e.state.where == "musicViewer") {
@@ -507,10 +507,17 @@ export default class MusicViewerWindow extends HTMLDivElement {
         this.#eventEl.addEventListener("songchange", callback)
     }
 
+    addEventListener(event, callback, options) {
+        this.#eventEl.addEventListener(event, callback, options)
+    }
+
     disconnectedCallback() {
+        /* no close function, so do not do this
+        this.translation.end()
+        this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }
-        this.shadowRoot.innerHTML = ""
+        this.shadowRoot.innerHTML = ""*/
     }
 }

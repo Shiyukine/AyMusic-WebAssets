@@ -54,7 +54,7 @@ export default class InfoPanel extends HTMLDivElement {
                 this.shadowRoot.getElementById("panelInfoBG").ontransitionend = () => { };
                 this.shadowRoot.getElementById("panelInfoBG").style = "";
                 this.#loaded = true;
-                new Translations(this.shadowRoot.children[1])
+                this.translation = new Translations(this.shadowRoot.children[1])
                 new ThemeColor(this.shadowRoot.children[1])
             }
             this.shadowRoot.getElementById("panelInfoBG").style.zIndex = "100"
@@ -134,9 +134,6 @@ export default class InfoPanel extends HTMLDivElement {
             if (this.shadowRoot.getRootNode().host.parentElement)
                 this.shadowRoot.getRootNode().host.parentElement.removeChild(this);
             this.isClosed = true
-            while (this.firstChild) {
-                this.removeChild(this.lastChild);
-            }
             this.controller.abort()
         }
         this.hide()
@@ -153,6 +150,8 @@ export default class InfoPanel extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        this.translation.end()
+        this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }

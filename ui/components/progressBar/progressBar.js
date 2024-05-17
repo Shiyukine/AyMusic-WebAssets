@@ -152,6 +152,8 @@ export default class ProgressBar extends HTMLDivElement {
     }
 
     disconnectedCallback() {
+        this.translation.end()
+        //this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }
