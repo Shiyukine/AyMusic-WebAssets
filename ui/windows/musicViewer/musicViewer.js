@@ -27,6 +27,8 @@ export default class MusicViewerWindow extends HTMLDivElement {
         end: -1
     }
     #eventEl = document.createElement("event");
+    scrolls = {};
+    lastOffsets = {};
 
     constructor() {
         super();
@@ -441,9 +443,32 @@ export default class MusicViewerWindow extends HTMLDivElement {
     }
 
     addScrollEventForList(list) {
-        list.parentElement.addEventListener("scroll", async (e) => {
-            if (list.parentElement) {
-                let offset = parseInt((list.parentElement.scrollTop + list.parentElement.offsetHeight - list.offsetTop) / 3200)
+        this.lastOffsets[list] = { last: 0, toRemove: -1 }
+        list.addEventListener("scroll", async (e) => {
+            let isScrollDown = this.scrolls[list] < list.scrollTop
+            let slice = 50 * 70
+            let offset = parseInt((list.scrollTop + (isScrollDown ? 15 : -15) * 70) / slice)
+            let realOffsetToRemove = (list.scrollTop + (isScrollDown ? -105 : 115) * 70) / slice
+            let offsetToRemove = parseInt(realOffsetToRemove)
+            if (realOffsetToRemove >= 0) isScrollDown ? offsetToRemove++ : offsetToRemove--
+            if (this.lastOffsets[list].toRemove != offsetToRemove) {
+                this.lastOffsets[list].toRemove = offsetToRemove
+                let elToHide = list.children[(offsetToRemove) * 50]
+                if (elToHide) {
+                    elToHide.changeRequested = false
+                    for (let i = 0; i < 50; i++) {
+                        /**
+                         * @type {SongGrid}
+                         */
+                        let el = list.children[(offsetToRemove) * 50 + i]
+                        if (el) {
+                            el.changeSong(null, true)
+                        }
+                    }
+                }
+            }
+            if (this.lastOffsets[list].last != offset) {
+                this.lastOffsets[list].last = offset
                 /**
                  * @type {SongGrid}
                  */
@@ -487,6 +512,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     }
                 }
             }
+            this.scrolls[list] = list.scrollTop
         })
     }
 

@@ -30,6 +30,9 @@ export default class LibraryWindow extends HTMLDivElement {
 
     controller = new AbortController();
 
+    scrolls = {};
+    lastOffsets = {};
+
     constructor() {
         super();
         var shadow = this.attachShadow({ mode: "open" })
@@ -226,6 +229,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             this.shadowRoot.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                             this.shadowRoot.getElementById("playlist_name").innerText = pl.name
                             let songsList = this.shadowRoot.getElementById("playlist_songs")
+                            songsList.scrollTo(0, 0)
                             Utils.apiManager.fetchAPI({
                                 act: "getPlaylistSongs",
                                 playlistID: pl.id,
@@ -422,38 +426,58 @@ export default class LibraryWindow extends HTMLDivElement {
     }
 
     addScrollEventForList(listId) {
+        this.lastOffsets[listId] = { last: 0, toRemove: -1 }
         this.shadowRoot.getElementById(listId).addEventListener("scroll", async (e) => {
-            let counterSongNotLoaded = 0
-            Array.from(this.shadowRoot.getElementById(listId).children).forEach(x => {
-                if (x.style.height == "") counterSongNotLoaded++
-            })
-            let slice = 2900
-            //if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") slice = 2900
-            let offset = parseInt((this.shadowRoot.getElementById(listId).scrollTop + this.shadowRoot.getElementById(listId).offsetHeight) / slice)
-            /**
-             * @type {SongGrid}
-             */
-            let el = this.shadowRoot.getElementById(listId).children[offset * 50]
-            if (el && el.song === null && !el.changeRequested) {
-                el.changeRequested = true
-                Utils.apiManager.fetchAPI({
-                    act: "getPlaylistSongs",
-                    playlistID: this.selectedPl && this.selectedIndex != 0 ? this.selectedPl.id : Utils.libManager.userInfo.likedSongsPlId,
-                    orderByDesc: !(this.selectedPl && this.selectedIndex != 0),
-                    offset: offset
-                }, (result) => {
-                    let i = 0;
-                    for (let obj of result["songs"]) {
+            let isScrollDown = this.scrolls[listId] < this.shadowRoot.getElementById(listId).scrollTop
+            let slice = 50 * 70
+            let offset = parseInt((this.shadowRoot.getElementById(listId).scrollTop + (isScrollDown ? 15 : -15) * 70) / slice)
+            let realOffsetToRemove = (this.shadowRoot.getElementById(listId).scrollTop + (isScrollDown ? -105 : 115) * 70) / slice
+            let offsetToRemove = parseInt(realOffsetToRemove)
+            if (realOffsetToRemove >= 0) isScrollDown ? offsetToRemove++ : offsetToRemove--
+            if (this.lastOffsets[listId].toRemove != offsetToRemove) {
+                this.lastOffsets[listId].toRemove = offsetToRemove
+                let elToHide = this.shadowRoot.getElementById(listId).children[(offsetToRemove) * 50]
+                if (elToHide) {
+                    elToHide.changeRequested = false
+                    for (let i = 0; i < 50; i++) {
                         /**
                          * @type {SongGrid}
                          */
-                        let grid = this.shadowRoot.getElementById(listId).children[offset * 50 + i]
-                        let song = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
-                        grid.changeSong(song, !song.canBeLoaded)
-                        i++;
+                        let el = this.shadowRoot.getElementById(listId).children[(offsetToRemove) * 50 + i]
+                        if (el) {
+                            el.changeSong(null, true)
+                        }
                     }
-                })
+                }
             }
+            if (this.lastOffsets[listId].last != offset) {
+                this.lastOffsets[listId].last = offset
+                /**
+                 * @type {SongGrid}
+                 */
+                let el = this.shadowRoot.getElementById(listId).children[offset * 50]
+                if (el && el.song === null && !el.changeRequested) {
+                    el.changeRequested = true
+                    Utils.apiManager.fetchAPI({
+                        act: "getPlaylistSongs",
+                        playlistID: this.selectedPl && this.selectedIndex != 0 ? this.selectedPl.id : Utils.libManager.userInfo.likedSongsPlId,
+                        orderByDesc: !(this.selectedPl && this.selectedIndex != 0),
+                        offset: offset
+                    }, (result) => {
+                        let i = 0;
+                        for (let obj of result["songs"]) {
+                            /**
+                             * @type {SongGrid}
+                             */
+                            let grid = this.shadowRoot.getElementById(listId).children[offset * 50 + i]
+                            let song = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
+                            grid.changeSong(song, !song.canBeLoaded)
+                            i++;
+                        }
+                    })
+                }
+            }
+            this.scrolls[listId] = this.shadowRoot.getElementById(listId).scrollTop
         })
     }
 

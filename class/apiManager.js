@@ -42,13 +42,13 @@ export default class ApiManager {
                 let json = await rep.json()
                 if (json) {
                     result = JSON.stringify(json)
-                    if (callback) callback(json)
+                    if (callback) callback(json, true)
                 }
             })
             this.doPostRequest(body).then(rep => {
                 if (rep && result != JSON.stringify(rep)) {
                     if (rep.success !== false) {
-                        if (callback) callback(rep)
+                        if (callback) callback(rep, false)
                         Utils.app.remoteClient.saveCache("API/" + this.cache[JSON.stringify(body)], new TextEncoder("utf-8").encode(JSON.stringify(rep)))
                     }
                     else console.error("Error from API:", rep["reason"])
@@ -60,7 +60,7 @@ export default class ApiManager {
                 if (rep) {
                     if (rep.success !== false) {
                         this.cache[JSON.stringify(body)] = (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2)
-                        if (callback) callback(rep)
+                        if (callback) callback(rep, false)
                         Utils.app.remoteClient.saveCache("API/" + this.cache[JSON.stringify(body)], new TextEncoder("utf-8").encode(JSON.stringify(rep)))
                         Utils.app.remoteClient.saveCache("API/index", new TextEncoder("utf-8").encode(JSON.stringify(this.cache)))
                     }

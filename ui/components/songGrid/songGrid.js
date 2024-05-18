@@ -142,6 +142,7 @@ export default class SongGrid extends HTMLDivElement {
         if (!dontShow) {
             if (this.song === null) {
                 Import.getData("/ui/components/songGrid/songGrid" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
+                    this.controller = new AbortController()
                     this.shadowRoot.innerHTML = html
                     this.shadowRoot.getElementById("cssImport").onload = async () => {
                         //new Translations(shadow.children[1])
@@ -319,7 +320,11 @@ export default class SongGrid extends HTMLDivElement {
             }
         }
         else {
-            this.style.height = ""
+            if (this.song != null) {
+                this.shadowRoot.innerHTML = `<div></div>`
+                this.song = song;
+                this.controller.abort()
+            }
         }
     }
 }
