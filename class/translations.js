@@ -72,5 +72,6 @@ export default class Translations {
     end() {
         this.observer.disconnect()
         this.rootElement = null
+        this.__proto__ = null
     }
 }

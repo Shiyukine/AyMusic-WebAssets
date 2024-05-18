@@ -164,7 +164,7 @@ export default class ContextMenu extends HTMLDivElement {
                 }
                 else {
                     div.onmousemove = () => {
-                        if (!this.isHidded) {
+                        if (!this.isHidded && context.isHidded) {
                             let rect = this.getBoundingClientRect();
                             context.show(new MouseEvent("contextmenu", {
                                 clientX: rect.left,
@@ -247,13 +247,15 @@ export default class ContextMenu extends HTMLDivElement {
         this.loaded = true
     }
 
-    disconnectedCallback() {
-        this.translation.end()
+    close() {
+        if (this.translation) this.translation.end()
         this.controller.abort()
         this.#eventEl = null
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }
         this.shadowRoot.innerHTML = ""
+        this.innerHTML = ""
+        this.__proto__ = null
     }
 }

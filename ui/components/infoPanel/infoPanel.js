@@ -134,7 +134,6 @@ export default class InfoPanel extends HTMLDivElement {
             if (this.shadowRoot.getRootNode().host.parentElement)
                 this.shadowRoot.getRootNode().host.parentElement.removeChild(this);
             this.isClosed = true
-            this.controller.abort()
         }
         this.hide()
         //this.changeloading(false)
@@ -156,5 +155,7 @@ export default class InfoPanel extends HTMLDivElement {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }
         this.shadowRoot.innerHTML = ""
+        this.innerHTML = ""
+        this.__proto__ = null
     }
 }

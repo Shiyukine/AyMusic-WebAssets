@@ -488,5 +488,6 @@ export default class LibraryWindow extends HTMLDivElement {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
         }
         this.shadowRoot.innerHTML = ""
+        this.__proto__ = null
     }
 }

@@ -1,11 +1,8 @@
 import Import from "../../../class/import.js";
 import Playlist from "../../../class/music/playlist.js";
 import Song from "../../../class/music/song.js";
-import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
 import Utils from "../../../class/utils/utils.js";
 import ContextMenu from "../contextMenu/contextMenu.js";
-import * as id3 from "../../../plugins/id3/id3.js"
-import InfoPanel from "../infoPanel/infoPanel.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
@@ -26,6 +23,15 @@ export default class SongGrid extends HTMLDivElement {
     changeRequested = false
 
     controller = new AbortController()
+
+    /**
+     * @type {ContextMenu}
+     */
+    cm = null;
+    /**
+     * @type {ContextMenu}
+     */
+    cm2 = null;
 
     /**
      * 
@@ -51,6 +57,9 @@ export default class SongGrid extends HTMLDivElement {
         }
         this.shadowRoot.innerHTML = ""
         this.innerHTML = ""
+        this.__proto__ = null
+        if (this.cm) this.cm.close()
+        if (this.cm2) this.cm2.close()
     }
 
     isMySong() {
@@ -181,7 +190,9 @@ export default class SongGrid extends HTMLDivElement {
                                 }
                             }
                         }, { signal: this.controller.signal });
-                        var cm = new ContextMenu()
+                        if (this.cm == null)
+                            this.cm = new ContextMenu()
+                        let cm = this.cm
                         this.shadowRoot.getElementById("context").onclick = async (e) => {
                             cm.show(e)
                         }
@@ -225,7 +236,9 @@ export default class SongGrid extends HTMLDivElement {
                             cm.addElement(Utils.libManager.isSongIsInLikedSongs(song) ? "{lib.removeLikedSong}" : "{lib.addLikedSong}", () => {
                                 Utils.libManager.addOrRemoveSongLikedSongs(song)
                             })
-                            var cm2 = new ContextMenu()
+                            if (this.cm2 == null)
+                                this.cm2 = new ContextMenu()
+                            let cm2 = this.cm2
                             cm2.beforeShow = () => {
                                 let havePl = false;
                                 for (let pl of Utils.libManager.userPlaylists) {
