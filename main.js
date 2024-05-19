@@ -48,6 +48,12 @@ async function main() {
                 await Translations.init()
                 this.translation = new Translations(document.body)
                 new ThemeColor(document.body)
+                window.addEventListener("popstate", (e) => {
+                    if (!e.state) {
+                        console.warn("No state in popstate event !")
+                        history.forward()
+                    }
+                })
                 document.getElementById("version_name").innerText = Utils.app.versionName
                 if (window.forceRestart && Utils.app.isRelease) {
                     let info = new InfoPanel("Warning after updating app", "The new version is installed ! But there is a problem.\n"

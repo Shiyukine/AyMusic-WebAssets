@@ -9,6 +9,8 @@ import ThemeColor from "../../../class/themeColor.js";
 
 export default class MenuWindow extends HTMLDivElement {
 
+    forceUpdateHistory = false
+
     constructor() {
         super();
         var shadow = this.attachShadow({ mode: "open" });
@@ -33,7 +35,10 @@ export default class MenuWindow extends HTMLDivElement {
                 this.accountEl = this.shadowRoot.getElementById("acc_pp");
                 this.changeAccountAvatar();
                 window.addEventListener("popstate", (e) => {
-                    if (e.state.where == "menu") this.changeWindow(e.state.window, e.state.menu, false)
+                    if (e.state.where == "menu") {
+                        this.forceUpdateHistory = false
+                        this.changeWindow(e.state.window, e.state.menu, false)
+                    }
                 })
                 Array.from(shadow.getElementById("main").getElementsByTagName("svg")).forEach((el) => {
                     el.onclick = () => {
@@ -91,6 +96,8 @@ export default class MenuWindow extends HTMLDivElement {
     changeWindow(newWindow, menuId, updateHistory = true) {
         Utils.musicViewer.close()
         let menu = this.shadowRoot.getElementById(menuId)
+        if ((!this.anWindow || newWindow != this.anWindow.enum) || this.forceUpdateHistory)
+            if (updateHistory) window.history.pushState({ where: "menu", window: newWindow, menu: menuId }, "", "/index.html")
         if (!this.anWindow || newWindow != this.anWindow.enum) {
             let awindow;
             let winName;
@@ -117,7 +124,6 @@ export default class MenuWindow extends HTMLDivElement {
             }
             awindow.classList.add("aWindow")
             if (Utils.app.platform == "Windows") awindow.classList.add("windows")
-            if (updateHistory) window.history.pushState({ where: "menu", window: newWindow, menu: menuId }, "", "/index.html")
             if (this.anWindow) {
                 let thisW = this.anWindow.win
                 thisW.ontransitionend = () => {
@@ -135,6 +141,11 @@ export default class MenuWindow extends HTMLDivElement {
             return awindow
         }
         return this.anWindow.win
+    }
+
+    // needed if the window is opened from a popup
+    havePopup() {
+        this.forceUpdateHistory = true
     }
 
     scaleIt(source, scaleFactor) {

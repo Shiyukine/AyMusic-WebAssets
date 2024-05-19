@@ -21,8 +21,10 @@ export default class Translations {
             }
             let trl = Translations.allTranslations[Utils.app.settings.gen_langs]
             this.changeLang(trl)
-            this.observer = new MutationObserver(() => {
-                this.translate(trl);
+            this.observer = new MutationObserver((mutationsList, observer) => {
+                for (let mutation of mutationsList) {
+                    this.translate(trl, mutation.target);
+                }
             });
             this.observer.observe(rootElement, {
                 childList: true,
@@ -37,8 +39,32 @@ export default class Translations {
         }
     }
 
-    translate(trl) {
+    translateAll(trl) {
         Array.from(this.rootElement.querySelectorAll("*")).forEach(x => {
+            let text = x.innerText
+            if (x.tagName == "title") text = x.innerHTML
+            if (typeof x.dataset["translated"] == "undefined" || typeof x.dataset["translated2"] == "undefined" ||
+                x.dataset["translated"] != text || x.dataset["translated2"] != x.title) {
+                if (x.tagName == "P" || x.tagName == "A" || x.tagName == "title" ||
+                    x.tagName == "SPAN" || x.tagName == "H1" || x.tagName == "H2" ||
+                    x.tagName == "H3" || x.tagName == "H4" || x.tagName == "H5" ||
+                    x.tagName == "BUTTON" || x.tagName == "LABEL") {
+                    if (trl[text]) {
+                        x.innerText = trl[text]
+                        if (x.tagName == "title") x.innerHTML = trl[text]
+                        x.setAttribute("data-translated", text)
+                    }
+                    if (trl[x.title]) {
+                        x.title = trl[x.title]
+                        x.setAttribute("data-translated2", x.title)
+                    }
+                }
+            }
+        })
+    }
+
+    translate(trl, el) {
+        Array.from(el.querySelectorAll("*")).forEach(x => {
             let text = x.innerText
             if (x.tagName == "title") text = x.innerHTML
             if (typeof x.dataset["translated"] == "undefined" || typeof x.dataset["translated2"] == "undefined" ||
@@ -66,7 +92,7 @@ export default class Translations {
             Utils.newError("Translations in " + Utils.app.settings.gen_langs + " not found", "Language set to English.")
             trl = Translations.allTranslations["English"]
         }
-        this.translate(trl)
+        this.translateAll(trl)
     }
 
     end() {

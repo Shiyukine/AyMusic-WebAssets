@@ -52,14 +52,18 @@ export default class SongGrid extends HTMLDivElement {
 
     disconnectedCallback() {
         this.controller.abort()
-        while (this.shadowRoot.firstChild) {
-            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        if (this.shadowRoot) {
+            while (this.shadowRoot.firstChild) {
+                this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+            }
+            this.shadowRoot.innerHTML = ""
         }
-        this.shadowRoot.innerHTML = ""
         this.innerHTML = ""
         this.__proto__ = null
         if (this.cm) this.cm.close()
+        this.cm = null
         if (this.cm2) this.cm2.close()
+        this.cm2 = null
     }
 
     isMySong() {

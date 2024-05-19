@@ -74,10 +74,13 @@ export default class AlbumGrid extends HTMLDivElement {
 
     disconnectedCallback() {
         this.controller.abort()
-        while (this.shadowRoot.firstChild) {
-            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        if (this.shadowRoot) {
+            while (this.shadowRoot.firstChild) {
+                this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+            }
+            this.shadowRoot.innerHTML = ""
         }
-        this.shadowRoot.innerHTML = ""
+        this.innerHTML = ""
         this.__proto__ = null
     }
 }

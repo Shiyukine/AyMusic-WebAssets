@@ -220,7 +220,10 @@ export default class MusicViewerWindow extends HTMLDivElement {
      * @param {String} objectID 
      */
     async changeView(objectID, updateHistory = true) {
-        if (!this.parentElement) document.getElementById("main").appendChild(this)
+        if (!this.parentElement) {
+            document.getElementById("main").appendChild(this)
+            Utils.menu.havePopup()
+        }
         //wait
         this.clientWidth
         //

@@ -49,12 +49,14 @@ export default class TextBox extends HTMLDivElement {
     }
 
     disconnectedCallback() {
-        this.translation.end()
-        //this.controller.abort()
-        while (this.shadowRoot.firstChild) {
-            this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+        if (!this.parentElement) {
+            this.translation.end()
+            //this.controller.abort()
+            while (this.shadowRoot.firstChild) {
+                this.shadowRoot.removeChild(this.shadowRoot.lastChild);
+            }
+            this.shadowRoot.innerHTML = ""
+            this.__proto__ = null
         }
-        this.shadowRoot.innerHTML = ""
-        this.__proto__ = null
     }
 }
