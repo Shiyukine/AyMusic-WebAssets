@@ -64,7 +64,7 @@ export default class Translations {
     }
 
     translate(trl, el) {
-        Array.from(el.querySelectorAll("*")).forEach(x => {
+        [el].concat(Array.from(el.querySelectorAll("*"))).forEach(x => {
             let text = x.innerText
             if (x.tagName == "title") text = x.innerHTML
             if (typeof x.dataset["translated"] == "undefined" || typeof x.dataset["translated2"] == "undefined" ||
