@@ -144,6 +144,8 @@ p.plTitle {
     height: 46px;
     float: left;
     margin-right: 15px;
+    object-fit: cover;
+    object-position: center;
 }
 
 .pl:hover {

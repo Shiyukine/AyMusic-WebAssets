@@ -91,6 +91,11 @@ async function main() {
                 Update.searchUpdate(loadPanel);
                 //loadPanel.changeText("Connecting to your account...", "Please wait...");
                 //loadPanel.changeloading(true)
+                //
+                // add all consent links here
+                Utils.app.remoteClient.registerIframeUrl("https://consent.google.com/", `setInterval(() => document.getElementsByClassName("saveButtonContainer")[0].children[0].submit(), 100)`)
+                Utils.app.remoteClient.registerIframeUrl("https://consent.youtube.com/", `setInterval(() => document.querySelectorAll("form")[1].submit(), 100)`)
+                //
                 var cb = async () => {
                     if (Utils.app.platform == "Android") {
                         Utils.app.remoteClient.syncCookies()

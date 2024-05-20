@@ -92,7 +92,6 @@ export default class LyricsViewerWindow extends HTMLDivElement {
                 })
             }
         })
-        Utils.app.remoteClient.registerIframeUrl("https://consent.google.com/", `setInterval(() => document.getElementsByClassName("saveButtonContainer")[0].children[0].submit(), 100)`)
     }
 
     async refresh() {
