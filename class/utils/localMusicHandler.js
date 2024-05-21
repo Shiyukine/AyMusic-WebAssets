@@ -93,15 +93,17 @@ export default class LocalMusicHandler {
         let isOk = true;
         let counter = 0;
         for (let i in urls) {
-            let nurl = urls[i]
+            let nurl = urls[i][0]
+            let nbaseFileName = urls[i][1]
             let result = LocalMusicHandler.getLocalUrl() + nurl
-            var gmt = new GetMusicTag(result)
+            var gmt = new GetMusicTag(result, nbaseFileName)
             gmt.getTags().then(async (tags) => {
                 let artist = LocalMusicHandler.addLocalSinger(tags != null && tags.artist != null ? tags.artist : "Unknown artist")
                 console.log("Added new local artist : " + artist.id.replace("si_", ""))
                 let album = LocalMusicHandler.addLocalAlbum(tags != null && tags.album != null ? tags.album : "Unknown album", tags != null && tags.artist != null ? tags.artist : "Unknown artist")
                 console.log("Added new local album : " + album.id.replace("al_", "") + ", artist : " + album.singerID.replace("si_", ""))
-                allMusics.push([result, tags != null && tags.title != null ? tags.title : null, "localImg", tags.duration])
+                // added actual account id to avoid conflict between users
+                allMusics.push([result + "_" + Utils.actualAccount.id, tags != null && tags.title != null ? tags.title : null, "localImg", tags.duration])
                 if (tags != null && tags.image != null) {
                     var bytes = new Uint8Array(tags.image);
                     var uwu = []

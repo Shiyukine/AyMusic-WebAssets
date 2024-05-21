@@ -60,6 +60,8 @@ export default class Song {
                 this.albumName = al.name
                 this.albumID = al.id
                 this.singerID = si.id
+                // added actual account id to avoid conflict between users, see localMusicHandler.js
+                this.url = this.url.split("_")[0]
             }
             catch (e) {
                 //console.error("Unable to get local data for a song.")

@@ -11,9 +11,11 @@ export default class GetMusicTag {
         duration: null
     }
     curMusicUrl = "";
+    curBaseFileName = "";
 
-    constructor(musicURL) {
+    constructor(musicURL, curBaseFileName) {
         this.curMusicUrl = musicURL
+        this.curBaseFileName = curBaseFileName
     }
 
     getTags() {
@@ -27,8 +29,8 @@ export default class GetMusicTag {
                 let reader = new FileReader();
                 reader.readAsArrayBuffer(request.response);
                 reader.onload = function (e) {
+                    let titleFile = base.getFileTitle(base.curBaseFileName)
                     if (base.getFileExtension() == "wav") {
-                        let titleFile = base.getFileTitle(musicURL)
                         base.tags.title = titleFile
                         var audioWav = AudioWAV;
                         const outputChunks = wav => {
@@ -57,7 +59,6 @@ export default class GetMusicTag {
                         id3.fromFile(new File([e.target.result], musicURL.split("\\")[musicURL.split("\\").length - 1])).then((tags) => {
                             let audio = new Audio()
                             audio.onloadedmetadata = async () => {
-                                let titleFile = base.getFileTitle(musicURL)
                                 base.tags = {
                                     title: tags != null && tags.title != null ? tags.title : titleFile,
                                     duration: audio.duration * 1000,
@@ -75,7 +76,6 @@ export default class GetMusicTag {
                             onSuccess: function (tag) {
                                 let audio = new Audio()
                                 audio.onloadedmetadata = async () => {
-                                    let titleFile = base.getFileTitle(musicURL)
                                     base.tags = {
                                         title: tag != null && tag.tags.title != null ? tag.tags.title : titleFile,
                                         duration: audio.duration * 1000,
@@ -120,6 +120,7 @@ export default class GetMusicTag {
     getFileTitle(musicURL) {
         let titleFile = musicURL.split("/")[musicURL.split("/").length - 1].split(".")[0]
         if (Utils.app.platform == "Windows") titleFile = musicURL.split("\\")[musicURL.split("\\").length - 1].split(".")[0]
+        if (Utils.app.platform == "Linux") titleFile = musicURL.split("/")[musicURL.split("/").length - 1].split(".")[0]
         if (Utils.app.platform == "Android") titleFile = musicURL.split("%2F")[musicURL.split("%2F").length - 1].split(".")[0]
         return titleFile
     }
