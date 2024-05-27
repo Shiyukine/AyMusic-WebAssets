@@ -148,6 +148,10 @@ export default class ListenWindow extends HTMLDivElement {
                                 imge.src = "/resources/icon.ico"
                             }
                             imge.onload = async () => {
+                                let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+                                for (let sing of Utils.queueManager.currentSong.additionalSingers) {
+                                    singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
+                                }
                                 if (Utils.app.platform != "Android") {
                                     let blob = await (await fetch(imge.src)).blob();
                                     let dataUrl = await new Promise(resolve => {
@@ -157,7 +161,7 @@ export default class ListenWindow extends HTMLDivElement {
                                     });
                                     navigator.mediaSession.metadata = new window.MediaMetadata({
                                         title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                        artist: Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName,
+                                        artist: singer,
                                         album: Utils.queueManager.currentSong.albumName,
                                         artwork: [
                                             { src: dataUrl, sizes: '512x512', type: 'image/png' },
@@ -167,7 +171,7 @@ export default class ListenWindow extends HTMLDivElement {
                                 else {
                                     this.fakeMetadata = {
                                         title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                        artist: Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName,
+                                        artist: singer,
                                         album: Utils.queueManager.currentSong.albumName,
                                         artwork: [
                                             { src: imge.src, sizes: '512x512', type: 'image/png' },
@@ -181,10 +185,14 @@ export default class ListenWindow extends HTMLDivElement {
                         }
                         else {
                             this.shadowRoot.getElementById("music_img").src = "/resources/icon.ico"
+                            let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+                            for (let sing of Utils.queueManager.currentSong.additionalSingers) {
+                                singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
+                            }
                             if (Utils.app.platform != "Android") {
                                 navigator.mediaSession.metadata = new window.MediaMetadata({
                                     title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                    artist: Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName,
+                                    artist: singer,
                                     album: Utils.queueManager.currentSong.albumName,
                                     artwork: [
                                         { src: "/resources/icon.ico", sizes: '512x512', type: 'image/png' },
@@ -194,7 +202,7 @@ export default class ListenWindow extends HTMLDivElement {
                             else {
                                 this.fakeMetadata = {
                                     title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                    artist: Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName,
+                                    artist: singer,
                                     album: Utils.queueManager.currentSong.albumName,
                                     artwork: [
                                         { src: "/resources/icon.ico", sizes: '512x512', type: 'image/png' },
@@ -206,10 +214,14 @@ export default class ListenWindow extends HTMLDivElement {
                     else {
                         let iUrl = await ImageCacheHandler.getCacheForImageUrl(Utils.queueManager.currentSong.imgUrl)
                         this.shadowRoot.getElementById("music_img").src = iUrl
+                        let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+                        for (let sing of Utils.queueManager.currentSong.additionalSingers) {
+                            singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
+                        }
                         if (Utils.app.platform != "Android") {
                             navigator.mediaSession.metadata = new window.MediaMetadata({
                                 title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                artist: Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName,
+                                artist: singer,
                                 album: Utils.queueManager.currentSong.albumName,
                                 artwork: [
                                     { src: Utils.queueManager.currentSong.imgUrl, sizes: '512x512', type: 'image/png' },
@@ -219,7 +231,7 @@ export default class ListenWindow extends HTMLDivElement {
                         else {
                             this.fakeMetadata = {
                                 title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                artist: Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName,
+                                artist: singer,
                                 album: Utils.queueManager.currentSong.albumName,
                                 artwork: [
                                     { src: Utils.queueManager.currentSong.imgUrl, sizes: '512x512', type: 'image/png' },
