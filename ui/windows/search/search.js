@@ -347,6 +347,7 @@ export default class SearchWindow extends HTMLDivElement {
                                     let albumType = song.albumType
                                     let albumImgUrl = song.albumImgUrl
                                     let additionalSingers = [];
+                                    let aliasSongSingerName = song.singerNameAlias
                                     for (let i in song.additionalSingers) {
                                         let sing = song.additionalSingers[i]
                                         additionalSingers.push({
@@ -357,7 +358,7 @@ export default class SearchWindow extends HTMLDivElement {
                                         })
                                     }
                                     let sg = new Song(id, url, positionOrDate, title, imgUrl, time,
-                                        isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, albumUrl, singerUrl, additionalSingers)
+                                        isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, albumUrl, singerUrl, additionalSingers, "", aliasSongSingerName)
                                     SearchWindow.lastSearchCache.push(sg)
                                     this.shadowRoot.getElementById("songs").appendChild(new SongGrid(sg))
                                     if (!singersIDAdded.includes(singerID)) {

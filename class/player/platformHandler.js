@@ -103,7 +103,7 @@ export default class PlatformHandler {
          */
         if (platform && platforms) {
             var u = platforms["Servers"][platform]["URLs"][url]
-            if (u.startsWith("https://") || u.startsWith("http://")) return u
+            if (u.startsWith("https://") || u.startsWith("http://") || u.startsWith("%")) return u
             else return this.getPlatformPath(platform) + u
         }
         else return ""

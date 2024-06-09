@@ -68,6 +68,7 @@ export default class PlaylistPicker extends HTMLDivElement {
                 this.changeText("{playlistPicker.title}", "{playlistPicker.choosePl}");
                 this.changeloading(false);
                 let havePl = false;
+                this.shadowRoot.getElementById("next").disabled = true
                 for (let pl of Utils.libManager.userPlaylists) {
                     if (pl.name == "{pl.liked}" || (!pl.name.includes("{") && !pl.name.includes("}"))) {
                         havePl = true
@@ -90,6 +91,7 @@ export default class PlaylistPicker extends HTMLDivElement {
                             if (this.selectedDiv != null) this.selectedDiv.classList.remove("selected")
                             this.selectedDiv = div
                             this.step = 1
+                            this.shadowRoot.getElementById("next").disabled = false
                         }
                         this.shadowRoot.getElementById("plList").appendChild(div)
                     }
@@ -111,7 +113,7 @@ export default class PlaylistPicker extends HTMLDivElement {
                             this.changeloading(e.data.curItem / e.data.items)
                         }
                     }
-                })
+                }, { signal: this.controller.signal })
             }
             this.shadowRoot.getElementById("panelInfoBG").style.zIndex = "100"
             this.style.opacity = "1"

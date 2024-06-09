@@ -79,6 +79,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                             this.close()
                     }
                 }, { signal: this.controller.signal })
+                this.shadowRoot.getElementById("next").disabled = true
                 this.beginImport(platform)
                 this.errors = false;
                 this.songsToAdd = []
@@ -95,6 +96,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                          */
                         let pl = await plPicker.showDialog()
                         if (pl != null) {
+                            await Utils.player.pause()
                             this.step = 3
                             this.selectedPlaylistPicker = pl;
                             this.changeText("{playlistImporter.title}", "{playlistImporter.importing}");
@@ -130,6 +132,10 @@ export default class PlaylistImporter extends HTMLDivElement {
                 }
                 window.addEventListener("message", async (e) => {
                     if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcbdata") {
+                        if (e.data.cb == "error") {
+                            console.error(e.data.error)
+                            this.errors = true
+                        }
                         if (e.data.cb == "progressupdate") {
                             console.log("recevied items from " + platform)
                             for (let song of e.data.data.items) {
@@ -217,7 +223,6 @@ export default class PlaylistImporter extends HTMLDivElement {
                 this.changeText("{playlistImporter.title}", "{playlistImporter.choosePl}");
                 this.changeloading(false);
                 this.shadowRoot.getElementById("next").innerText = "{next}"
-                this.shadowRoot.getElementById("next").disabled = false
                 let json = JSON.parse(data)
                 json.forEach(pl => {
                     let div = document.createElement("div")
@@ -239,6 +244,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                         if (this.selectedDiv != null) this.selectedDiv.classList.remove("selected")
                         this.selectedDiv = div
                         this.step = 1
+                        this.shadowRoot.getElementById("next").disabled = false
                     }
                     this.shadowRoot.getElementById("plList").appendChild(div)
                 });

@@ -50,33 +50,44 @@ export default class TaskHandler {
         if (this.blockAdsContent == "") await this.addAdblock()
         Utils.app.remoteClient.registerIframeUrl(wt.url, `(async () => {\n`
             + this.blockAdsContent + `;\n
-            let func = async () => { var wtId = ` + wt.id + `; ` + wt.script.split("app://root").join(origin) + `}
+            var wtId = ` + wt.id + `; 
+            var wtUrl = "` + wt.url + `";
+            let func = async () => {
+                ` + wt.script.split("app://root").join(origin) + `;
+            }
             let retData = null;
             if("` + Utils.app.platform + `" == "Android") {
                 try {
                     retData = await func()
+                    parent.postMessage({message: 'callback', data: retData, id: wtId}, '` + origin + `')
                 }
                 catch(e) {
                     console.warn("Error when evaluating JS");
                     console.warn(e)
                     addEventListener("DOMContentLoaded", async () => {
                         retData = await func()
+                        parent.postMessage({message: 'callback', data: retData, id: wtId}, '` + origin + `')
                     })
                 }
             }
             else {
                 addEventListener("DOMContentLoaded", async () => {
                     retData = await func()
+                    parent.postMessage({message: 'callback', data: retData, id: wtId}, '` + origin + `')
                 })
+                try {
+                    retData = await func()
+                    parent.postMessage({message: 'callback', data: retData, id: wtId}, '` + origin + `')
+                }
+                catch(e) {
+                    console.warn("Error when evaluating JS");
+                    console.warn(e)
+                }
             }
             addEventListener('message', async (e) =>
                 {
                     if(e.origin.includes('` + origin + `'))
                     {
-                        if(e.data.message == 'js')
-                        {
-                            parent.postMessage({message: 'callback', data: retData ? retData : await func(), id: e.data.id}, '` + origin + `')
-                        }
                         if(e.data.message == 'execjs')
                         {
                             try {
@@ -91,35 +102,16 @@ export default class TaskHandler {
                     }
                 })
             })()`)
-        iframe.onload = async () => {
-            wt.callback(await TaskHandler.postJs(iframe, wt), wt.id)
-            if (!wt.stopTaskManually) this.switchTask(wt)
-            /* it is really needed ? (can fix bug with Deezer)
-            if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS" || Utils.app.platform == "Linux")) {
-                let increment = 0
-                var intv = setInterval(() => {
-                    //5.1s
-                    let mvmt = document.getElementById("win_mvmt")
-                    mvmt.style.height = mvmt.style.height == "35px" ? "36px" : "35px";
-                    if (increment >= 51) {
-                        clearInterval(intv)
-                    }
-                    increment++
-                }, 100);
-            } */
-        }
         iframe.allow = "encrypted-media"
-        /*iframe.style.width = "1920"
-        iframe.style.height = "1080"
-        iframe.width = "1920"
-        iframe.height = "1080"*/
         iframe.style.width = "100%"
         iframe.style.height = "100%"
         iframe.allowFullscreen = true
         if (wt.needDisplayNone && (Utils.app.platform == "Android" || Utils.app.platform == "iOS")) iframe.style.display = "none"
-        //iframe.sandbox.add('allow-scripts');
-        //iframe.sandbox.add('allow-same-origin');
         iframe.src = wt.url;
+        TaskHandler.postJs(iframe, wt).then((data) => {
+            wt.callback(data, wt.id)
+            if (!wt.stopTaskManually) this.switchTask(wt)
+        })
         document.getElementById("iframes").appendChild(iframe)
         this.wbs[0].push(wt);
         this.wbs[1].push(iframe);
@@ -130,15 +122,14 @@ export default class TaskHandler {
         let controller = new AbortController();
         return new Promise((resolve) => {
             window.addEventListener("message", (e) => {
-                //console.log(e)
                 if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.id == wt.id) {
                     if (e.data.message == "callback") {
+                        console.log("Task finished : " + wt.url)
                         controller.abort()
                         resolve(e.data.data)
                     }
                 }
             }, { signal: controller.signal })
-            iframe.contentWindow.postMessage({ message: "js", id: wt.id }, wt.url)
         })
     }
 

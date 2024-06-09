@@ -121,7 +121,7 @@
         "{set.general.clearCache.btn}": "Clear",
         "{set.general.clearCache.info}": "Useful if you run out of space",
         "{playlistImporter.title}": "Playlist importer",
-        "{playlistImporter.choosePl}": "Choose a playlist to import songs of it and copy these songs to one of your playlist on AyMusic. For some platforms, you must be logged to continue.",
+        "{playlistImporter.choosePl}": "Choose a playlist to import songs of it and copy these songs to one of your playlist on AyMusic. For some platforms, you must be logged to continue.\nWARNING: This can take a long time if you have a lot of songs in your playlist.\nYou will not be able to use AyMusic during this process and the music currently playing will be paused.",
         "{playlistImporter.wait}": "Please wait...",
         "{playlistImporter.importing}": "Importing",
         "{playlistImporter.importedSuccess}": "Success!",
