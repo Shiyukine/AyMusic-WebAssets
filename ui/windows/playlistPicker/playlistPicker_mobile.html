@@ -3,12 +3,16 @@
 </style>
 <div id="panelInfoBG" style="opacity: 0%;">
     <div id="panelInfo">
-        <svg height="100" width="100" id="svg" class="svg rotate">
-            <circle cx="50" cy="50" r="40" stroke="#428bca" stroke-width="6" fill="#0000" stroke-linecap="round" />
+        <p id="text">{playlistPicker.title}</p>
+        <p id="subtext">{playlistPicker.info}</p>
+        <div id="plList">
+        </div>
+        <svg height="46" width="46" id="svg" class="svg rotate">
+            <circle cx="23" cy="23" r="21" stroke="white" stroke-width="4" fill="#0000" stroke-linecap="round" />
         </svg>
-        <p id="text">Text</p>
-        <p id="subtext"></p>
         <div id="btnList">
+            <button id="cancel" class="negative">{cancel}</button>
+            <button id="next">{playlistPicker.choose}</button>
         </div>
         <div id="progressBar" class="progressBar hidden"></div>
     </div>

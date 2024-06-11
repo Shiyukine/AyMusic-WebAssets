@@ -150,7 +150,7 @@ export default class SettingsWindow extends HTMLDivElement {
                         btn2.innerText = "{set.music.rmAccount}"
                         btn2.onclick = async () => {
                             await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LogoutUrl"),
-                                await PlatformHandler.getPlatformUrl(platform, "LogoutUrlCallback"))
+                                await PlatformHandler.getPlatformUrl(platform, "LogoutUrlCallback"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
                             /*await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
                                 await PlatformHandler.getPlatformUrl(platform, "BaseUrl"))*/
                             Utils.newError("Information", "If the window has closed by itself, it means that you've been disconnected!")

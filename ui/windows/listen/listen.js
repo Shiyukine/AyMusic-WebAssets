@@ -99,7 +99,7 @@ export default class ListenWindow extends HTMLDivElement {
                     span.innerText = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
                     span.classList.add("link")
                     span.onclick = async function () {
-                        if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                        if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS") && Utils.queueManager.currentSong.imgUrl !== "localImg") {
                             Utils.musicViewer.changeView("si_" + Utils.queueManager.currentSong.singerID)
                         }
                     }
@@ -113,7 +113,8 @@ export default class ListenWindow extends HTMLDivElement {
                             span2.innerText = sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName
                             span2.classList.add("link")
                             span2.onclick = async function () {
-                                Utils.musicViewer.changeView("si_" + sing.singerID)
+                                if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS"))
+                                    Utils.musicViewer.changeView("si_" + sing.singerID)
                             }
                             this.shadowRoot.getElementById("music_artist").appendChild(span2)
                         }
@@ -371,7 +372,7 @@ export default class ListenWindow extends HTMLDivElement {
                         span.innerText = e.detail.aliasSongSingerName != "" ? e.detail.aliasSongSingerName : Utils.queueManager.currentSong.singerName
                         span.classList.add("link")
                         span.onclick = async function () {
-                            if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                            if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS") && Utils.queueManager.currentSong.imgUrl !== "localImg") {
                                 Utils.musicViewer.changeView("si_" + Utils.queueManager.currentSong.singerID)
                             }
                         }
@@ -385,7 +386,8 @@ export default class ListenWindow extends HTMLDivElement {
                                 span2.innerText = sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName
                                 span2.classList.add("link")
                                 span2.onclick = async function () {
-                                    Utils.musicViewer.changeView("si_" + sing.singerID)
+                                    if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS"))
+                                        Utils.musicViewer.changeView("si_" + sing.singerID)
                                 }
                                 this.shadowRoot.getElementById("music_artist").appendChild(span2)
                             }

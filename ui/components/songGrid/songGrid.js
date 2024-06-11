@@ -84,7 +84,7 @@ export default class SongGrid extends HTMLDivElement {
         span.innerText = this.song.aliasSingerName != null ? song.aliasSingerName : this.song.singerName
         span.classList.add("link")
         span.onclick = async function () {
-            if (song.imgUrl !== "localImg") {
+            if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS") && song.imgUrl !== "localImg") {
                 Utils.musicViewer.changeView("si_" + song.singerID)
             }
         }
@@ -98,7 +98,8 @@ export default class SongGrid extends HTMLDivElement {
                 span2.innerText = sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName
                 span2.classList.add("link")
                 span2.onclick = async function () {
-                    Utils.musicViewer.changeView("si_" + sing.singerID)
+                    if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS"))
+                        Utils.musicViewer.changeView("si_" + sing.singerID)
                 }
                 this.shadowRoot.getElementById("artist").appendChild(span2)
             }
