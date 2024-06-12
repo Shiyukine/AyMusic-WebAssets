@@ -113,6 +113,8 @@ async function main() {
                             })
                         let resp2 = await resp1.text()
                         console.log(resp1.headers.get("set-cookie"))*/
+                        if(${Utils.app.platform == "Android"}) boundobject.addInterceptAllWebRequest("https://consent.youtube.com/save")
+                        if(${Utils.app.platform == "Android"}) boundobject.addInterceptAllWebRequest("https://consent.youtube.com/")
                         console.log(window.boundobject.httpRequestPOST("https://consent.youtube.com/save", dataStr, "application/x-www-form-urlencoded"))
                         location.href = data["continue"]
                     }, 100)`)
