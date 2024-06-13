@@ -31,7 +31,6 @@ export default class GestureHandler {
                 isDown = true;
                 this.movedOk = false;
                 this.scrollBegin = (!isTopDown ? element.scrollTop : element.scrollLeft);
-                console.log(!isTopDown ? element.scrollTop : element.scrollLeft)
             }
         })
         var callbackMove = (e) => {
