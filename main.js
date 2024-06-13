@@ -104,15 +104,6 @@ async function main() {
                         })
                         dataStr = dataStr.slice(0, -1)
                         if(data["continue"]) alrE = true
-                        //document.querySelectorAll("form")[1].submit()
-                        /*let resp1 = await fetch("https://consent.youtube.com/save", { 
-                                method: "POST",
-                                credentials: 'include',
-                                mode: 'no-cors',
-                                body: new URLSearchParams(new FormData(document.querySelectorAll("form")[1]))
-                            })
-                        let resp2 = await resp1.text()
-                        console.log(resp1.headers.get("set-cookie"))*/
                         if(${Utils.app.platform == "Android"}) boundobject.addInterceptAllWebRequest("https://consent.youtube.com/save")
                         if(${Utils.app.platform == "Android"}) boundobject.addInterceptAllWebRequest("https://consent.youtube.com/")
                         console.log(window.boundobject.httpRequestPOST("https://consent.youtube.com/save", dataStr, "application/x-www-form-urlencoded"))
