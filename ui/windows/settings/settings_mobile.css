@@ -48,12 +48,12 @@ p {
 }
 
 #view {
-    margin-left: 25px;
-    margin-top: 25px;
+    margin-left: 15px;
+    margin-top: 15px;
     /* border-radius: 15px; */
     position: relative;
     overflow: auto;
-    height: calc(100% - 66px);
+    height: calc(100% - 55px);
     /* width: calc(100% - 50px); */
 }
 
@@ -80,7 +80,7 @@ p {
     background-color: rgb(59, 59, 59, 0.6);
     border-radius: 15px;
     padding-bottom: 0px;
-    margin-right: 25px;
+    margin-right: 15px;
     margin-top: 10px;
     padding-top: 10px;
 }

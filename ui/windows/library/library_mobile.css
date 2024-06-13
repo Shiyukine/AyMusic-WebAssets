@@ -59,7 +59,7 @@ p {
     margin-top: 25px;
     border-radius: 15px;
     position: relative;
-    height: calc(100% - 103px);
+    height: calc(100% - 38px);
 }
 
 .panel {
@@ -372,7 +372,7 @@ svg:hover {
 #libBack {
     float: left;
     margin-left: 15px;
-    margin-top: 4px;
+    margin-top: 5px;
     margin-right: 0px;
     width: 35px;
     height: 35px;

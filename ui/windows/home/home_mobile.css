@@ -11,8 +11,8 @@ h2 {
     padding-top: 50px;
     margin-right: 0px;
     border-radius: 15px;
-    padding-left: 20px;
-    height: calc(100% - 50px);
+    padding-left: 15px;
+    height: calc(100% - 33px);
 }
 
 #main {
@@ -31,7 +31,7 @@ h2 {
     padding: 20px;
     padding-bottom: 0px;
     /* padding-right: 0px; */
-    /* margin-right: 20px; */
+    margin-right: 15px;
 }
 
 .noSong {

@@ -9,6 +9,7 @@ export default class GestureHandler {
     noTransition = false;
     movedOk = false;
     curOverflowStyle = "";
+    scrollBegin = 0;
 
     /**
      * 
@@ -29,6 +30,8 @@ export default class GestureHandler {
                 element.ontransitionend = () => { };
                 isDown = true;
                 this.movedOk = false;
+                this.scrollBegin = (!isTopDown ? element.scrollTop : element.scrollLeft);
+                console.log(!isTopDown ? element.scrollTop : element.scrollLeft)
             }
         })
         var callbackMove = (e) => {
@@ -40,14 +43,14 @@ export default class GestureHandler {
                 var currentX = e.touches ? e.touches[0].pageX : e.pageX;
                 if (!isTopDown) {
                     let diff = mv.x - currentX
-                    if ((diff > ndiff || diff < -ndiff) || this.movedOk) {
+                    if (this.scrollBegin == (!isTopDown ? element.scrollTop : element.scrollLeft) && ((diff > ndiff || diff < -ndiff) || this.movedOk)) {
                         element.style.transform = "translateX(" + (diff * -1) + "px)"
                         this.movedOk = true;
                     }
                 }
                 else {
                     let diff = mv.y - currentY
-                    if ((diff > ndiff || diff < -ndiff) || this.movedOk) {
+                    if (this.scrollBegin == (!isTopDown ? element.scrollTop : element.scrollLeft) && ((diff > ndiff || diff < -ndiff) || this.movedOk)) {
                         element.style.transform = "translateY(" + (diff * -1) + "px)"
                         this.movedOk = true;
                     }
@@ -117,7 +120,8 @@ export default class GestureHandler {
             }
         }
         element.addEventListener("click", callbackStop, true)
-        window.addEventListener("pointerup", callbackStop, true)
+        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") element.addEventListener("touchend", callbackStop, true)
+        else window.addEventListener("pointerup", callbackStop, true)
         element.addEventListener("mouseleave", callbackStop, true)
     }
 

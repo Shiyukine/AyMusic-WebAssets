@@ -114,7 +114,8 @@ p {
     mask-image: linear-gradient(90deg, black, calc(100% - 10px), transparent);
 }
 
-.left p:hover {
+.left p:not(.nohover) .link:hover,
+.left p.link:hover {
     text-decoration: underline;
 }
 

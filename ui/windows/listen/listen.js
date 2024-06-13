@@ -341,20 +341,22 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                 })
                 let lastTime = /*await Utils.player.getCurrentTime()*/0;
-                setInterval(async () => {
-                    let cur = await Utils.player.getCurrentTime()
-                    if (cur != lastTime && await Utils.player.getDuration()) {
-                        Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
-                        Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
-                        await Utils.apiManager.doPostRequest({
-                            act: "updateUserInfo",
-                            curTime: cur,
-                            curMusic: Utils.libManager.userInfo.curMusic,
-                            curObject: Utils.libManager.userInfo.curObject
-                        })
-                        lastTime = cur
-                    }
-                }, 15000)
+                if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS")) {
+                    setInterval(async () => {
+                        let cur = await Utils.player.getCurrentTime()
+                        if (cur != lastTime && await Utils.player.getDuration()) {
+                            Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
+                            Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
+                            await Utils.apiManager.doPostRequest({
+                                act: "updateUserInfo",
+                                curTime: cur,
+                                curMusic: Utils.libManager.userInfo.curMusic,
+                                curObject: Utils.libManager.userInfo.curObject
+                            })
+                            lastTime = cur
+                        }
+                    }, 15000)
+                }
                 let mouseDownPb = false;
                 pb.onChanging(() => {
                     mouseDownPb = true;

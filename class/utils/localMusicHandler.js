@@ -105,12 +105,15 @@ export default class LocalMusicHandler {
                 // added actual account id to avoid conflict between users
                 allMusics.push([result + "_" + Utils.actualAccount.id, tags != null && tags.title != null ? tags.title : null, "localImg", tags.duration])
                 if (tags != null && tags.image != null) {
-                    var bytes = new Uint8Array(tags.image);
-                    var uwu = []
-                    for (let i = 0; i < bytes.byteLength; i++) {
-                        uwu.push(bytes[i])
+                    let imgD = tags.image
+                    if (Utils.app.platform == "Android") {
+                        var bytes = new Uint8Array(tags.image);
+                        imgD = []
+                        for (let i = 0; i < bytes.byteLength; i++) {
+                            imgD.push(bytes[i])
+                        }
                     }
-                    musicInfo.push([artist.id, album.id, tags.image])
+                    musicInfo.push([artist.id, album.id, imgD])
                 }
                 else musicInfo.push([artist.id, album.id, null])
                 counter++

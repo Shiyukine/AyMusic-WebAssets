@@ -112,7 +112,11 @@ export default class LyricsViewerWindow extends HTMLDivElement {
             }
             /**/
             TaskHandler.addTask("https://www.google.com/search?hl=en&q=" + (title + " " + artist + " lyrics").split(" ").join("+"), script, false, true, false, async (data) => {
-                this.shadowRoot.getElementById("lyrics").innerText = data
+                if (data instanceof Error) {
+                    console.error(data)
+                    this.shadowRoot.getElementById("lyrics").innerText = "{lv.noData}"
+                }
+                else this.shadowRoot.getElementById("lyrics").innerText = data
                 this.refreshing = false
                 /*if (data != "{lv.noData}") {
                         this.shadowRoot.getElementById("lyrics").innerText = data

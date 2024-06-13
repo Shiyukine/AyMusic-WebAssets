@@ -44,8 +44,33 @@ export default class ListenViewerWindow extends HTMLDivElement {
             }, { signal: this.controller.signal })
             Utils.player.onSongChange(async () => {
                 this.clearUrls()
-                shadow.getElementById("music_title").innerText = Utils.queueManager.currentSong.title
-                shadow.getElementById("music_artist").innerText = Utils.queueManager.currentSong.singerName
+                shadow.getElementById("music_title").innerText = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
+                shadow.getElementById("music_artist").innerText = ""
+                let span = document.createElement("span")
+                span.innerText = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+                span.classList.add("link")
+                span.onclick = async () => {
+                    if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                        history.back()
+                        this.goToMusicViewer = "si_" + Utils.queueManager.currentSong.singerID
+                    }
+                }
+                this.shadowRoot.getElementById("music_artist").appendChild(span)
+                if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
+                    for (let sing of Utils.queueManager.currentSong.additionalSingers) {
+                        let sep = document.createElement("span")
+                        sep.innerText = " • "
+                        this.shadowRoot.getElementById("music_artist").appendChild(sep)
+                        let span2 = document.createElement("span")
+                        span2.innerText = sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName
+                        span2.classList.add("link")
+                        span2.onclick = async () => {
+                            history.back()
+                            this.goToMusicViewer = "si_" + sing.singerID
+                        }
+                        this.shadowRoot.getElementById("music_artist").appendChild(span2)
+                    }
+                }
                 if (Utils.player.isLocalMusic) {
                     if (!this.shadowRoot.getElementById("music_title").classList.contains("nohover")) this.shadowRoot.getElementById("music_title").classList.add("nohover")
                     if (!this.shadowRoot.getElementById("music_artist").classList.contains("nohover")) this.shadowRoot.getElementById("music_artist").classList.add("nohover")
@@ -192,12 +217,6 @@ export default class ListenViewerWindow extends HTMLDivElement {
                     if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
                         history.back()
                         this.goToMusicViewer = "al_" + Utils.queueManager.currentSong.albumID
-                    }
-                }
-                shadow.getElementById("music_artist").onclick = () => {
-                    if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
-                        history.back()
-                        this.goToMusicViewer = "si_" + Utils.queueManager.currentSong.singerID
                     }
                 }
                 let lyrics = new LyricsViewerWindow()

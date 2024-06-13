@@ -65,15 +65,25 @@ export default class TaskHandler {
                     console.warn("Error when evaluating JS");
                     console.warn(e)
                     addEventListener("DOMContentLoaded", async () => {
-                        retData = await func()
-                        parent.postMessage({message: 'callback', data: retData, id: wtId}, '` + origin + `')
+                        try {
+                            retData = await func()
+                            parent.postMessage({message: 'callback', data: retData, id: wtId}, '` + origin + `')
+                        }
+                        catch(e) {
+                            parent.postMessage({message: 'callback', data: null, error: e, id: wtId}, '` + origin + `')
+                        }
                     })
                 }
             }
             else {
                 addEventListener("DOMContentLoaded", async () => {
-                    retData = await func()
-                    parent.postMessage({message: 'callback', data: retData, id: wtId}, '` + origin + `')
+                    try {
+                        retData = await func()
+                        parent.postMessage({message: 'callback', data: retData, id: wtId}, '` + origin + `')
+                    }
+                    catch(e) {
+                        parent.postMessage({message: 'callback', data: null, error: e, id: wtId}, '` + origin + `')
+                    }
                 })
                 try {
                     retData = await func()
@@ -111,6 +121,10 @@ export default class TaskHandler {
         TaskHandler.postJs(iframe, wt).then((data) => {
             wt.callback(data, wt.id)
             if (!wt.stopTaskManually) this.switchTask(wt)
+        }).catch((e) => {
+            wt.callback(e, wt.id)
+            // keep task when debugging
+            if (!wt.stopTaskManually || Utils.app.isRelease) this.switchTask(wt)
         })
         document.getElementById("iframes").appendChild(iframe)
         this.wbs[0].push(wt);
@@ -120,13 +134,14 @@ export default class TaskHandler {
 
     static postJs(iframe, wt) {
         let controller = new AbortController();
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             window.addEventListener("message", (e) => {
                 if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.id == wt.id) {
                     if (e.data.message == "callback") {
                         console.log("Task finished : " + wt.url)
                         controller.abort()
-                        resolve(e.data.data)
+                        if (e.data.error) reject(e.data.error)
+                        else resolve(e.data.data)
                     }
                 }
             }, { signal: controller.signal })
