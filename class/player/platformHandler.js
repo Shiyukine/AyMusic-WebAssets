@@ -4,6 +4,7 @@ import Utils from "../utils/utils.js";
 export default class PlatformHandler {
 
     static platforms = null;
+    static cachedPlatforms = null;
     static searchingTokenForPlatform = [];
     static origin = "app://Cache"
     static loadedByCache = false;
@@ -16,6 +17,7 @@ export default class PlatformHandler {
                     this.platforms = await result.json()
                     Utils.app.remoteClient.saveCache("servers.json", new TextEncoder("utf-8").encode(JSON.stringify(this.platforms)))
                     this.loadedByCache = false
+                    this.cachedPlatforms = null
                     resolve(this.platforms)
                 }).catch(async (e) => {
                     if (!this.loadedByCache) console.warn("Cannot fetch servers.json, trying to load from cache...", e)
@@ -23,12 +25,14 @@ export default class PlatformHandler {
                     fetch(this.origin + "/servers.json").then(async (rep) => {
                         let json = await rep.json()
                         this.loadedByCache = true
+                        this.cachedPlatforms = json
                         resolve(json)
                     }).catch((f) => {
                         console.error(f)
                         resolve(null)
                     })
                 })
+                if (this.loadedByCache) resolve(this.cachedPlatforms)
             }
             else {
                 resolve(this.platforms)
