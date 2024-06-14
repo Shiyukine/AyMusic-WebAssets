@@ -28,15 +28,17 @@ export default class LoginPanel extends HTMLDivElement {
     messID = "log_" + Date.now()
 
     #getIframeUrl = () => {
+        let jsctrl = new AbortController();
         return new Promise((resolve) => {
-            this.#iframe.contentWindow.postMessage({ message: "getURL", id: this.messID }, Utils.servURL)
             window.addEventListener("message", (e) => {
                 if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == this.messID) {
                     if (e.data.message == "callbackURL") {
+                        jsctrl.abort()
                         resolve(e.data.data)
                     }
                 }
-            }, { signal: this.controller.signal })
+            }, { signal: jsctrl.signal })
+            this.#iframe.contentWindow.postMessage({ message: "getURL", id: this.messID }, Utils.servURL)
         })
     }
 
@@ -67,9 +69,11 @@ export default class LoginPanel extends HTMLDivElement {
             let loaded = false;
             this.addScript()
             this.#iframe.onload = async () => {
+                this.messID = "log_" + Date.now() + (Math.random() + 1).toString(36).substring(7)
                 let url = await this.#getIframeUrl();
                 loaded = true;
                 if (url.includes("islogged.php")) {
+                    this.messID = "log2_" + Date.now() + (Math.random() + 1).toString(36).substring(7)
                     this.#iframe.contentWindow.postMessage({ message: "html", id: this.messID }, Utils.servURL)
                 }
                 if (url.includes("/login/index.php") && isForModification == "logout") {

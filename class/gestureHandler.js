@@ -10,6 +10,7 @@ export default class GestureHandler {
     movedOk = false;
     curOverflowStyle = "";
     scrollBegin = 0;
+    threshold = 50;
 
     /**
      * 
@@ -35,7 +36,7 @@ export default class GestureHandler {
         })
         var callbackMove = (e) => {
             let ndiff = 4
-            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") ndiff = 50
+            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") ndiff = 20
             element.parentElement.style.overflow = "hidden"
             if (isDown) {
                 var currentY = e.touches ? e.touches[0].pageY : e.pageY;
@@ -69,19 +70,19 @@ export default class GestureHandler {
             var currentX = e.changedTouches ? e.changedTouches[0].pageX : e.pageX;
             if (!isTopDown) {
                 let diff = mv.x - currentX
-                if (diff > 100) {
+                if (diff > this.threshold) {
                     this.#eventEl.dispatchEvent(new CustomEvent("right"));
                 }
-                if (diff < -100) {
+                if (diff < -this.threshold) {
                     this.#eventEl.dispatchEvent(new CustomEvent("left"));
                 }
             }
             else {
                 let diff = mv.y - currentY
-                if (diff > 100) {
+                if (diff > this.threshold) {
                     this.#eventEl.dispatchEvent(new CustomEvent("down"));
                 }
-                if (diff < -100) {
+                if (diff < -this.threshold) {
                     this.#eventEl.dispatchEvent(new CustomEvent("top"));
                 }
             }
@@ -101,15 +102,15 @@ export default class GestureHandler {
             element.style.transition = "transform .2s"
             if (!isTopDown) {
                 let diff = mv.x - currentX
-                if (diff > 100 && this.noTransition) diff += element.clientWidth
-                else if (diff < -100 && this.noTransition) diff -= element.clientWidth
+                if (diff > this.threshold && this.noTransition) diff += element.clientWidth
+                else if (diff < -this.threshold && this.noTransition) diff -= element.clientWidth
                 else diff = 0
                 element.style.transform = "translateX(" + (diff * -1) + "px)"
             }
             else {
                 let diff = mv.y - currentY
-                if (diff > 100 && this.noTransition) diff += element.clientHeight
-                else if (diff < -100 && this.noTransition) diff -= element.clientHeight
+                if (diff > this.threshold && this.noTransition) diff += element.clientHeight
+                else if (diff < -this.threshold && this.noTransition) diff -= element.clientHeight
                 else diff = 0
                 element.style.transform = "translateY(" + (diff * -1) + "px)"
             }

@@ -137,7 +137,8 @@ export default class MenuWindow extends HTMLDivElement {
             awindow.classList.add("loaded")
             menu.classList.add("activated")
             this.anWindow = { win: awindow, enum: newWindow, menu: menuId }
-            document.getElementById("curPageName").innerText = winName
+            if (document.getElementById("curPageName"))
+                document.getElementById("curPageName").innerText = winName
             return awindow
         }
         return this.anWindow.win
