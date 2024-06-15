@@ -123,7 +123,7 @@ export default class MenuWindow extends HTMLDivElement {
                 winName = "{settings}"
             }
             awindow.classList.add("aWindow")
-            if (Utils.app.platform == "Windows") awindow.classList.add("windows")
+            if (Utils.app.platform == "Windows" | Utils.app.platform == "Linux") awindow.classList.add("windows")
             if (this.anWindow) {
                 let thisW = this.anWindow.win
                 thisW.ontransitionend = () => {

@@ -25,20 +25,35 @@ export default class LoginPanel extends HTMLDivElement {
     isClosed = false;
     controller = new AbortController();
 
-    messID = "log_" + Date.now()
-
     #getIframeUrl = () => {
         let jsctrl = new AbortController();
+        let messID = "log_" + Date.now() + (Math.random() + 1).toString(36).substring(7)
         return new Promise((resolve) => {
             window.addEventListener("message", (e) => {
-                if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == this.messID) {
+                if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == messID) {
                     if (e.data.message == "callbackURL") {
                         jsctrl.abort()
                         resolve(e.data.data)
                     }
                 }
             }, { signal: jsctrl.signal })
-            this.#iframe.contentWindow.postMessage({ message: "getURL", id: this.messID }, Utils.servURL)
+            this.#iframe.contentWindow.postMessage({ message: "getURL", id: messID }, Utils.servURL)
+        })
+    }
+
+    #getIframeHtml = () => {
+        let jsctrl = new AbortController();
+        let messID = "log2_" + Date.now() + (Math.random() + 1).toString(36).substring(7)
+        return new Promise((resolve) => {
+            window.addEventListener("message", (e) => {
+                if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == messID) {
+                    if (e.data.message == "callbackHTML") {
+                        jsctrl.abort()
+                        resolve(e.data.data)
+                    }
+                }
+            }, { signal: jsctrl.signal })
+            this.#iframe.contentWindow.postMessage({ message: "html", id: messID }, Utils.servURL)
         })
     }
 
@@ -69,12 +84,28 @@ export default class LoginPanel extends HTMLDivElement {
             let loaded = false;
             this.addScript()
             this.#iframe.onload = async () => {
-                this.messID = "log_" + Date.now() + (Math.random() + 1).toString(36).substring(7)
                 let url = await this.#getIframeUrl();
                 loaded = true;
                 if (url.includes("islogged.php")) {
-                    this.messID = "log2_" + Date.now() + (Math.random() + 1).toString(36).substring(7)
-                    this.#iframe.contentWindow.postMessage({ message: "html", id: this.messID }, Utils.servURL)
+                    let data = await this.#getIframeHtml()
+                    let text = data.split("<br>").join("\n");
+                    let params = text.split("\n")
+                    let value = i => params[i].split(" = ")[1]
+                    Utils.actualAccount = {
+                        name: value(2),
+                        id: value(3),
+                        email: value(0),
+                        apiKey: value(7),
+                        avatarUrl: await ImageCacheHandler.getCacheForImageUrl(Utils.servURL + "account/" + value(3) + "/pp.gif", isForModification == "modify")
+                    }
+                    Utils.apiManager.refreshApiKey()
+                    console.log("Welcome " + Utils.actualAccount.id + " to AyMusic !")
+                    if (isForModification == "modify") {
+                        document.getElementById("menu_win").changeAccountAvatar()
+                        document.getElementById("menu_win").anWindow.win.changeAccount();
+                        this.#eventEl.dispatchEvent(new CustomEvent("changedinfos"));
+                    }
+                    this.close()
                 }
                 if (url.includes("/login/index.php") && isForModification == "logout") {
                     console.log(await Utils.app.remoteClient.removeCache("Image/"))
@@ -88,30 +119,6 @@ export default class LoginPanel extends HTMLDivElement {
                     this.style.opacity = "1"
                 }
             }
-            window.addEventListener("message", async (e) => {
-                if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == this.messID) {
-                    if (e.data.message == "callbackHTML") {
-                        let text = e.data.data.split("<br>").join("\n");
-                        let params = text.split("\n")
-                        let value = i => params[i].split(" = ")[1]
-                        Utils.actualAccount = {
-                            name: value(2),
-                            id: value(3),
-                            email: value(0),
-                            apiKey: value(7),
-                            avatarUrl: await ImageCacheHandler.getCacheForImageUrl(Utils.servURL + "account/" + value(3) + "/pp.gif", isForModification == "modify")
-                        }
-                        Utils.apiManager.refreshApiKey()
-                        console.log("Welcome " + Utils.actualAccount.id + " to AyMusic !")
-                        if (isForModification == "modify") {
-                            document.getElementById("menu_win").changeAccountAvatar()
-                            document.getElementById("menu_win").anWindow.win.changeAccount();
-                            this.#eventEl.dispatchEvent(new CustomEvent("changedinfos"));
-                        }
-                        this.close()
-                    }
-                }
-            }, { signal: this.controller.signal })
             setTimeout(() => {
                 if (!loaded && !this.isClosed) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
             }, 21500)

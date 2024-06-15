@@ -68,55 +68,57 @@ export default class GestureHandler {
             isDown = false;
             var currentY = e.changedTouches ? e.changedTouches[0].pageY : e.pageY;
             var currentX = e.changedTouches ? e.changedTouches[0].pageX : e.pageX;
-            if (!isTopDown) {
-                let diff = mv.x - currentX
-                if (diff > this.threshold) {
-                    this.#eventEl.dispatchEvent(new CustomEvent("right"));
-                }
-                if (diff < -this.threshold) {
-                    this.#eventEl.dispatchEvent(new CustomEvent("left"));
-                }
-            }
-            else {
-                let diff = mv.y - currentY
-                if (diff > this.threshold) {
-                    this.#eventEl.dispatchEvent(new CustomEvent("down"));
-                }
-                if (diff < -this.threshold) {
-                    this.#eventEl.dispatchEvent(new CustomEvent("top"));
-                }
-            }
-            element.ontransitionend = () => {
-                let count = 1
-                element.ontransitionend = () => {
-                    //this event is triggered 3 times here, so we want to handle the last of these event triggered
-                    if (count == 3) {
-                        element.parentElement.style.overflow = this.curOverflowStyle;
+            if (this.scrollBegin == (!isTopDown ? element.scrollTop : element.scrollLeft)) {
+                if (!isTopDown) {
+                    let diff = mv.x - currentX
+                    if (diff > this.threshold) {
+                        this.#eventEl.dispatchEvent(new CustomEvent("right"));
                     }
-                    count += 1
+                    if (diff < -this.threshold) {
+                        this.#eventEl.dispatchEvent(new CustomEvent("left"));
+                    }
                 }
-                if (this.noTransition) this.element.style.transition = "transform 0.0000001s"
-                element.style.transform = ""
-                this.noTransition = false
-            }
-            element.style.transition = "transform .2s"
-            if (!isTopDown) {
-                let diff = mv.x - currentX
-                if (diff > this.threshold && this.noTransition) diff += element.clientWidth
-                else if (diff < -this.threshold && this.noTransition) diff -= element.clientWidth
-                else diff = 0
-                element.style.transform = "translateX(" + (diff * -1) + "px)"
-            }
-            else {
-                let diff = mv.y - currentY
-                if (diff > this.threshold && this.noTransition) diff += element.clientHeight
-                else if (diff < -this.threshold && this.noTransition) diff -= element.clientHeight
-                else diff = 0
-                element.style.transform = "translateY(" + (diff * -1) + "px)"
-            }
-            if (this.movedOk) {
-                e.stopPropagation();
-                e.stopImmediatePropagation();
+                else {
+                    let diff = mv.y - currentY
+                    if (diff > this.threshold) {
+                        this.#eventEl.dispatchEvent(new CustomEvent("down"));
+                    }
+                    if (diff < -this.threshold) {
+                        this.#eventEl.dispatchEvent(new CustomEvent("top"));
+                    }
+                }
+                element.ontransitionend = () => {
+                    let count = 1
+                    element.ontransitionend = () => {
+                        //this event is triggered 3 times here, so we want to handle the last of these event triggered
+                        if (count == 3) {
+                            element.parentElement.style.overflow = this.curOverflowStyle;
+                        }
+                        count += 1
+                    }
+                    if (this.noTransition) this.element.style.transition = "transform 0.0000001s"
+                    element.style.transform = ""
+                    this.noTransition = false
+                }
+                element.style.transition = "transform .2s"
+                if (!isTopDown) {
+                    let diff = mv.x - currentX
+                    if (diff > this.threshold && this.noTransition) diff += element.clientWidth
+                    else if (diff < -this.threshold && this.noTransition) diff -= element.clientWidth
+                    else diff = 0
+                    element.style.transform = "translateX(" + (diff * -1) + "px)"
+                }
+                else {
+                    let diff = mv.y - currentY
+                    if (diff > this.threshold && this.noTransition) diff += element.clientHeight
+                    else if (diff < -this.threshold && this.noTransition) diff -= element.clientHeight
+                    else diff = 0
+                    element.style.transform = "translateY(" + (diff * -1) + "px)"
+                }
+                if (this.movedOk) {
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                }
             }
         }
         element.addEventListener("click", callbackStop, true)
