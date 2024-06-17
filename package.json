@@ -1,18 +1,5 @@
 {
-    "name": "aymusic",
-    "version": "0.1.0",
-    "description": "blabla",
-    "main": "index.js",
-    "author": "Shiyukine",
-    "license": "ISC",
-    "devDependencies": {
-        "@typescript-eslint/eslint-plugin": "^5.8.0",
-        "@typescript-eslint/parser": "^5.8.0",
-        "eslint": "^8.5.0",
-        "eslint-config-google": "^0.14.0"
-    },
-    "dependencies": {
-        "require": "^2.4.20",
-        "requirejs": "^2.3.6"
-    }
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
 }

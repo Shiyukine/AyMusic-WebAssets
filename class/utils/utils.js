@@ -1,12 +1,4 @@
-import Import from "../import.js";
-import infoPanel from "../../ui/components/infoPanel/infoPanel.js";
-import ApiManager from "../apiManager.js";
-import LibraryManager from "../libraryManager.js";
-import MenuWindow from "../../ui/windows/menu/menu.js";
-import App from "../app.js";
-import QueueManager from "../player/queueManager.js";
-import Player from "../player/player.js";
-import MusicViewerWindow from "../../ui/windows/musicViewer/musicViewer.js";
+import RemoteApp from "../remoteapp.js";
 
 export default class Utils {
     static useLocalServer = true
@@ -21,23 +13,9 @@ export default class Utils {
             apiKey: "",
         }
 
-    static app = new App();
+    static app = new RemoteApp();
 
-    static apiManager = new ApiManager();
-    static libManager = new LibraryManager();
-    static queueManager = new QueueManager();
-    static player = new Player();
-    static pathsData = []
-
-    /**
-     * @type {MenuWindow}
-     */
-    static menu = null;
-
-    /**
-     * @type {MusicViewerWindow}
-     */
-    static musicViewer = null
+    static pathsData = [];
 
     static delay(ms) {
         return new Promise(resolve => setTimeout(() => resolve(), ms))
@@ -61,17 +39,6 @@ export default class Utils {
                 resolve(svg)
             })
         })
-    }
-
-    static async newError(info, subText) {
-        console.error(info, "\n", subText)
-        let errPanel = new infoPanel(info, subText, [{
-            text: "OK", isPositive: true, onclick: () => {
-                errPanel.close()
-            }
-        }], false)
-        document.getElementById("main").appendChild(errPanel)
-        await errPanel.showDialog()
     }
 
     static currentMiniErrorID = -1

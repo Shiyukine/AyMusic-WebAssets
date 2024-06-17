@@ -1,61 +1,37 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport"
-        content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AyMusic</title>
-    <link id="main_style" rel="stylesheet" href="/main.css">
-    <script>
-        var app = null;
-        var newError = () => { };
-        var loaded = false;
-        var documentVisible = true;
-        var listeners = {
-            player: {
-                pause: () => { },
-                play: () => { },
-                next: () => { },
-                previous: () => { },
-                seek: (time) => { },
-                setVolume: (vol) => { },
-                disconnect: () => { }
-            },
-            showListenViewerWindow: () => { },
-            filePickerCallback: (urls) => { },
-            changeDocumentVisibility: (visible) => { },
-            httpRequestCallback: (data) => { },
-        }
-    </script>
-    <script src="/plugins/jsmediatags.js"></script>
-    <script src="/main.js" type="module"></script>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AyMusic</title>
+  <script>
+    var app = null;
+    var newError = () => { };
+    var loaded = false;
+    var documentVisible = true;
+    var listeners = {
+      player: {
+        pause: () => { },
+        play: () => { },
+        next: () => { },
+        previous: () => { },
+        seek: (time) => { },
+        setVolume: (vol) => { },
+        disconnect: () => { }
+      },
+      showListenViewerWindow: () => { },
+      filePickerCallback: (urls) => { },
+      changeDocumentVisibility: (visible) => { },
+      httpRequestCallback: (data) => { },
+    }
+  </script>
 </head>
 
-<body class="loading">
-    <div id="miniInfo" class="miniInfo">
-        <p id="miniInfoP"></p>
-    </div>
-    <div id="iframes" style="position: absolute; overflow: hidden; width: 100%; height: calc(100% - 36px); opacity: 0;">
-    </div>
-    <div id="bgImgContainer">
-        <div id="bgImg"></div>
-    </div>
-    <div id="main">
-        <div id="loadPanel">
-            <svg height="100" width="100" class="rotate">
-                <circle cx="50" cy="50" r="40" stroke="#428bca" stroke-width="6" fill="#0000" stroke-linecap="round" />
-            </svg>
-            <img src="/resources/icon.ico" id="main_icon" class="nohover">
-            <div id="main_logo">
-                <img src="resources/play2.png" class="nohover">
-                <img src="resources/aketsuky.png" class="nohover">
-            </div>
-            <!--<p class="center">If you see this text for a long moment, please report this bug to the Aketsuky™ Team.</p>-->
-            <p id="version_name"></p>
-        </div>
-    </div>
+<body>
+  <div id="root"></div>
 </body>
 
 </html>
