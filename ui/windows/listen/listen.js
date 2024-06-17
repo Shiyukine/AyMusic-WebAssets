@@ -15,6 +15,7 @@ import ProgressBar from "../../components/progressBar/progressBar.js";
 import ListenViewerWindow from "../listenViewer/listenViewer.js";
 import LyricsViewerWindow from "../lyricsViewer/lyricsViewer.js";
 import QueueViewerWindow from "../queueViewer/queueViewer.js";
+import SettingsWindow from "../settings/settings.js";
 
 export default class ListenWindow extends HTMLDivElement {
     fakeMetadata = {
@@ -577,8 +578,9 @@ export default class ListenWindow extends HTMLDivElement {
                     let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                     let errPanel = new InfoPanel("Not connected into " + platform, "You must be connected into " + platform + " to listen a music on this platform!\nIf you're sure to be connected into " + platform + ", please click on \"I'm connected!\".", [
                         {
-                            text: "OK", isPositive: true, onclick: () => {
+                            text: "Connect", isPositive: true, onclick: async () => {
                                 errPanel.close()
+                                await SettingsWindow.connectToPlatform(platform)
                             }
                         },
                         {

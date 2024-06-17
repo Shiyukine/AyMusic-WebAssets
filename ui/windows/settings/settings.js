@@ -139,9 +139,7 @@ export default class SettingsWindow extends HTMLDivElement {
                         btn1.classList.add("inline")
                         btn1.innerText = "{set.music.addAccount}"
                         btn1.onclick = async () => {
-                            await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
-                                await PlatformHandler.getPlatformUrl(platform, "BaseUrl"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
-                            Utils.newError("Information", "If the window has closed by itself, it means that you've been connected!")
+                            await SettingsWindow.connectToPlatform(platform)
                         }
                         div.appendChild(btn1)
                         let btn2 = document.createElement("p")
@@ -212,6 +210,12 @@ export default class SettingsWindow extends HTMLDivElement {
                 this.style.opacity = "1"
             }
         })
+    }
+
+    static async connectToPlatform(platform) {
+        await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
+            await PlatformHandler.getPlatformUrl(platform, "BaseUrl"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
+        Utils.newError("Information", "If the window has closed by itself, it means that you've been connected!")
     }
 
     changeView(newIndex) {
