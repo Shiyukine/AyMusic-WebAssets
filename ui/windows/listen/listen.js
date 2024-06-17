@@ -308,33 +308,35 @@ export default class ListenWindow extends HTMLDivElement {
                     if (!mouseDownPb) pb.changeValue(cur)
                     if (document.visibilityState == "visible")
                         shadow.getElementById("curTime").firstChild.textContent = Utils.msToTime(cur)
-                    if (!Utils.player.isLocalMusic) {
-                        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                        //this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                        //this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                        if (Utils.app.platform == "Android") {
-                            this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
-                                pR: 1,
-                                cur: cur,
-                                dur: pb.getMax()
-                            })
-                        }
-                    }
-                    else {
-                        if (Utils.app.platform != "Android") {
-                            navigator.mediaSession.setPositionState({
-                                playbackRate: 1,
-                                position: cur / 1000,
-                                duration: pb.getMax() / 1000
-                            });
+                    if (cur <= pb.getMax()) {
+                        if (!Utils.player.isLocalMusic) {
+                            let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                            //this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                            //this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
+                            if (Utils.app.platform == "Android") {
+                                this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
+                                    pR: 1,
+                                    cur: cur,
+                                    dur: pb.getMax()
+                                })
+                            }
                         }
                         else {
-                            let data = {
-                                pR: 1,
-                                cur: cur,
-                                dur: pb.getMax()
+                            if (Utils.app.platform != "Android") {
+                                navigator.mediaSession.setPositionState({
+                                    playbackRate: 1,
+                                    position: cur / 1000,
+                                    duration: pb.getMax() / 1000
+                                });
                             }
-                            Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR)
+                            else {
+                                let data = {
+                                    pR: 1,
+                                    cur: cur,
+                                    dur: pb.getMax()
+                                }
+                                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR)
+                            }
                         }
                     }
                     if ((cur - Utils.queueManager.currentSong.cropStart) >= 0 && (cur - Utils.queueManager.currentSong.cropStart) < 1000 && await Utils.player.getState()) {
