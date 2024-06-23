@@ -1,6 +1,6 @@
 import React from "react";
 import Loader from "./components/Loader.jsx";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import NoPage from "./pages/NoPage.jsx";

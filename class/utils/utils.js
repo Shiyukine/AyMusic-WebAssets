@@ -1,3 +1,4 @@
+import ApiManager from "../apiManager.js";
 import RemoteApp from "../remoteapp.js";
 
 export default class Utils {
@@ -14,31 +15,12 @@ export default class Utils {
         }
 
     static app = new RemoteApp();
+    static apiManager = new ApiManager();
 
     static pathsData = [];
 
     static delay(ms) {
         return new Promise(resolve => setTimeout(() => resolve(), ms))
-    }
-
-    static createSVGPath(pathName, color, click, size) {
-        return new Promise((resolve) => {
-            Import.getData("./resources/paths.json").then((data) => {
-                let paths = JSON.parse(data)
-                let path = paths[pathName]
-                let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-                svg.setAttributeNS(null, "viewBox", "0 0 24 24")
-                svg.setAttributeNS(null, "width", size)
-                svg.setAttributeNS(null, "height", size)
-                let sp = document.createElementNS("http://www.w3.org/2000/svg", "path")
-                sp.setAttributeNS(null, "d", path)
-                sp.setAttributeNS(null, "fill", color)
-                svg.addEventListener("touchstart", click);
-                svg.addEventListener("mousedown", click);
-                svg.appendChild(sp)
-                resolve(svg)
-            })
-        })
     }
 
     static currentMiniErrorID = -1
@@ -105,5 +87,38 @@ export default class Utils {
         }
         path.push('body[0]');
         return path.reverse().join('.');
+    }
+
+    static getOrigin() {
+        let origin = "app://root"
+        if (Utils.app.platform == "Android") origin = "https://myapp"
+        if (!Utils.app.isRelease) origin = "http://localhost:3000"
+        return origin
+    }
+
+    static async sendSWMessage(message) {
+        // This wraps the message posting/response in a promise, which will
+        // resolve if the response doesn't contain an error, and reject with
+        // the error if it does. If you'd prefer, it's possible to call
+        // controller.postMessage() and set up the onmessage handler
+        // independently of a promise, but this is a convenient wrapper.
+        return new Promise(function (resolve, reject) {
+            var messageChannel = new MessageChannel();
+            messageChannel.port1.onmessage = function (event) {
+                if (event.data.error) {
+                    reject(event.data.error);
+                } else {
+                    resolve(event.data);
+                }
+            };
+            // This sends the message data as well as transferring
+            // messageChannel.port2 to the service worker.
+            // The service worker can then use the transferred port to reply
+            // via postMessage(), which will in turn trigger the onmessage
+            // handler on messageChannel.port1.
+            // See
+            // https://html.spec.whatwg.org/multipage/workers.html#dom-worker-postmessage
+            navigator.serviceWorker.controller.postMessage(message, [messageChannel.port2]);
+        });
     }
 }

@@ -33,7 +33,7 @@ export default class RemoteApp {
     * @param {Boolean} isRelease Know if the package is in release state or not
     */
     async registerClient(platform, versionName, versionId, remoteClient, isRelease) {
-        if (!this.registered && this.haveCallback.toString() != "function () { }") {
+        if (!this.registered && this.haveCallback.toString() != "function () { }" && this.haveCallback.toString() != "function () {}") {
             this.registered = true;
             try {
                 //force change settings for mobile
