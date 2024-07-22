@@ -143,7 +143,7 @@ export default class ApiManager {
                                     logP.style.display = "none"
                                     document.getElementById("main").appendChild(logP);
                                     logP.notConnected = () => {
-                                        location.reload()
+                                        logP.style.display = ""
                                     }
                                     logP.logged = async () => {
                                         this.countFailed == 0
