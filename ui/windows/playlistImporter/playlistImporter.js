@@ -128,6 +128,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                     }
                 }
                 this.shadowRoot.getElementById("cancel").onclick = () => {
+                    TaskHandler.stopWebTaskManually(this.curTaskUrl, true)
                     history.back()
                 }
                 window.addEventListener("message", async (e) => {
@@ -137,7 +138,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                             this.errors = true
                         }
                         if (e.data.cb == "progressupdate") {
-                            console.log("recevied items from " + platform)
+                            console.log("received items from " + platform)
                             for (let song of e.data.data.items) {
                                 let songID = null
                                 for (let songDB of this.urlsExist) {
@@ -211,6 +212,7 @@ export default class PlaylistImporter extends HTMLDivElement {
         if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
             url = url.split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
         }
+        this.curTaskUrl = url;
         let script = await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "GetPlaylistsScript"))
         TaskHandler.addTask(url, script, false, true, false, async (data) => {
             if (data == "Error" && (await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {

@@ -94,7 +94,11 @@ async function main() {
                 //
                 // add all consent links here
                 Utils.app.remoteClient.registerIframeUrl("https://consent.google.com/", `setInterval(() => document.getElementsByClassName("saveButtonContainer")[0].children[0].submit(), 100)`)
-                Utils.app.remoteClient.registerIframeUrl("https://consent.youtube.com/", `let alrE = false; setInterval(async () => { 
+                if (Utils.app.platform == "Windows") {
+                    Utils.app.remoteClient.registerIframeUrl("https://consent.youtube.com/", `setInterval(() => document.querySelectorAll("form")[1].submit(), 100)`)
+                }
+                else if (Utils.app.platform == "Android") {
+                    Utils.app.remoteClient.registerIframeUrl("https://consent.youtube.com/", `let alrE = false; setInterval(async () => { 
                         if(alrE) return
                         let data = {}
                         let dataStr = ""
@@ -109,6 +113,7 @@ async function main() {
                         console.log(window.boundobject.httpRequestPOST("https://consent.youtube.com/save", dataStr, "application/x-www-form-urlencoded"))
                         location.href = data["continue"]
                     }, 100)`)
+                }
                 //
                 var cb = async () => {
                     if (Utils.app.platform == "Android") {
