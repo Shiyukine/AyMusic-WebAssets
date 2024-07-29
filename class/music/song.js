@@ -22,7 +22,7 @@ export default class Song {
     aliasSongSingerName = ""
     canBeLoaded = true
     singerUrl = ""
-    albumurl = ""
+    albumUrl = ""
     additionalSingers = []
 
     constructor(id, url, positionOrDate, title, imgUrl, time, isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, albumUrl, singerUrl, additionalSingers = [], aliasTitle = "", aliasSongSingerName = "", aliasSingerName = "") {

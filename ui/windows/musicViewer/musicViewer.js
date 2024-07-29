@@ -29,6 +29,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
     #eventEl = document.createElement("event");
     scrolls = {};
     lastOffsets = {};
+    offsetsSize = {};
 
     constructor() {
         super();
@@ -203,15 +204,16 @@ export default class MusicViewerWindow extends HTMLDivElement {
         })
     }
 
-    addList(title, isSong = true) {
+    addList(title, id, addEvent = true) {
         let h1 = document.createElement("h3")
         h1.innerText = title
         h1.classList.add("sublistTitle")
         this.shadowRoot.getElementById("list").appendChild(h1)
         let div = document.createElement("div")
         div.classList.add("sublist")
+        div.id = id
         this.shadowRoot.getElementById("list").appendChild(div)
-        if (isSong) this.addScrollEventForList(div)
+        if (addEvent) this.addScrollEventForList(id, div)
         return div
     }
 
@@ -249,11 +251,12 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     while (this.shadowRoot.getElementById("list").firstChild) {
                         this.shadowRoot.getElementById("list").removeChild(this.shadowRoot.getElementById("list").lastChild);
                     }
+                    this.offsetsSize = {};
                     this.shadowRoot.getElementById("title").innerText = info["playlistInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = "By " + info["playlistInfo"]["userID"]
                     let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico")
                     this.shadowRoot.getElementById("cover").src = iUrl
-                    let div = this.addList("Songs in this playlist:")
+                    let div = this.addList("Songs in this playlist:", "songs_list")
                     let songs = info["songs"]["songs"]
                     let counterSongNotLoaded = 0
                     let pl = new Playlist(info["playlistInfo"]["id"], info["playlistInfo"]["name"], info["playlistInfo"]["userID"], info["playlistInfo"]["desc"], info["playlistInfo"]["imgUrl"], info["playlistInfo"]["isPrivate"], info["playlistInfo"]["rank"])
@@ -261,13 +264,14 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     for (let i in songs) {
                         let obj = songs[i]
                         let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
-                        if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
-                        else counterSongNotLoaded++
+                        div.appendChild(new SongGrid(sng, pl))
+                        if (!sng.canBeLoaded) counterSongNotLoaded++
                     }
                     let total = parseInt(info["songs"]["total"])
                     while (div.children.length < total - counterSongNotLoaded) {
                         div.appendChild(new SongGrid(null, pl))
                     }
+                    this.offsetsSize[0] = { begin: 0, end: (50 - counterSongNotLoaded) * 70 }
                 })
             }
             if (objectID.startsWith("al_")) {
@@ -280,11 +284,12 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     while (this.shadowRoot.getElementById("list").firstChild) {
                         this.shadowRoot.getElementById("list").removeChild(this.shadowRoot.getElementById("list").lastChild);
                     }
+                    this.offsetsSize = {};
                     this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerHTML = "<span>By </span><span>" + info["albumInfo"]["singerID"] + "</span>"
                     let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico")
                     this.shadowRoot.getElementById("cover").src = iUrl
-                    let div = this.addList("Songs in this album added on AyMusic's database:")
+                    let div = this.addList("Songs in this album added on AyMusic's database:", "album_songs_list")
                     let songs = info["songs"]["songs"]
                     let counterSongNotLoaded = 0
                     let pl = new Album(info["albumInfo"]["id"], info["albumInfo"]["name"], info["albumInfo"]["singerID"], info["albumInfo"]["type"], info["albumInfo"]["imgUrl"])
@@ -312,13 +317,14 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     for (let i in songs) {
                         let obj = songs[i]
                         let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, pl.name, pl.id, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
-                        if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
-                        else counterSongNotLoaded++
+                        div.appendChild(new SongGrid(sng, pl))
+                        if (!sng.canBeLoaded) counterSongNotLoaded++
                     }
                     let total = parseInt(info["songs"]["total"])
                     while (div.children.length < total - counterSongNotLoaded) {
                         div.appendChild(new SongGrid(null, pl))
                     }
+                    this.offsetsSize[0] = { begin: 0, end: (50 - counterSongNotLoaded) * 70 }
                 })
             }
             if (objectID.startsWith("si_")) {
@@ -338,7 +344,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     this.shadowRoot.getElementById("subtitle").innerText = info["singerInfo"]["aliasName"] && info["singerInfo"]["aliasName"] != "" ? info["singerInfo"]["aliasName"] : "Artist"
                     let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico")
                     this.shadowRoot.getElementById("cover").src = iUrl
-                    let div = this.addList("Latest added song on AyMusic's database of this artist:")
+                    let div = this.addList("Latest added song on AyMusic's database of this artist:", "artist_songs_list", false)
                     let songs = info["songs"]
                     let pl = new Singer(info["singerInfo"]["id"], info["singerInfo"]["name"], info["singerInfo"]["imgUrl"], info["singerInfo"]["aliasName"], info["singerInfo"]["url"])
                     this.object = pl
@@ -347,7 +353,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                         let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                         if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
                     }
-                    let div2 = this.addList("Albums of this artist added on AyMusic's database:", false)
+                    let div2 = this.addList("Albums of this artist added on AyMusic's database:", "artist_albums_list", false)
                     let als = info["singerAlbums"]
                     for (let i in als) {
                         let obj = als[i]
@@ -445,37 +451,57 @@ export default class MusicViewerWindow extends HTMLDivElement {
         if (updateHistory) window.history.pushState({ where: "musicViewer", objId: objectID, panel: "main" }, "", "/index.html")
     }
 
-    addScrollEventForList(list) {
-        this.lastOffsets[list] = { last: 0, toRemove: -1 }
+    addScrollEventForList(listId, list) {
+        this.lastOffsets[listId] = { last: 0, toRemove: -1 }
         list.addEventListener("scroll", async (e) => {
-            let isScrollDown = this.scrolls[list] < list.scrollTop
-            let slice = 50 * 70
-            let offset = parseInt((list.scrollTop + (isScrollDown ? 15 : -15) * 70) / slice)
-            let realOffsetToRemove = (list.scrollTop + (isScrollDown ? -105 : 115) * 70) / slice
+            let isScrollDown = this.scrolls[listId] < this.shadowRoot.getElementById(listId).scrollTop
+            let offset = 0
+            let ioffset = this.shadowRoot.getElementById(listId).scrollTop + (isScrollDown ? this.shadowRoot.getElementById(listId).clientHeight + 70 * 2 : -70 * 2)
+            if (ioffset > this.offsetsSize[Object.keys(this.offsetsSize).length - 1].end) offset = parseInt(Object.keys(this.offsetsSize)[Object.keys(this.offsetsSize).length - 1]) + 1
+            else {
+                for (let i in this.offsetsSize) {
+                    if (this.offsetsSize[i].begin <= ioffset && this.offsetsSize[i].end >= ioffset) {
+                        offset = parseInt(i)
+                        break;
+                    }
+                }
+            }
+            let realOffsetToRemove = undefined
+            let irealOffsetToRemove = this.shadowRoot.getElementById(listId).scrollTop + (isScrollDown ? -70 * 3 : this.shadowRoot.getElementById(listId).clientHeight + 70 * 3)
+            if (irealOffsetToRemove > this.offsetsSize[Object.keys(this.offsetsSize).length - 1].end) realOffsetToRemove = parseInt(Object.keys(this.offsetsSize)[Object.keys(this.offsetsSize).length - 1]) + 1
+            else if (irealOffsetToRemove < 0) realOffsetToRemove = -1
+            else {
+                for (let i in this.offsetsSize) {
+                    if (this.offsetsSize[i].begin <= irealOffsetToRemove && this.offsetsSize[i].end >= irealOffsetToRemove) {
+                        realOffsetToRemove = parseInt(i)
+                        break;
+                    }
+                }
+            }
             let offsetToRemove = parseInt(realOffsetToRemove)
-            if (realOffsetToRemove >= 0) isScrollDown ? offsetToRemove++ : offsetToRemove--
-            if (this.lastOffsets[list].toRemove != offsetToRemove) {
-                this.lastOffsets[list].toRemove = offsetToRemove
-                let elToHide = list.children[(offsetToRemove) * 50]
+            if (realOffsetToRemove >= 0) isScrollDown ? offsetToRemove-- : offsetToRemove++
+            if (this.lastOffsets[listId].toRemove != offsetToRemove) {
+                this.lastOffsets[listId].toRemove = offsetToRemove
+                let elToHide = this.shadowRoot.getElementById(listId).children[(offsetToRemove) * 50]
                 if (elToHide) {
                     elToHide.changeRequested = false
                     for (let i = 0; i < 50; i++) {
                         /**
                          * @type {SongGrid}
                          */
-                        let el = list.children[(offsetToRemove) * 50 + i]
+                        let el = this.shadowRoot.getElementById(listId).children[(offsetToRemove) * 50 + i]
                         if (el) {
                             el.changeSong(null, true)
                         }
                     }
                 }
             }
-            if (this.lastOffsets[list].last != offset) {
-                this.lastOffsets[list].last = offset
+            if (this.lastOffsets[listId].last != offset) {
+                this.lastOffsets[listId].last = offset
                 /**
                  * @type {SongGrid}
                  */
-                let el = list.children[offset * 50]
+                let el = this.shadowRoot.getElementById(listId).children[offset * 50]
                 if (el && el.song === null && !el.changeRequested) {
                     el.changeRequested = true
                     if (this.fullObjId.startsWith("pl_")) {
@@ -486,14 +512,18 @@ export default class MusicViewerWindow extends HTMLDivElement {
                             offset: offset
                         }, (result) => {
                             let i = 0;
+                            let counterSongNotLoaded = 0
                             for (let obj of result["songs"]) {
                                 /**
                                  * @type {SongGrid}
                                  */
                                 let grid = list.children[offset * 50 + i]
-                                grid.changeSong(new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName))
+                                let song = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
+                                grid.changeSong(song)
+                                if (!song.canBeLoaded) counterSongNotLoaded++
                                 i++;
                             }
+                            this.offsetsSize[offset] = { begin: offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end + 1, end: (offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end) + (50 - counterSongNotLoaded) * 70 }
                         })
                     }
                     if (this.fullObjId.startsWith("al_")) {
@@ -503,19 +533,23 @@ export default class MusicViewerWindow extends HTMLDivElement {
                             offset: offset
                         }, (result) => {
                             let i = 0;
+                            let counterSongNotLoaded = 0
                             for (let obj of result["songs"]) {
                                 /**
                                  * @type {SongGrid}
                                  */
                                 let grid = list.children[offset * 50 + i]
-                                grid.changeSong(new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName))
+                                let song = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
+                                grid.changeSong(song)
+                                if (!song.canBeLoaded) counterSongNotLoaded++
                                 i++;
                             }
+                            this.offsetsSize[offset] = { begin: offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end + 1, end: (offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end) + (50 - counterSongNotLoaded) * 70 }
                         })
                     }
                 }
             }
-            this.scrolls[list] = list.scrollTop
+            this.scrolls[listId] = this.shadowRoot.getElementById(listId).scrollTop
         })
     }
 

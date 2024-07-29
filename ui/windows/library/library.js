@@ -32,6 +32,7 @@ export default class LibraryWindow extends HTMLDivElement {
 
     scrolls = {};
     lastOffsets = {};
+    offsetsSize = {};
 
     constructor() {
         super();
@@ -239,16 +240,20 @@ export default class LibraryWindow extends HTMLDivElement {
                                 while (songsList.firstChild) {
                                     songsList.removeChild(songsList.lastChild);
                                 }
+                                this.offsetsSize = {};
+                                let counterSongNotLoaded = 0
                                 let songs = result["songs"]
                                 for (let i in songs) {
                                     let obj = songs[i]
                                     let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                                     songsList.appendChild(new SongGrid(sng, pl, !sng.canBeLoaded))
+                                    if (!sng.canBeLoaded) counterSongNotLoaded++
                                 }
                                 let total = parseInt(result["total"])
                                 while (songsList.children.length < total) {
                                     songsList.appendChild(new SongGrid(null, pl))
                                 }
+                                this.offsetsSize[0] = { begin: 0, end: (50 - counterSongNotLoaded) * 70 }
                             })
                         }
                     }
@@ -278,6 +283,7 @@ export default class LibraryWindow extends HTMLDivElement {
                         while (objs.firstChild) {
                             objs.removeChild(objs.lastChild);
                         }
+                        this.offsetsSize = {};
                         let songs = result["songs"]
                         let counterSongNotLoaded = 0
                         for (let i in songs) {
@@ -285,11 +291,13 @@ export default class LibraryWindow extends HTMLDivElement {
                             let sng = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                             let grid = new SongGrid(sng, Utils.libManager.userLikedPl, !sng.canBeLoaded)
                             objs.appendChild(grid)
+                            if (!sng.canBeLoaded) counterSongNotLoaded++
                         }
                         let total = parseInt(result["total"])
                         while (objs.children.length < total) {
                             objs.appendChild(new SongGrid(null, Utils.libManager.userLikedPl))
                         }
+                        this.offsetsSize[0] = { begin: 0, end: (50 - counterSongNotLoaded) * 70 }
                     })
                 }
                 else {
@@ -429,11 +437,31 @@ export default class LibraryWindow extends HTMLDivElement {
         this.lastOffsets[listId] = { last: 0, toRemove: -1 }
         this.shadowRoot.getElementById(listId).addEventListener("scroll", async (e) => {
             let isScrollDown = this.scrolls[listId] < this.shadowRoot.getElementById(listId).scrollTop
-            let slice = 50 * 70
-            let offset = parseInt((this.shadowRoot.getElementById(listId).scrollTop + (isScrollDown ? 15 : -15) * 70) / slice)
-            let realOffsetToRemove = (this.shadowRoot.getElementById(listId).scrollTop + (isScrollDown ? -105 : 115) * 70) / slice
+            let offset = 0
+            let ioffset = this.shadowRoot.getElementById(listId).scrollTop + (isScrollDown ? this.shadowRoot.getElementById(listId).clientHeight + 70 * 2 : -70 * 2)
+            if (ioffset > this.offsetsSize[Object.keys(this.offsetsSize).length - 1].end) offset = parseInt(Object.keys(this.offsetsSize)[Object.keys(this.offsetsSize).length - 1]) + 1
+            else {
+                for (let i in this.offsetsSize) {
+                    if (this.offsetsSize[i].begin <= ioffset && this.offsetsSize[i].end >= ioffset) {
+                        offset = parseInt(i)
+                        break;
+                    }
+                }
+            }
+            let realOffsetToRemove = undefined
+            let irealOffsetToRemove = this.shadowRoot.getElementById(listId).scrollTop + (isScrollDown ? -70 * 3 : this.shadowRoot.getElementById(listId).clientHeight + 70 * 3)
+            if (irealOffsetToRemove > this.offsetsSize[Object.keys(this.offsetsSize).length - 1].end) realOffsetToRemove = parseInt(Object.keys(this.offsetsSize)[Object.keys(this.offsetsSize).length - 1]) + 1
+            else if (irealOffsetToRemove < 0) realOffsetToRemove = -1
+            else {
+                for (let i in this.offsetsSize) {
+                    if (this.offsetsSize[i].begin <= irealOffsetToRemove && this.offsetsSize[i].end >= irealOffsetToRemove) {
+                        realOffsetToRemove = parseInt(i)
+                        break;
+                    }
+                }
+            }
             let offsetToRemove = parseInt(realOffsetToRemove)
-            if (realOffsetToRemove >= 0) isScrollDown ? offsetToRemove++ : offsetToRemove--
+            if (realOffsetToRemove >= 0) isScrollDown ? offsetToRemove-- : offsetToRemove++
             if (this.lastOffsets[listId].toRemove != offsetToRemove) {
                 this.lastOffsets[listId].toRemove = offsetToRemove
                 let elToHide = this.shadowRoot.getElementById(listId).children[(offsetToRemove) * 50]
@@ -465,6 +493,7 @@ export default class LibraryWindow extends HTMLDivElement {
                         offset: offset
                     }, (result) => {
                         let i = 0;
+                        let counterSongNotLoaded = 0
                         for (let obj of result["songs"]) {
                             /**
                              * @type {SongGrid}
@@ -472,8 +501,10 @@ export default class LibraryWindow extends HTMLDivElement {
                             let grid = this.shadowRoot.getElementById(listId).children[offset * 50 + i]
                             let song = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                             grid.changeSong(song, !song.canBeLoaded)
+                            if (!song.canBeLoaded) counterSongNotLoaded++
                             i++;
                         }
+                        this.offsetsSize[offset] = { begin: offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end + 1, end: (offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end) + (50 - counterSongNotLoaded) * 70 }
                     })
                 }
             }
