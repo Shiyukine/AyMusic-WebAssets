@@ -272,6 +272,10 @@ export default class LibraryWindow extends HTMLDivElement {
                 if (newIndex > -1)
                     this.shadowRoot.getElementById("mylib_topbar").children[newIndex].classList.add("selected")
                 let objs = this.shadowRoot.getElementById("mylib_list")
+                let plObjs = this.shadowRoot.getElementById("playlist_songs")
+                while (plObjs.firstChild) {
+                    plObjs.removeChild(plObjs.lastChild);
+                }
                 if (newIndex == 0) {
                     Utils.apiManager.fetchAPI({
                         act: "getPlaylistSongs",
