@@ -32,9 +32,9 @@ export default class LibraryManager {
     #eventEl = document.createElement("event");
 
     refreshUserInfo(cb) {
-        try {
-            console.log("Refreshing user info")
-            Utils.apiManager.fetchAPIThenCache({ act: "getUserInfo" }, (info) => {
+        console.log("Refreshing user info")
+        Utils.apiManager.fetchAPIThenCache({ act: "getUserInfo" }, (info) => {
+            try {
                 this.userPlaylists = []
                 this.userInfo.curMusic = info["curMusic"]
                 this.userInfo.curTime = info["curTime"]
@@ -50,11 +50,11 @@ export default class LibraryManager {
                 this.userInfo.likedSongsPlId = info["likedSongsPlId"]
                 console.log("User info refreshed successfully")
                 cb()
-            })
-        }
-        catch (e) {
-            Utils.newError("Unable to get your account information", e)
-        }
+            }
+            catch (e) {
+                Utils.newError("Unable to get your account information", e)
+            }
+        })
     }
 
     async addPlaylist(name, desc, imgUrl, isPrivate) {

@@ -74,7 +74,7 @@ export default class ApiManager {
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 2000)
         this.doPostRequest(body, controller).then(rep => {
-            if (rep) {
+            if (rep && rep.success !== false) {
                 if (JSON.stringify(body) in this.cache) {
                     if (callback) callback(rep)
                     Utils.app.remoteClient.saveCache("API/" + this.cache[JSON.stringify(body)], new TextEncoder("utf-8").encode(JSON.stringify(rep)))
@@ -103,7 +103,9 @@ export default class ApiManager {
         //console.log("-> POST request : SENDING. Action : " + content.act)
         let start = Date.now();
         var newDico = {
-            apiKey: this.apiKey
+            apiKey: this.apiKey,
+            platform: Utils.app.platform,
+            version: Utils.app.versionId,
         }
         for (let i in content) {
             newDico[i] = content[i]

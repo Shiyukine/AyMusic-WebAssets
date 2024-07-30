@@ -35,7 +35,7 @@ export default class SingerGrid extends HTMLDivElement {
                 }, { signal: this.controller.signal });
                 this.addEventListener("mouseout", function () {
                     this.shadowRoot.getElementById("img").style.transform = "scale(1)"
-                    if (Utils.queueManager.currentObject != null && "si_" + singer.id != Utils.queueManager.currentObject.id) this.shadowRoot.getElementById("cache").style.opacity = "0"
+                    if (Utils.queueManager.currentObject == null || "si_" + singer.id != Utils.queueManager.currentObject.id) this.shadowRoot.getElementById("cache").style.opacity = "0"
                 }, { signal: this.controller.signal });
                 this.addEventListener("click", function () {
                     if (!this.shadowRoot.getElementById("svg").matches(':hover')) Utils.musicViewer.changeView("si_" + singer.id)
