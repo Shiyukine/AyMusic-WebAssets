@@ -367,7 +367,7 @@ export default class ListenWindow extends HTMLDivElement {
                 pb.onRelease(async () => {
                     mouseDownPb = false;
                     await Utils.player.seek(pb.getValue());
-                    this.updateDiscordRPC(pb, false)
+                    this.updateDiscordRPC(pb, !await Utils.player.getState())
                 })
                 Utils.musicViewer.onSongChange((e) => {
                     if (e.detail.objId.startsWith("so_") && Utils.queueManager.currentSong.id == e.detail.objId.replace("so_", "")) {
@@ -878,7 +878,7 @@ export default class ListenWindow extends HTMLDivElement {
                     details: "Listening " + (Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title),
                     state: "By " + (singer),
                     endTimestamp: Date.now() + ((Utils.queueManager.currentSong.cropEnd != -1 ? Utils.queueManager.currentSong.cropEnd : pb.getMax()) - pb.getValue()),
-                    largeImageKey: "icon",
+                    largeImageKey: "big_icon",
                     largeImageText: "AyMusic by Aketsuky",
                     smallImageKey: plat,
                     smallImageText: "Listening on " + platName,

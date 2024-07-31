@@ -12,7 +12,7 @@ import SingerGrid from "../../components/singerGrid/singerGrid.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
 
 export default class SearchWindow extends HTMLDivElement {
-    selectedServer = "icon";
+    selectedServer = "iconround";
     isClosed = false;
     controller = new AbortController();
     platformsBusy = []
@@ -192,7 +192,7 @@ export default class SearchWindow extends HTMLDivElement {
                 while (this.shadowRoot.getElementById("playlists").children.length > 0) {
                     this.shadowRoot.getElementById("playlists").removeChild(this.shadowRoot.getElementById("playlists").children[0])
                 }
-                if (this.selectedServer != "icon") {
+                if (this.selectedServer != "iconround") {
                     await this.searchForAPlatform(this.capitalizeFirstLetter(this.selectedServer))
                 }
                 else {
