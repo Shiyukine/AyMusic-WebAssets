@@ -147,7 +147,6 @@ export default class Player {
             if ((await PlatformHandler.getPlatformSettings(platform)).UseListenUrl) {
                 let urlsplit = (await PlatformHandler.getPlatformUrl(platform, "BaseSongUrl")).split("%id%")
                 let url2split = (await PlatformHandler.getPlatformUrl(platform, "ListenUrl")).split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
-                    .split("%client_token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
                     .split("%id%")
                 for (let spl in urlsplit) {
                     url = url.replace(urlsplit[spl], url2split[spl])

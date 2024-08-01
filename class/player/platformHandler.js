@@ -139,11 +139,7 @@ export default class PlatformHandler {
                     if (Utils.app.platform == "Android") {
                         var intv = setInterval(async () => {
                             if (Utils.app.remoteClient.getClientToken(platform)) {
-                                let ret = JSON.parse(Utils.app.remoteClient.getClientToken(platform))
-                                let auth = ret["auth"]
-                                let token = ret["client"]
-                                await PlatformHandler.setPlatformSetting(platform, "Token", auth)
-                                await PlatformHandler.setPlatformSetting(platform, "ClientToken", token)
+                                await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
                                 clearInterval(intv)
                                 TaskHandler.stopWebTaskManually(url, true)
                                 this.searchingTokenForPlatform.splice(this.searchingTokenForPlatform.indexOf(platform), 1)
@@ -156,11 +152,7 @@ export default class PlatformHandler {
                         TaskHandler.addTask(url, "", false, true, true, () => {
                             var intv = setInterval(async () => {
                                 if (Utils.app.remoteClient.getClientToken(platform)) {
-                                    let ret = JSON.parse(Utils.app.remoteClient.getClientToken(platform))
-                                    let auth = ret["auth"]
-                                    let token = ret["client"]
-                                    await PlatformHandler.setPlatformSetting(platform, "Token", auth)
-                                    await PlatformHandler.setPlatformSetting(platform, "ClientToken", token)
+                                    await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
                                     clearInterval(intv)
                                     TaskHandler.stopWebTaskManually(url, true)
                                     this.searchingTokenForPlatform.splice(this.searchingTokenForPlatform.indexOf(platform), 1)
