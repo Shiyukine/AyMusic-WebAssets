@@ -203,6 +203,7 @@ export default class LibraryWindow extends HTMLDivElement {
     async changeView(newIndex, updateHistory = true) {
         try {
             if (newIndex !== this.selectedIndex) {
+                this.translation.pause()
                 this.shadowRoot.getElementById("menu").children[this.selectedIndex].classList.remove("selected")
                 this.shadowRoot.getElementById("view").children[this.selectedIndex > 2 ? 2 : this.selectedIndex].classList.remove("selected")
                 this.shadowRoot.getElementById("menu").children[newIndex].classList.add("selected")
@@ -254,6 +255,7 @@ export default class LibraryWindow extends HTMLDivElement {
                                     songsList.appendChild(new SongGrid(null, pl))
                                 }
                                 this.offsetsSize[0] = { begin: 0, end: (50 - counterSongNotLoaded) * 70 }
+                                this.translation.resume()
                             })
                         }
                     }
@@ -261,12 +263,15 @@ export default class LibraryWindow extends HTMLDivElement {
                 if (updateHistory) window.history.pushState({ where: "library", index: newIndex }, "", "/index.html")
                 this.selectedIndex = newIndex
             }
-        } catch { }
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     async changeViewMyLib(newIndex) {
         try {
             if (newIndex !== this.selectedIndexMyLib) {
+                this.translation.pause()
                 if (this.selectedIndexMyLib > -1)
                     this.shadowRoot.getElementById("mylib_topbar").children[this.selectedIndexMyLib].classList.remove("selected")
                 if (newIndex > -1)
@@ -302,9 +307,10 @@ export default class LibraryWindow extends HTMLDivElement {
                             objs.appendChild(new SongGrid(null, Utils.libManager.userLikedPl))
                         }
                         this.offsetsSize[0] = { begin: 0, end: (50 - counterSongNotLoaded) * 70 }
+                        this.translation.resume()
                     })
                 }
-                else {
+                else if (newIndex > 0) {
                     Utils.apiManager.fetchAPI({
                         act: "getObjectsInPlaylist",
                         playlistID: Utils.libManager.userInfo.likedSongsPlId,
@@ -376,11 +382,14 @@ export default class LibraryWindow extends HTMLDivElement {
                                 objs.appendChild(new AlbumGrid(i))
                             }
                         }
+                        this.translation.resume()
                     })
                 }
             }
             this.selectedIndexMyLib = newIndex
-        } catch { }
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     close() {

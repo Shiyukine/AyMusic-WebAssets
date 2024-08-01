@@ -89,7 +89,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     shadow.getElementById("edit_cropS").innerText = Utils.msToTime(this.crops.start)
                 }
                 else
-                    Utils.showMiniError("mv_errcur", "Please play this song to do that.")
+                    Utils.showMiniError("mv_errcur", "Please play this song to do it.", true)
             }
             shadow.getElementById("edit_curT2").onclick = async () => {
                 if (this.object.id == Utils.queueManager.currentSong.id) {
@@ -97,7 +97,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     shadow.getElementById("edit_cropE").innerText = Utils.msToTime(this.crops.end)
                 }
                 else
-                    Utils.showMiniError("mv_errcur", "Please play this song to do that.")
+                    Utils.showMiniError("mv_errcur", "Please play this song to do it.", true)
             }
             shadow.getElementById("edit_resetT1").onclick = async () => {
                 if (this.object.id == Utils.queueManager.currentSong.id) {
@@ -105,7 +105,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     shadow.getElementById("edit_cropS").innerText = Utils.msToTime(this.crops.start)
                 }
                 else
-                    Utils.showMiniError("mv_errcur", "Please play this song to do that.")
+                    Utils.showMiniError("mv_errcur", "Please play this song to do it.", true)
             }
             shadow.getElementById("edit_resetT2").onclick = async () => {
                 if (this.object.id == Utils.queueManager.currentSong.id) {
@@ -113,7 +113,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     shadow.getElementById("edit_cropE").innerText = this.crops.end != -1 ? Utils.msToTime(this.crops.end) : "{mv.endOfSong}"
                 }
                 else
-                    Utils.showMiniError("mv_errcur", "Please play this song to do that.")
+                    Utils.showMiniError("mv_errcur", "Please play this song to do it.", true)
             }
             shadow.getElementById("edit_cancel").onclick = () => {
                 history.back()
@@ -236,6 +236,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
             this.shadowRoot.getElementById("edit").style.display = "none"
             this.shadowRoot.getElementById("edit_btn").style.display = "none"
             this.shadowRoot.getElementById("subtitle").onclick = () => { }
+            this.translation.pause()
             for (let el of this.shadowRoot.getElementById("editor").children) {
                 el.style.display = ""
             }
@@ -256,7 +257,8 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     this.shadowRoot.getElementById("subtitle").innerText = "By " + info["playlistInfo"]["userID"]
                     let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico")
                     this.shadowRoot.getElementById("cover").src = iUrl
-                    let div = this.addList("Songs in this playlist:", "songs_list")
+                    let div = this.addList("{mv.musicInPl}", "songs_list")
+                    this.translation.translateAll()
                     let songs = info["songs"]["songs"]
                     let counterSongNotLoaded = 0
                     let pl = new Playlist(info["playlistInfo"]["id"], info["playlistInfo"]["name"], info["playlistInfo"]["userID"], info["playlistInfo"]["desc"], info["playlistInfo"]["imgUrl"], info["playlistInfo"]["isPrivate"], info["playlistInfo"]["rank"])
@@ -272,6 +274,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                         div.appendChild(new SongGrid(null, pl))
                     }
                     this.offsetsSize[0] = { begin: 0, end: (50 - counterSongNotLoaded) * 70 }
+                    this.translation.resume()
                 })
             }
             if (objectID.startsWith("al_")) {
@@ -286,10 +289,11 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     }
                     this.offsetsSize = {};
                     this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
-                    this.shadowRoot.getElementById("subtitle").innerHTML = "<span>By </span><span>" + info["albumInfo"]["singerID"] + "</span>"
+                    this.shadowRoot.getElementById("subtitle").innerHTML = "<span>{mv.by}</span> <span>" + info["albumInfo"]["singerID"] + "</span>"
                     let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico")
                     this.shadowRoot.getElementById("cover").src = iUrl
-                    let div = this.addList("Songs in this album added on AyMusic's database:", "album_songs_list")
+                    let div = this.addList("{mv.songsInAlbum}", "album_songs_list")
+                    this.translation.translateAll()
                     let songs = info["songs"]["songs"]
                     let counterSongNotLoaded = 0
                     let pl = new Album(info["albumInfo"]["id"], info["albumInfo"]["name"], info["albumInfo"]["singerID"], info["albumInfo"]["type"], info["albumInfo"]["imgUrl"])
@@ -325,12 +329,14 @@ export default class MusicViewerWindow extends HTMLDivElement {
                         div.appendChild(new SongGrid(null, pl))
                     }
                     this.offsetsSize[0] = { begin: 0, end: (50 - counterSongNotLoaded) * 70 }
+                    this.translation.resume()
                 })
             }
             if (objectID.startsWith("si_")) {
                 this.shadowRoot.getElementById("edit_btn").style.display = ""
                 this.shadowRoot.getElementById("editTitle").innerText = "{mv.modifySinger}"
                 this.shadowRoot.getElementById("editHelp").innerText = "{mv.modifySingerHelp}"
+                this.translation.translateAll()
                 if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
                 Utils.apiManager.fetchAPI({
                     act: "getSingerInfo",
@@ -341,10 +347,12 @@ export default class MusicViewerWindow extends HTMLDivElement {
                         this.shadowRoot.getElementById("list").removeChild(this.shadowRoot.getElementById("list").lastChild);
                     }
                     this.shadowRoot.getElementById("title").innerText = info["singerInfo"]["name"]
-                    this.shadowRoot.getElementById("subtitle").innerText = info["singerInfo"]["aliasName"] && info["singerInfo"]["aliasName"] != "" ? info["singerInfo"]["aliasName"] : "Artist"
+                    this.shadowRoot.getElementById("subtitle").innerText = info["singerInfo"]["aliasName"] && info["singerInfo"]["aliasName"] != "" ? info["singerInfo"]["aliasName"] : "{mv.artistSimple}"
                     let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico")
                     this.shadowRoot.getElementById("cover").src = iUrl
-                    let div = this.addList("Latest added song on AyMusic's database of this artist:", "artist_songs_list", false)
+                    let div = this.addList("{mv.latestArtistSongs}", "artist_songs_list", false)
+                    let div2 = this.addList("{mv.albumsArtist}", "artist_albums_list", false)
+                    this.translation.translateAll()
                     let songs = info["songs"]
                     let pl = new Singer(info["singerInfo"]["id"], info["singerInfo"]["name"], info["singerInfo"]["imgUrl"], info["singerInfo"]["aliasName"], info["singerInfo"]["url"])
                     this.object = pl
@@ -353,7 +361,6 @@ export default class MusicViewerWindow extends HTMLDivElement {
                         let sng = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                         if (sng.canBeLoaded) div.appendChild(new SongGrid(sng, pl))
                     }
-                    let div2 = this.addList("Albums of this artist added on AyMusic's database:", "artist_albums_list", false)
                     let als = info["singerAlbums"]
                     for (let i in als) {
                         let obj = als[i]
@@ -369,12 +376,14 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     this.shadowRoot.getElementById("edit_inline1").style.display = "none"
                     this.shadowRoot.getElementById("edit_inline2").style.display = "none"
                     this.shadowRoot.getElementById("edit_inline3").style.display = "none"
+                    this.translation.resume()
                 })
             }
             if (objectID.startsWith("so_")) {
                 isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == "so_" + Utils.queueManager.currentObject.id && await Utils.player.getState()
                 this.shadowRoot.getElementById("editTitle").innerText = "{mv.modifySong}"
                 this.shadowRoot.getElementById("editHelp").innerText = "{mv.modifySongHelp}"
+                this.translation.translateAll()
                 if (this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.remove("nohover")
                 Utils.apiManager.fetchAPI({
                     act: "getSongInfo",
@@ -439,10 +448,11 @@ export default class MusicViewerWindow extends HTMLDivElement {
                         start: info["cropStart"],
                         end: info["cropEnd"]
                     }
-                    this.shadowRoot.getElementById("edit_cropS").innerText = Utils.msToTime(this.crops.start)
-                    this.shadowRoot.getElementById("edit_cropE").innerText = this.crops.end != -1 ? Utils.msToTime(this.crops.end) : "{mv.endOfSong}"
                     this.object = new Song(info["songID"], info["url"], info["dateAdded"], info["title"], info["imgUrl"], info["time"], info["isExplicit"], info["addedBy"], info["cropStart"], info["cropEnd"], info["singerID"], info["singerName"], info["albumName"], info["albumID"], info["aliasTitle"], info["aliasSongSingerName"])
                     this.fullObjId = this.fullObjId.split("so_").join("")
+                    this.translation.resume()
+                    this.shadowRoot.getElementById("edit_cropS").innerText = Utils.msToTime(this.crops.start)
+                    this.shadowRoot.getElementById("edit_cropE").innerText = this.crops.end != -1 ? Utils.msToTime(this.crops.end) : "{mv.endOfSong}"
                 })
             }
             this.shadowRoot.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])

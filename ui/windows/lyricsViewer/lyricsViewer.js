@@ -14,8 +14,7 @@ import TaskHandler from "../../../class/taskHandler.js";
 export default class LyricsViewerWindow extends HTMLDivElement {
     isClosed = true;
     refreshing = false;
-    currentArtistName = "";
-    currentTitle = "";
+    currendSongId = "";
 
     constructor() {
         super();
@@ -95,9 +94,8 @@ export default class LyricsViewerWindow extends HTMLDivElement {
     }
 
     async refresh() {
-        if (!this.isClosed && !this.refreshing && (this.currentArtistName != Utils.queueManager.currentSong.singerName || this.currentTitle != Utils.queueManager.currentSong.title)) {
-            this.currentArtistName = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
-            this.currentTitle = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
+        if (!this.isClosed && !this.refreshing && this.currendSongId != Utils.queueManager.currentSong.id.replace("so_", "")) {
+            this.currendSongId = Utils.queueManager.currentSong.id.replace("so_", "")
             this.refreshing = true
             this.shadowRoot.getElementById("lyrics").innerText = '{lv.fetching}'
             console.log("Refreshing lyricsViewer")
@@ -105,6 +103,7 @@ export default class LyricsViewerWindow extends HTMLDivElement {
             let title = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
             let artist = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
             title = title.split("(")[0]
+            if (artist.includes("Various Artists") && Utils.queueManager.currentSong.additionalSingers.length > 0) artist = Utils.queueManager.currentSong.additionalSingers[0].singerName
             artist = artist.split(",")[0].split("(")[0]
             if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                 title = encodeURIComponent(title)

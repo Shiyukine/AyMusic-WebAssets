@@ -78,7 +78,7 @@ export default class LoginPanel extends HTMLDivElement {
             }
             this.shadowRoot.getElementById("loginBG").onclick = () => {
                 if (isForModification == "modify") {
-                    this.close(false)
+                    history.back()
                 }
             }
             let loaded = false;
@@ -125,6 +125,8 @@ export default class LoginPanel extends HTMLDivElement {
             if (isForModification == "" || isForModification == "refresh") {
                 this.#iframe.src = Utils.servURL + "login/?inapp=1&" + (Utils.app.platform == "Android" ? "injectscript=1" : "") + "&date=" + Date.now().toString()
             }
+            //wait panel load
+            this.clientWidth
             if (isForModification == "modify") {
                 this.#iframe.src = Utils.servURL + "account/?inapp=1&date=" + Date.now().toString()
                 this.style.opacity = "1"

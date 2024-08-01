@@ -96,6 +96,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
     async refresh() {
         if (!this.isClosed) {
             console.log("Refreshing queueViewer")
+            if (this.translation) this.translation.pause()
             this.clearAll()
             var curI = Utils.queueManager.currentIndex
             for (let i in Utils.queueManager.allSongs) {
@@ -108,6 +109,7 @@ export default class QueueViewerWindow extends HTMLDivElement {
                     this.shadowRoot.getElementById("next").appendChild(new SongGrid(song, pl))
                 }
             }
+            if (this.translation) this.translation.resume()
             console.log("queueViewer refreshed")
         }
     }

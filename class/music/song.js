@@ -1,4 +1,5 @@
 import LocalMusicHandler from "../utils/localMusicHandler.js"
+import Singer from "./singer.js"
 
 export default class Song {
 
@@ -23,6 +24,9 @@ export default class Song {
     canBeLoaded = true
     singerUrl = ""
     albumUrl = ""
+    /**
+     * @type {Array<{aliasSingerName: String, singerID: String, singerImgUrl: String, singerName: String, singerUrl: String}>}
+     */
     additionalSingers = []
 
     constructor(id, url, positionOrDate, title, imgUrl, time, isExplicit, addedBy, cropStart, cropEnd, singerID, singerName, albumName, albumID, albumUrl, singerUrl, additionalSingers = [], aliasTitle = "", aliasSongSingerName = "", aliasSingerName = "") {

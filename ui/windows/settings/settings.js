@@ -114,7 +114,7 @@ export default class SettingsWindow extends HTMLDivElement {
                  */
                 var lp = null;
                 shadow.getElementById("acc_change").onclick = () => {
-                    if (lp) lp.close(false)
+                    if (lp && !lp.isClosed) lp.close(false)
                     lp = new LoginPanel("modify")
                     document.getElementById("main").appendChild(lp)
                     window.history.pushState({ where: "settings", showLog: true }, "", "/index.html")

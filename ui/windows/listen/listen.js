@@ -580,14 +580,19 @@ export default class ListenWindow extends HTMLDivElement {
                     let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                     let errPanel = new InfoPanel("Not connected into " + platform, "You must be connected into " + platform + " to listen a music on this platform!\nIf you're sure to be connected into " + platform + ", please click on \"I'm connected!\".", [
                         {
-                            text: "Connect", isPositive: true, onclick: async () => {
+                            text: "Close", isPositive: false, onclick: () => {
                                 errPanel.close()
-                                await SettingsWindow.connectToPlatform(platform)
                             }
                         },
                         {
                             text: "I'm connected!", isPositive: false, onclick: () => {
                                 location.reload()
+                            }
+                        },
+                        {
+                            text: "Connect", isPositive: true, onclick: async () => {
+                                errPanel.close()
+                                await SettingsWindow.connectToPlatform(platform)
                             }
                         }], false)
                     document.getElementById("main").appendChild(errPanel)
