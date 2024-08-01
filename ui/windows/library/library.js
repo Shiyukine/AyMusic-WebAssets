@@ -444,6 +444,7 @@ export default class LibraryWindow extends HTMLDivElement {
             this.shadowRoot.getElementById("pl_isPriv").style.backgroundColor = this.shadowRoot.getElementById("pl_isPriv").value == "1" ? "" : "gray"
         }
         this.modifyingPl = isForModification
+        this.translation.translateAll()
     }
 
     addScrollEventForList(listId) {

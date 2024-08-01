@@ -58,6 +58,7 @@ export default class PlatformHandler {
             UseListenUrl: true,
             ReplaceInSongUrl: null,
             Token: "",
+            ClientToken: "",
             FilterSearch: "",
             NeedDisplayNoneWhenSearching: true,
             NeedDisplayNoneWhenPlaying: true,
@@ -138,26 +139,34 @@ export default class PlatformHandler {
                     if (Utils.app.platform == "Android") {
                         var intv = setInterval(async () => {
                             if (Utils.app.remoteClient.getClientToken(platform)) {
-                                await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
+                                let ret = JSON.parse(Utils.app.remoteClient.getClientToken(platform))
+                                let auth = ret["auth"]
+                                let token = ret["client"]
+                                await PlatformHandler.setPlatformSetting(platform, "Token", auth)
+                                await PlatformHandler.setPlatformSetting(platform, "ClientToken", token)
                                 clearInterval(intv)
                                 TaskHandler.stopWebTaskManually(url, true)
                                 this.searchingTokenForPlatform.splice(this.searchingTokenForPlatform.indexOf(platform), 1)
                                 resolve()
                             }
-                        }, 1000)
+                        }, 100)
                         Utils.app.remoteClient.loadBackgroundWeb(url)
                     }
                     else {
                         TaskHandler.addTask(url, "", false, true, true, () => {
                             var intv = setInterval(async () => {
                                 if (Utils.app.remoteClient.getClientToken(platform)) {
-                                    await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
+                                    let ret = JSON.parse(Utils.app.remoteClient.getClientToken(platform))
+                                    let auth = ret["auth"]
+                                    let token = ret["client"]
+                                    await PlatformHandler.setPlatformSetting(platform, "Token", auth)
+                                    await PlatformHandler.setPlatformSetting(platform, "ClientToken", token)
                                     clearInterval(intv)
                                     TaskHandler.stopWebTaskManually(url, true)
                                     this.searchingTokenForPlatform.splice(this.searchingTokenForPlatform.indexOf(platform), 1)
                                     resolve()
                                 }
-                            }, 1000)
+                            }, 100)
                         })
                     }
                 })

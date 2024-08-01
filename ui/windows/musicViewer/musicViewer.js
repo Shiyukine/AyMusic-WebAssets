@@ -241,6 +241,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 el.style.display = ""
             }
             this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.libManager.isObjectIDIsInLikedSongs(this.fullObjId) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
+            this.shadowRoot.getElementById("editHelpBold").style.display = ""
             let isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id && Utils.player.state != null && await Utils.player.getState()
             if (objectID.startsWith("pl_")) {
                 if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
@@ -394,6 +395,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     }
                     this.shadowRoot.getElementById("edit").style.display = ""
                     if (info["imgUrl"] == "localImg") {
+                        this.shadowRoot.getElementById("editHelpBold").style.display = "none"
                         var imge = this.shadowRoot.getElementById("cover");
                         imge.onerror = () => {
                             imge.src = "/resources/icon.ico"

@@ -49,20 +49,22 @@
                 </div>
                 <div id="edit_inline2" class="inline">
                     <p>{mv.cropStart}</p>
-                    <button id="edit_resetT1">{mv.resetPos}</button>
-                    <button id="edit_curT1">{mv.usePosMini}</button>
                     <p id="edit_cropS">0:00:00</p>
+                    <button id="edit_curT1">{mv.usePos}</button>
+                    <p id="edit_resetT1" class="link inline">{mv.resetPos}</p>
                 </div>
                 <div id="edit_inline3" class="inline last">
                     <p>{mv.cropEnd}</p>
-                    <button id="edit_resetT2">{mv.resetPos}</button>
-                    <button id="edit_curT2">{mv.usePosMini}</button>
                     <p id="edit_cropE">0:00:00</p>
+                    <button id="edit_curT2">{mv.usePos}</button>
+                    <p id="edit_resetT2" class="link inline">{mv.resetPos}</p>
                 </div>
                 <br>
                 <br>
-                <button id="edit_save">{mv.save}</button>
-                <button id="edit_cancel">{mv.cancel}</button>
+                <div class="buttons last">
+                    <button id="edit_cancel" class="negative">{mv.cancel}</button>
+                    <button id="edit_save">{mv.save}</button>
+                </div>
             </div>
         </div>
         <div id="list">

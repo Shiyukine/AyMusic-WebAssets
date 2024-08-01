@@ -9,6 +9,10 @@ export default class Update {
     static infoPanel = null;
 
     static async searchUpdate(panelInfo) {
+        if (!Utils.app.isRelease) {
+            console.warn("Updates are disabled in debug mode")
+            return
+        }
         let curUpdate = 0
         let maxUpdate = 0
         return new Promise(resolve => {

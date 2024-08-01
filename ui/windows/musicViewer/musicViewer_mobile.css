@@ -294,3 +294,38 @@ button:disabled {
     overflow: auto;
     overflow-x: hidden;
 }
+
+.buttons {
+    float: right;
+}
+
+#editor {
+    margin-bottom: 0px;
+}
+
+#editor .link {
+    color: #67b7fd;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+#editor .link.inline {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 5px;
+}
+
+#editor .link:hover {
+    text-decoration: underline;
+}
+
+#edit_curT1,
+#edit_curT2 {
+    float: left;
+}
+
+button.negative {
+    border: none;
+    margin-top: 2px;
+    background-color: rgb(72 72 72);
+}
