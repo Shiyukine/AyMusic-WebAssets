@@ -115,8 +115,7 @@ export default class TaskHandler {
         iframe.allow = "encrypted-media"
         iframe.style.width = "100%"
         iframe.style.height = "100%"
-        iframe.allowFullscreen = true
-        if (wt.needDisplayNone && (Utils.app.platform == "Android" || Utils.app.platform == "iOS")) iframe.style.display = "none"
+        if (wt.needDisplayNone) iframe.style.display = "none"
         iframe.src = wt.url;
         TaskHandler.postJs(iframe, wt).then((data) => {
             wt.callback(data, wt.id)

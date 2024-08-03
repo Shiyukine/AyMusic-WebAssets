@@ -157,7 +157,7 @@ export default class Player {
                     url += "&volume=" + ((await PlatformHandler.getPlatformSettings(platform)).SmallVolumeInSongUrl ? this.volume / 100 : this.volume)
                 }
             }
-            var wtId = TaskHandler.addTask(url, await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => { }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying)
+            var wtId = TaskHandler.addTask(url, await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => { }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying.includes(Utils.app.platform))
             this.currentUrl = url
         }
         this.currentSongUrl = song.url
@@ -272,26 +272,28 @@ export default class Player {
     changeShuffle(activate) {
         console.log("changing shuffle")
         Utils.queueManager.shuffle = activate
-        if (Utils.queueManager.shuffle) {
-            Utils.queueManager.allSongs = Utils.queueManager.shuffleArray(Utils.queueManager.allSongs)
-        }
-        else {
-            for (let i = 0; i < Utils.queueManager.allSongsIds.length; i++) {
-                let id = Utils.queueManager.allSongsIds[i].song
-                let id2 = Utils.queueManager.allSongsIds[i].obj.split("_")[1]
-                for (let y = 0; y < Utils.queueManager.allSongs.length; y++) {
-                    if (Utils.queueManager.allSongs[y].song.id == id && Utils.queueManager.allSongs[y].obj.id == id2) {
-                        let temp = Utils.queueManager.allSongs[i]
-                        Utils.queueManager.allSongs[i] = Utils.queueManager.allSongs[y]
-                        Utils.queueManager.allSongs[y] = temp
+        if (Utils.queueManager.allSongs.length > 1) {
+            if (Utils.queueManager.shuffle) {
+                Utils.queueManager.allSongs = Utils.queueManager.shuffleArray(Utils.queueManager.allSongs)
+            }
+            else {
+                for (let i = 0; i < Utils.queueManager.allSongsIds.length; i++) {
+                    let id = Utils.queueManager.allSongsIds[i].song
+                    let id2 = Utils.queueManager.allSongsIds[i].obj.split("_")[1]
+                    for (let y = 0; y < Utils.queueManager.allSongs.length; y++) {
+                        if (Utils.queueManager.allSongs[y].song.id == id && Utils.queueManager.allSongs[y].obj.id == id2) {
+                            let temp = Utils.queueManager.allSongs[i]
+                            Utils.queueManager.allSongs[i] = Utils.queueManager.allSongs[y]
+                            Utils.queueManager.allSongs[y] = temp
+                        }
                     }
                 }
             }
-        }
-        for (let y = 0; y < Utils.queueManager.allSongs.length; y++) {
-            if (Utils.queueManager.allSongs[y].song.id == Utils.queueManager.currentSong.id
-                && Utils.queueManager.allSongsIds[y].obj == Utils.queueManager.currentObject.id) {
-                Utils.queueManager.currentIndex = y;
+            for (let y = 0; y < Utils.queueManager.allSongs.length; y++) {
+                if (Utils.queueManager.allSongs[y].song.id == Utils.queueManager.currentSong.id
+                    && Utils.queueManager.allSongsIds[y].obj == Utils.queueManager.currentObject.id) {
+                    Utils.queueManager.currentIndex = y;
+                }
             }
         }
         this.#eventEl.dispatchEvent(new CustomEvent("shufflechange"));
@@ -332,6 +334,9 @@ export default class Player {
                     else {
                         this.changeVolume(this.anVol)
                     }
+                }
+                else {
+                    TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "SetMute", mute))
                 }
             }
         }

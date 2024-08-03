@@ -60,8 +60,9 @@ export default class PlatformHandler {
             Token: "",
             ClientToken: "",
             FilterSearch: "",
-            NeedDisplayNoneWhenSearching: true,
-            NeedDisplayNoneWhenPlaying: true,
+            NeedDisplayNoneWhenSearching: ["Windows", "Android", "Linux"],
+            NeedDisplayNoneWhenPlaying: ["Windows", "Android", "Linux"],
+            NeedDisplayNoneWhenTokenRefresh: ["Windows", "Android", "Linux"],
             UseIncludeUrlFilter: true,
             NoMute: false,
             AddParamsInSongUrl: true,
@@ -135,7 +136,7 @@ export default class PlatformHandler {
             if (!this.searchingTokenForPlatform.includes(platform)) {
                 this.searchingTokenForPlatform.push(platform)
                 Utils.app.remoteClient.removeClientToken(platform)
-                PlatformHandler.getPlatformUrl(platform, "BaseUrl").then((url) => {
+                PlatformHandler.getPlatformUrl(platform, "BaseUrl").then(async (url) => {
                     if (Utils.app.platform == "Android") {
                         var intv = setInterval(async () => {
                             if (Utils.app.remoteClient.getClientToken(platform)) {
@@ -159,7 +160,7 @@ export default class PlatformHandler {
                                     resolve()
                                 }
                             }, 100)
-                        })
+                        }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenTokenRefresh.includes(Utils.app.platform))
                     }
                 })
             }

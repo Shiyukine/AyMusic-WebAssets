@@ -463,7 +463,7 @@ export default class SearchWindow extends HTMLDivElement {
                     Utils.newError("Unable to search on " + platform, e)
                 }
             }
-        }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenSearching)
+        }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenSearching.includes(Utils.app.platform))
     }
 
     disconnectedCallback() {
