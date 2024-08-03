@@ -215,7 +215,16 @@ export default class SettingsWindow extends HTMLDivElement {
     static async connectToPlatform(platform) {
         await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
             await PlatformHandler.getPlatformUrl(platform, "BaseUrl"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
-        Utils.newError("Information", "If the window has closed by itself, it means that you've been connected!")
+        let inf = new InfoPanel("Information", "If the window has closed by itself, it means that you've been connected! If so, click on the \"I'm connected!\" button and wait a bit.", [
+            { text: "Close", isPositive: false, onclick: async () => { inf.close() } },
+            {
+                text: "I'm connected!", isPositive: true, onclick: async () => {
+                    if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) Utils.player.needTokenChange()
+                    else Utils.player.playSong(Utils.queueManager.currentSong)
+                    inf.close()
+                }
+            }], false)
+        document.getElementById("main").appendChild(inf)
     }
 
     changeView(newIndex) {

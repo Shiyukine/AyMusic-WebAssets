@@ -120,7 +120,7 @@ export default class ListenWindow extends HTMLDivElement {
                             this.shadowRoot.getElementById("music_artist").appendChild(span2)
                         }
                     }
-                    document.title = shadow.getElementById("music_title").innerText + " • " + shadow.getElementById("music_artist").innerText.replace(" • ", ", ") + " - AyMusic"
+                    document.title = shadow.getElementById("music_title").innerText + " • " + shadow.getElementById("music_artist").innerText.split(" • ").join(", ") + " - AyMusic"
                     if (Utils.player.isLocalMusic) {
                         if (!this.shadowRoot.getElementById("music_title").classList.contains("nohover")) this.shadowRoot.getElementById("music_title").classList.add("nohover")
                         if (!this.shadowRoot.getElementById("music_artist").classList.contains("nohover")) this.shadowRoot.getElementById("music_artist").classList.add("nohover")
@@ -585,8 +585,10 @@ export default class ListenWindow extends HTMLDivElement {
                             }
                         },
                         {
-                            text: "I'm connected!", isPositive: false, onclick: () => {
-                                location.reload()
+                            text: "I'm connected!", isPositive: false, onclick: async () => {
+                                if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) Utils.player.needTokenChange()
+                                else Utils.player.playSong(Utils.queueManager.currentSong)
+                                errPanel.close()
                             }
                         },
                         {

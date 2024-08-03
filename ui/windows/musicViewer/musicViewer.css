@@ -25,8 +25,8 @@ h3 {
 
 #music {
     background-color: rgb(49, 49, 49, 0.8);
-    width: calc(100% - 300px);
-    height: 90%;
+    width: calc(100% - 230px);
+    height: calc(100% - 30px);
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -312,6 +312,7 @@ button.negative {
     text-decoration: underline;
 }
 
-#edit_curT1, #edit_curT2 {
+#edit_curT1,
+#edit_curT2 {
     float: left;
 }

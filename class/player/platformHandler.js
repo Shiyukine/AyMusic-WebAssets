@@ -135,6 +135,7 @@ export default class PlatformHandler {
         return new Promise((resolve, reject) => {
             if (!this.searchingTokenForPlatform.includes(platform)) {
                 this.searchingTokenForPlatform.push(platform)
+                TaskHandler.stopWebTaskManually(Utils.player.currentSongUrl, true)
                 Utils.app.remoteClient.removeClientToken(platform)
                 PlatformHandler.getPlatformUrl(platform, "BaseUrl").then(async (url) => {
                     if (Utils.app.platform == "Android") {

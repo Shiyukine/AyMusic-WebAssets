@@ -54,11 +54,12 @@ h3 {
     display: flex;
     margin: 18px;
     margin-top: 0px;
+    margin-bottom: 10px;
     overflow: hidden;
 }
 
 #bottom {
-    height: calc(100% - 65px);
+    height: calc(100% - 39px);
     padding-left: 18px;
     display: none;
 }

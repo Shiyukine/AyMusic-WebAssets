@@ -431,4 +431,8 @@ export default class Player {
             else return true
         }
     }
+
+    needTokenChange() {
+        this.#eventEl.dispatchEvent(new CustomEvent("needtokenchange"));
+    }
 }
