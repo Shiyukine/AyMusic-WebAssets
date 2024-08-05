@@ -98,7 +98,7 @@ export default class PlatformHandler {
     static async getPlatformOverrideResponses(platform) {
         var platforms = await this.searchPlatforms()
         if (platform && platforms) {
-            return platforms["Servers"][platform]["OverrideResponses"]
+            return platforms["Servers"][platform]["OverrideResponses"] ? platforms["Servers"][platform]["OverrideResponses"] : []
         }
         else return []
     }
