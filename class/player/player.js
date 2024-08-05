@@ -137,6 +137,7 @@ export default class Player {
             var platform = await PlatformHandler.getPlatformBySongUrl(song.url)
             this.currentPlatform = platform
             console.log("Platform: " + platform)
+            await Utils.app.remoteClient.registerOverrideResponse(JSON.stringify(await PlatformHandler.getPlatformOverrideResponses(platform)))
             if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform &&
                 (await PlatformHandler.getPlatformSettings(platform)).Token == "") {
                 console.log("Platform need refresh token")
