@@ -37,7 +37,7 @@ async function main() {
         if (!window.loaded) {
             window.loaded = true;
             try {
-                console.log("AyMusic client registered : " + Utils.app.platform + ", version : " + Utils.app.versionName + " (" + Utils.app.versionId + "), isRelease : " + Utils.app.isRelease);
+                console.log("AyMusic client registered: " + Utils.app.platform + ", version: " + Utils.app.versionName + " (" + Utils.app.versionId + "), isRelease: " + Utils.app.isRelease);
                 if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS") {
                     Window.setTopBarWindow();
                     Window.setDevToolLogger();
@@ -77,7 +77,7 @@ async function main() {
                 else
                     Utils.servURL = "https://192.168.0.33/";
                 await Utils.app.remoteClient.changeServURL(Utils.servURL)
-                console.log("Server URL : " + Utils.servURL);
+                console.log("Server URL: " + Utils.servURL);
                 //
                 await ImageCacheHandler.init()
                 //

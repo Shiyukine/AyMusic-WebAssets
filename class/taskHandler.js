@@ -32,11 +32,11 @@ export default class TaskHandler {
             else {
                 this.createTask(wt);
             }
-            console.log("Added new task. Url : " + url + ". Urgent : " + urgent + ". " + (this.wbs[0].length + this.waiting.length) + " remaining task");
+            console.log("Added new task. Url: " + url + ". Urgent: " + urgent + ". " + (this.wbs[0].length + this.waiting.length) + " remaining task");
         }
         else {
             this.waiting.push(wt);
-            console.log("Added new task in waiting list. Url : " + url + ". " + (this.wbs[0].length + this.waiting.length) + " remaining task");
+            console.log("Added new task in waiting list. Url: " + url + ". " + (this.wbs[0].length + this.waiting.length) + " remaining task");
         }
         return wt.id
     }
@@ -128,7 +128,7 @@ export default class TaskHandler {
         document.getElementById("iframes").appendChild(iframe)
         this.wbs[0].push(wt);
         this.wbs[1].push(iframe);
-        console.log("Task in process : " + wt.url);
+        console.log("Task in process: " + wt.url);
     }
 
     static postJs(iframe, wt) {
@@ -137,7 +137,7 @@ export default class TaskHandler {
             window.addEventListener("message", (e) => {
                 if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.id == wt.id) {
                     if (e.data.message == "callback") {
-                        console.log("Task finished : " + wt.url)
+                        console.log("Task finished: " + wt.url)
                         controller.abort()
                         if (e.data.error) reject(e.data.error)
                         else resolve(e.data.data)
@@ -210,14 +210,14 @@ export default class TaskHandler {
             document.getElementById("iframes").removeChild(this.wbs[1][this.wbs[0].indexOf(wt)])
             this.wbs[1].splice(this.wbs[0].indexOf(wt), 1)
             this.wbs[0].splice(this.wbs[0].indexOf(wt), 1)
-            console.log("Task url : " + wt.url + " has finished. " + (this.wbs[0].length + this.waiting.length) + " remaining task");
+            console.log("Task url: " + wt.url + " has finished. " + (this.wbs[0].length + this.waiting.length) + " remaining task");
         }
         //var b = this.wbs[0].length == 0;
         if (this.waiting.length > 0) {
             var nwt = this.waiting[0];
             this.createTask(nwt);
             this.waiting.splice(this.waiting.indexOf(nwt), 1);
-            console.log("Switched 1 task. Url of new task : " + nwt.url + ". " + (this.wbs[0].length + this.waiting.length) + " remaining task");
+            console.log("Switched 1 task. Url of new task: " + nwt.url + ". " + (this.wbs[0].length + this.waiting.length) + " remaining task");
         }
     }
 

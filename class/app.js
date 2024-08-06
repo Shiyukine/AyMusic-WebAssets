@@ -62,7 +62,7 @@ export default class App {
                     newS = JSON.parse(newS)
                     for (var x in this.settings) {
                         if (typeof newS[x] === "undefined") {
-                            console.warn("Adding settings which didn't exists : " + x)
+                            console.warn("Adding settings which didn't exists: " + x)
                             newS[x] = this.settings[x]
                         }
                     }
@@ -95,11 +95,11 @@ export default class App {
     changeSetting(settingName, value) {
         this.settings[settingName] = value
         this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
-        console.log("Setting : " + settingName + " is changed to : " + value)
+        console.log("Setting: " + settingName + " is changed to: " + value)
     }
 
     getSetting(settingName) {
-        console.log("Getting setting : " + settingName + ". Value : " + this.settings[settingName])
+        console.log("Getting setting: " + settingName + ". Value: " + this.settings[settingName])
         return this.settings[settingName]
     }
 
