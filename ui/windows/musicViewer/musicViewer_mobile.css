@@ -135,18 +135,17 @@ h3 {
 
 #list {
     position: relative;
-    height: calc(100% - 228px);
+    height: calc(100% - 211px);
     border-radius: 15px;
-    /* background-color: rgba(37, 37, 37, 0.5); */
-    /* margin: 10px; */
-    padding: 10px;
     overflow: auto;
     overflow-x: hidden;
 }
 
+#artist_albums_list {
+    margin-left: 5px;
+}
+
 .sublist {
-    /* background-color: rgba(19, 19, 19, 0.5); */
-    padding: 10px;
     border-radius: 15px;
     margin-bottom: 20px;
     display: flow-root;
@@ -286,7 +285,7 @@ button:disabled {
 #edit {
     /* overflow: auto; */
     position: relative;
-    height: calc(100% - 228px);
+    height: calc(100% - 211px);
     border-radius: 15px;
     /* background-color: rgba(37, 37, 37, 0.5); */
     /* margin: 10px; */

@@ -151,8 +151,8 @@ p {
 
 #btnList>.negative {
     border: none;
-    box-shadow: none;
     margin-top: 2px;
+    background-color: rgb(72 72 72);
 }
 
 #progressBar {

@@ -179,6 +179,7 @@ export default class SearchWindow extends HTMLDivElement {
             if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
             this.elementFocus = null
             this.shadowRoot.getElementById("suggest").style.display = "none"
+            this.shadowRoot.getElementById("tb_search").blur()
             if (this.platformsBusy.length == 0) {
                 while (this.shadowRoot.getElementById("songs").children.length > 0) {
                     this.shadowRoot.getElementById("songs").removeChild(this.shadowRoot.getElementById("songs").children[0])

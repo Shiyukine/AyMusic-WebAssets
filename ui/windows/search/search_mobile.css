@@ -16,7 +16,6 @@ h3 {
     background-color: rgb(56, 56, 56);
     border-radius: 22.5px;
     margin: 5px;
-    margin-left: 0px;
     width: 125px;
 }
 
@@ -24,6 +23,8 @@ h3 {
     border-radius: 15px;
     margin-left: 0px;
     float: right;
+    position: absolute;
+    margin-top: 3px;
 }
 
 #serv_ico {
@@ -61,16 +62,16 @@ h3 {
 
 #bottom {
     height: calc(100% - 65px);
-    padding-left: 18px;
-    padding-right: 18px;
     display: none;
     overflow-x: hidden;
 }
 
+#bottom>h3 {
+    margin-left: 10px;
+}
+
 .lists {
     border-radius: 15px;
-    background-color: rgba(26, 26, 26, 0.6);
-    padding: 7px;
     margin-bottom: 10px;
     display: flow-root;
 }
@@ -125,12 +126,7 @@ h3 {
 
 .sub .set {
     display: flow-root;
-    /* padding-right: 10px; */
-    padding-left: 10px;
-    /* margin-bottom: 7px; */
-    /* padding-bottom: 7px; */
     border-bottom: rgba(99, 99, 99, 0.6) solid 1px;
-    /* min-height: 33px; */
     overflow: scroll;
 }
 

@@ -34,8 +34,6 @@ h3 {
 #cur,
 #next {
     border-radius: 15px;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 8px;
     display: grid;
 }
 
