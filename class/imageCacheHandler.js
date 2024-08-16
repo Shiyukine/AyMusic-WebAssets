@@ -3,6 +3,7 @@ import Utils from "./utils/utils.js";
 export default class ImageCacheHandler {
     static cache = {}
     static origin = "app://Cache"
+    static tempCache = {}
 
     static async init() {
         try {
@@ -10,6 +11,15 @@ export default class ImageCacheHandler {
             let rep = await fetch(this.origin + "/Image/index")
             let json = await rep.json()
             this.cache = json
+            window.listeners.getFileData = (url) => {
+                if (url in ImageCacheHandler.tempCache) {
+                    let view = ImageCacheHandler.tempCache[url]
+                    delete ImageCacheHandler.tempCache[url]
+                    let ret = view.toString()
+                    return ret
+                }
+                else return "not found"
+            }
         }
         catch {
             Utils.app.remoteClient.saveCache("Image/index", new TextEncoder("utf-8").encode(JSON.stringify(this.cache)))
@@ -32,7 +42,8 @@ export default class ImageCacheHandler {
             let rep = await raw.arrayBuffer()
             if (Utils.app.platform == "Android") {
                 let view = new Uint8Array(rep)
-                Utils.app.remoteClient.saveCache("Image/" + rdm, view)
+                ImageCacheHandler.tempCache[url] = view
+                Utils.app.remoteClient.saveCacheV2("Image/" + rdm, url)
             }
             else await Utils.app.remoteClient.saveCache("Image/" + rdm, rep)
             this.cache[url] = [rdm, Date.now()]
