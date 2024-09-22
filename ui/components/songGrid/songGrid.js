@@ -209,21 +209,21 @@ export default class SongGrid extends HTMLDivElement {
                         cm.beforeShow = async () => {
                             cm.addElement("{wt.addQueue}", () => {
                                 //Utils.newError("Can't do this", "This feature will be added soon :)")
-                                Utils.queueManager.addToQueue(song)
+                                Utils.queueManager.addToQueue(this.song)
                             })
                             if (this.song.imgUrl !== "localImg") {
                                 cm.addElement("{lib.goArtist}", () => {
-                                    Utils.musicViewer.changeView("si_" + song.singerID)
+                                    Utils.musicViewer.changeView("si_" + this.song.singerID)
                                 })
                                 cm.addElement("{lib.goAlbum}", () => {
-                                    Utils.musicViewer.changeView("al_" + song.albumID)
+                                    Utils.musicViewer.changeView("al_" + this.song.albumID)
                                 })
                                 cm.addElement("{lib.openLink}", () => {
-                                    Utils.app.remoteClient.openLink(song.url)
+                                    Utils.app.remoteClient.openLink(this.song.url)
                                 })
                             }
                             cm.addElement("{lib.modifySong}", () => {
-                                Utils.musicViewer.changeView("so_" + song.id)
+                                Utils.musicViewer.changeView("so_" + this.song.id)
                             })
                             if (this.object != null && this.object.id != Utils.libManager.userInfo.likedSongsPlId && Utils.libManager.userPlaylists.includes(this.object)) {
                                 let result = await Utils.apiManager.doPostRequest({
@@ -231,15 +231,15 @@ export default class SongGrid extends HTMLDivElement {
                                     playlistID: this.object.id,
                                     orderByDesc: false
                                 })
-                                if (result.includes("so_" + song.id)) {
+                                if (result.includes("so_" + this.song.id)) {
                                     cm.addElement("{lib.removeFromPl}", () => {
-                                        Utils.libManager.removeSongFromAPlaylist(this.object.id, "so_" + song.id)
+                                        Utils.libManager.removeSongFromAPlaylist(this.object.id, "so_" + this.song.id)
                                         //this.parentElement.removeChild(this)
                                     })
                                 }
                             }
-                            cm.addElement(Utils.libManager.isSongIsInLikedSongs(song) ? "{lib.removeLikedSong}" : "{lib.addLikedSong}", () => {
-                                Utils.libManager.addOrRemoveSongLikedSongs(song)
+                            cm.addElement(Utils.libManager.isSongIsInLikedSongs(this.song) ? "{lib.removeLikedSong}" : "{lib.addLikedSong}", () => {
+                                Utils.libManager.addOrRemoveSongLikedSongs(this.song)
                             })
                             if (this.cm2 == null)
                                 this.cm2 = new ContextMenu()
@@ -250,7 +250,7 @@ export default class SongGrid extends HTMLDivElement {
                                     if (!pl.name.includes("{") && !pl.name.includes("}")) {
                                         havePl = true
                                         cm2.addElement(pl.name, () => {
-                                            Utils.libManager.addSongToAPlaylist(pl.id, "so_" + song.id)
+                                            Utils.libManager.addSongToAPlaylist(pl.id, "so_" + this.song.id)
                                         })
                                     }
                                 }
