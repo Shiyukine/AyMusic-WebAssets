@@ -338,6 +338,9 @@ export default class SongGrid extends HTMLDivElement {
             }
         }
         else {
+            if (song != null) {
+                this.style.height = ""
+            }
             if (this.song != null) {
                 this.shadowRoot.innerHTML = `<div></div>`
                 this.song = song;
