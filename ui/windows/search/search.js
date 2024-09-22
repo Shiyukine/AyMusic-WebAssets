@@ -313,6 +313,7 @@ export default class SearchWindow extends HTMLDivElement {
                 console.log("Platform need refresh token")
                 await PlatformHandler.refreshTokenForPlatform(platform)
                 console.log("Platform token refreshed")
+                this.platformsBusy.splice(this.platformsBusy.indexOf(platform), 1)
                 this.searchForAPlatform(server)
             }
             else {
@@ -451,12 +452,8 @@ export default class SearchWindow extends HTMLDivElement {
                         this.platformsBusy.splice(this.platformsBusy.indexOf(platform), 1)
                     }
                     else {
-                        /*for (let song of songsIDs.concat(nsongsID)) {
-                            if (!urlsExist.includes(song.url)) {
-                                songs.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
-                                song.albumName, song.albumType, song.albumImgUrl, song.singerName, song.singerImgUrl])
-                            }
-                        }*/
+                        this.platformsBusy.splice(this.platformsBusy.indexOf(platform), 1)
+                        Utils.newError("Unable to search on " + platform, "No songs returned")
                     }
                 }
                 catch (e) {
