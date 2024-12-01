@@ -70,6 +70,7 @@ export default class SongGrid extends HTMLDivElement {
         let b = this.object == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "pl_" + this.object.id && this.object.constructor == Playlist)
         b = b || this.object == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "al_" + this.object.id && this.object.constructor == Album)
         b = b || this.object == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == "si_" + this.object.id && this.object.constructor == Singer)
+        b = b || this.object == null || (Utils.queueManager.currentObject != null && Utils.queueManager.currentObject.id == this.object.id && this.object.constructor == Song)
         return Utils.queueManager.currentSong != null && this.song != null && Utils.queueManager.currentSong.id == this.song.id && b
     }
 
