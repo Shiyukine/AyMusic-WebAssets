@@ -118,10 +118,6 @@ export default class GetMusicTag {
     }
 
     getFileTitle(musicURL) {
-        let titleFile = musicURL.split("/")[musicURL.split("/").length - 1].split(".")[0]
-        if (Utils.app.platform == "Windows") titleFile = musicURL.split("\\")[musicURL.split("\\").length - 1].split(".")[0]
-        if (Utils.app.platform == "Linux") titleFile = musicURL.split("/")[musicURL.split("/").length - 1].split(".")[0]
-        if (Utils.app.platform == "Android") titleFile = musicURL.split("%2F")[musicURL.split("%2F").length - 1].split(".")[0]
-        return titleFile
+        return this.curBaseFileName.substring(0, this.curBaseFileName.length - this.getFileExtension().length - 1)
     }
 }

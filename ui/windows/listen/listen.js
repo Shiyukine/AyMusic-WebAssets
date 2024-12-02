@@ -179,6 +179,7 @@ export default class ListenWindow extends HTMLDivElement {
                                             { src: imge.src, sizes: '512x512', type: 'image/png' },
                                         ]
                                     }
+                                    Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
                                 }
                             }
                             let imgU = "app://data"
@@ -210,6 +211,7 @@ export default class ListenWindow extends HTMLDivElement {
                                         { src: "/resources/icon.ico", sizes: '512x512', type: 'image/png' },
                                     ]
                                 }
+                                Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
                             }
                         }
                     }
@@ -239,6 +241,7 @@ export default class ListenWindow extends HTMLDivElement {
                                     { src: Utils.queueManager.currentSong.imgUrl, sizes: '512x512', type: 'image/png' },
                                 ]
                             }
+                            Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
                         }
                     }
                     if (Utils.app.platform != "Android") {
@@ -257,7 +260,7 @@ export default class ListenWindow extends HTMLDivElement {
                         navigator.mediaSession.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime) });
                     }
                     else {
-                        Utils.app.remoteClient.sessionChangePlaying(false)
+                        if (!Utils.player.isLocalMusic) Utils.app.remoteClient.sessionChangePlaying(false)
                     }
                 })
                 let firstPlay = true
@@ -467,6 +470,15 @@ export default class ListenWindow extends HTMLDivElement {
                             dur: pb.getMax()
                         })
                     }
+                    else if (Utils.app.platform == "Android") {
+                        this.updateMediaSession("changeMediaMetadata", null, null)
+                        this.updateMediaSession("setActionHandler", null, null)
+                        this.updateMediaSession("changePositionState", null, {
+                            pR: 1,
+                            cur: cur,
+                            dur: pb.getMax()
+                        })
+                    }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
                     if (Utils.app.platform != "Android") {
                         navigator.mediaSession.playbackState = "playing";
@@ -483,6 +495,15 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
                         this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
+                            pR: 1,
+                            cur: cur,
+                            dur: pb.getMax()
+                        })
+                    }
+                    else if (Utils.app.platform == "Android") {
+                        this.updateMediaSession("changeMediaMetadata", null, null)
+                        this.updateMediaSession("setActionHandler", null, null)
+                        this.updateMediaSession("changePositionState", null, {
                             pR: 1,
                             cur: cur,
                             dur: pb.getMax()

@@ -219,8 +219,10 @@ export default class SettingsWindow extends HTMLDivElement {
             { text: "Close", isPositive: false, onclick: async () => { inf.close() } },
             {
                 text: "I'm connected!", isPositive: true, onclick: async () => {
-                    if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) Utils.player.needTokenChange()
-                    else Utils.player.playSong(Utils.queueManager.currentSong)
+                    if (await PlatformHandler.getPlatformBySongUrl(Utils.queueManager.currentSong.url) == platform) {
+                        if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) Utils.player.needTokenChange()
+                        else Utils.player.playSong(Utils.queueManager.currentSong)
+                    }
                     inf.close()
                 }
             }], false)

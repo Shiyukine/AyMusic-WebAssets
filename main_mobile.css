@@ -295,7 +295,6 @@ img:hover {
 .aWindow.home {
     background-color: rgba(32, 32, 32, 0.4);
     backdrop-filter: initial;
-    overflow: auto;
 }
 
 .resizeBar {
