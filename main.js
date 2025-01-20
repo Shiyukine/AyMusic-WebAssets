@@ -50,13 +50,13 @@ async function main() {
                 new ThemeColor(document.body)
                 window.addEventListener("popstate", (e) => {
                     if (!e.state) {
-                        console.warn("No state in popstate event !")
+                        console.warn("No state in popstate event!")
                         history.forward()
                     }
                 })
                 document.getElementById("version_name").innerText = Utils.app.versionName
                 if (window.forceRestart && Utils.app.isRelease) {
-                    let info = new InfoPanel("Warning after updating app", "The new version is installed ! But there is a problem.\n"
+                    let info = new InfoPanel("Warning after updating app", "The new version is installed! But there is a problem.\n"
                         + "For your security, please manually restart AyMusic.\n"
                         + "Please see https://github.com/castlabs/electron-releases/issues/165\nfor more information.", [{
                             text: "Close app", isPositive: true, onclick: () => {

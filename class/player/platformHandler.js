@@ -124,7 +124,7 @@ export default class PlatformHandler {
     }
 
     static getPlatformPath(platform) {
-        return Utils.servURL + "/dl/AyMusic/scripts/" + platform + "/"
+        return Utils.servURL + "dl/AyMusic/scripts/" + platform + "/"
     }
 
     static async getPlatformBySongUrl(url) {

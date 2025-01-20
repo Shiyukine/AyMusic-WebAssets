@@ -903,20 +903,28 @@ export default class ListenWindow extends HTMLDivElement {
                     singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
                 }
                 let out = {
-                    details: "Listening " + (Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title),
-                    state: "By " + (singer),
-                    endTimestamp: Date.now() + ((Utils.queueManager.currentSong.cropEnd != -1 ? Utils.queueManager.currentSong.cropEnd : pb.getMax()) - pb.getValue()),
-                    largeImageKey: "big_icon",
-                    largeImageText: "AyMusic by Aketsuky",
-                    smallImageKey: plat,
-                    smallImageText: "Listening on " + platName,
-                    instance: false,
+                    details: "" + (Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title),
+                    state: "" + (singer),
+                    name: "AyMusic",
+                    //endTimestamp: Date.now() + ((Utils.queueManager.currentSong.cropEnd != -1 ? Utils.queueManager.currentSong.cropEnd : pb.getMax()) - pb.getValue()),
+                    assets: {
+                        large_image: Utils.queueManager.currentSong.imgUrl != "localImg" ? Utils.queueManager.currentSong.imgUrl : "big_icon",
+                        large_text: "AyMusic by Aketsuky",
+                        small_image: plat,
+                        small_text: "Music from " + platName,
+                    },
+                    timestamps: {
+                        start: Date.now() + ((Utils.queueManager.currentSong.cropStart != -1 ? Utils.queueManager.currentSong.cropStart : 0) - pb.getValue()),
+                        end: Date.now() + ((Utils.queueManager.currentSong.cropEnd != -1 ? Utils.queueManager.currentSong.cropEnd : pb.getMax()) - pb.getValue())
+                    },
+                    type: 2,
+                    url: Utils.queueManager.currentSong.url
                 }
                 if (buttons.length > 0) out["buttons"] = buttons
                 Utils.app.remoteClient.discordRPC(out)
             }
             else {
-                Utils.app.remoteClient.discordRPC({})
+                Utils.app.remoteClient.discordRPC(null)
             }
         }
     }

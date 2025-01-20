@@ -8,11 +8,11 @@
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^5.8.0",
         "@typescript-eslint/parser": "^5.8.0",
-        "eslint": "^8.5.0",
+        "eslint": "^8.57.1",
         "eslint-config-google": "^0.14.0"
     },
     "dependencies": {
-        "require": "^2.4.20",
+        "require": "^0.4.4",
         "requirejs": "^2.3.6"
     }
 }
