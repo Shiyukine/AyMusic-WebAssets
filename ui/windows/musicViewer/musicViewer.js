@@ -213,7 +213,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
         div.classList.add("sublist")
         div.id = id
         this.shadowRoot.getElementById("list").appendChild(div)
-        if (addEvent) this.addScrollEventForList(id, div)
+        if (addEvent) this.addScrollEventForList("list", id)
         return div
     }
 
@@ -463,12 +463,12 @@ export default class MusicViewerWindow extends HTMLDivElement {
         if (updateHistory) window.history.pushState({ where: "musicViewer", objId: objectID, panel: "main" }, "", "/index.html")
     }
 
-    addScrollEventForList(listId, list) {
+    addScrollEventForList(parentElementId, listId) {
         this.lastOffsets[listId] = { last: 0, toRemove: -1 }
-        list.addEventListener("scroll", async (e) => {
-            let isScrollDown = this.scrolls[listId] < this.shadowRoot.getElementById(listId).scrollTop
+        this.shadowRoot.getElementById(parentElementId).addEventListener("scroll", async (e) => {
+            let isScrollDown = this.scrolls[parentElementId] < this.shadowRoot.getElementById(parentElementId).scrollTop
             let offset = 0
-            let ioffset = this.shadowRoot.getElementById(listId).scrollTop + (isScrollDown ? this.shadowRoot.getElementById(listId).clientHeight + 70 * 2 : -70 * 2)
+            let ioffset = this.shadowRoot.getElementById(parentElementId).scrollTop + this.shadowRoot.getElementById(listId).offsetTop + (isScrollDown ? this.shadowRoot.getElementById(parentElementId).clientHeight + 70 * 2 : -70 * 2)
             if (ioffset > this.offsetsSize[Object.keys(this.offsetsSize).length - 1].end) offset = parseInt(Object.keys(this.offsetsSize)[Object.keys(this.offsetsSize).length - 1]) + 1
             else {
                 for (let i in this.offsetsSize) {
@@ -479,7 +479,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 }
             }
             let realOffsetToRemove = undefined
-            let irealOffsetToRemove = this.shadowRoot.getElementById(listId).scrollTop + (isScrollDown ? -70 * 3 : this.shadowRoot.getElementById(listId).clientHeight + 70 * 3)
+            let irealOffsetToRemove = this.shadowRoot.getElementById(parentElementId).scrollTop + this.shadowRoot.getElementById(listId).offsetTop + (isScrollDown ? -70 * 3 : this.shadowRoot.getElementById(parentElementId).clientHeight + 70 * 3)
             if (irealOffsetToRemove > this.offsetsSize[Object.keys(this.offsetsSize).length - 1].end) realOffsetToRemove = parseInt(Object.keys(this.offsetsSize)[Object.keys(this.offsetsSize).length - 1]) + 1
             else if (irealOffsetToRemove < 0) realOffsetToRemove = -1
             else {
@@ -529,7 +529,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                                 /**
                                  * @type {SongGrid}
                                  */
-                                let grid = list.children[offset * 50 + i]
+                                let grid = this.shadowRoot.getElementById(listId).children[offset * 50 + i]
                                 let song = new Song(obj.musicID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                                 grid.changeSong(song)
                                 if (!song.canBeLoaded) counterSongNotLoaded++
@@ -550,7 +550,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                                 /**
                                  * @type {SongGrid}
                                  */
-                                let grid = list.children[offset * 50 + i]
+                                let grid = this.shadowRoot.getElementById(listId).children[offset * 50 + i]
                                 let song = new Song(obj.songID.replace("so_", ""), obj.url, obj.albumPosition, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName)
                                 grid.changeSong(song)
                                 if (!song.canBeLoaded) counterSongNotLoaded++
@@ -561,7 +561,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     }
                 }
             }
-            this.scrolls[listId] = this.shadowRoot.getElementById(listId).scrollTop
+            this.scrolls[parentElementId] = this.shadowRoot.getElementById(parentElementId).scrollTop
         })
     }
 

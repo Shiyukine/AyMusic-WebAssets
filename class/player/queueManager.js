@@ -168,7 +168,29 @@ export default class QueueManager {
      * @param {Song} song 
      */
     addToQueue(song) {
-        this.allSongs.splice(this.currentIndex + 1, 0, { song: song, obj: null });
+        this.allSongs.splice(this.currentIndex + 1, 0, { song: song, obj: song });
+        this.#eventEl.dispatchEvent(new CustomEvent("queuechange"));
+    }
+    
+    /**
+     * @param {Playlist} playlist
+     */
+    async addPlaylistToQueue(playlist) {
+        let result = await Utils.apiManager.doPostRequest({
+            act: "getPlaylistSongs",
+            playlistID: playlist.id,
+            orderByDesc: playlist.id == Utils.libManager.userInfo.likedSongsPlId ? true : false,
+            offset: -1
+        })
+        let songs = result["songs"]
+        for (let i in songs) {
+            let objs = songs[i]
+            let sng = new Song(objs.musicID.replace("so_", ""), objs.url, objs.dateAdded, objs.title, objs.imgUrl, objs.time, objs.isExplicit, objs.addedBy, objs.cropStart, objs.cropEnd, objs.singerID, objs.singerName, objs.albumName, objs.albumID, objs.albumUrl, objs.singerUrl, objs.additionalSingers, objs.aliasTitle, objs.aliasSongSingerName, objs.aliasSingerName)
+            if (sng.canBeLoaded) {
+                this.allSongs.push({ song: sng, obj: playlist })
+                this.allSongsIds.push({ song: sng.id, obj: "pl_" + playlist.id })
+            }
+        }
         this.#eventEl.dispatchEvent(new CustomEvent("queuechange"));
     }
 

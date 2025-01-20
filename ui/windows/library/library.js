@@ -111,7 +111,7 @@ export default class LibraryWindow extends HTMLDivElement {
                 var cm = new ContextMenu()
                 cm.beforeShow = () => {
                     cm.addElement("{wt.addQueue}", () => {
-                        Utils.newError("Not implemented", "Feature will be here soon !")
+                        Utils.queueManager.addPlaylistToQueue(this.selectedPl)
                     })
                     cm.addElement("{plInfo.edit}", () => {
                         this.changeView(1)
