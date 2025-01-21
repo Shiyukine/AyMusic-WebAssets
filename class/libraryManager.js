@@ -269,7 +269,7 @@ export default class LibraryManager {
      */
     async addOrRemoveSongLikedSongs(song) {
         if (LocalMusicHandler.isMusicInLocalLibrary(song.id)) {
-            var ip = new InfoPanel("Confirmation", "Do you want to remove this song ?", [{
+            var ip = new InfoPanel("Confirmation", "Do you want to remove this song?", [{
                 text: "Yes", isPositive: true, onclick: async () => {
                     await LocalMusicHandler.removeMusic(song.id)
                     await Utils.libManager.removeObjFromLikedSongs("so_" + song.id)
@@ -294,7 +294,7 @@ export default class LibraryManager {
                 console.log("added song")
             }
             else {
-                Utils.newError("Unable to add this music !", "Please import this local music to continue.");
+                Utils.newError("Unable to add this music!", "Please import this local music to continue.");
             }
         }
     }

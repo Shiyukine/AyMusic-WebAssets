@@ -152,7 +152,7 @@ export default class PlaylistPicker extends HTMLDivElement {
             if (subtext != null) this.#subtextEl.innerHTML = subtext.toString().split("\n").join("<br>");
         }
         catch {
-            console.error("PlaylistPicker not initialized !")
+            console.error("PlaylistPicker not initialized!")
         }
     }
 
@@ -181,7 +181,7 @@ export default class PlaylistPicker extends HTMLDivElement {
             }
         }
         catch {
-            console.error("PlaylistPicker not initialized !")
+            console.error("PlaylistPicker not initialized!")
         }
     }
 
@@ -193,7 +193,7 @@ export default class PlaylistPicker extends HTMLDivElement {
                 document.getElementById("menu_win").style.zIndex = ""
         }
         catch {
-            console.error("PlaylistPicker not initialized !")
+            console.error("PlaylistPicker not initialized!")
         }
     }
 

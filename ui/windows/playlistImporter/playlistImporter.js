@@ -274,7 +274,7 @@ export default class PlaylistImporter extends HTMLDivElement {
             if (subtext != null) this.#subtextEl.innerHTML = subtext.toString().split("\n").join("<br>");
         }
         catch {
-            console.error("PlaylistImporter not initialized !")
+            console.error("PlaylistImporter not initialized!")
         }
     }
 
@@ -303,7 +303,7 @@ export default class PlaylistImporter extends HTMLDivElement {
             }
         }
         catch {
-            console.error("PlaylistImporter not initialized !")
+            console.error("PlaylistImporter not initialized!")
         }
     }
 
@@ -315,7 +315,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                 document.getElementById("menu_win").style.zIndex = ""
         }
         catch {
-            console.error("PlaylistImporter not initialized !")
+            console.error("PlaylistImporter not initialized!")
         }
     }
 

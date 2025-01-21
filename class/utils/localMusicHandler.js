@@ -143,7 +143,7 @@ export default class LocalMusicHandler {
                         }
                         if (isOk) {
                             LocalMusicHandler.setLocalLibrary()
-                            let ip = new InfoPanel("Success", "Song added to liked songs !", [{
+                            let ip = new InfoPanel("Success", "Song added to liked songs!", [{
                                 text: "OK", isPositive: true, onclick: () => {
                                     ip.close()
                                 }

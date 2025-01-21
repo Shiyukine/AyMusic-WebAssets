@@ -87,7 +87,7 @@ export default class InfoPanel extends HTMLDivElement {
             if (subtext != null) this.#subtextEl.innerHTML = subtext.toString().split("\n").join("<br>");
         }
         catch {
-            console.error("Info panel not initialized !")
+            console.error("Info panel not initialized!")
         }
     }
 
@@ -113,7 +113,7 @@ export default class InfoPanel extends HTMLDivElement {
             }
         }
         catch {
-            console.error("Info panel not initialized !")
+            console.error("Info panel not initialized!")
         }
     }
 
@@ -125,7 +125,7 @@ export default class InfoPanel extends HTMLDivElement {
                 document.getElementById("menu_win").style.zIndex = ""
         }
         catch {
-            console.error("Info panel not initialized !")
+            console.error("Info panel not initialized!")
         }
     }
 

@@ -105,7 +105,7 @@ export default class LibraryWindow extends HTMLDivElement {
                         }
                     }
                     else {
-                        Utils.newError("Can't create a playlist", "Please put a name to this playlist !")
+                        Utils.newError("Can't create a playlist", "Please put a name to this playlist!")
                     }
                 }
                 var cm = new ContextMenu()
@@ -118,8 +118,8 @@ export default class LibraryWindow extends HTMLDivElement {
                         this.prepareCreateModifPanel(true)
                     })
                     cm.addElement("{plInfo.remove}", async () => {
-                        var confirm = new InfoPanel("Delete this playlist ?",
-                            "Are you sure to delete this playlist ?\nYou will not be able to retrieve this playlist !",
+                        var confirm = new InfoPanel("Delete this playlist?",
+                            "Are you sure to delete this playlist ?\nYou will not be able to retrieve this playlist!",
                             [{
                                 text: "Yes", isPositive: true, onclick: async () => {
                                     await Utils.libManager.removePlaylist(this.selectedPl.id)

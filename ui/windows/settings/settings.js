@@ -61,6 +61,10 @@ export default class SettingsWindow extends HTMLDivElement {
                 shadow.getElementById("about_web").onclick = () => {
                     Utils.app.remoteClient.openLink(Utils.servURL)
                 }
+                shadow.getElementById("about_git").onclick = () => {
+                    if(Utils.app.platform == "Android") Utils.app.remoteClient.openLink("https://github.com/Shiyukine/AyMusic-Android")
+                    else if(Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS") Utils.app.remoteClient.openLink("https://github.com/Shiyukine/AyMusic-Electron")
+                }
                 shadow.getElementById("about_pp").onclick = () => {
                     Utils.app.remoteClient.openLink(Utils.servURL + "privacy.php")
                 }

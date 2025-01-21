@@ -171,40 +171,6 @@ export default class TaskHandler {
         })
     }
 
-    /*private static void bypassCf(string url)
-    {
-    DONT USE CEF
-        bool iscf = false;
-        CefSharp.WinForms.ChromiumWebBrowser cwb = new CefSharp.WinForms.ChromiumWebBrowser(url);
-        cwb.FrameLoadEnd += async (sender, e) =>
-        {
-            bool b = e.Frame.IsMain;
-            string a = await e.Browser.MainFrame.GetTextAsync();
-            iscf = a.Contains("CAPTCHA");
-            (Form.ActiveForm as MainForm).Invoke(new MainForm.UICallback(() =>
-            {
-                if (b)
-                {
-                    if (!iscf)
-                    {
-
-                        (Form.ActiveForm as MainForm).Controls.Remove(cwb);
-                        cwb.GetBrowser().CloseBrowser(true);
-                        cwb.GetBrowserHost().TryCloseBrowser();
-                        cwb.Dispose();
-                        MainForm.newErr(new Exception("Captcha passed !"), "");
-                    }
-                    else
-                    {
-                        cwb.BringToFront();
-                        (Form.ActiveForm as MainForm).Controls.Add(cwb);
-                        MainForm.newErr("Please complete the Captcha to continue.", "");
-                    }
-                }
-            }));
-        };
-    }*/
-
     static switchTask(wt) {
         if (this.wbs[0].length > 0 && wt != null) {
             document.getElementById("iframes").removeChild(this.wbs[1][this.wbs[0].indexOf(wt)])

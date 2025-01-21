@@ -18,7 +18,7 @@ export default class SettingsReaderString
                     this.table[0].push(set[0])
                     this.table[1].push(set[1])
                 }
-                else console.error("Enter empty string !")
+                else console.error("Enter empty string!")
             });
         }
     }
@@ -36,7 +36,7 @@ export default class SettingsReaderString
     getString(setting)
     {
         let set = this.table[1][this.table[0].indexOf(setting)]
-        if (set == undefined) throw "Value not found !"
+        if (set == undefined) throw "Value not found!"
         return set
     }
 

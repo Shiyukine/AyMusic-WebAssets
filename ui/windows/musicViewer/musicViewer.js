@@ -17,6 +17,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
     isClosed = false;
     loaded = false;
     controller = new AbortController();
+    scrollController = new AbortController();
     fullObjId = "";
     /**
      * @type {Album|Singer|Playlist|Song}
@@ -242,6 +243,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
             }
             this.shadowRoot.getElementById("like").children[0].setAttribute("d", Utils.libManager.isObjectIDIsInLikedSongs(this.fullObjId) ? Utils.pathsData["Heart"] : Utils.pathsData["HeartOutline"])
             this.shadowRoot.getElementById("editHelpBold").style.display = ""
+            this.scrollController.abort()
             let isPlay = this.fullObjId != "" && Utils.queueManager.currentObject != null && this.fullObjId == Utils.queueManager.currentObject.id && Utils.player.state != null && await Utils.player.getState()
             if (objectID.startsWith("pl_")) {
                 if (!this.shadowRoot.getElementById("subtitle").classList.contains("nohover")) this.shadowRoot.getElementById("subtitle").classList.add("nohover")
@@ -464,6 +466,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
     }
 
     addScrollEventForList(parentElementId, listId) {
+        this.scrollController = new AbortController();
         this.lastOffsets[listId] = { last: 0, toRemove: -1 }
         this.shadowRoot.getElementById(parentElementId).addEventListener("scroll", async (e) => {
             let isScrollDown = this.scrolls[parentElementId] < this.shadowRoot.getElementById(parentElementId).scrollTop
@@ -562,7 +565,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 }
             }
             this.scrolls[parentElementId] = this.shadowRoot.getElementById(parentElementId).scrollTop
-        })
+        }, { signal: this.scrollController.signal })
     }
 
     close() {
@@ -587,7 +590,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
     }
 
     disconnectedCallback() {
-        /* no close function, so do not do this
+        /* we don't remove this window completely, because we want to keep the state of the window
         this.translation.end()
         this.controller.abort()
         while (this.shadowRoot.firstChild) {

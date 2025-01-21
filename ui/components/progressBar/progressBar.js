@@ -117,7 +117,7 @@ export default class ProgressBar extends HTMLDivElement {
             }
         }
         catch (e) {
-            //console.error("Can't change value, progressBar not initialized !")
+            //console.error("Can't change value, progressBar not initialized!")
             this.changeValueInitialized = value
         }
     }

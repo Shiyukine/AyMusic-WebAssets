@@ -99,7 +99,7 @@ export default class LoginPanel extends HTMLDivElement {
                         avatarUrl: await ImageCacheHandler.getCacheForImageUrl(Utils.servURL + "account/" + value(3) + "/pp.gif", isForModification == "modify")
                     }
                     Utils.apiManager.refreshApiKey()
-                    console.log("Welcome " + Utils.actualAccount.id + " to AyMusic !")
+                    console.log("Welcome " + Utils.actualAccount.id + " to AyMusic!")
                     if (isForModification == "modify") {
                         document.getElementById("menu_win").changeAccountAvatar()
                         document.getElementById("menu_win").anWindow.win.changeAccount();
