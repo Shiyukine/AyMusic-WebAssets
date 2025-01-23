@@ -103,6 +103,14 @@ export default class PlatformHandler {
         else return []
     }
 
+    static async getPlatformBlockRequests(platform) {
+        var platforms = await this.searchPlatforms()
+        if (platform && platforms) {
+            return platforms["Servers"][platform]["BlockRequests"] ? platforms["Servers"][platform]["BlockRequests"] : []
+        }
+        else return []
+    }
+
     static async setPlatformSetting(platform, setting, value) {
         var platforms = await this.searchPlatforms()
         if (platform && platforms) {
@@ -131,7 +139,9 @@ export default class PlatformHandler {
         let platforms = await this.searchPlatforms()
         if (platforms) {
             for (let platform of platforms["AvailableServers"]) {
-                if (url.includes(await PlatformHandler.getPlatformUrl(platform, "ListenUrl")) || url.includes(await PlatformHandler.getPlatformUrl(platform, "BaseSongUrl"))) {
+                let baseSongUrl = await this.getPlatformUrl(platform, "BaseSongUrl")
+                if(baseSongUrl.includes("%id%")) baseSongUrl = baseSongUrl.split("%id%")[0]
+                if (url.includes(await PlatformHandler.getPlatformUrl(platform, "ListenUrl")) || url.includes(baseSongUrl)) {
                     return platform
                 }
             }

@@ -138,6 +138,11 @@ export default class Player {
             this.currentPlatform = platform
             console.log("Platform: " + platform)
             await Utils.app.remoteClient.registerOverrideResponse(JSON.stringify(await PlatformHandler.getPlatformOverrideResponses(platform)))
+            for(let bypass of await PlatformHandler.getPlatformBlockRequests(platform)) {
+                let url = bypass.url
+                let includes = bypass.includes
+                Utils.app.remoteClient.addBadUrl(url, includes)
+            }
             if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform &&
                 (await PlatformHandler.getPlatformSettings(platform)).Token == "") {
                 console.log("Platform need refresh token")
@@ -146,11 +151,13 @@ export default class Player {
             }
             let url = song.url
             if ((await PlatformHandler.getPlatformSettings(platform)).UseListenUrl) {
-                let urlsplit = (await PlatformHandler.getPlatformUrl(platform, "BaseSongUrl")).split("%id%")
+                let baseSongUrl = await PlatformHandler.getPlatformUrl(platform, "BaseSongUrl")
+                let urlsplit = baseSongUrl.split("%id%")
                 let url2split = (await PlatformHandler.getPlatformUrl(platform, "ListenUrl")).split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
                     .split("%id%")
                 for (let spl in urlsplit) {
-                    url = url.replace(urlsplit[spl], url2split[spl])
+                    if(spl == urlsplit.length - 1 && urlsplit[spl] == "") url += url2split[spl]
+                    else url = url.replace(urlsplit[spl], url2split[spl])
                 }
                 if ((await PlatformHandler.getPlatformSettings(platform)).AddParamsInSongUrl) {
                     if (!url.includes("?")) url += "?uwu=1"
