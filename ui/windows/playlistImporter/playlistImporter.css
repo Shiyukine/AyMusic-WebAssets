@@ -24,6 +24,8 @@ p {
     border-radius: 15px;
     overflow: hidden;
     scrollbar-width: thin;
+    display: flex;
+    flex-direction: column;
 }
 
 #panelInfo *::-webkit-scrollbar {
@@ -69,7 +71,8 @@ p {
     animation-play-state: paused;
     visibility: collapse;
     margin-left: 20px;
-    margin-bottom: 11px;
+    margin-bottom: 13px;
+    margin-top: 1px;
 }
 
 #panelInfo svg.playSVG {
@@ -81,7 +84,6 @@ p {
     color: rgb(31, 165, 255);
     font-weight: bold;
     margin-bottom: 0%;
-    overflow: auto;
     margin-left: 20px;
 }
 
@@ -92,13 +94,12 @@ p {
 #subtext {
     margin-top: 10px;
     color: white;
-    overflow-y: auto;
     font-size: 12px;
     margin-left: 20px;
     margin-right: 20px;
     overflow-wrap: break-word;
     user-select: text;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 #plList {
@@ -108,7 +109,7 @@ p {
     margin-left: 20px;
     margin-right: 20px;
     overflow-wrap: break-word;
-    margin-bottom: 10px;
+    transition: 0.3s;
 }
 
 #plList.noSVG {

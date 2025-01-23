@@ -243,7 +243,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                     div.onclick = () => {
                         this.selectedPlaylist = pl
                         div.classList.add("selected")
-                        if (this.selectedDiv != null) this.selectedDiv.classList.remove("selected")
+                        if (this.selectedDiv != null && this.selectedDiv != div) this.selectedDiv.classList.remove("selected")
                         this.selectedDiv = div
                         this.step = 1
                         this.shadowRoot.getElementById("next").disabled = false
