@@ -28,7 +28,7 @@ export default class ImageCacheHandler {
             }
             else {
                 let rdm = (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Utils.app.platform == "Android" ? ".jpg" : "")
-                if (Utils.app.platform == "Android") Utils.app.remoteClient.addBypassWebRequest(url)
+                if (Utils.app.platform == "Android") Utils.app.remoteClient.addBypassWebRequest(new URL(url).hostname, true)
                 let raw = await fetch(url)
                 let rep = await raw.arrayBuffer()
                 if (Utils.app.platform == "Android") {
@@ -54,7 +54,7 @@ export default class ImageCacheHandler {
     static async getImgUrlCachedForObjectID(id, defaultUrl) {
         if (this.haveCacheForObjectID(id)) {
             if (this.cache[id][2] != defaultUrl) {
-                if (Utils.app.platform == "Android") Utils.app.remoteClient.addBypassWebRequest(defaultUrl)
+                if (Utils.app.platform == "Android") Utils.app.remoteClient.addBypassWebRequest(new URL(defaultUrl).hostname, true)
                 let raw = await fetch(defaultUrl)
                 let rep = await raw.arrayBuffer()
                 if (Utils.app.platform == "Android") {
@@ -72,7 +72,7 @@ export default class ImageCacheHandler {
         }
         else {
             let rdm = (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Utils.app.platform == "Android" ? ".jpg" : "")
-            if (Utils.app.platform == "Android") Utils.app.remoteClient.addBypassWebRequest(defaultUrl)
+            if (Utils.app.platform == "Android") Utils.app.remoteClient.addBypassWebRequest(new URL(defaultUrl).hostname, true)
             let raw = await fetch(defaultUrl)
             let rep = await raw.arrayBuffer()
             if (Utils.app.platform == "Android") {

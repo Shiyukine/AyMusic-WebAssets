@@ -45,6 +45,7 @@ export default class SearchWindow extends HTMLDivElement {
                     shadow.getElementById("serv_ico").src = "/resources/" + shadow.getElementById("serv_picker").value + ".ico"
                     SearchWindow.lastPlatformCache = this.selectedServer
                 })
+                SearchWindow.lastPlatformCache = this.selectedServer
                 shadow.getElementById("launchSearch").addEventListener("click", async () => {
                     this.launchSearch()
                 })
