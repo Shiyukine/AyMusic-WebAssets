@@ -24,6 +24,8 @@ p {
     border-radius: 15px;
     overflow: hidden;
     scrollbar-width: thin;
+    display: flex;
+    flex-direction: column;
 }
 
 #panelInfo *::-webkit-scrollbar {
