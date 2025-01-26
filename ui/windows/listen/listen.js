@@ -850,15 +850,24 @@ export default class ListenWindow extends HTMLDivElement {
                 ifr.push(frames[0].frames[0])
             }
             catch { }
-            ifr.forEach((x) => {
+            ifr.forEach(async (x) => {
                 if (typeof x != "undefined") {
                     if (part == "changeMediaMetadata") {
+                        let dataUrl = "";
+                        if(navigator.mediaSession.metadata.artwork[0].src == "app://root/resources/icon.ico") {
+                            let blob = await (await fetch("app://root/resources/icon.ico")).blob();
+                            dataUrl = await new Promise(resolve => {
+                                let reader = new FileReader();
+                                reader.onload = () => resolve(reader.result);
+                                reader.readAsDataURL(blob);
+                            });
+                        }
                         x.postMessage({
                             message: part, inData: {
                                 title: navigator.mediaSession.metadata.title,
                                 album: navigator.mediaSession.metadata.album,
                                 artist: navigator.mediaSession.metadata.artist,
-                                artwork: JSON.stringify(navigator.mediaSession.metadata.artwork),
+                                artwork: JSON.stringify(navigator.mediaSession.metadata.artwork).split("app://root/resources/icon.ico").join(dataUrl),
                             }, platform: platform
                         }, url)
                     }
