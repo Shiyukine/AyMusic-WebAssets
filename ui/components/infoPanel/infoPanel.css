@@ -16,7 +16,7 @@ p {
 #panelInfo {
     background-color: rgb(49, 49, 49, 0.8);
     width: 500px;
-    height: 150px;
+    max-height: 70%;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -86,7 +86,6 @@ p {
     color: #67b7fd;
     font-weight: bold;
     margin-bottom: 0%;
-    overflow: auto;
     margin-left: 20px;
 }
 
@@ -94,12 +93,13 @@ p {
     margin-top: 10px;
     color: white;
     overflow-y: auto;
-    height: calc(100% - 56px);
     font-size: 12px;
     margin-left: 20px;
     margin-right: 5px;
+    margin-bottom: 58px;
     overflow-wrap: break-word;
     user-select: text;
+    transition: 0.3s;
 }
 
 #btnList {
