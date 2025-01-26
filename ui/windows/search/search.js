@@ -194,6 +194,7 @@ export default class SearchWindow extends HTMLDivElement {
                 while (this.shadowRoot.getElementById("playlists").children.length > 0) {
                     this.shadowRoot.getElementById("playlists").removeChild(this.shadowRoot.getElementById("playlists").children[0])
                 }
+                this.shadowRoot.getElementById("bottom").style.display = "block"
                 if (this.selectedServer != "iconround") {
                     await this.searchForAPlatform(this.capitalizeFirstLetter(this.selectedServer))
                 }
@@ -202,7 +203,6 @@ export default class SearchWindow extends HTMLDivElement {
                         await this.searchForAPlatform(plat)
                     }
                 }
-                this.shadowRoot.getElementById("bottom").style.display = "block"
             }
             else {
                 let id = "search"
