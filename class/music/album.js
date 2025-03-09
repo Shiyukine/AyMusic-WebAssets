@@ -10,7 +10,7 @@ export default class Album {
 
     constructor(id, name, singerID, type, imgUrl, albumUrl, datedAdded = 0) {
         this.id = id;
-        this.name = name.trim();
+        this.name = name ? name.trim() : name;
         this.imgUrl = imgUrl;
         this.singerID = singerID;
         this.type = type;
