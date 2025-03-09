@@ -52,11 +52,12 @@ export default class TaskHandler {
             + this.blockAdsContent + `;\n
             var wtId = ` + wt.id + `; 
             var wtUrl = "` + wt.url + `";
+            var platform = "` + Utils.app.platform + `";
             let func = async () => {
                 ` + wt.script.split("app://root").join(origin) + `;
             }
             let retData = null;
-            if("` + Utils.app.platform + `" == "Android") {
+            if(platform == "Android") {
                 try {
                     retData = await func()
                     parent.postMessage({message: 'callback', data: retData, id: wtId}, '` + origin + `')
