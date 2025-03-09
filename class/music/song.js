@@ -33,7 +33,7 @@ export default class Song {
         this.id = id;
         this.url = url;
         this.positionOrDate = positionOrDate;
-        this.title = title.trim();
+        this.title = (title || "").trim();
         this.imgUrl = imgUrl;
         this.time = time;
         this.isExplicit = isExplicit;
@@ -41,19 +41,19 @@ export default class Song {
         this.cropStart = cropStart;
         this.cropEnd = cropEnd;
         this.singerID = singerID;
-        this.singerName = singerName.trim();
-        this.albumName = albumName.trim();
+        this.singerName = (singerName || "").trim();
+        this.albumName = (albumName || "").trim();
         this.albumID = albumID;
-        this.aliasTitle = aliasTitle.trim();
+        this.aliasTitle = (aliasTitle || "").trim();
         this.singerUrl = singerUrl;
         this.albumUrl = albumUrl;
         this.additionalSingers = additionalSingers;
         if (aliasTitle == "") this.aliasTitle = null;
-        this.aliasSingerName = aliasSingerName.trim();
+        this.aliasSingerName = (aliasSingerName || "").trim();
         if (aliasSingerName == "") this.aliasSingerName = null;
-        this.aliasSongSingerName = aliasSongSingerName.trim();
+        this.aliasSongSingerName = (aliasSongSingerName || "").trim();
         if (aliasSongSingerName == "") this.aliasSongSingerName = null;
-        if (this.aliasSongSingerName != null) this.aliasSingerName = this.aliasSongSingerName.trim();
+        if (this.aliasSongSingerName != null) this.aliasSingerName = (this.aliasSongSingerName || "").trim();
         if (this.imgUrl === "")
             this.imgUrl = '/resources/icon.ico';
         if (this.imgUrl === "localImg") {
