@@ -11,7 +11,7 @@ export default class Playlist {
 
     constructor(id, name, userID, desc, imgUrl, isPrivate, rank, dateAdded = 0) {
         this.id = id;
-        this.name = name;
+        this.name = name.trim();
         this.userID = userID;
         this.desc = desc;
         this.imgUrl = imgUrl;

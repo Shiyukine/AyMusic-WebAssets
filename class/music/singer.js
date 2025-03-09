@@ -9,10 +9,10 @@ export default class Singer {
 
     constructor(id, name, imgUrl, singerUrl, dateAdded = 0, aliasName = "") {
         this.id = id;
-        this.name = name;
+        this.name = name.trim();
         this.imgUrl = imgUrl;
         this.dateAdded = dateAdded;
-        this.aliasName = aliasName;
+        this.aliasName = aliasName.trim();
         this.singerUrl = singerUrl;
         if (this.imgUrl === "")
             this.imgUrl = '/resources/icon.ico';
