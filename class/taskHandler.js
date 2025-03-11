@@ -172,7 +172,26 @@ export default class TaskHandler {
         })
     }
 
-    static switchTask(wt) {
+    static async waitConnected(attempt = 0) {
+        let miniErrorId = "taskHandlerWait"
+        if (attempt > 0) {
+            Utils.showMiniError(miniErrorId, "No internet connection. Retrying...", false, "orange", "#000")
+        }
+        try {
+            if (navigator.onLine) {
+                let res = await fetch("https://google.com")
+                if (res.ok) {
+                    Utils.hideMiniError(miniErrorId)
+                    return
+                }
+            }
+        }
+        catch (e) { }
+        await Utils.delay(3000)
+        await this.waitConnected(attempt + 1)
+    }
+
+    static async switchTask(wt) {
         if (this.wbs[0].length > 0 && wt != null) {
             document.getElementById("iframes").removeChild(this.wbs[1][this.wbs[0].indexOf(wt)])
             this.wbs[1].splice(this.wbs[0].indexOf(wt), 1)
@@ -182,6 +201,7 @@ export default class TaskHandler {
         //var b = this.wbs[0].length == 0;
         if (this.waiting.length > 0) {
             var nwt = this.waiting[0];
+            //await this.waitConnected()
             this.createTask(nwt);
             this.waiting.splice(this.waiting.indexOf(nwt), 1);
             console.log("Switched 1 task. Url of new task: " + nwt.url + ". " + (this.wbs[0].length + this.waiting.length) + " remaining task");
@@ -208,30 +228,6 @@ export default class TaskHandler {
             console.log("Purged no tasks.");
         }
     }
-
-    /*public static void pauseAll(bool pause) {
-        try {
-            if (pause) {
-                foreach(KeyValuePair < WebTask, WebView2 > keys in wbs)
-                {
-                    if (keys.Value.CoreWebView2 != null) keys.Value.Stop();
-                    else keys.Value.Dispose();
-                }
-                MainForm.addLog("WebTask", "Paused.");
-            }
-            else {
-                foreach(KeyValuePair < WebTask, WebView2 > keys in wbs)
-                {
-                    keys.Value.Reload();
-                }
-                MainForm.addLog("WebTask", "Reloading...");
-            }
-        }
-        catch (Exception e)
-        {
-            MainForm.newErr(e, "Uh, we can't pause background task");
-        }
-    }*/
 
     static haveTasksForUrl(url, includeWaiting) {
         var i = 0;

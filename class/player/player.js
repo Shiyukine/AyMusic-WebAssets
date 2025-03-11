@@ -138,7 +138,7 @@ export default class Player {
             this.currentPlatform = platform
             console.log("Platform: " + platform)
             await Utils.app.remoteClient.registerOverrideResponse(JSON.stringify(await PlatformHandler.getPlatformOverrideResponses(platform)))
-            for(let bypass of await PlatformHandler.getPlatformBlockRequests(platform)) {
+            for (let bypass of await PlatformHandler.getPlatformBlockRequests(platform)) {
                 let url = bypass.url
                 let includes = bypass.includes
                 Utils.app.remoteClient.addBadUrl(url, includes)
@@ -156,7 +156,7 @@ export default class Player {
                 let url2split = (await PlatformHandler.getPlatformUrl(platform, "ListenUrl")).split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
                     .split("%id%")
                 for (let spl in urlsplit) {
-                    if(spl == urlsplit.length - 1 && urlsplit[spl] == "") url += url2split[spl]
+                    if (spl == urlsplit.length - 1 && urlsplit[spl] == "") url += url2split[spl]
                     else url = url.replace(urlsplit[spl], url2split[spl])
                 }
                 if ((await PlatformHandler.getPlatformSettings(platform)).AddParamsInSongUrl) {
@@ -165,6 +165,7 @@ export default class Player {
                     url += "&volume=" + ((await PlatformHandler.getPlatformSettings(platform)).SmallVolumeInSongUrl ? this.volume / 100 : this.volume)
                 }
             }
+            await TaskHandler.waitConnected()
             var wtId = TaskHandler.addTask(url, await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => { }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying.includes(Utils.app.platform))
             this.currentUrl = url
         }

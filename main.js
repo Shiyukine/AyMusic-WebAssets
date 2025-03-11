@@ -114,6 +114,8 @@ async function main() {
                         location.href = data["continue"]
                     }, 100)`)
                 }
+                //for ping only
+                Utils.app.remoteClient.addInterceptAllWebRequest("https://google.com/")
                 //
                 var cb = async () => {
                     if (Utils.app.platform == "Android") {

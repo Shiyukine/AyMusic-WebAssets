@@ -45,7 +45,7 @@ export default class SearchWindow extends HTMLDivElement {
                     shadow.getElementById("serv_ico").src = "/resources/" + shadow.getElementById("serv_picker").value + ".ico"
                     SearchWindow.lastPlatformCache = this.selectedServer
                 })
-                if(SearchWindow.lastPlatformCache == "") SearchWindow.lastPlatformCache = this.selectedServer
+                if (SearchWindow.lastPlatformCache == "") SearchWindow.lastPlatformCache = this.selectedServer
                 shadow.getElementById("launchSearch").addEventListener("click", async () => {
                     this.launchSearch()
                 })
@@ -230,6 +230,7 @@ export default class SearchWindow extends HTMLDivElement {
     async searchForAPlatform(server) {
         var platform = server
         this.platformsBusy.push(platform)
+        await TaskHandler.waitConnected()
         if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform &&
             (await PlatformHandler.getPlatformSettings(platform)).Token == "") {
             console.log("Platform need refresh token")
