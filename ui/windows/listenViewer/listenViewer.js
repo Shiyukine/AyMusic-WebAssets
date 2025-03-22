@@ -282,7 +282,7 @@ export default class ListenViewerWindow extends HTMLDivElement {
                         this.goToMusicViewer = "so_" + Utils.queueManager.currentSong.id
                     })
                     cm.addSubContextMenu("{timer}", cm2)
-                    cm.addSubContextMenu("{timer}", cm3)
+                    cm.addSubContextMenu("{lib.addToPl}", cm3)
                 }
                 shadow.getElementById("menu").onclick = (e) => {
                     cm.show(e)
