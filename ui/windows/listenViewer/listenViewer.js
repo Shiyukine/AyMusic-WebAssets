@@ -231,6 +231,21 @@ export default class ListenViewerWindow extends HTMLDivElement {
                 }
                 var cm = new ContextMenu()
                 var cm2 = new ContextMenu()
+                var cm3 = new ContextMenu()
+                cm3.beforeShow = () => {
+                    let havePl = false;
+                    for (let pl of Utils.libManager.userPlaylists) {
+                        if (!pl.name.includes("{") && !pl.name.includes("}")) {
+                            havePl = true
+                            cm3.addElement(pl.name, () => {
+                                Utils.libManager.addSongToAPlaylist(pl.id, "so_" + Utils.queueManager.currentSong.id)
+                            })
+                        }
+                    }
+                    if (!havePl) {
+                        cm3.addElement("No playlists available", () => { })
+                    }
+                }
                 cm2.beforeShow = () => {
                     if (TimerHandler.timers != -1) {
                         cm2.addElement("{timer.clear}", () => {
@@ -267,6 +282,7 @@ export default class ListenViewerWindow extends HTMLDivElement {
                         this.goToMusicViewer = "so_" + Utils.queueManager.currentSong.id
                     })
                     cm.addSubContextMenu("{timer}", cm2)
+                    cm.addSubContextMenu("{timer}", cm3)
                 }
                 shadow.getElementById("menu").onclick = (e) => {
                     cm.show(e)
