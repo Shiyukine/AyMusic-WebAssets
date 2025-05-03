@@ -53,10 +53,15 @@ export default class SearchWindow extends HTMLDivElement {
                     if (shadow.getElementById("suggest").style.display != "none" && !this.elementFocus) shadow.getElementById("suggest").style.display = "none"
                 })*/
                 let dontHide = false
+                let isSearchFocused = false
                 shadow.getElementById("tb_search").addEventListener("blur", () => {
                     if (!dontHide && shadow.querySelectorAll(":hover").length > 0 && shadow.querySelectorAll(":hover")[shadow.querySelectorAll(":hover").length - 1].tagName != "LI" && !this.elementFocus) shadow.getElementById("suggest").style.display = "none"
                     dontHide = false
+                    isSearchFocused = false
                 })
+                shadow.getElementById("tb_search").addEventListener("focus", () => {
+                    isSearchFocused = true
+                });
                 window.addEventListener("click", () => {
                     this.anSearch = null
                     if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
@@ -113,6 +118,7 @@ export default class SearchWindow extends HTMLDivElement {
                         this.anSearch = null
                         if (shadow.getElementById("tb_search").value != "") {
                             let data = await (await fetch("https://suggestqueries-clients6.youtube.com/complete/search?client=youtube&hl=en&gl=fr&gs_rn=64&gs_ri=youtube&ds=yt&cp=12&gs_id=2p&callback=uwu&q=" + shadow.getElementById("tb_search").value)).text()
+                            if (!isSearchFocused) return;
                             shadow.getElementById("suggest").style.display = ""
                             data = data.replace("uwu && uwu(", "").slice(0, -1)
                             let json = JSON.parse(data)
