@@ -115,6 +115,8 @@ async function main() {
                     }, 100)`)
                     //for ping only
                     Utils.app.remoteClient.addInterceptAllWebRequest("https://google.com/")
+                    //Spotify account authorization
+                    Utils.app.remoteClient.addInterceptAllWebRequest("https://accounts.spotify.com/authorize", true)
                 }
                 //
                 var cb = async () => {
