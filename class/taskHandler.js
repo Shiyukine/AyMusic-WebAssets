@@ -187,7 +187,9 @@ export default class TaskHandler {
             }
         }
         catch (e) { }
-        await Utils.delay(3000)
+        let delay = 1000 * Math.pow(2, attempt)
+        if (delay > 30000) delay = 30000
+        await Utils.delay(delay)
         await this.waitConnected(attempt + 1)
     }
 
