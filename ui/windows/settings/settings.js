@@ -62,8 +62,8 @@ export default class SettingsWindow extends HTMLDivElement {
                     Utils.app.remoteClient.openLink(Utils.servURL)
                 }
                 shadow.getElementById("about_git").onclick = () => {
-                    if(Utils.app.platform == "Android") Utils.app.remoteClient.openLink("https://github.com/Shiyukine/AyMusic-Android")
-                    else if(Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS") Utils.app.remoteClient.openLink("https://github.com/Shiyukine/AyMusic-Electron")
+                    if (Utils.app.platform == "Android") Utils.app.remoteClient.openLink("https://github.com/Shiyukine/AyMusic-Android")
+                    else if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS") Utils.app.remoteClient.openLink("https://github.com/Shiyukine/AyMusic-Electron")
                 }
                 shadow.getElementById("about_pp").onclick = () => {
                     Utils.app.remoteClient.openLink(Utils.servURL + "privacy.php")
@@ -219,7 +219,7 @@ export default class SettingsWindow extends HTMLDivElement {
     static async connectToPlatform(platform) {
         await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
             await PlatformHandler.getPlatformUrl(platform, "BaseUrl"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
-        let inf = new InfoPanel("Information", "If the window has closed by itself, it means that you've been connected! If so, click on the \"I'm connected!\" button and wait a bit.", [
+        let inf = new InfoPanel("Information", "If the window has closed by itself, it means that you've been connected! If so, click on the \"I'm connected!\" button and wait a bit. If you find you're waiting too long, restart the application.", [
             { text: "Close", isPositive: false, onclick: async () => { inf.close() } },
             {
                 text: "I'm connected!", isPositive: true, onclick: async () => {
