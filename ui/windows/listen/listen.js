@@ -288,7 +288,8 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                             pR: 1,
                             cur: pb.getValue(),
-                            dur: pb.getMax()
+                            dur: pb.getMax(),
+                            isPlaying: await Utils.player.getState()
                         })
                     }
                     else {
@@ -320,7 +321,8 @@ export default class ListenWindow extends HTMLDivElement {
                                 this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                                     pR: 1,
                                     cur: cur,
-                                    dur: pb.getMax()
+                                    dur: pb.getMax(),
+                                    isPlaying: await Utils.player.getState()
                                 })
                             }
                         }
@@ -336,9 +338,10 @@ export default class ListenWindow extends HTMLDivElement {
                                 let data = {
                                     pR: 1,
                                     cur: cur,
-                                    dur: pb.getMax()
+                                    dur: pb.getMax(),
+                                    isPlaying: await Utils.player.getState()
                                 }
-                                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR)
+                                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying)
                             }
                         }
                     }
@@ -467,7 +470,8 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                             pR: 1,
                             cur: cur,
-                            dur: pb.getMax()
+                            dur: pb.getMax(),
+                            isPlaying: true
                         })
                     }
                     else if (Utils.app.platform == "Android") {
@@ -476,7 +480,8 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changePositionState", null, {
                             pR: 1,
                             cur: cur,
-                            dur: pb.getMax()
+                            dur: pb.getMax(),
+                            isPlaying: true
                         })
                     }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
@@ -497,7 +502,8 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                             pR: 1,
                             cur: cur,
-                            dur: pb.getMax()
+                            dur: pb.getMax(),
+                            isPlaying: false
                         })
                     }
                     else if (Utils.app.platform == "Android") {
@@ -506,7 +512,8 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changePositionState", null, {
                             pR: 1,
                             cur: cur,
-                            dur: pb.getMax()
+                            dur: pb.getMax(),
+                            isPlaying: false
                         })
                     }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Play"])
@@ -870,7 +877,7 @@ export default class ListenWindow extends HTMLDivElement {
                 if (typeof x != "undefined") {
                     if (part == "changeMediaMetadata") {
                         let dataUrl = "";
-                        if(navigator.mediaSession.metadata.artwork[0].src == "app://root/resources/icon.ico") {
+                        if (navigator.mediaSession.metadata.artwork[0].src == "app://root/resources/icon.ico") {
                             let blob = await (await fetch("app://root/resources/icon.ico")).blob();
                             dataUrl = await new Promise(resolve => {
                                 let reader = new FileReader();
@@ -906,7 +913,7 @@ export default class ListenWindow extends HTMLDivElement {
                 Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
             }
             if (part == "changePositionState") {
-                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR)
+                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying)
             }
             if (part == "setActionHandler") {
 
