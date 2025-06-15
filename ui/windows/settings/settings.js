@@ -1,4 +1,3 @@
-import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 import Import from "../../../class/import.js";
 import PlatformHandler from "../../../class/player/platformHandler.js";
 import ThemeColor from "../../../class/themeColor.js";
@@ -73,7 +72,9 @@ export default class SettingsWindow extends HTMLDivElement {
                 }
                 shadow.getElementById("clear_cache").onclick = async () => {
                     console.log(await Utils.app.remoteClient.removeCache("Image/"))
-                    ImageCacheHandler.cache = {}
+                    navigator.serviceWorker.controller.postMessage({
+                        action: "deleteCache",
+                    });
                     console.log(await Utils.app.remoteClient.removeCache("API/"))
                     Utils.apiManager.cache = {}
                     Utils.showMiniError("rm_cache", "Cache cleared!", true, "rgb(0, 204, 255)", "#000")

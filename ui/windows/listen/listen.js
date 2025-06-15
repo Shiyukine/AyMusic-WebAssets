@@ -1,4 +1,3 @@
-import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 import Import from "../../../class/import.js";
 import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
@@ -216,8 +215,7 @@ export default class ListenWindow extends HTMLDivElement {
                         }
                     }
                     else {
-                        let iUrl = await ImageCacheHandler.getCacheForImageUrl(Utils.queueManager.currentSong.imgUrl)
-                        this.shadowRoot.getElementById("music_img").src = iUrl
+                        this.shadowRoot.getElementById("music_img").src = Utils.queueManager.currentSong.imgUrl
                         let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
                         for (let sing of Utils.queueManager.currentSong.additionalSingers) {
                             singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)

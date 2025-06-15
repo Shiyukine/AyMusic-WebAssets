@@ -11,8 +11,6 @@ import LocalMusicHandler from "./class/utils/localMusicHandler.js";
 import ThemeColor from "./class/themeColor.js";
 import MusicViewerWindow from "./ui/windows/musicViewer/musicViewer.js";
 import TaskHandler from "./class/taskHandler.js";
-import Adblock from "./class/adblock.js";
-import ImageCacheHandler from "./class/imageCacheHandler.js";
 
 async function main() {
     window.app = Utils.app;
@@ -36,6 +34,20 @@ async function main() {
     Utils.app.loaded = async function () {
         if (!window.loaded) {
             window.loaded = true;
+            try {
+                const registration = await navigator.serviceWorker.register("/sw.js", {
+                    scope: "/",
+                });
+                if (registration.installing) {
+                    console.log("Service worker installing");
+                } else if (registration.waiting) {
+                    console.log("Service worker installed");
+                } else if (registration.active) {
+                    console.log("Service worker active");
+                }
+            } catch (error) {
+                console.error(`Registration failed with ${error}`);
+            }
             try {
                 console.log("AyMusic client registered: " + Utils.app.platform + ", version: " + Utils.app.versionName + " (" + Utils.app.versionId + "), isRelease: " + Utils.app.isRelease);
                 if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS") {
@@ -78,8 +90,6 @@ async function main() {
                     Utils.servURL = "https://192.168.0.33/";
                 await Utils.app.remoteClient.changeServURL(Utils.servURL)
                 console.log("Server URL: " + Utils.servURL);
-                //
-                await ImageCacheHandler.init()
                 //
                 LocalMusicHandler.init()
                 await LocalMusicHandler.getLocalLibrary()

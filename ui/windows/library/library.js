@@ -481,6 +481,7 @@ export default class LibraryWindow extends HTMLDivElement {
                 let elToHide = this.shadowRoot.getElementById(listId).children[(offsetToRemove) * 50]
                 if (elToHide) {
                     elToHide.changeRequested = false
+                    this.translation.pause();
                     for (let i = 0; i < 50; i++) {
                         /**
                          * @type {SongGrid}
@@ -490,6 +491,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             el.changeSong(null, true)
                         }
                     }
+                    this.translation.resume();
                 }
             }
             if (this.lastOffsets[listId].last != offset) {
@@ -508,6 +510,7 @@ export default class LibraryWindow extends HTMLDivElement {
                     }, (result) => {
                         let i = 0;
                         let counterSongNotLoaded = 0
+                        this.translation.pause();
                         for (let obj of result["songs"]) {
                             /**
                              * @type {SongGrid}
@@ -519,6 +522,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             i++;
                         }
                         this.offsetsSize[offset] = { begin: offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end + 1, end: (offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end) + (50 - counterSongNotLoaded) * 70 }
+                        this.translation.resume();
                     })
                 }
             }

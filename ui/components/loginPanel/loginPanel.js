@@ -2,7 +2,6 @@ import Utils from "../../../class/utils/utils.js";
 import Import from "../../../class/import.js";
 import Translations from "../../../class/translations.js";
 import ThemeColor from "../../../class/themeColor.js";
-import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 
 export default class LoginPanel extends HTMLDivElement {
     /**
@@ -96,7 +95,13 @@ export default class LoginPanel extends HTMLDivElement {
                         id: value(3),
                         email: value(0),
                         apiKey: value(7),
-                        avatarUrl: await ImageCacheHandler.getCacheForImageUrl(Utils.servURL + "account/" + value(3) + "/pp.gif", isForModification == "modify")
+                        avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif"
+                    }
+                    if (isForModification == "modify") {
+                        navigator.serviceWorker.controller.postMessage({
+                            action: "deleteCache",
+                            cacheKey: Utils.servURL + "account/" + value(3) + "/pp.gif"
+                        })
                     }
                     Utils.apiManager.refreshApiKey()
                     console.log("Welcome " + Utils.actualAccount.id + " to AyMusic!")
@@ -109,7 +114,9 @@ export default class LoginPanel extends HTMLDivElement {
                 }
                 if (url.includes("/login/index.php") && isForModification == "logout") {
                     console.log(await Utils.app.remoteClient.removeCache("Image/"))
-                    ImageCacheHandler.cache = {}
+                    navigator.serviceWorker.controller.postMessage({
+                        action: "deleteCache",
+                    });
                     console.log(await Utils.app.remoteClient.removeCache("API/"))
                     Utils.apiManager.cache = {}
                     location.reload()

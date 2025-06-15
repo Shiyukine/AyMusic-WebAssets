@@ -1,4 +1,3 @@
-import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 import Import from "../../../class/import.js";
 import Album from "../../../class/music/album.js";
 import Playlist from "../../../class/music/playlist.js";
@@ -258,8 +257,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     this.offsetsSize = {};
                     this.shadowRoot.getElementById("title").innerText = info["playlistInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = "By " + info["playlistInfo"]["userID"]
-                    let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico")
-                    this.shadowRoot.getElementById("cover").src = iUrl
+                    this.shadowRoot.getElementById("cover").src = info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico"
                     let div = this.addList("{mv.musicInPl}", "songs_list")
                     this.translation.translateAll()
                     let songs = info["songs"]["songs"]
@@ -293,8 +291,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     this.offsetsSize = {};
                     this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerHTML = "<span>{mv.by}</span> <span>" + info["albumInfo"]["singerID"] + "</span>"
-                    let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico")
-                    this.shadowRoot.getElementById("cover").src = iUrl
+                    this.shadowRoot.getElementById("cover").src = info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico"
                     let div = this.addList("{mv.songsInAlbum}", "album_songs_list")
                     this.translation.translateAll()
                     let songs = info["songs"]["songs"]
@@ -351,8 +348,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                     }
                     this.shadowRoot.getElementById("title").innerText = info["singerInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = info["singerInfo"]["aliasName"] && info["singerInfo"]["aliasName"] != "" ? info["singerInfo"]["aliasName"] : "{mv.artistSimple}"
-                    let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico")
-                    this.shadowRoot.getElementById("cover").src = iUrl
+                    this.shadowRoot.getElementById("cover").src = info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico"
                     let div = this.addList("{mv.latestArtistSongs}", "artist_songs_list", false)
                     let div2 = this.addList("{mv.albumsArtist}", "artist_albums_list", false)
                     this.translation.translateAll()
@@ -432,8 +428,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                             }
                             this.shadowRoot.getElementById("subtitle").appendChild(span2)
                         }
-                        let iUrl = await ImageCacheHandler.getCacheForImageUrl(info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico")
-                        this.shadowRoot.getElementById("cover").src = iUrl
+                        this.shadowRoot.getElementById("cover").src = info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico"
                     }
                     /**
                      * @type {TextBox}
@@ -500,6 +495,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                 let elToHide = this.shadowRoot.getElementById(listId).children[(offsetToRemove) * 50]
                 if (elToHide) {
                     elToHide.changeRequested = false
+                    this.translation.pause();
                     for (let i = 0; i < 50; i++) {
                         /**
                          * @type {SongGrid}
@@ -509,6 +505,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                             el.changeSong(null, true)
                         }
                     }
+                    this.translation.resume();
                 }
             }
             if (this.lastOffsets[listId].last != offset) {
@@ -528,6 +525,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                         }, (result) => {
                             let i = 0;
                             let counterSongNotLoaded = 0
+                            this.translation.pause();
                             for (let obj of result["songs"]) {
                                 /**
                                  * @type {SongGrid}
@@ -539,6 +537,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                                 i++;
                             }
                             this.offsetsSize[offset] = { begin: offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end + 1, end: (offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end) + (50 - counterSongNotLoaded) * 70 }
+                            this.translation.resume();
                         })
                     }
                     if (this.fullObjId.startsWith("al_")) {
@@ -549,6 +548,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                         }, (result) => {
                             let i = 0;
                             let counterSongNotLoaded = 0
+                            this.translation.pause();
                             for (let obj of result["songs"]) {
                                 /**
                                  * @type {SongGrid}
@@ -560,6 +560,7 @@ export default class MusicViewerWindow extends HTMLDivElement {
                                 i++;
                             }
                             this.offsetsSize[offset] = { begin: offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end + 1, end: (offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end) + (50 - counterSongNotLoaded) * 70 }
+                            this.translation.resume();
                         })
                     }
                 }
