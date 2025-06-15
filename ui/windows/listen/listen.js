@@ -33,7 +33,8 @@ export default class ListenWindow extends HTMLDivElement {
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.4s"
         this.style.position = "absolute"
-        this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "78px" : "0"
+        let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
+        this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (78 + insets.bottom / devicePixelRatio) + "px" : "0"
         this.style.left = "0"
         this.style.right = "0"
         this.style.zIndex = "2"
