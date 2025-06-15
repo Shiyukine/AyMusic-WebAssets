@@ -66,7 +66,6 @@ async function main() {
                         history.forward()
                     }
                 })
-                document.getElementById("version_name").innerText = Utils.app.versionName
                 if (window.forceRestart && Utils.app.isRelease) {
                     let info = new InfoPanel("Warning after updating app", "The new version is installed! But there is a problem.\n"
                         + "For your security, please manually restart AyMusic.\n"
