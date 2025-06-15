@@ -13,20 +13,58 @@ const putInCache = async (request, response) => {
     }
 };
 
+const excludedResources = [
+    {
+        url: "app://",
+        includes: true,
+    },
+    {
+        url: "https://myapp/",
+        includes: true,
+    },
+    {
+        url: "https://mycache/",
+        includes: true,
+    },
+    {
+        url: "https://mydata/",
+        includes: true,
+    },
+    {
+        url: "https://myfiles/",
+        includes: true,
+    },
+];
+
+const isExcluded = (url) => {
+    return excludedResources.some((resource) => {
+        if (resource.includes) {
+            return url.includes(resource.url);
+        } else {
+            return url === resource.url;
+        }
+    });
+}
+
+const excludeResource = (url, includes) => {
+    if (!isExcluded(url)) {
+        excludedResources.push({
+            url: url,
+            includes: includes,
+        });
+    }
+};
+
+
 const cacheFirst = async ({
     request,
     preloadResponsePromise,
     event,
 }) => {
-    if (request.url.startsWith("app://")
-        || request.url.startsWith("https://myapp/")
-        || request.url.startsWith("https://mycache/")
-        || request.url.startsWith("https://mydata/")
-        || request.url.startsWith("https://myfiles/")) {
+    if (isExcluded(request.url)) {
         // For internal app resources, we can skip caching
         return fetch(request);
     }
-    // TODO: skip API requests. We don't need to cache them for now because they use POST requests.
     if (request.method !== "GET") {
         // Only cache GET requests
         return fetch(request);
@@ -93,8 +131,6 @@ self.addEventListener("activate", (event) => {
 });
 
 addEventListener("message", (event) => {
-    // event is an ExtendableMessageEvent object
-    console.log(`The client sent me a message: ${event.data}`);
     if (event.data.action === "deleteCache") {
         // Delete a specific cache
         const cacheKey = event.data.cacheKey || "v1"; // Default to "v1" if no cacheKey is provided
@@ -106,6 +142,13 @@ addEventListener("message", (event) => {
         const key = event.data.key;
         const cacheKey = event.data.cacheKey || "v1"; // Default to "v1" if no cacheKey is provided
         removeCache(cacheKey, key);
+        return;
+    }
+    if (event.data.action === "excludeResource") {
+        // Exclude a resource from caching
+        const url = event.data.url;
+        const includes = event.data.includes || false; // Default to false if not provided
+        excludeResource(url, includes);
         return;
     }
 });

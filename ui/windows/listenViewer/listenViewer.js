@@ -269,7 +269,7 @@ export default class ListenViewerWindow extends HTMLDivElement {
                         TimerHandler.addTimer(60)
                     })
                 }
-                cm.beforeShow = () => {
+                cm.beforeShow = async () => {
                     if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
                         cm.addElement("{lib.openLink}", () => {
                             Utils.app.remoteClient.openLink(Utils.queueManager.currentSong.url)
@@ -281,6 +281,21 @@ export default class ListenViewerWindow extends HTMLDivElement {
                     })
                     cm.addSubContextMenu("{timer}", cm2)
                     cm.addSubContextMenu("{lib.addToPl}", cm3)
+                    if (Utils.queueManager.currentSong != null
+                        && Utils.queueManager.currentObject != null
+                        && Utils.queueManager.currentObject.id != Utils.libManager.userInfo.likedSongsPlId
+                        && Utils.libManager.userPlaylists.filter((pl) => pl.id == Utils.queueManager.currentObject.id.replace("pl_", "")).length > 0) {
+                        let result = await Utils.apiManager.doPostRequest({
+                            act: "getIdSongsInPlaylist",
+                            playlistID: Utils.queueManager.currentObject.id.replace("pl_", ""),
+                            orderByDesc: false
+                        })
+                        if (result.includes("so_" + Utils.queueManager.currentSong.id)) {
+                            cm.addElement("{lib.removeFromCurrentPl}", () => {
+                                Utils.libManager.removeSongFromAPlaylist(Utils.queueManager.currentObject.id.replace("pl_", ""), "so_" + Utils.queueManager.currentSong.id)
+                            })
+                        }
+                    }
                 }
                 shadow.getElementById("menu").onclick = (e) => {
                     cm.show(e)
