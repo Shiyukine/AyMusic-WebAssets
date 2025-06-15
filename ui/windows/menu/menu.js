@@ -128,8 +128,8 @@ export default class MenuWindow extends HTMLDivElement {
             }
             awindow.classList.add("aWindow")
             let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
-            awindow.style.paddingBottom = (155 + insets.bottom / devicePixelRatio) + "px";
-            if (Utils.app.platform == "Windows" | Utils.app.platform == "Linux") awindow.classList.add("windows")
+            awindow.style.paddingBottom = ((Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 155 : 0) + insets.bottom / devicePixelRatio) + "px";
+            if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux") awindow.classList.add("windows")
             if (this.anWindow) {
                 let thisW = this.anWindow.win
                 thisW.ontransitionend = () => {
