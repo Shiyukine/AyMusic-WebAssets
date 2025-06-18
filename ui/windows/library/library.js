@@ -206,7 +206,7 @@ export default class LibraryWindow extends HTMLDivElement {
                         else Utils.player.play()
                     }
                     else {
-                        Utils.queueManager.changeQueue(this.selectedPl)
+                        Utils.queueManager.changeQueue(Utils.libManager.userLikedPl)
                     }
                 }
             }
