@@ -111,7 +111,7 @@ p {
     position: relative;
 }
 
-#plState {
+#plState, #likedState {
     margin-right: 5px;
 }
 
