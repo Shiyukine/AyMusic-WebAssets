@@ -52,7 +52,7 @@ export default class Player {
                     else this.pause()
                     //TaskHandler.executeJs(url, "async () => { navigator.mediaSession.metadata = " + navigator.mediaSession.metadata + " }")
                 }
-                this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
+                this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb, { detail: e.data.data }));
             }
         })
     }

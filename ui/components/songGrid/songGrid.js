@@ -32,6 +32,8 @@ export default class SongGrid extends HTMLDivElement {
      */
     cm2 = null;
 
+    overrideClick = null;
+
     /**
      * 
      * @param {Song} song 
@@ -182,6 +184,10 @@ export default class SongGrid extends HTMLDivElement {
                         let curThis = this;
                         let elToClick = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? this : this.shadowRoot.getElementById("svg")
                         elToClick.addEventListener("click", async function () {
+                            if (curThis.overrideClick != null) {
+                                curThis.overrideClick()
+                                return
+                            }
                             if ((Utils.app.platform != "Android" && Utils.app.platform != "iOS") ||
                                 (!this.shadowRoot.getElementById("context").matches(":hover") && !this.shadowRoot.getElementById("like").matches(":hover"))) {
                                 if (curThis.isMySong()) {

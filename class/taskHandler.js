@@ -113,7 +113,7 @@ export default class TaskHandler {
                     }
                 })
             })()`)
-        iframe.allow = "encrypted-media"
+        iframe.allow = "autoplay; encrypted-media"
         iframe.style.width = "100%"
         iframe.style.height = "100%"
         if (wt.needDisplayNone) iframe.style.display = "none"

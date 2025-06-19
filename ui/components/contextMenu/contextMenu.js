@@ -44,7 +44,8 @@ export default class ContextMenu extends HTMLDivElement {
                         : document.body.clientHeight - this.clientHeight - 10
                     if (Utils.currentMiniErrorID != -1) y -= 75
                     if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-                        this.style.bottom = "0"
+                        let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
+                        this.style.bottom = (insets.bottom / devicePixelRatio) + "px"
                         this.style.left = "0"
                         this.style.right = "0"
                         this.style.top = "0"

@@ -301,7 +301,7 @@ export default class ListenWindow extends HTMLDivElement {
                         firstPlay = false
                     }
                     if (this.needRefreshTime != -1) {
-                        await Utils.player.seek(this.needRefreshTime * 1000)
+                        await Utils.player.seek(this.needRefreshTime)
                         this.needRefreshTime = -1
                         Utils.player.play()
                     }
@@ -599,8 +599,9 @@ export default class ListenWindow extends HTMLDivElement {
                 Utils.player.onSkipAds(async () => {
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 });
-                Utils.player.onNeedRefresh(async () => {
-                    this.needRefreshTime = await Utils.player.getCurrentTime()
+                Utils.player.onNeedRefresh(async (e) => {
+                    this.needRefreshTime = e.detail || await Utils.player.getCurrentTime()
+                    console.log(this.needRefreshTime)
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 });
                 Utils.player.onNotConnected(async () => {
