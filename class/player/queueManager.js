@@ -163,6 +163,34 @@ export default class QueueManager {
         }
     }
 
+    seekToSong(song) {
+        for (let i in this.allSongs) {
+            let sng = this.allSongs[i]
+            if (sng.song.id == song.id) {
+                this.currentIndex = parseInt(i)
+                this.currentSong = sng.song
+                this.currentObject = sng.obj
+                if (sng.obj != null) {
+                    if (sng.obj.constructor === Playlist) {
+                        this.currentObject = Object.assign(new Playlist(), this.currentObject)
+                        if (!this.currentObject.id.startsWith("pl_")) this.currentObject.id = "pl_" + this.currentObject.id
+                    }
+                    if (sng.obj.constructor === Album) {
+                        this.currentObject = Object.assign(new Album(), this.currentObject)
+                        if (!this.currentObject.id.startsWith("al_")) this.currentObject.id = "al_" + this.currentObject.id
+                    }
+                    if (sng.obj.constructor === Singer) {
+                        this.currentObject = Object.assign(new Singer(), this.currentObject)
+                        if (!this.currentObject.id.startsWith("si_")) this.currentObject.id = "si_" + this.currentObject.id
+                    }
+                }
+                Utils.player.playSong(this.currentSong, true)
+                return;
+            }
+        }
+        console.error("Cannot seek to song, song not found in queue!");
+    }
+
     /**
      * 
      * @param {Song} song 
@@ -171,7 +199,7 @@ export default class QueueManager {
         this.allSongs.splice(this.currentIndex + 1, 0, { song: song, obj: song });
         this.#eventEl.dispatchEvent(new CustomEvent("queuechange"));
     }
-    
+
     /**
      * @param {Playlist} playlist
      */

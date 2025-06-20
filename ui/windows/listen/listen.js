@@ -1,4 +1,3 @@
-import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 import Import from "../../../class/import.js";
 import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
@@ -34,7 +33,8 @@ export default class ListenWindow extends HTMLDivElement {
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.4s"
         this.style.position = "absolute"
-        this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "78px" : "0"
+        let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
+        this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (78 + insets.bottom / devicePixelRatio) + "px" : "0"
         this.style.left = "0"
         this.style.right = "0"
         this.style.zIndex = "2"
@@ -216,8 +216,7 @@ export default class ListenWindow extends HTMLDivElement {
                         }
                     }
                     else {
-                        let iUrl = await ImageCacheHandler.getCacheForImageUrl(Utils.queueManager.currentSong.imgUrl)
-                        this.shadowRoot.getElementById("music_img").src = iUrl
+                        this.shadowRoot.getElementById("music_img").src = Utils.queueManager.currentSong.imgUrl
                         let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
                         for (let sing of Utils.queueManager.currentSong.additionalSingers) {
                             singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
@@ -288,7 +287,8 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                             pR: 1,
                             cur: pb.getValue(),
-                            dur: pb.getMax()
+                            dur: pb.getMax(),
+                            isPlaying: await Utils.player.getState()
                         })
                     }
                     else {
@@ -301,7 +301,7 @@ export default class ListenWindow extends HTMLDivElement {
                         firstPlay = false
                     }
                     if (this.needRefreshTime != -1) {
-                        await Utils.player.seek(this.needRefreshTime * 1000)
+                        await Utils.player.seek(this.needRefreshTime)
                         this.needRefreshTime = -1
                         Utils.player.play()
                     }
@@ -320,7 +320,8 @@ export default class ListenWindow extends HTMLDivElement {
                                 this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                                     pR: 1,
                                     cur: cur,
-                                    dur: pb.getMax()
+                                    dur: pb.getMax(),
+                                    isPlaying: await Utils.player.getState()
                                 })
                             }
                         }
@@ -336,9 +337,10 @@ export default class ListenWindow extends HTMLDivElement {
                                 let data = {
                                     pR: 1,
                                     cur: cur,
-                                    dur: pb.getMax()
+                                    dur: pb.getMax(),
+                                    isPlaying: await Utils.player.getState()
                                 }
-                                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR)
+                                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying)
                             }
                         }
                     }
@@ -467,7 +469,8 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                             pR: 1,
                             cur: cur,
-                            dur: pb.getMax()
+                            dur: pb.getMax(),
+                            isPlaying: true
                         })
                     }
                     else if (Utils.app.platform == "Android") {
@@ -476,7 +479,8 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changePositionState", null, {
                             pR: 1,
                             cur: cur,
-                            dur: pb.getMax()
+                            dur: pb.getMax(),
+                            isPlaying: true
                         })
                     }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
@@ -497,7 +501,8 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
                             pR: 1,
                             cur: cur,
-                            dur: pb.getMax()
+                            dur: pb.getMax(),
+                            isPlaying: false
                         })
                     }
                     else if (Utils.app.platform == "Android") {
@@ -506,7 +511,8 @@ export default class ListenWindow extends HTMLDivElement {
                         this.updateMediaSession("changePositionState", null, {
                             pR: 1,
                             cur: cur,
-                            dur: pb.getMax()
+                            dur: pb.getMax(),
+                            isPlaying: false
                         })
                     }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Play"])
@@ -593,8 +599,9 @@ export default class ListenWindow extends HTMLDivElement {
                 Utils.player.onSkipAds(async () => {
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 });
-                Utils.player.onNeedRefresh(async () => {
-                    this.needRefreshTime = await Utils.player.getCurrentTime()
+                Utils.player.onNeedRefresh(async (e) => {
+                    this.needRefreshTime = e.detail || await Utils.player.getCurrentTime()
+                    console.log(this.needRefreshTime)
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 });
                 Utils.player.onNotConnected(async () => {
@@ -693,7 +700,7 @@ export default class ListenWindow extends HTMLDivElement {
                             TimerHandler.addTimer(60)
                         })
                     }
-                    cm.beforeShow = () => {
+                    cm.beforeShow = async () => {
                         if (Utils.queueManager.currentSong.imgUrl !== "localImg") {
                             cm.addElement("{lib.openLink}", () => {
                                 Utils.app.remoteClient.openLink(Utils.queueManager.currentSong.url)
@@ -704,6 +711,21 @@ export default class ListenWindow extends HTMLDivElement {
                         })
                         cm.addSubContextMenu("{timer}", cm2)
                         cm.addSubContextMenu("{lib.addToPl}", cm3)
+                        if (Utils.queueManager.currentSong != null
+                            && Utils.queueManager.currentObject != null
+                            && Utils.queueManager.currentObject.id != Utils.libManager.userInfo.likedSongsPlId
+                            && Utils.libManager.userPlaylists.filter((pl) => pl.id == Utils.queueManager.currentObject.id.replace("pl_", "")).length > 0) {
+                            let result = await Utils.apiManager.doPostRequest({
+                                act: "getIdSongsInPlaylist",
+                                playlistID: Utils.queueManager.currentObject.id.replace("pl_", ""),
+                                orderByDesc: false
+                            })
+                            if (result.includes("so_" + Utils.queueManager.currentSong.id)) {
+                                cm.addElement("{lib.removeFromCurrentPl}", () => {
+                                    Utils.libManager.removeSongFromAPlaylist(Utils.queueManager.currentObject.id.replace("pl_", ""), "so_" + Utils.queueManager.currentSong.id)
+                                })
+                            }
+                        }
                     }
                     shadow.getElementById("menu").onclick = (e) => {
                         cm.show(e)
@@ -870,7 +892,7 @@ export default class ListenWindow extends HTMLDivElement {
                 if (typeof x != "undefined") {
                     if (part == "changeMediaMetadata") {
                         let dataUrl = "";
-                        if(navigator.mediaSession.metadata.artwork[0].src == "app://root/resources/icon.ico") {
+                        if (navigator.mediaSession.metadata.artwork[0].src == "app://root/resources/icon.ico") {
                             let blob = await (await fetch("app://root/resources/icon.ico")).blob();
                             dataUrl = await new Promise(resolve => {
                                 let reader = new FileReader();
@@ -906,7 +928,7 @@ export default class ListenWindow extends HTMLDivElement {
                 Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
             }
             if (part == "changePositionState") {
-                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR)
+                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying)
             }
             if (part == "setActionHandler") {
 

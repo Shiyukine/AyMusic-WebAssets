@@ -11,8 +11,6 @@ import LocalMusicHandler from "./class/utils/localMusicHandler.js";
 import ThemeColor from "./class/themeColor.js";
 import MusicViewerWindow from "./ui/windows/musicViewer/musicViewer.js";
 import TaskHandler from "./class/taskHandler.js";
-import Adblock from "./class/adblock.js";
-import ImageCacheHandler from "./class/imageCacheHandler.js";
 
 async function main() {
     window.app = Utils.app;
@@ -37,6 +35,20 @@ async function main() {
         if (!window.loaded) {
             window.loaded = true;
             try {
+                const registration = await navigator.serviceWorker.register("/sw.js", {
+                    scope: "/",
+                });
+                if (registration.installing) {
+                    console.log("Service worker installing");
+                } else if (registration.waiting) {
+                    console.log("Service worker installed");
+                } else if (registration.active) {
+                    console.log("Service worker active");
+                }
+            } catch (error) {
+                console.error(`Registration failed with ${error}`);
+            }
+            try {
                 console.log("AyMusic client registered: " + Utils.app.platform + ", version: " + Utils.app.versionName + " (" + Utils.app.versionId + "), isRelease: " + Utils.app.isRelease);
                 if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS") {
                     Window.setTopBarWindow();
@@ -54,7 +66,6 @@ async function main() {
                         history.forward()
                     }
                 })
-                document.getElementById("version_name").innerText = Utils.app.versionName
                 if (window.forceRestart && Utils.app.isRelease) {
                     let info = new InfoPanel("Warning after updating app", "The new version is installed! But there is a problem.\n"
                         + "For your security, please manually restart AyMusic.\n"
@@ -78,8 +89,18 @@ async function main() {
                     Utils.servURL = "https://192.168.0.33/";
                 await Utils.app.remoteClient.changeServURL(Utils.servURL)
                 console.log("Server URL: " + Utils.servURL);
-                //
-                await ImageCacheHandler.init()
+                navigator.serviceWorker.ready.then((registration) => {
+                    navigator.serviceWorker.controller.postMessage({
+                        action: "excludeResource",
+                        url: Utils.servURL + "dl/",
+                        includes: true,
+                    });
+                    navigator.serviceWorker.controller.postMessage({
+                        action: "excludeResource",
+                        url: Utils.servURL + "api/",
+                        includes: true,
+                    });
+                });
                 //
                 LocalMusicHandler.init()
                 await LocalMusicHandler.getLocalLibrary()
@@ -115,6 +136,8 @@ async function main() {
                     }, 100)`)
                     //for ping only
                     Utils.app.remoteClient.addInterceptAllWebRequest("https://google.com/")
+                    //Spotify account authorization
+                    Utils.app.remoteClient.addInterceptAllWebRequest("https://accounts.spotify.com/authorize", true)
                 }
                 //
                 var cb = async () => {

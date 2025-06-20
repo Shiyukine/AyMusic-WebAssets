@@ -79,6 +79,7 @@
         "{lib.addLikedSong}": "Add to liked songs",
         "{lib.addToPl}": "Add to a playlist",
         "{lib.removeFromPl}": "Remove from this playlist",
+        "{lib.removeFromCurrentPl}": "Remove from the current playlist",
         "{lib.openLink}": "Open link in your browser",
         "{lib.modifySong}": "Modify this song",
         "{qv.curPlaying}": "Current song",

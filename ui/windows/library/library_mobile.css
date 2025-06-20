@@ -115,7 +115,7 @@ p {
     position: relative;
 }
 
-#plState {
+#plState, #likedState {
     margin-right: 5px;
 }
 
@@ -216,7 +216,7 @@ p {
 }
 
 div[is="text-box"] {
-    width: 250px;
+    width: 100%;
 }
 
 .sub p,
@@ -338,7 +338,6 @@ button:disabled {
 
 .sub .set#mylib_list.obj {
     padding-left: 5px;
-    padding-top: 5px;
 }
 
 #mylib_topbar>p {
@@ -348,7 +347,7 @@ button:disabled {
 #pl_create {
     position: absolute;
     bottom: 30px;
-    right: 20px;
+    right: 0;
 }
 
 svg {

@@ -80,17 +80,19 @@ p {
     position: absolute;
     right: 10px;
     bottom: 10px;
-    stroke-dasharray: 251;
+    stroke-dasharray: 142;
     /* (2PI * 40px) */
-    stroke-dashoffset: 251;
-    animation: offsettozeroDouble 1.1s cubic-bezier(0.4, 0, 0.7, 0.87) infinite;
+    stroke-dashoffset: 142;
+    animation: offsettozero 1.1s cubic-bezier(0.4, 0, 0.7, 0.87) infinite;
+    top: calc(30% + 200px + 35px);
+    left: calc(50% - 25px);
 }
 
 #loadPanel #main_icon {
     width: 200px;
     height: 200px;
     position: absolute;
-    top: 20%;
+    top: 30%;
     left: calc(50% - 100px);
 }
 
@@ -155,11 +157,11 @@ svg.rotate:hover {
 
 @keyframes offsettozero {
     50% {
-        stroke-dashoffset: 168;
+        stroke-dashoffset: 99;
     }
 
     100% {
-        stroke-dashoffset: 251;
+        stroke-dashoffset: 142;
         transform: rotate(270deg);
     }
 }

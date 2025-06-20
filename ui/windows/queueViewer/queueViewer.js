@@ -28,7 +28,8 @@ export default class QueueViewerWindow extends HTMLDivElement {
             this.style.left = "105px"
             this.style.height = "calc(100% - 135px)"
         }
-        this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "200px" : "45px"
+        let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
+        this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (200 - insets.bottom / devicePixelRatio) + "px" : "45px"
         this.style.transform = "translateY(" + window.innerHeight + "px)"
         if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") this.style.zIndex = "4"
         Import.getData("/ui/windows/queueViewer/queueViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
@@ -106,7 +107,11 @@ export default class QueueViewerWindow extends HTMLDivElement {
                     this.shadowRoot.getElementById("cur").appendChild(new SongGrid(song, pl))
                 }
                 if (i > curI && i - curI < 50) {
-                    this.shadowRoot.getElementById("next").appendChild(new SongGrid(song, pl))
+                    let songGrid = new SongGrid(song, pl)
+                    songGrid.overrideClick = () => {
+                        Utils.queueManager.seekToSong(song)
+                    }
+                    this.shadowRoot.getElementById("next").appendChild(songGrid)
                 }
             }
             if (this.translation) this.translation.resume()

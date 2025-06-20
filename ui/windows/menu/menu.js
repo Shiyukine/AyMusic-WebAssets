@@ -30,6 +30,10 @@ export default class MenuWindow extends HTMLDivElement {
                     this.style.width = "100px";
                     this.style.height = "100%";
                 }
+                if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                    let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
+                    this.shadowRoot.getElementById("main").style.height = (68 + insets.bottom / devicePixelRatio) + "px";
+                }
                 this.style.position = "absolute";
                 this.style.opacity = "1"
                 this.accountEl = this.shadowRoot.getElementById("acc_pp");
@@ -123,7 +127,9 @@ export default class MenuWindow extends HTMLDivElement {
                 winName = "{settings}"
             }
             awindow.classList.add("aWindow")
-            if (Utils.app.platform == "Windows" | Utils.app.platform == "Linux") awindow.classList.add("windows")
+            let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
+            awindow.style.paddingBottom = ((Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 155 : 0) + insets.bottom / devicePixelRatio) + "px";
+            if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux") awindow.classList.add("windows")
             if (this.anWindow) {
                 let thisW = this.anWindow.win
                 thisW.ontransitionend = () => {

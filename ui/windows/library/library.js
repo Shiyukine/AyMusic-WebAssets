@@ -176,14 +176,20 @@ export default class LibraryWindow extends HTMLDivElement {
                 Utils.player.addEventListener("songchange", async () => {
                     let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
+                    let isPlay2 = Utils.queueManager.currentObject != null && "pl_" + Utils.libManager.userInfo.likedSongsPlId == Utils.queueManager.currentObject.id && await Utils.player.getState()
+                    shadow.getElementById("likedState").children[0].setAttribute("d", Utils.pathsData[isPlay2 ? "Pause" : "Play"])
                 }, { signal: this.controller.signal })
                 Utils.player.addEventListener("play", async () => {
                     let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
+                    let isPlay2 = Utils.queueManager.currentObject != null && "pl_" + Utils.libManager.userInfo.likedSongsPlId == Utils.queueManager.currentObject.id && await Utils.player.getState()
+                    shadow.getElementById("likedState").children[0].setAttribute("d", Utils.pathsData[isPlay2 ? "Pause" : "Play"])
                 }, { signal: this.controller.signal })
                 Utils.player.addEventListener("pause", async () => {
                     let isPlay = this.selectedPl != null && Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id && await Utils.player.getState()
                     shadow.getElementById("plState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
+                    let isPlay2 = Utils.queueManager.currentObject != null && "pl_" + Utils.libManager.userInfo.likedSongsPlId == Utils.queueManager.currentObject.id && await Utils.player.getState()
+                    shadow.getElementById("likedState").children[0].setAttribute("d", Utils.pathsData[isPlay2 ? "Pause" : "Play"])
                 }, { signal: this.controller.signal })
                 shadow.getElementById("plState").onclick = async () => {
                     if (Utils.queueManager.currentObject != null && "pl_" + this.selectedPl.id == Utils.queueManager.currentObject.id) {
@@ -192,6 +198,15 @@ export default class LibraryWindow extends HTMLDivElement {
                     }
                     else {
                         Utils.queueManager.changeQueue(this.selectedPl)
+                    }
+                }
+                shadow.getElementById("likedState").onclick = async () => {
+                    if (Utils.queueManager.currentObject != null && "pl_" + Utils.libManager.userInfo.likedSongsPlId == Utils.queueManager.currentObject.id) {
+                        if (await Utils.player.getState()) Utils.player.pause()
+                        else Utils.player.play()
+                    }
+                    else {
+                        Utils.queueManager.changeQueue(Utils.libManager.userLikedPl)
                     }
                 }
             }
@@ -282,6 +297,7 @@ export default class LibraryWindow extends HTMLDivElement {
                     plObjs.removeChild(plObjs.lastChild);
                 }
                 if (newIndex == 0) {
+                    this.shadowRoot.getElementById("likedState").style.display = "block"
                     Utils.apiManager.fetchAPI({
                         act: "getPlaylistSongs",
                         playlistID: Utils.libManager.userInfo.likedSongsPlId,
@@ -311,6 +327,7 @@ export default class LibraryWindow extends HTMLDivElement {
                     })
                 }
                 else if (newIndex > 0) {
+                    this.shadowRoot.getElementById("likedState").style.display = "none"
                     Utils.apiManager.fetchAPI({
                         act: "getObjectsInPlaylist",
                         playlistID: Utils.libManager.userInfo.likedSongsPlId,
@@ -481,6 +498,7 @@ export default class LibraryWindow extends HTMLDivElement {
                 let elToHide = this.shadowRoot.getElementById(listId).children[(offsetToRemove) * 50]
                 if (elToHide) {
                     elToHide.changeRequested = false
+                    this.translation.pause();
                     for (let i = 0; i < 50; i++) {
                         /**
                          * @type {SongGrid}
@@ -490,6 +508,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             el.changeSong(null, true)
                         }
                     }
+                    this.translation.resume();
                 }
             }
             if (this.lastOffsets[listId].last != offset) {
@@ -508,6 +527,7 @@ export default class LibraryWindow extends HTMLDivElement {
                     }, (result) => {
                         let i = 0;
                         let counterSongNotLoaded = 0
+                        this.translation.pause();
                         for (let obj of result["songs"]) {
                             /**
                              * @type {SongGrid}
@@ -519,6 +539,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             i++;
                         }
                         this.offsetsSize[offset] = { begin: offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end + 1, end: (offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end) + (50 - counterSongNotLoaded) * 70 }
+                        this.translation.resume();
                     })
                 }
             }

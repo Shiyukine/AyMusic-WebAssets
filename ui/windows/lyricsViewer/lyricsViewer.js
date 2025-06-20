@@ -31,7 +31,8 @@ export default class LyricsViewerWindow extends HTMLDivElement {
             this.style.height = "calc(100% - 135px)"
         }
         this.style.zIndex = "1"
-        this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "200px" : "45px"
+        let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
+        this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (200 - insets.bottom / devicePixelRatio) + "px" : "45px"
         this.style.transform = "translateY(" + window.innerHeight + "px)"
         if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") this.style.zIndex = "4"
         Import.getData("/ui/windows/lyricsViewer/lyricsViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {

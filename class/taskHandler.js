@@ -113,7 +113,7 @@ export default class TaskHandler {
                     }
                 })
             })()`)
-        iframe.allow = "encrypted-media"
+        iframe.allow = "autoplay; encrypted-media"
         iframe.style.width = "100%"
         iframe.style.height = "100%"
         if (wt.needDisplayNone) iframe.style.display = "none"
@@ -187,7 +187,9 @@ export default class TaskHandler {
             }
         }
         catch (e) { }
-        await Utils.delay(3000)
+        let delay = 1000 * Math.pow(2, attempt)
+        if (delay > 30000) delay = 30000
+        await Utils.delay(delay)
         await this.waitConnected(attempt + 1)
     }
 
