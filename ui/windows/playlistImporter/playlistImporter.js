@@ -134,7 +134,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                 window.addEventListener("message", async (e) => {
                     if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcbdata") {
                         if (e.data.cb == "error") {
-                            console.error(e.data.error)
+                            console.error(e.data.data.error)
                             this.errors = true
                         }
                         if (e.data.cb == "progressupdate") {
