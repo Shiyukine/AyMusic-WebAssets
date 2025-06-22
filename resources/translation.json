@@ -135,6 +135,7 @@
         "{playlistImporter.importing}": "Importing",
         "{playlistImporter.importedSuccess}": "Success!",
         "{playlistImporter.importedWithErrors}": "Import finished with some errors because a song may already be in your playlist.",
+        "{playlistImporter.importFatalError}": "Unable to import your playlist. Please contact us or try again later.",
         "{cancel}": "Cancel",
         "{next}": "Next",
         "{close}": "Close",

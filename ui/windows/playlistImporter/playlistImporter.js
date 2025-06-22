@@ -133,6 +133,16 @@ export default class PlaylistImporter extends HTMLDivElement {
                 }
                 window.addEventListener("message", async (e) => {
                     if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcbdata") {
+                        if (e.data.cb == "fatalerror") {
+                            console.error(e.data.data.error)
+                            this.changeText("{playlistImporter.title}", "{playlistImporter.importFatalError}");
+                            this.changeloading(false);
+                            this.shadowRoot.getElementById("next").innerText = "{close}"
+                            this.shadowRoot.getElementById("next").disabled = false
+                            // don't stop task when debugging
+                            if (Utils.app.isRelease) TaskHandler.stopWebTaskManually(this.curTaskUrl, true)
+                            this.step = 4
+                        }
                         if (e.data.cb == "error") {
                             console.error(e.data.data.error)
                             this.errors = true
