@@ -43,6 +43,7 @@ export default class ListenViewerWindow extends HTMLDivElement {
             }, { signal: this.controller.signal })
             Utils.player.onSongChange(async () => {
                 this.clearUrls()
+                shadow.getElementById("changeState").children[1].classList.add("playSVG")
                 shadow.getElementById("music_title").innerText = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
                 shadow.getElementById("music_artist").innerText = ""
                 let span = document.createElement("span")
@@ -109,6 +110,7 @@ export default class ListenViewerWindow extends HTMLDivElement {
                     pb.changeMax(dur)
                     shadow.getElementById("maxTime").innerText = Utils.msToTime(dur)
                     shadow.getElementById("curTime").innerText = Utils.msToTime(0)
+                    shadow.getElementById("changeState").children[1].classList.remove("playSVG")
                     if (await Utils.player.getState()) {
                         shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
                     }
@@ -126,6 +128,9 @@ export default class ListenViewerWindow extends HTMLDivElement {
             pb.onRelease(() => {
                 mouseDownPb = false;
                 Utils.player.seek(pb.getValue());
+            })
+            Utils.musicViewer.onSongChange(() => {
+                shadow.getElementById("changeState").children[1].classList.add("playSVG")
             })
             Utils.player.onShuffleChange(() => {
                 if (Utils.queueManager.shuffle) {
@@ -154,9 +159,11 @@ export default class ListenViewerWindow extends HTMLDivElement {
                 shadow.getElementById("previous").style.color = Utils.queueManager.canPrevious() ? "white" : "gray"
             })
             Utils.player.onPlay(async () => {
+                shadow.getElementById("changeState").children[1].classList.remove("playSVG")
                 shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
             })
             Utils.player.onPause(async () => {
+                shadow.getElementById("changeState").children[1].classList.remove("playSVG")
                 shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Play"])
             })
             Utils.libManager.onAddSongToLikedSongs((e) => {
@@ -168,6 +175,18 @@ export default class ListenViewerWindow extends HTMLDivElement {
                 if (Utils.queueManager.currentSong != null && e.detail.objId == "so_" + Utils.queueManager.currentSong.id) {
                     shadow.getElementById("like").children[0].setAttribute("d", Utils.pathsData["HeartOutline"])
                 }
+            });
+            Utils.player.onNeedTokenChange(async () => {
+                shadow.getElementById("changeState").children[1].classList.add("playSVG")
+            })
+            Utils.player.onSkipAds(async () => {
+                shadow.getElementById("changeState").children[1].classList.add("playSVG")
+            });
+            Utils.player.onNeedRefresh(async (e) => {
+                shadow.getElementById("changeState").children[1].classList.add("playSVG")
+            });
+            Utils.player.onNotConnected(async () => {
+                shadow.getElementById("changeState").children[1].classList.add("playSVG")
             });
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.shadowRoot.getElementById("listen").ontransitionend = () => { };

@@ -197,9 +197,9 @@ export default class SearchWindow extends HTMLDivElement {
                 while (this.shadowRoot.getElementById("albums").children.length > 0) {
                     this.shadowRoot.getElementById("albums").removeChild(this.shadowRoot.getElementById("albums").children[0])
                 }
-                while (this.shadowRoot.getElementById("playlists").children.length > 0) {
+                /*while (this.shadowRoot.getElementById("playlists").children.length > 0) {
                     this.shadowRoot.getElementById("playlists").removeChild(this.shadowRoot.getElementById("playlists").children[0])
-                }
+                }*/
                 this.shadowRoot.getElementById("bottom").style.display = "block"
                 if (this.selectedServer != "iconround") {
                     await this.searchForAPlatform(this.capitalizeFirstLetter(this.selectedServer))
@@ -236,6 +236,7 @@ export default class SearchWindow extends HTMLDivElement {
     async searchForAPlatform(server) {
         var platform = server
         this.platformsBusy.push(platform)
+        this.shadowRoot.getElementById("changeState").classList.add("playSVG")
         await TaskHandler.waitConnected()
         if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform &&
             (await PlatformHandler.getPlatformSettings(platform)).Token == "") {
@@ -317,6 +318,7 @@ export default class SearchWindow extends HTMLDivElement {
                 await PlatformHandler.refreshTokenForPlatform(platform)
                 console.log("Platform token refreshed")
                 this.platformsBusy.splice(this.platformsBusy.indexOf(platform), 1)
+                if (this.platformsBusy.length == 0) this.shadowRoot.getElementById("changeState").classList.remove("playSVG")
                 this.searchForAPlatform(server)
             }
             else {
@@ -458,14 +460,17 @@ export default class SearchWindow extends HTMLDivElement {
                             }
                         }
                         this.platformsBusy.splice(this.platformsBusy.indexOf(platform), 1)
+                        if (this.platformsBusy.length == 0) this.shadowRoot.getElementById("changeState").classList.remove("playSVG")
                     }
                     else {
                         this.platformsBusy.splice(this.platformsBusy.indexOf(platform), 1)
+                        if (this.platformsBusy.length == 0) this.shadowRoot.getElementById("changeState").classList.remove("playSVG")
                         Utils.newError("Unable to search on " + platform, "No songs returned")
                     }
                 }
                 catch (e) {
                     this.platformsBusy.splice(this.platformsBusy.indexOf(platform), 1)
+                    if (this.platformsBusy.length == 0) this.shadowRoot.getElementById("changeState").classList.remove("playSVG")
                     Utils.newError("Unable to search on " + platform, e)
                 }
             }

@@ -57,6 +57,7 @@ export default class ListenWindow extends HTMLDivElement {
                 let firstS = true;
                 Utils.player.onSongChange(async () => {
                     this.clearUrls()
+                    shadow.getElementById("changeState").children[1].classList.add("playSVG")
                     if (!Utils.player.isLocalMusic) {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         let origin = "app://root"
@@ -270,6 +271,7 @@ export default class ListenWindow extends HTMLDivElement {
                         pb.changeMax(dur)
                         shadow.getElementById("maxTime").innerText = Utils.msToTime(dur)
                         shadow.getElementById("curTime").innerText = Utils.msToTime(0)
+                        shadow.getElementById("changeState").children[1].classList.remove("playSVG")
                         if (await Utils.player.getState()) {
                             shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
                             if (Utils.app.platform != "Android") {
@@ -378,6 +380,7 @@ export default class ListenWindow extends HTMLDivElement {
                     if (e.detail.objId.startsWith("so_") && Utils.queueManager.currentSong.id == e.detail.objId.replace("so_", "")) {
                         shadow.getElementById("music_title").innerText = e.detail.aliasTitle != "" ? e.detail.aliasTitle : Utils.queueManager.currentSong.title
                         shadow.getElementById("music_artist").innerText = ""
+                        shadow.getElementById("changeState").children[1].classList.add("playSVG")
                         let span = document.createElement("span")
                         span.innerText = e.detail.aliasSongSingerName != "" ? e.detail.aliasSongSingerName : Utils.queueManager.currentSong.singerName
                         span.classList.add("link")
@@ -461,6 +464,7 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                 })
                 Utils.player.onPlay(async () => {
+                    shadow.getElementById("changeState").children[1].classList.remove("playSVG")
                     let cur = await Utils.player.getCurrentTime()
                     if (!Utils.player.isLocalMusic) {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
@@ -493,6 +497,7 @@ export default class ListenWindow extends HTMLDivElement {
                     this.updateDiscordRPC(pb, false)
                 })
                 Utils.player.onPause(async () => {
+                    shadow.getElementById("changeState").children[1].classList.remove("playSVG")
                     let cur = await Utils.player.getCurrentTime()
                     if (!Utils.player.isLocalMusic) {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
@@ -585,6 +590,7 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                 })
                 Utils.player.onNeedTokenChange(async () => {
+                    shadow.getElementById("changeState").children[1].classList.add("playSVG")
                     try {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         console.log("Platform need refresh token")
@@ -597,14 +603,17 @@ export default class ListenWindow extends HTMLDivElement {
                     }
                 })
                 Utils.player.onSkipAds(async () => {
+                    shadow.getElementById("changeState").children[1].classList.add("playSVG")
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 });
                 Utils.player.onNeedRefresh(async (e) => {
+                    shadow.getElementById("changeState").children[1].classList.add("playSVG")
                     this.needRefreshTime = e.detail || await Utils.player.getCurrentTime()
                     console.log(this.needRefreshTime)
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 });
                 Utils.player.onNotConnected(async () => {
+                    shadow.getElementById("changeState").children[1].classList.add("playSVG")
                     let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                     let errPanel = new InfoPanel("Not connected into " + platform, "You must be connected into " + platform + " to listen a music on this platform!\nIf you're sure to be connected into " + platform + ", please click on \"I'm connected!\".", [
                         {

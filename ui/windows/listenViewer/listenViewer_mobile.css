@@ -21,6 +21,33 @@
     transition: 0.4s background;
 }
 
+@keyframes offsettozero {
+    50% {
+        stroke-dashoffset: 82;
+    }
+
+    100% {
+        stroke-dashoffset: 102;
+        transform: rotate(270deg);
+    }
+}
+
+svg>circle {
+    transform-origin: center;
+    transform: rotate(-90deg);
+    stroke-dasharray: 102;
+    /* (2PI * 40px) */
+    stroke-dashoffset: 102;
+    animation: offsettozero 1.1s cubic-bezier(0.4, 0, 0.7, 0.87) infinite;
+    animation-play-state: paused;
+    visibility: collapse;
+}
+
+circle.playSVG {
+    animation-play-state: running !important;
+    visibility: visible !important;
+}
+
 .listen svg:hover {
     background-color: rgb(221, 221, 221, 0.3);
 }
