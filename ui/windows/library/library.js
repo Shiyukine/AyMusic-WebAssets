@@ -297,6 +297,8 @@ export default class LibraryWindow extends HTMLDivElement {
                     plObjs.removeChild(plObjs.lastChild);
                 }
                 if (newIndex == 0) {
+                    let isPlay = Utils.queueManager.currentObject != null && "pl_" + Utils.libManager.userInfo.likedSongsPlId == Utils.queueManager.currentObject.id && await Utils.player.getState()
+                    this.shadowRoot.getElementById("likedState").children[0].setAttribute("d", Utils.pathsData[isPlay ? "Pause" : "Play"])
                     this.shadowRoot.getElementById("likedState").style.display = "block"
                     Utils.apiManager.fetchAPI({
                         act: "getPlaylistSongs",
