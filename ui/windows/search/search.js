@@ -253,11 +253,6 @@ export default class SearchWindow extends HTMLDivElement {
         }
         if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") searchUrl = encodeURI(searchUrl)
         console.log("Search url: " + searchUrl)
-        var urlsExist = []
-        urlsExist = await Utils.apiManager.doPostRequest({
-            act: "getSongsUrl",
-            filter: (await PlatformHandler.getPlatformSettings(platform)).FilterSearch
-        })
         var objDB = []
         objDB = await Utils.apiManager.doPostRequest({
             act: "newSearch",
@@ -328,6 +323,11 @@ export default class SearchWindow extends HTMLDivElement {
                 try {
                     var json = JSON.parse(data)
                     if (json.length > 0) {
+                        var urlsExist = []
+                        urlsExist = await Utils.apiManager.doPostRequest({
+                            act: "getSongsFromUrls",
+                            urls: json.map(x => x.url),
+                        })
                         var songsToAdd = []
                         var songsIDs = []
                         let albumsIDAdded = []
