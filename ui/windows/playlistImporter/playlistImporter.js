@@ -43,6 +43,7 @@ export default class PlaylistImporter extends HTMLDivElement {
     selectedPlaylistPicker = null;
     step = 0;
     curTaskUrl = "";
+    curWtId = "";
 
     urlsExist = [];
     songsToAdd = []
@@ -116,7 +117,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                                 filter: (await PlatformHandler.getPlatformSettings(platform)).FilterSearch
                             })
                             let script = await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "GetPlaylistItemsScript"))
-                            TaskHandler.addTask(url, script, false, true, true, async (data) => {
+                            this.curWtId = TaskHandler.addTask(url, script, false, true, true, async (data) => {
                             }, false)
                         }
                         else {
@@ -132,7 +133,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                     history.back()
                 }
                 window.addEventListener("message", async (e) => {
-                    if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcbdata") {
+                    if (this.curWtId == e.data.id && e.data.message == "jseventcbdata") {
                         if (e.data.cb == "fatalerror") {
                             console.error(e.data.data.error)
                             this.changeText("{playlistImporter.title}", "{playlistImporter.importFatalError}");
@@ -224,7 +225,7 @@ export default class PlaylistImporter extends HTMLDivElement {
         }
         this.curTaskUrl = url;
         let script = await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "GetPlaylistsScript"))
-        TaskHandler.addTask(url, script, false, true, false, async (data) => {
+        this.curWtId = TaskHandler.addTask(url, script, false, true, false, async (data) => {
             if (data == "Error" && (await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
                 console.log("Platform need refresh token")
                 await PlatformHandler.refreshTokenForPlatform(platform)

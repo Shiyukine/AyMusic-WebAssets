@@ -17,6 +17,7 @@ export default class Player {
     currentUrl = "";
     currentSongUrl = "";
     currentPlatform = null;
+    currentWtId = "";
     needPlay = true;
     currentTime = -1;
     duration = -1;
@@ -25,7 +26,7 @@ export default class Player {
     constructor() {
         window.addEventListener("message", (e) => {
             //console.log(e)
-            if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcb") {
+            if (e.data.id == this.currentWtId && e.data.message == "jseventcb") {
                 if (e.data.cb == "play") {
                     this.state = true
                 }
@@ -40,7 +41,7 @@ export default class Player {
                     //TaskHandler.executeJs(url, "async () => { navigator.mediaSession.metadata = " + navigator.mediaSession.metadata + " }")
                 }
             }
-            if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.message == "jseventcbdata") {
+            if (e.data.id == this.currentWtId && e.data.message == "jseventcbdata") {
                 if (e.data.cb == "timeupdate") {
                     this.checkCropSong(e.data.data)
                     this.currentTime = e.data.data
@@ -67,6 +68,7 @@ export default class Player {
         this.needPlay = play
         this.duration = -1
         this.currentTime - 1
+        this.currentWtId = ""
         this.state = null
         if (this.objurl != "") URL.revokeObjectURL(this.objurl)
         if (this.audioElement != null) {
@@ -167,6 +169,7 @@ export default class Player {
             }
             await TaskHandler.waitConnected()
             var wtId = TaskHandler.addTask(url, await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => { }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying.includes(Utils.app.platform))
+            this.currentWtId = wtId
             this.currentUrl = url
         }
         this.currentSongUrl = song.url

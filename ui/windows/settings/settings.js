@@ -218,20 +218,28 @@ export default class SettingsWindow extends HTMLDivElement {
     }
 
     static async connectToPlatform(platform) {
-        await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
-            await PlatformHandler.getPlatformUrl(platform, "BaseUrl"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
-        let inf = new InfoPanel("Information", "If the window has closed by itself, it means that you've been connected! If so, click on the \"I'm connected!\" button and wait a bit. If you find you're waiting too long, restart the application.", [
-            { text: "Close", isPositive: false, onclick: async () => { inf.close() } },
+        let inf2 = new InfoPanel("WARNING", "When linking an account, please consider linking a secondary account due to the potential risk of bans. Although the risk is low and we try to minimize the risk, we strongly recommend linking a secondary account.\nWE DON'T TAKE RESPONSIBILITY FOR BANNED ACCOUNTS.", [
+            { text: "Cancel", isPositive: false, onclick: async () => { inf2.close() } },
             {
-                text: "I'm connected!", isPositive: true, onclick: async () => {
-                    if (await PlatformHandler.getPlatformBySongUrl(Utils.queueManager.currentSong.url) == platform) {
-                        if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) Utils.player.needTokenChange()
-                        else Utils.player.playSong(Utils.queueManager.currentSong)
-                    }
-                    inf.close()
+                text: "I understand", isPositive: true, onclick: async () => {
+                    await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LoginUrl"),
+                        await PlatformHandler.getPlatformUrl(platform, "BaseUrl"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
+                    let inf = new InfoPanel("Information", "If the window has closed by itself, it means that you've been connected! If so, click on the \"I'm connected!\" button and wait a bit. If you find you're waiting too long, restart the application.", [
+                        { text: "Close", isPositive: false, onclick: async () => { inf.close() } },
+                        {
+                            text: "I'm connected!", isPositive: true, onclick: async () => {
+                                if (await PlatformHandler.getPlatformBySongUrl(Utils.queueManager.currentSong.url) == platform) {
+                                    if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) Utils.player.needTokenChange()
+                                    else Utils.player.playSong(Utils.queueManager.currentSong)
+                                }
+                                inf.close()
+                            }
+                        }], false)
+                    document.getElementById("main").appendChild(inf)
+                    inf2.close()
                 }
             }], false)
-        document.getElementById("main").appendChild(inf)
+        document.getElementById("main").appendChild(inf2)
     }
 
     changeView(newIndex) {
