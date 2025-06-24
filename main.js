@@ -100,6 +100,11 @@ async function main() {
                         url: Utils.servURL + "api/",
                         includes: true,
                     });
+                    navigator.serviceWorker.controller.postMessage({
+                        action: "excludeResource",
+                        url: "google.com",
+                        includes: true,
+                    });
                 });
                 //
                 LocalMusicHandler.init()
