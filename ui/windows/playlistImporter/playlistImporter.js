@@ -45,7 +45,6 @@ export default class PlaylistImporter extends HTMLDivElement {
     curTaskUrl = "";
     curWtId = "";
 
-    urlsExist = [];
     songsToAdd = []
     songsToAddPl = []
     songsIDs = []
@@ -112,10 +111,6 @@ export default class PlaylistImporter extends HTMLDivElement {
                                 url = url.split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
                             }
                             this.curTaskUrl = url;
-                            this.urlsExist = await Utils.apiManager.doPostRequest({
-                                act: "getSongsUrl",
-                                filter: (await PlatformHandler.getPlatformSettings(platform)).FilterSearch
-                            })
                             let script = await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "GetPlaylistItemsScript"))
                             this.curWtId = TaskHandler.addTask(url, script, false, true, true, async (data) => {
                             }, false)
@@ -132,6 +127,7 @@ export default class PlaylistImporter extends HTMLDivElement {
                     TaskHandler.stopWebTaskManually(this.curTaskUrl, true)
                     history.back()
                 }
+                let itemsOut = [];
                 window.addEventListener("message", async (e) => {
                     if (this.curWtId == e.data.id && e.data.message == "jseventcbdata") {
                         if (e.data.cb == "fatalerror") {
@@ -150,26 +146,34 @@ export default class PlaylistImporter extends HTMLDivElement {
                         }
                         if (e.data.cb == "progressupdate") {
                             console.log("received items from " + platform)
-                            for (let song of e.data.data.items) {
-                                let songID = null
-                                for (let songDB of this.urlsExist) {
-                                    if (songDB["url"] == song.url) {
-                                        songID = songDB["songID"]
-                                    }
-                                }
-                                if (!songID) {
-                                    // 2 last items in list: id, index
-                                    this.songsToAdd.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
-                                    song.albumName, song.albumType, song.albumImgUrl, song.albumUrl, song.singerName, song.singerImgUrl, song.singerUrl, song.singerNameAlias, song.additionalSingers, song.additionalAlbumSingers, null, this.currentItemNumber])
-                                }
-                                else {
-                                    this.songsIDs.push([songID, this.currentItemNumber])
-                                }
-                                this.currentItemNumber++
+                            for (let item of e.data.data.items) {
+                                itemsOut.push(item)
                             }
                             this.changeloading(e.data.data.itemNumber / this.selectedPlaylist.songs * 50)
                             if (e.data.data.itemNumber == this.selectedPlaylist.songs) {
                                 TaskHandler.stopWebTaskManually(this.curTaskUrl, true)
+                                let urlsExist = await Utils.apiManager.doPostRequest({
+                                    act: "getSongsFromUrls",
+                                    urls: itemsOut.map(song => song.url)
+                                })
+                                this.currentItemNumber = 0
+                                for (let song of itemsOut) {
+                                    let songID = null
+                                    for (let songDB of urlsExist) {
+                                        if (songDB["url"] == song.url) {
+                                            songID = songDB["songID"]
+                                        }
+                                    }
+                                    if (!songID) {
+                                        // 2 last items in list: id, index
+                                        this.songsToAdd.push([song.url, song.title, song.imgUrl, song.time, song.isExplicit, song.cropStart, song.cropEnd,
+                                        song.albumName, song.albumType, song.albumImgUrl, song.albumUrl, song.singerName, song.singerImgUrl, song.singerUrl, song.singerNameAlias, song.additionalSingers, song.additionalAlbumSingers, null, this.currentItemNumber])
+                                    }
+                                    else {
+                                        this.songsIDs.push([songID, this.currentItemNumber])
+                                    }
+                                    this.currentItemNumber++
+                                }
                                 if (this.songsToAdd.length > 0) {
                                     for (let i = 0; i < this.songsToAdd.length; i += 50) {
                                         let nsongsID = await Utils.apiManager.doPostRequest({
