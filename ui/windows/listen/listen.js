@@ -306,11 +306,9 @@ export default class ListenWindow extends HTMLDivElement {
                         firstPlay = false
                     }
                     if (this.needRefreshTime.time != -1 && this.needRefreshTime.songID == Utils.queueManager.currentSong.id) {
-                        await Utils.player.seek(this.needRefreshTime)
-                        this.needRefreshTime = {
-                            time: -1,
-                            songID: null
-                        }
+                        await Utils.player.seek(this.needRefreshTime.time)
+                        this.needRefreshTime.time = -1
+                        this.needRefreshTime.songID = null
                         Utils.player.play()
                     }
                 })
@@ -597,10 +595,8 @@ export default class ListenWindow extends HTMLDivElement {
                 })
                 Utils.player.onNeedTokenChange(async (e) => {
                     shadow.getElementById("changeState").children[1].classList.add("playSVG")
-                    this.needRefreshTime = {
-                        time: e.detail || await Utils.player.getCurrentTime(),
-                        songID: Utils.queueManager.currentSong.id
-                    }
+                    this.needRefreshTime.time = e.detail || await Utils.player.getCurrentTime()
+                    this.needRefreshTime.songID = Utils.queueManager.currentSong.id
                     try {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         console.log("Platform need refresh token")
@@ -618,10 +614,8 @@ export default class ListenWindow extends HTMLDivElement {
                 });
                 Utils.player.onNeedRefresh(async (e) => {
                     shadow.getElementById("changeState").children[1].classList.add("playSVG")
-                    this.needRefreshTime = {
-                        time: e.detail || await Utils.player.getCurrentTime(),
-                        songID: Utils.queueManager.currentSong.id
-                    }
+                    this.needRefreshTime.time = e.detail || await Utils.player.getCurrentTime()
+                    this.needRefreshTime.songID = Utils.queueManager.currentSong.id
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 });
                 Utils.player.onNotConnected(async () => {

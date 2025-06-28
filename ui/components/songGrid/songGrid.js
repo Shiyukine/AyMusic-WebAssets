@@ -119,9 +119,6 @@ export default class SongGrid extends HTMLDivElement {
         else {
             this.shadowRoot.getElementById("svg_explicit").style.display = ""
         }
-        let plat = song.imgUrl == "localImg" ? "iconround" : await PlatformHandler.getPlatformBySongUrl(song.url)
-        plat = plat.toLowerCase()
-        this.shadowRoot.getElementById("platform").style.backgroundImage = "url('/resources/" + plat + ".ico')"
         if (this.song.imgUrl === "localImg") {
             if (this.song.canBeLoaded) {
                 var imge = this.shadowRoot.getElementById("img");
@@ -147,6 +144,9 @@ export default class SongGrid extends HTMLDivElement {
                 }
             });
         }
+        let plat = song.imgUrl == "localImg" ? "iconround" : await PlatformHandler.getPlatformBySongUrl(song.url)
+        plat = plat.toLowerCase()
+        this.shadowRoot.getElementById("platform").style.backgroundImage = "url('/resources/" + plat + ".ico')"
     }
 
     /**
