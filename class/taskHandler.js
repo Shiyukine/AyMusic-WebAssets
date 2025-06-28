@@ -179,10 +179,13 @@ export default class TaskHandler {
         }
         try {
             if (navigator.onLine) {
-                let res = await fetch("https://google.com")
+                let res = await fetch(Utils.servURL)
                 if (res.ok) {
-                    Utils.hideMiniError(miniErrorId)
-                    return
+                    let details = await res.blob()
+                    if (details.size > 0) {
+                        Utils.hideMiniError(miniErrorId)
+                        return
+                    }
                 }
             }
         }
