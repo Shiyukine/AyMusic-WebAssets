@@ -45,6 +45,14 @@ async function main() {
                 } else if (registration.active) {
                     console.log("Service worker active");
                 }
+                if (Utils.app.versionId != Utils.app.getSetting("serviceWorkerVersionCode")) {
+                    console.log("Service worker version changed, unregistering old service worker");
+                    await registration.unregister();
+                    await navigator.serviceWorker.register("/sw.js", {
+                        scope: "/",
+                    });
+                    Utils.app.changeSetting("serviceWorkerVersionCode", Utils.app.versionId);
+                }
             } catch (error) {
                 console.error(`Registration failed with ${error}`);
             }

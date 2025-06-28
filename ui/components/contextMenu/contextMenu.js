@@ -68,7 +68,7 @@ export default class ContextMenu extends HTMLDivElement {
             }, { signal: this.controller.signal })
             if (Utils.app.platform != "Android" && Utils.app.platform != "iOS") {
                 window.addEventListener("pointerdown", (e) => {
-                    if (!this.isHidded && !this.shadowRoot.getElementById("context").matches(":hover") && !this.isSub)
+                    if (!this.isHidded && this.shadowRoot && !this.shadowRoot.getElementById("context").matches(":hover") && !this.isSub)
                         this.hide()
                 })
                 this.addEventListener("mouseleave", (e) => {
@@ -257,6 +257,7 @@ export default class ContextMenu extends HTMLDivElement {
         }
         this.shadowRoot.innerHTML = ""
         this.innerHTML = ""
+        if (document.getElementById("main").contains(this)) document.getElementById("main").removeChild(this)
         this.__proto__ = null
     }
 }

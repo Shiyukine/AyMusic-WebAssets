@@ -16,7 +16,8 @@ export default class App {
         repeat: 0,
         mute: false,
         firstOpen: true,
-        other_hwacc: true
+        other_hwacc: true,
+        serviceWorkerVersionCode: 0,
     }
     registered = false;
     haveCallback = null;

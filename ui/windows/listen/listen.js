@@ -25,7 +25,10 @@ export default class ListenWindow extends HTMLDivElement {
             { src: null, sizes: '512x512', type: 'image/png' },
         ]
     }
-    needRefreshTime = -1
+    needRefreshTime = {
+        time: - 1,
+        songID: null
+    }
 
     constructor() {
         super();
@@ -302,9 +305,12 @@ export default class ListenWindow extends HTMLDivElement {
                         await Utils.player.seek(Utils.libManager.userInfo.curTime)
                         firstPlay = false
                     }
-                    if (this.needRefreshTime != -1) {
+                    if (this.needRefreshTime.time != -1 && this.needRefreshTime.songID == Utils.queueManager.currentSong.id) {
                         await Utils.player.seek(this.needRefreshTime)
-                        this.needRefreshTime = -1
+                        this.needRefreshTime = {
+                            time: -1,
+                            songID: null
+                        }
                         Utils.player.play()
                     }
                 })
@@ -589,8 +595,12 @@ export default class ListenWindow extends HTMLDivElement {
                         await Utils.player.play()
                     }
                 })
-                Utils.player.onNeedTokenChange(async () => {
+                Utils.player.onNeedTokenChange(async (e) => {
                     shadow.getElementById("changeState").children[1].classList.add("playSVG")
+                    this.needRefreshTime = {
+                        time: e.detail || await Utils.player.getCurrentTime(),
+                        songID: Utils.queueManager.currentSong.id
+                    }
                     try {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         console.log("Platform need refresh token")
@@ -608,8 +618,10 @@ export default class ListenWindow extends HTMLDivElement {
                 });
                 Utils.player.onNeedRefresh(async (e) => {
                     shadow.getElementById("changeState").children[1].classList.add("playSVG")
-                    this.needRefreshTime = e.detail || await Utils.player.getCurrentTime()
-                    console.log(this.needRefreshTime)
+                    this.needRefreshTime = {
+                        time: e.detail || await Utils.player.getCurrentTime(),
+                        songID: Utils.queueManager.currentSong.id
+                    }
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 });
                 Utils.player.onNotConnected(async () => {

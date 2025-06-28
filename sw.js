@@ -61,14 +61,6 @@ const cacheFirst = async ({
     preloadResponsePromise,
     event,
 }) => {
-    if (isExcluded(request.url)) {
-        // For internal app resources, we can skip caching
-        return fetch(request);
-    }
-    if (request.method !== "GET") {
-        // Only cache GET requests
-        return fetch(request);
-    }
     // First try to get the resource from the cache
     const responseFromCache = await caches.match(request);
     if (responseFromCache) {
@@ -117,6 +109,9 @@ const removeCache = async (cacheKey, key) => {
 }
 
 self.addEventListener("fetch", (event) => {
+    if (isExcluded(event.request.url) || event.request.method !== "GET") {
+        return;
+    }
     event.respondWith(
         cacheFirst({
             request: event.request,
