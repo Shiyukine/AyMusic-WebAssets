@@ -98,17 +98,17 @@ async function main() {
                 await Utils.app.remoteClient.changeServURL(Utils.servURL)
                 console.log("Server URL: " + Utils.servURL);
                 navigator.serviceWorker.ready.then((registration) => {
-                    navigator.serviceWorker.controller.postMessage({
+                    registration.active.postMessage({
                         action: "excludeResource",
                         url: Utils.servURL + "dl/",
                         includes: true,
                     });
-                    navigator.serviceWorker.controller.postMessage({
+                    registration.active.postMessage({
                         action: "excludeResource",
                         url: Utils.servURL + "api/",
                         includes: true,
                     });
-                    navigator.serviceWorker.controller.postMessage({
+                    registration.active.postMessage({
                         action: "excludeResource",
                         url: "google.com",
                         includes: true,
