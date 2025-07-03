@@ -72,7 +72,7 @@ export default class SettingsWindow extends HTMLDivElement {
                 }
                 shadow.getElementById("clear_cache").onclick = async () => {
                     console.log(await Utils.app.remoteClient.removeCache("Image/"))
-                    navigator.serviceWorker.controller.postMessage({
+                    Utils.postMessageSW({
                         action: "deleteCache",
                     });
                     console.log(await Utils.app.remoteClient.removeCache("API/"))

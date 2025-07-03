@@ -113,6 +113,7 @@ async function main() {
                         url: "google.com",
                         includes: true,
                     });
+                    Utils.postMessageSW = registration.active.postMessage.bind(registration.active);
                 });
                 //
                 LocalMusicHandler.init()

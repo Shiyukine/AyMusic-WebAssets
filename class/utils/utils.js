@@ -29,6 +29,8 @@ export default class Utils {
     static player = new Player();
     static pathsData = []
 
+    static postMessageSW = () => { console.error("not implemented") }
+
     /**
      * @type {MenuWindow}
      */

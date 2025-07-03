@@ -98,7 +98,7 @@ export default class LoginPanel extends HTMLDivElement {
                         avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif"
                     }
                     if (isForModification == "modify") {
-                        navigator.serviceWorker.controller.postMessage({
+                        Utils.postMessageSW({
                             action: "deleteCache",
                             cacheKey: Utils.servURL + "account/" + value(3) + "/pp.gif"
                         })
@@ -114,7 +114,7 @@ export default class LoginPanel extends HTMLDivElement {
                 }
                 if (url.includes("/login/index.php") && isForModification == "logout") {
                     console.log(await Utils.app.remoteClient.removeCache("Image/"))
-                    navigator.serviceWorker.controller.postMessage({
+                    Utils.postMessageSW({
                         action: "deleteCache",
                     });
                     console.log(await Utils.app.remoteClient.removeCache("API/"))
