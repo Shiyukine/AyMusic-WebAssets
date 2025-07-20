@@ -305,7 +305,7 @@ export default class ListenWindow extends HTMLDivElement {
                         await Utils.player.seek(Utils.libManager.userInfo.curTime)
                         firstPlay = false
                     }
-                    if (this.needRefreshTime.time != -1 && this.needRefreshTime.songID == Utils.queueManager.currentSong.id) {
+                    if (this.needRefreshTime.time != -1 && this.needRefreshTime.songID == Utils.queueManager.currentSong.id && this.needRefreshTime.time != await Utils.player.getDuration()) {
                         await Utils.player.seek(this.needRefreshTime.time)
                         this.needRefreshTime.time = -1
                         this.needRefreshTime.songID = null
@@ -596,7 +596,8 @@ export default class ListenWindow extends HTMLDivElement {
                 Utils.player.onNeedTokenChange(async (e) => {
                     shadow.getElementById("changeState").children[1].classList.add("playSVG")
                     this.needRefreshTime.time = e.detail || await Utils.player.getCurrentTime()
-                    this.needRefreshTime.songID = Utils.queueManager.currentSong.id
+                    if (this.needRefreshTime.time != await Utils.player.getDuration()) this.needRefreshTime.songID = Utils.queueManager.currentSong.id
+                    else this.needRefreshTime.time = -1
                     try {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
                         console.log("Platform need refresh token")
@@ -615,7 +616,8 @@ export default class ListenWindow extends HTMLDivElement {
                 Utils.player.onNeedRefresh(async (e) => {
                     shadow.getElementById("changeState").children[1].classList.add("playSVG")
                     this.needRefreshTime.time = e.detail || await Utils.player.getCurrentTime()
-                    this.needRefreshTime.songID = Utils.queueManager.currentSong.id
+                    if (this.needRefreshTime.time != await Utils.player.getDuration()) this.needRefreshTime.songID = Utils.queueManager.currentSong.id
+                    else this.needRefreshTime.time = -1
                     Utils.player.playSong(Utils.queueManager.currentSong)
                 });
                 Utils.player.onNotConnected(async () => {
