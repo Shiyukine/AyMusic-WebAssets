@@ -252,6 +252,13 @@ svg.rotate:hover {
     position: relative;
 }
 
+.windowTopBar.macOS img,
+.windowTopBar.macOS svg {
+    width: 28px;
+    height: 28px;
+    margin-top: 5px;
+}
+
 .windowTopBar img.left,
 .windowTopBar svg.left,
 .windowTopBar p.left {
@@ -266,6 +273,10 @@ svg.rotate:hover {
     -webkit-app-region: drag;
     /*-webkit-app-region: drag;
     -webkit-user-select: none;*/
+}
+
+.windowTopBar.macOS p {
+    margin-top: 8px;
 }
 
 .windowTopBar>.mvmt {

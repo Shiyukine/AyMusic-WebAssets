@@ -51,20 +51,37 @@ export default class Window {
             topbar.appendChild(wchange)
             topbar.appendChild(wmin)
         }
-        var back = await Utils.createSVGPath("Back", "white", () => history.back(), 29)
-        var forward = await Utils.createSVGPath("Forward", "white", () => history.forward(), 29)
+        if (Utils.app.platform == "MacOS") {
+            topbar.classList.add("colorTopBar")
+            topbar.classList.add("macOS")
+            var mvmt = document.createElement("div")
+            /*mvmt.addEventListener("pointerdown", async function (e) {
+                if (e.button == 0) await Utils.app.remoteClient.beginMoveWindow()
+            })
+            mvmt.addEventListener("pointerup", async function (e) {
+                if (e.button == 2) await Utils.app.remoteClient.rightClickWindow()
+            })*/
+            mvmt.classList.add("mvmt")
+            mvmt.id = "win_mvmt"
+            topbar.appendChild(mvmt)
+        }
+        var back = await Utils.createSVGPath("Back", "white", () => history.back(), Utils.app.platform == "MacOS" ? 28 : 29)
+        var forward = await Utils.createSVGPath("Forward", "white", () => history.forward(), Utils.app.platform == "MacOS" ? 28 : 29)
         back.classList.add("left")
         back.classList.add("clickable")
         forward.classList.add("left")
         forward.classList.add("clickable")
         topbar.appendChild(back)
         topbar.appendChild(forward)
-        if (Utils.app.platform == "Windows") {
+        if (Utils.app.platform == "Windows" || Utils.app.platform == "MacOS") {
             var appName = document.createElement("p")
             appName.innerText = ""
             appName.id = "curPageName"
             appName.classList.add("left")
             topbar.appendChild(appName)
+        }
+        if(Utils.app.platform == "MacOS") {
+            back.style.marginLeft = "80px"
         }
         document.body.appendChild(topbar)
         new ThemeColor(topbar)
