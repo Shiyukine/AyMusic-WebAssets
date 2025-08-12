@@ -346,7 +346,7 @@ export default class ListenWindow extends HTMLDivElement {
                                     dur: pb.getMax(),
                                     isPlaying: await Utils.player.getState()
                                 }
-                                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying)
+                                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying, Utils.queueManager.shuffle, Utils.queueManager.repeat)
                             }
                         }
                     }
@@ -432,6 +432,15 @@ export default class ListenWindow extends HTMLDivElement {
                             Utils.player.next()
                         } : null);
                     }
+                    else {
+                        const data = {
+                            pR: 1,
+                            cur: await Utils.player.getCurrentTime(),
+                            dur: pb.getMax(),
+                            isPlaying: await Utils.player.getState()
+                        }
+                        Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying, Utils.queueManager.shuffle, Utils.queueManager.repeat)
+                    }
                     Utils.app.changeSetting("shuffle", Utils.queueManager.shuffle)
                     if (!Utils.player.isLocalMusic && Utils.queueManager.currentSong != null) {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
@@ -460,6 +469,15 @@ export default class ListenWindow extends HTMLDivElement {
                         navigator.mediaSession.setActionHandler("nexttrack", Utils.queueManager.canNext() ? () => {
                             Utils.player.next()
                         } : null);
+                    }
+                    else {
+                        const data = {
+                            pR: 1,
+                            cur: await Utils.player.getCurrentTime(),
+                            dur: pb.getMax(),
+                            isPlaying: await Utils.player.getState()
+                        }
+                        Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying, Utils.queueManager.shuffle, Utils.queueManager.repeat)
                     }
                     Utils.app.changeSetting("repeat", Utils.queueManager.repeat)
                     if (!Utils.player.isLocalMusic && Utils.queueManager.currentSong != null) {
@@ -849,6 +867,35 @@ export default class ListenWindow extends HTMLDivElement {
                 }
                 window.listeners.player.pause = () => Utils.player.pause()
                 window.listeners.player.seek = (time) => Utils.player.seek(time)
+                window.listeners.player.setShuffle = (shuffle) => Utils.player.changeShuffle(shuffle)
+                window.listeners.player.setRepeat = (repeat) => Utils.player.changeRepeat(repeat)
+                window.listeners.queue.view = () => {
+                    let songs = []
+                    var curI = Utils.queueManager.currentIndex
+                    for (let i in Utils.queueManager.allSongs) {
+                        if (i > curI && i - curI < 50) {
+                            let song = Utils.queueManager.allSongs[i].song
+                            songs.push({
+                                id: song.id,
+                                objId: Utils.queueManager.allSongs[i].obj.id,
+                                title: song.title,
+                                artist: song.singerName,
+                                album: song.albumName,
+                                duration: song.time,
+                                icon: song.imgUrl,
+                            })
+                        }
+                    }
+                    return JSON.stringify(songs)
+                }
+                window.listeners.queue.moveTo = (songId) => {
+                    for (let songInfo of Utils.queueManager.allSongs) {
+                        if (songInfo.song.id == songId) {
+                            Utils.queueManager.seekToSong(songInfo.song)
+                            break;
+                        }
+                    }
+                }
                 window.addEventListener("message", (e) => {
                     //console.log(e)
                     //console.log(e.data)
@@ -945,7 +992,7 @@ export default class ListenWindow extends HTMLDivElement {
                 Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
             }
             if (part == "changePositionState") {
-                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying)
+                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying, Utils.queueManager.shuffle, Utils.queueManager.repeat)
             }
             if (part == "setActionHandler") {
 

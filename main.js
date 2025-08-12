@@ -91,7 +91,7 @@ async function main() {
                 //loadPanel.show();
                 console.log("Getting server URL");
                 Utils.realServURL = (await Utils.app.httpRequestGET("https://raw.githubusercontent.com/Shiyukine/Shiyukine/main/serv.txt")).replace("\n", "");
-                if (Utils.app.isRelease)
+                if (true || Utils.app.isRelease)
                     Utils.servURL = Utils.realServURL;
                 else
                     Utils.servURL = "https://192.168.0.33/";
