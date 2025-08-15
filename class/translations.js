@@ -32,7 +32,7 @@ export default class Translations {
                         this.translate(mutation.target);
                     }
                 });
-                this.observer.observe(rootElement, this.observerOptions);
+                if (!this.paused) this.observer.observe(rootElement, this.observerOptions);
                 Utils.app.addEventListener("langchanged", () => {
                     this.changeLang(allTranslations[Utils.app.settings.gen_langs])
                 })
@@ -44,8 +44,9 @@ export default class Translations {
     }
 
     pause() {
-        if (this.paused || !this.observer) return
+        if (this.paused) return
         this.paused = true
+        if (!this.observer) return;
         this.observer.disconnect()
     }
 
