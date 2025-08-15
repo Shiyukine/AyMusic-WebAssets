@@ -18,10 +18,15 @@ export default class Player {
     currentSongUrl = "";
     currentPlatform = null;
     currentWtId = "";
+    /**
+     * @type {Song}
+     */
+    currentSong = null;
     needPlay = true;
     currentTime = -1;
     duration = -1;
     state = null;
+    currentIntervalTestIframe = -1;
 
     constructor() {
         window.addEventListener("message", (e) => {
@@ -67,9 +72,13 @@ export default class Player {
     async playSong(song, play = true) {
         this.needPlay = play
         this.duration = -1
-        this.currentTime - 1
+        this.currentTime = -1
         this.currentWtId = ""
         this.state = null
+        if (this.currentIntervalTestIframe != -1) {
+            clearInterval(this.currentIntervalTestIframe)
+            this.currentIntervalTestIframe = -1
+        }
         if (this.objurl != "") URL.revokeObjectURL(this.objurl)
         if (this.audioElement != null) {
             this.audioElement.pause()
@@ -83,6 +92,7 @@ export default class Player {
         } catch (e) { }
         this.currentSongUrl = ""
         console.log("begin to play song " + song.url)
+        this.currentSong = song;
         if (song.imgUrl == "localImg") {
             this.isLocalMusic = true;
             this.audioElement = new Audio()
@@ -175,6 +185,14 @@ export default class Player {
         this.currentSongUrl = song.url
         this.#eventEl.dispatchEvent(new CustomEvent("songchange"));
         console.log("audio element created")
+        if (!this.isLocalMusic) {
+            this.currentIntervalTestIframe = setInterval(async () => {
+                if (Utils.app.remoteClient.getIframeStatus(this.currentSong.url) == 2 /*failed*/) {
+                    await TaskHandler.waitConnected()
+                    this.playSong(this.currentSong, this.needPlay)
+                }
+            }, 1000)
+        }
     }
 
     /**

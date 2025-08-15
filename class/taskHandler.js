@@ -179,14 +179,7 @@ export default class TaskHandler {
         }
         try {
             if (navigator.onLine) {
-                let res = await fetch(Utils.servURL)
-                if (res.ok) {
-                    let details = await res.blob()
-                    if (details.size > 0) {
-                        Utils.hideMiniError(miniErrorId)
-                        return
-                    }
-                }
+                return;
             }
         }
         catch (e) { }
