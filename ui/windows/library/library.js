@@ -270,7 +270,7 @@ export default class LibraryWindow extends HTMLDivElement {
                                     songsList.appendChild(new SongGrid(null, pl))
                                 }
                                 this.offsetsSize[0] = { begin: 0, end: (50 - counterSongNotLoaded) * 70 }
-                                this.translation.resume()
+                                //this.translation.resume()
                             })
                         }
                     }
@@ -327,7 +327,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             objs.appendChild(new SongGrid(null, Utils.libManager.userLikedPl))
                         }
                         this.offsetsSize[0] = { begin: 0, end: (50 - counterSongNotLoaded) * 70 }
-                        this.translation.resume()
+                        //this.translation.resume()
                     })
                 }
                 else if (newIndex > 0) {
@@ -403,7 +403,7 @@ export default class LibraryWindow extends HTMLDivElement {
                                 objs.appendChild(new AlbumGrid(i))
                             }
                         }
-                        this.translation.resume()
+                        //this.translation.resume()
                     })
                 }
             }
@@ -512,7 +512,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             el.changeSong(null, true)
                         }
                     }
-                    this.translation.resume();
+                    //this.translation.resume();
                 }
             }
             if (this.lastOffsets[listId].last != offset) {
@@ -543,7 +543,7 @@ export default class LibraryWindow extends HTMLDivElement {
                             i++;
                         }
                         this.offsetsSize[offset] = { begin: offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end + 1, end: (offset - 1 < 0 ? 0 : this.offsetsSize[offset - 1].end) + (50 - counterSongNotLoaded) * 70 }
-                        this.translation.resume();
+                        //this.translation.resume();
                     })
                 }
             }
