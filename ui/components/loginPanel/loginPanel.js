@@ -69,8 +69,11 @@ export default class LoginPanel extends HTMLDivElement {
             this.#cache = this.shadowRoot.getElementById("cache")
             this.#svg = this.shadowRoot.getElementById("svg")
             let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
-            this.shadowRoot.getElementById("login").style.top = (insets.top / devicePixelRatio) + "px";
-            this.shadowRoot.getElementById("login").style.height = "calc(100% - " + (insets.top / devicePixelRatio) + "px - " + (insets.bottom / devicePixelRatio) + "px)";
+            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                let top = Math.max(36, insets.top / devicePixelRatio);
+                this.shadowRoot.getElementById("login").style.top = (top) + "px";
+                this.shadowRoot.getElementById("login").style.height = "calc(100% - " + (top) + "px - " + (insets.bottom / devicePixelRatio) + "px)";
+            }
             this.shadowRoot.getElementById("cssImport").onload = () => {
                 this.shadowRoot.getElementById("loginBG").ontransitionend = () => { };
                 if (document.getElementById("menu_win"))
