@@ -178,7 +178,9 @@ export default class Player {
                 }
             }
             await TaskHandler.waitConnected()
-            var wtId = TaskHandler.addTask(url, await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => { }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying.includes(Utils.app.platform))
+            var wtId = TaskHandler.addTask(url, await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => {
+                clearInterval(this.currentIntervalTestIframe)
+            }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying.includes(Utils.app.platform))
             this.currentWtId = wtId
             this.currentUrl = url
         }
@@ -187,7 +189,8 @@ export default class Player {
         console.log("audio element created")
         if (!this.isLocalMusic) {
             this.currentIntervalTestIframe = setInterval(async () => {
-                if (Utils.app.remoteClient.getIframeStatus(this.currentSong.url) == 2 /*failed*/) {
+                if (Utils.app.remoteClient.getIframeStatus(this.currentUrl) == 2 /*failed*/) {
+                    clearInterval(this.currentIntervalTestIframe)
                     await TaskHandler.waitConnected()
                     this.playSong(this.currentSong, this.needPlay)
                 }

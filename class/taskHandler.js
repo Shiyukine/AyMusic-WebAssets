@@ -179,6 +179,7 @@ export default class TaskHandler {
         }
         try {
             if (navigator.onLine) {
+                Utils.hideMiniError(miniErrorId);
                 return;
             }
         }
