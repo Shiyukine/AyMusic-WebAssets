@@ -287,7 +287,18 @@ export default class SettingsWindow extends HTMLDivElement {
                             if (Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName).length > 0) {
                                 clearInterval(interv)
                                 if (await PlatformHandler.getPlatformBySongUrl(Utils.queueManager.currentSong.url) == platform) {
-                                    if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) Utils.player.needTokenChange()
+                                    if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
+                                        try {
+                                            let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                                            console.log("Platform need refresh token")
+                                            await PlatformHandler.refreshTokenForPlatform(platform)
+                                            console.log("Platform token refreshed")
+                                            Utils.player.playSong(Utils.queueManager.currentSong)
+                                        }
+                                        catch (e) {
+                                            console.warn(e)
+                                        }
+                                    }
                                     else Utils.player.playSong(Utils.queueManager.currentSong)
                                 }
                                 inf.close()
@@ -300,7 +311,18 @@ export default class SettingsWindow extends HTMLDivElement {
                             {
                                 text: "I'm connected!", isPositive: true, onclick: async () => {
                                     if (await PlatformHandler.getPlatformBySongUrl(Utils.queueManager.currentSong.url) == platform) {
-                                        if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) Utils.player.needTokenChange()
+                                        if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
+                                            try {
+                                                let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                                                console.log("Platform need refresh token")
+                                                await PlatformHandler.refreshTokenForPlatform(platform)
+                                                console.log("Platform token refreshed")
+                                                Utils.player.playSong(Utils.queueManager.currentSong)
+                                            }
+                                            catch (e) {
+                                                console.warn(e)
+                                            }
+                                        }
                                         else Utils.player.playSong(Utils.queueManager.currentSong)
                                     }
                                     inf.close()
