@@ -602,12 +602,14 @@ export default class ListenWindow extends HTMLDivElement {
                 })
                 Utils.player.changeRepeat(parseInt(Utils.app.getSetting("repeat")))
                 Utils.player.changeShuffle(Utils.app.getSetting("shuffle"))
-                Utils.player.onEnded(async () => {
+                Utils.player.onEnded(async (e) => {
                     if (Utils.queueManager.repeat != 2) {
                         Utils.player.next()
                     }
                     else {
-                        await Utils.player.seek(0)
+                        if (!e.detail || !e.detail.noSeek) {
+                            await Utils.player.seek(0)
+                        }
                         await Utils.player.play()
                     }
                 })
