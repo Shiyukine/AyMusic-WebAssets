@@ -67,6 +67,9 @@ export default class SettingsWindow extends HTMLDivElement {
                 shadow.getElementById("about_pp").onclick = () => {
                     Utils.app.remoteClient.openLink(Utils.servURL + "privacy.php")
                 }
+                shadow.getElementById("about_discord").onclick = () => {
+                    Utils.app.remoteClient.openLink("https://discord.gg/Kv56E7n")
+                }
                 shadow.getElementById("about_tos").onclick = () => {
                     Utils.app.remoteClient.openLink(Utils.servURL + "cgu.php")
                 }

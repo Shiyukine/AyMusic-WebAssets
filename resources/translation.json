@@ -121,6 +121,7 @@
         "{mv.artistSimple}": "Artist",
         "{settings.aketsukyWebsite}": "Our website",
         "{settings.github}": "GitHub of the project",
+        "{settings.discord}": "Join our Discord server",
         "{settings.privacyPolicy}": "Privacy Policy",
         "{settings.tos}": "Terms of Service",
         "{set.other}": "Other settings",
