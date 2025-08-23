@@ -8,7 +8,7 @@
         "{set.general.lang}": "Language",
         "{set.general.theme}": "Theme",
         "{set.general.discordRPC}": "Enable Discord RPC",
-        "{set.general.discordRPC.info}": "Enable you to see what you're listening on Discord\nReload AyMusic to apply this setting. Not working on Linux",
+        "{set.general.discordRPC.info}": "Enable you to see what you're listening on Discord\nReload AyMusic to apply this setting. Working only with Windows",
         "{set.general.logs}": "Write logs in files",
         "{set.experimental.info}": "Don't touch to anything unless you know what you are doing",
         "{set.experimental}": "Experimental features",
