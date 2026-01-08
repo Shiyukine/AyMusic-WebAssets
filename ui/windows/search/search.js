@@ -11,7 +11,7 @@ import AlbumGrid from "../../components/albumGrid/albumGrid.js";
 import SingerGrid from "../../components/singerGrid/singerGrid.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
 
-export default class SearchWindow extends HTMLDivElement {
+export default class SearchWindow extends HTMLElement {
     selectedServer = "iconround";
     isClosed = false;
     controller = new AbortController();

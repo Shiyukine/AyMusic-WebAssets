@@ -11,7 +11,7 @@ import SongGrid from "../../components/songGrid/songGrid.js";
 import ThemeColor from "../../../class/themeColor.js";
 import TaskHandler from "../../../class/taskHandler.js";
 
-export default class LyricsViewerWindow extends HTMLDivElement {
+export default class LyricsViewerWindow extends HTMLElement {
     isClosed = true;
     refreshing = false;
     currendSongId = "";
@@ -31,11 +31,11 @@ export default class LyricsViewerWindow extends HTMLDivElement {
             this.style.height = "calc(100% - 135px)"
         }
         this.style.zIndex = "1"
-        let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
-        this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (200 - insets.bottom / devicePixelRatio) + "px" : "45px"
-        this.style.transform = "translateY(" + window.innerHeight + "px)"
         if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") this.style.zIndex = "4"
-        Import.getData("/ui/windows/lyricsViewer/lyricsViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
+        Import.getData("/ui/windows/lyricsViewer/lyricsViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
+            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+            this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (200 - insets.bottom / devicePixelRatio) + "px" : "45px"
+            this.style.transform = "translateY(" + window.innerHeight + "px)"
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.translation = new Translations(shadow.children[1])

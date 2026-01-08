@@ -12,7 +12,7 @@ import ProgressBar from "../../components/progressBar/progressBar.js";
 import LyricsViewerWindow from "../lyricsViewer/lyricsViewer.js";
 import QueueViewerWindow from "../queueViewer/queueViewer.js";
 
-export default class ListenViewerWindow extends HTMLDivElement {
+export default class ListenViewerWindow extends HTMLElement {
     isClosed = true;
     controller = new AbortController();
     id = Date.now()

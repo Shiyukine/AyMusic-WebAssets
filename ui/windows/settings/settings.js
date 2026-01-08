@@ -8,7 +8,7 @@ import InfoPanel from "../../components/infoPanel/infoPanel.js";
 import LoginPanel from "../../components/loginPanel/loginPanel.js";
 import PlaylistImporter from "../playlistImporter/playlistImporter.js";
 
-export default class SettingsWindow extends HTMLDivElement {
+export default class SettingsWindow extends HTMLElement {
     selectedIndex = 0;
     isClosed = false;
     controller = new AbortController();
@@ -79,6 +79,7 @@ export default class SettingsWindow extends HTMLDivElement {
                         action: "deleteCache",
                     });
                     console.log(await Utils.app.remoteClient.removeCache("API/"))
+                    if (Utils.app.platform == "iOS") await Utils.app.remoteClient.clearWebViewCache()
                     Utils.apiManager.cache = {}
                     Utils.showMiniError("rm_cache", "Cache cleared!", true, "rgb(0, 204, 255)", "#000")
                 }

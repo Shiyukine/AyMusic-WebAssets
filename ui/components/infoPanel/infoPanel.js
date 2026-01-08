@@ -3,7 +3,7 @@ import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
 
-export default class InfoPanel extends HTMLDivElement {
+export default class InfoPanel extends HTMLElement {
     /**
      * @type {HTMLElement}
      */

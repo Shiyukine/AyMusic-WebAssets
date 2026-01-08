@@ -6,7 +6,7 @@ import Utils from "../../../class/utils/utils.js";
 import * as id3 from "../../../plugins/id3/id3.js";
 import InfoPanel from "../../components/infoPanel/infoPanel.js";
 
-export default class ProgressBar extends HTMLDivElement {
+export default class ProgressBar extends HTMLElement {
     #eventEl = document.createElement("event");
     max = 100.0;
     value = 0.0;

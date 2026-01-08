@@ -3,7 +3,7 @@ import Import from "../../../class/import.js";
 import Translations from "../../../class/translations.js";
 import ThemeColor from "../../../class/themeColor.js";
 
-export default class LoginPanel extends HTMLDivElement {
+export default class LoginPanel extends HTMLElement {
     /**
      * @type {HTMLIFrameElement}
      */
@@ -63,12 +63,12 @@ export default class LoginPanel extends HTMLDivElement {
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.3s"
         //this.style.zIndex = "101"
-        Import.getData("/ui/components/loginPanel/loginPanel" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
+        Import.getData("/ui/components/loginPanel/loginPanel" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
             shadow.innerHTML = html
             this.#iframe = this.shadowRoot.getElementById("iframe")
             this.#cache = this.shadowRoot.getElementById("cache")
             this.#svg = this.shadowRoot.getElementById("svg")
-            let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
+            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
             if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                 let top = Math.max(36, insets.top / devicePixelRatio);
                 this.shadowRoot.getElementById("login").style.top = (top) + "px";

@@ -11,7 +11,7 @@ import AlbumGrid from "../../components/albumGrid/albumGrid.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
 import TextBox from "../../components/textBox/textBox.js";
 
-export default class MusicViewerWindow extends HTMLDivElement {
+export default class MusicViewerWindow extends HTMLElement {
     selectedIndex = 0;
     isClosed = false;
     loaded = false;
@@ -39,17 +39,17 @@ export default class MusicViewerWindow extends HTMLDivElement {
         this.style.width = "100%"
         this.style.position = "relative"
         this.style.zIndex = "1"
-        let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
-        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-            this.style.marginTop = "0px"
-            this.style.height = "calc(100% - 138px - " + insets.bottom / devicePixelRatio + "px)"
-        }
-        else {
-            this.style.marginTop = "0px"
-            this.style.height = "calc(100% - 125px - " + insets.bottom / devicePixelRatio + "px)"
-        }
         this.style.transition = "opacity 0.4s"
-        Import.getData("/ui/windows/musicViewer/musicViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
+        Import.getData("/ui/windows/musicViewer/musicViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
+            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                this.style.marginTop = "0px"
+                this.style.height = "calc(100% - 138px - " + insets.bottom / devicePixelRatio + "px)"
+            }
+            else {
+                this.style.marginTop = "0px"
+                this.style.height = "calc(100% - 125px - " + insets.bottom / devicePixelRatio + "px)"
+            }
             shadow.innerHTML = html
             this.translation = new Translations(shadow.children[1])
             new ThemeColor(shadow.children[1])

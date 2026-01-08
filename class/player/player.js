@@ -176,6 +176,10 @@ export default class Player {
                     if (play) url += "&autoplay=1"
                     url += "&volume=" + ((await PlatformHandler.getPlatformSettings(platform)).SmallVolumeInSongUrl ? this.volume / 100 : this.volume)
                 }
+                if (Utils.app.platform == "iOS") {
+                    if (!url.includes("?")) url += "?playsinline=1"
+                    else url += "&playsinline=1"
+                }
             }
             await TaskHandler.waitConnected()
             var wtId = TaskHandler.addTask(url, await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => {
@@ -262,6 +266,10 @@ export default class Player {
 
     onNeedRefresh(callback) {
         this.#eventEl.addEventListener("needrefresh", callback)
+    }
+
+    onIncompatible(callback) {
+        this.#eventEl.addEventListener("incompatible", callback)
     }
 
     async play() {

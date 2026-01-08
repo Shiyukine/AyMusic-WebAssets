@@ -7,7 +7,7 @@ import Translations from "../../../class/translations.js";
 import HomeWindow from "../home/home.js";
 import ThemeColor from "../../../class/themeColor.js";
 
-export default class MenuWindow extends HTMLDivElement {
+export default class MenuWindow extends HTMLElement {
 
     forceUpdateHistory = false
 
@@ -19,7 +19,7 @@ export default class MenuWindow extends HTMLDivElement {
         this.id = "menu_win"
         Import.getData("/ui/windows/menu/menu" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html;
-            this.shadowRoot.getElementById("cssImport").onload = () => {
+            this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.shadowRoot.getElementById("main").ontransitionend = () => { };
                 this.shadowRoot.getElementById("main").style = "";
                 if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
@@ -31,7 +31,7 @@ export default class MenuWindow extends HTMLDivElement {
                     this.style.height = "100%";
                 }
                 if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-                    let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
+                    let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
                     this.shadowRoot.getElementById("main").style.height = (68 + insets.bottom / devicePixelRatio) + "px";
                 }
                 this.style.position = "absolute";
@@ -97,7 +97,7 @@ export default class MenuWindow extends HTMLDivElement {
      * @param {UserWindows} newWindow 
      * @param {Boolean} updateHistory
      */
-    changeWindow(newWindow, menuId, updateHistory = true) {
+    async changeWindow(newWindow, menuId, updateHistory = true) {
         Utils.musicViewer.close()
         let menu = this.shadowRoot.getElementById(menuId)
         if ((!this.anWindow || newWindow != this.anWindow.enum) || this.forceUpdateHistory)
@@ -127,7 +127,7 @@ export default class MenuWindow extends HTMLDivElement {
                 winName = "{settings}"
             }
             awindow.classList.add("aWindow")
-            let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
+            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
             awindow.style.paddingBottom = ((Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 155 : 0) + insets.bottom / devicePixelRatio) + "px";
             if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS") awindow.classList.add("windows")
             if (this.anWindow) {

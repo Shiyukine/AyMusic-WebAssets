@@ -5,7 +5,7 @@ import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
 import LibraryWindow from "../../windows/library/library.js";
 
-export default class PlaylistGrid extends HTMLDivElement {
+export default class PlaylistGrid extends HTMLElement {
 
     /**
      * @type {Playlist}

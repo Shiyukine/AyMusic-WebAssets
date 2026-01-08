@@ -8,7 +8,7 @@ import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
 import PlatformHandler from "../../../class/player/platformHandler.js";
 
-export default class SongGrid extends HTMLDivElement {
+export default class SongGrid extends HTMLElement {
 
     /**
      * @type {Song}
@@ -48,7 +48,10 @@ export default class SongGrid extends HTMLDivElement {
             shadow.innerHTML = `<div></div>`
         }
         //DON'T FORGET TO CHANGE IF NECESSARY!!
-        if (!dontShow) this.style.height = "70px"
+        if (!dontShow) {
+            this.style.height = "70px"
+            shadow.innerHTML = `<div style="height: 70px;"></div>`
+        }
     }
 
     disconnectedCallback() {
@@ -345,9 +348,10 @@ export default class SongGrid extends HTMLDivElement {
         else {
             if (song != null) {
                 this.style.height = ""
+                this.shadowRoot.innerHTML = `<div></div>`
             }
             if (this.song != null) {
-                this.shadowRoot.innerHTML = `<div></div>`
+                this.shadowRoot.innerHTML = `<div style="height: 70px;"></div>`
                 this.song = song;
                 this.controller.abort()
             }

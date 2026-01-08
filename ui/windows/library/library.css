@@ -111,7 +111,8 @@ p {
     position: relative;
 }
 
-#plState, #likedState {
+#plState,
+#likedState {
     margin-right: 5px;
 }
 
@@ -213,12 +214,12 @@ p {
     color: white;
 }
 
-div[is="text-box"] {
+text-box {
     width: 250px;
 }
 
 .sub p,
-div[is="text-box"] {
+text-box {
     float: left;
     margin: auto;
     margin-left: 0px;

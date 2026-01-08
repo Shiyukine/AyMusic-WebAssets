@@ -2,7 +2,7 @@ import Import from "../../../class/import.js";
 import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 
-export default class TextBox extends HTMLDivElement {
+export default class TextBox extends HTMLElement {
 
     label = ""
     cssColor = "white"

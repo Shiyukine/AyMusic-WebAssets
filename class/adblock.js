@@ -2,7 +2,7 @@ import Utils from "./utils/utils.js";
 
 export default class Adblock {
     static cache = {}
-    static origin = "app://Cache"
+    static origin = "app://cache"
 
     static async init() {
         try {

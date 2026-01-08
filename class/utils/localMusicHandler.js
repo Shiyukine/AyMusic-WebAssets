@@ -192,7 +192,6 @@ export default class LocalMusicHandler {
         return null;
     }
 
-
     static generateId() {
         var result = '';
         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

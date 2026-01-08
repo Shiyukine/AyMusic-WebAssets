@@ -6,7 +6,7 @@ export default class PlatformHandler {
     static platforms = null;
     static cachedPlatforms = null;
     static searchingTokenForPlatform = [];
-    static origin = "app://Cache"
+    static origin = "app://cache"
     static loadedByCache = false;
 
     static searchPlatforms() {
@@ -140,7 +140,7 @@ export default class PlatformHandler {
         if (platforms) {
             for (let platform of platforms["AvailableServers"]) {
                 let baseSongUrl = await this.getPlatformUrl(platform, "BaseSongUrl")
-                if(baseSongUrl.includes("%id%")) baseSongUrl = baseSongUrl.split("%id%")[0]
+                if (baseSongUrl.includes("%id%")) baseSongUrl = baseSongUrl.split("%id%")[0]
                 if (url.includes(await PlatformHandler.getPlatformUrl(platform, "ListenUrl")) || url.includes(baseSongUrl)) {
                     return platform
                 }
@@ -171,8 +171,8 @@ export default class PlatformHandler {
                     else {
                         TaskHandler.addTask(url, "", false, true, true, () => {
                             var intv = setInterval(async () => {
-                                if (Utils.app.remoteClient.getClientToken(platform)) {
-                                    await PlatformHandler.setPlatformSetting(platform, "Token", Utils.app.remoteClient.getClientToken(platform))
+                                if (await Utils.app.remoteClient.getClientToken(platform)) {
+                                    await PlatformHandler.setPlatformSetting(platform, "Token", await Utils.app.remoteClient.getClientToken(platform))
                                     clearInterval(intv)
                                     TaskHandler.stopWebTaskManually(url, true)
                                     this.searchingTokenForPlatform.splice(this.searchingTokenForPlatform.indexOf(platform), 1)

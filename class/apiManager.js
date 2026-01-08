@@ -8,7 +8,7 @@ export default class ApiManager {
     countFailed = 0;
     disconnected = false
     cache = {}
-    origin = "app://Cache"
+    origin = "app://cache"
 
     async init() {
         try {

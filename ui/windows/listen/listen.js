@@ -16,7 +16,7 @@ import LyricsViewerWindow from "../lyricsViewer/lyricsViewer.js";
 import QueueViewerWindow from "../queueViewer/queueViewer.js";
 import SettingsWindow from "../settings/settings.js";
 
-export default class ListenWindow extends HTMLDivElement {
+export default class ListenWindow extends HTMLElement {
     fakeMetadata = {
         title: null,
         artist: null,
@@ -36,12 +36,12 @@ export default class ListenWindow extends HTMLDivElement {
         this.style.opacity = "0%"
         this.style.transition = "opacity 0.4s"
         this.style.position = "absolute"
-        let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
-        this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (78 + insets.bottom / devicePixelRatio) + "px" : "0"
-        this.style.left = "0"
-        this.style.right = "0"
-        this.style.zIndex = "2"
-        Import.getData("/ui/windows/listen/listen" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
+        Import.getData("/ui/windows/listen/listen" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
+            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+            this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (78 + insets.bottom / devicePixelRatio) + "px" : "0"
+            this.style.left = "0"
+            this.style.right = "0"
+            this.style.zIndex = "2"
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.translation = new Translations(shadow.children[1])
@@ -664,6 +664,19 @@ export default class ListenWindow extends HTMLDivElement {
                         }], false)
                     document.getElementById("main").appendChild(errPanel)
                 });
+                Utils.player.onIncompatible(async (e) => {
+                    shadow.getElementById("changeState").children[1].classList.add("playSVG")
+                    let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
+                    let reason = e.detail || "Unknown reason"
+                    let errPanel = new InfoPanel("Incompatible platform", platform + " is not compatible with your device.\nReason: " + reason + ".", [
+                        {
+                            text: "Close", isPositive: true, onclick: () => {
+                                errPanel.close()
+                            }
+                        }
+                    ], false)
+                    document.getElementById("main").appendChild(errPanel)
+                });
                 Utils.libManager.onAddSongToLikedSongs((e) => {
                     if (Utils.queueManager.currentSong != null && e.detail.objId == "so_" + Utils.queueManager.currentSong.id) {
                         shadow.getElementById("like").children[0].setAttribute("d", Utils.pathsData["Heart"])
@@ -956,6 +969,8 @@ export default class ListenWindow extends HTMLDivElement {
             catch { }
             ifr.forEach(async (x) => {
                 if (typeof x != "undefined") {
+                    let targetOrigin = url;
+                    if (Utils.app.platform == "iOS") targetOrigin = "*";
                     if (part == "changeMediaMetadata") {
                         let dataUrl = "";
                         if (navigator.mediaSession.metadata.artwork[0].src == "app://root/resources/icon.ico") {
@@ -973,18 +988,18 @@ export default class ListenWindow extends HTMLDivElement {
                                 artist: navigator.mediaSession.metadata.artist,
                                 artwork: JSON.stringify(navigator.mediaSession.metadata.artwork).split("app://root/resources/icon.ico").join(dataUrl),
                             }, platform: platform
-                        }, url)
+                        }, targetOrigin)
                     }
                     if (part == "changePositionState") {
-                        x.postMessage({ message: part, inData: data, platform: platform }, url)
+                        x.postMessage({ message: part, inData: data, platform: platform }, targetOrigin)
                     }
                     if (part == "setActionHandler") {
                         let id = Date.now() + (Math.random() + 1).toString(36).substring(7);
-                        if (Utils.queueManager.canPrevious()) x.postMessage({ message: part, inData: { action: "previoustrack" }, id: id, platform: platform }, url)
-                        if (Utils.queueManager.canNext()) x.postMessage({ message: part, inData: { action: "nexttrack" }, id: id, platform: platform }, url)
-                        x.postMessage({ message: part, inData: { action: "play" }, id: id, platform: platform }, url)
-                        x.postMessage({ message: part, inData: { action: "pause" }, id: id, platform: platform }, url)
-                        x.postMessage({ message: part, inData: { action: "seekto" }, id: id, platform: platform }, url)
+                        if (Utils.queueManager.canPrevious()) x.postMessage({ message: part, inData: { action: "previoustrack" }, id: id, platform: platform }, targetOrigin)
+                        if (Utils.queueManager.canNext()) x.postMessage({ message: part, inData: { action: "nexttrack" }, id: id, platform: platform }, targetOrigin)
+                        x.postMessage({ message: part, inData: { action: "play" }, id: id, platform: platform }, targetOrigin)
+                        x.postMessage({ message: part, inData: { action: "pause" }, id: id, platform: platform }, targetOrigin)
+                        x.postMessage({ message: part, inData: { action: "seekto" }, id: id, platform: platform }, targetOrigin)
                     }
                 }
             })

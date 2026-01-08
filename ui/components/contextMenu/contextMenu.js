@@ -3,7 +3,7 @@ import ThemeColor from "../../../class/themeColor.js";
 import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
 
-export default class ContextMenu extends HTMLDivElement {
+export default class ContextMenu extends HTMLElement {
 
     elements = []
     #eventEl = document.createElement("event");
@@ -32,7 +32,7 @@ export default class ContextMenu extends HTMLDivElement {
                 this.translation = new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
                 this.style.opacity = "1"
-                setTimeout(() => {
+                setTimeout(async () => {
                     let testx = event.x + this.clientWidth < document.body.clientWidth
                     let testy = event.y + this.clientHeight < document.body.clientHeight
                     let x = testx
@@ -44,7 +44,7 @@ export default class ContextMenu extends HTMLDivElement {
                         : document.body.clientHeight - this.clientHeight - 10
                     if (Utils.currentMiniErrorID != -1) y -= 75
                     if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-                        let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
+                        let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
                         this.style.bottom = "0"
                         this.shadowRoot.getElementById("main").style.bottom = (insets.bottom / devicePixelRatio) + "px"
                         this.style.left = "0"

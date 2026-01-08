@@ -9,7 +9,7 @@ import Singer from "../../../class/music/singer.js";
 import Playlist from "../../../class/music/playlist.js";
 import ThemeColor from "../../../class/themeColor.js";
 
-export default class HomeWindow extends HTMLDivElement {
+export default class HomeWindow extends HTMLElement {
     isClosed = false;
 
     constructor() {

@@ -166,7 +166,9 @@ export default class TaskHandler {
                             }
                         }
                     }, { signal: controller.signal })
-                    iframe.contentWindow.postMessage({ message: "execjs", id: id, js: func }, wt.url)
+                    let targetOrigin = wt.url;
+                    if (Utils.app.platform == "iOS") targetOrigin = "*";
+                    iframe.contentWindow.postMessage({ message: "execjs", id: id, js: func }, targetOrigin);
                 }
             }
         })

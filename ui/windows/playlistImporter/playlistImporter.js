@@ -8,7 +8,7 @@ import Translations from "../../../class/translations.js";
 import Utils from "../../../class/utils/utils.js";
 import PlaylistPicker from "../playlistPicker/playlistPicker.js";
 
-export default class PlaylistImporter extends HTMLDivElement {
+export default class PlaylistImporter extends HTMLElement {
     /**
      * @type {HTMLElement}
      */

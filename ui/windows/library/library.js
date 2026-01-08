@@ -17,7 +17,7 @@ import SingerGrid from "../../components/singerGrid/singerGrid.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
 import TextBox from "../../components/textBox/textBox.js";
 
-export default class LibraryWindow extends HTMLDivElement {
+export default class LibraryWindow extends HTMLElement {
     selectedIndex = 0;
     selectedIndexMyLib = -1;
     isClosed = false;

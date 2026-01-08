@@ -10,7 +10,7 @@ import Playlist from "../../../class/music/playlist.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
 import ThemeColor from "../../../class/themeColor.js";
 
-export default class QueueViewerWindow extends HTMLDivElement {
+export default class QueueViewerWindow extends HTMLElement {
     isClosed = true;
 
     constructor() {
@@ -28,11 +28,11 @@ export default class QueueViewerWindow extends HTMLDivElement {
             this.style.left = "105px"
             this.style.height = "calc(100% - 135px)"
         }
-        let insets = JSON.parse(Utils.app.remoteClient.getWindowInsets());
-        this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (200 - insets.bottom / devicePixelRatio) + "px" : "45px"
-        this.style.transform = "translateY(" + window.innerHeight + "px)"
         if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") this.style.zIndex = "4"
-        Import.getData("/ui/windows/queueViewer/queueViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
+        Import.getData("/ui/windows/queueViewer/queueViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
+            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+            this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (200 - insets.bottom / devicePixelRatio) + "px" : "45px"
+            this.style.transform = "translateY(" + window.innerHeight + "px)"
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.translation = new Translations(shadow.children[1])

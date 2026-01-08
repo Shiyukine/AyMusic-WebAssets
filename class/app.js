@@ -117,7 +117,7 @@ export default class App {
     }
 
     async httpRequestGET(url) {
-        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+        if (Utils.app.platform == "Android") {
             return new Promise(r => {
                 window.listeners.httpRequestCallback = (data) => {
                     window.listeners.httpRequestCallback = (data) => { }
