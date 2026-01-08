@@ -22,27 +22,27 @@ import PlaylistPicker from "../ui/windows/playlistPicker/playlistPicker.js";
 
 export default class Import {
     static loadCustomElements() {
-        customElements.define('info-panel', InfoPanel, { extends: "div" });
-        customElements.define('login-panel', LoginPanel, { extends: "div" });
-        customElements.define("left-menu", MenuWindow, { extends: "div" });
-        customElements.define("listen-window", ListenWindow, { extends: "div" });
-        customElements.define("settings-window", SettingsWindow, { extends: "div" });
-        customElements.define("library-window", LibraryWindow, { extends: "div" });
-        customElements.define("search-window", SearchWindow, { extends: "div" });
-        customElements.define("musicview-window", MusicViewerWindow, { extends: "div" });
-        customElements.define("listenview-window", ListenViewerWindow, { extends: "div" });
-        customElements.define("home-window", HomeWindow, { extends: "div" });
-        customElements.define("playlist-grid", PlaylistGrid, { extends: "div" });
-        customElements.define("album-grid", AlbumGrid, { extends: "div" });
-        customElements.define("singer-grid", SingerGrid, { extends: "div" });
-        customElements.define("song-grid", SongGrid, { extends: "div" });
-        customElements.define("text-box", TextBox, { extends: "div" });
-        customElements.define("progress-bar", ProgressBar, { extends: "div" });
-        customElements.define("context-menu", ContextMenu, { extends: "div" });
-        customElements.define("queue-viewer", QueueViewerWindow, { extends: "div" })
-        customElements.define("lyrics-viewer", LyricsViewerWindow, { extends: "div" })
-        customElements.define("playlist-importer", PlaylistImporter, { extends: "div" })
-        customElements.define("playlist-picker", PlaylistPicker, { extends: "div" })
+        customElements.define('info-panel', InfoPanel);
+        customElements.define('login-panel', LoginPanel);
+        customElements.define("left-menu", MenuWindow);
+        customElements.define("listen-window", ListenWindow);
+        customElements.define("settings-window", SettingsWindow);
+        customElements.define("library-window", LibraryWindow);
+        customElements.define("search-window", SearchWindow);
+        customElements.define("musicview-window", MusicViewerWindow);
+        customElements.define("listenview-window", ListenViewerWindow);
+        customElements.define("home-window", HomeWindow);
+        customElements.define("playlist-grid", PlaylistGrid);
+        customElements.define("album-grid", AlbumGrid);
+        customElements.define("singer-grid", SingerGrid);
+        customElements.define("song-grid", SongGrid);
+        customElements.define("text-box", TextBox);
+        customElements.define("progress-bar", ProgressBar);
+        customElements.define("context-menu", ContextMenu);
+        customElements.define("queue-viewer", QueueViewerWindow)
+        customElements.define("lyrics-viewer", LyricsViewerWindow)
+        customElements.define("playlist-importer", PlaylistImporter)
+        customElements.define("playlist-picker", PlaylistPicker)
     }
 
     static cache = [[], []]
