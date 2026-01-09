@@ -67,6 +67,7 @@ export default class SettingsWindow extends HTMLElement {
                 shadow.getElementById("about_git").onclick = () => {
                     if (Utils.app.platform == "Android") Utils.app.remoteClient.openLink("https://github.com/Shiyukine/AyMusic-Android")
                     else if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS") Utils.app.remoteClient.openLink("https://github.com/Shiyukine/AyMusic-Electron")
+                    else if (Utils.app.platform == "iOS") Utils.app.remoteClient.openLink("https://github.com/Shiyukine/AyMusic-iOS")
                 }
                 shadow.getElementById("about_pp").onclick = () => {
                     Utils.app.remoteClient.openLink(Utils.servURL + "privacy.php")
