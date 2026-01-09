@@ -27,6 +27,7 @@ export default class Player {
     duration = -1;
     state = null;
     currentIntervalTestIframe = -1;
+    songLoading = true;
 
     constructor() {
         window.addEventListener("message", (e) => {
@@ -75,6 +76,7 @@ export default class Player {
         this.currentTime = -1
         this.currentWtId = ""
         this.state = null
+        this.songLoading = true;
         if (this.currentIntervalTestIframe != -1) {
             clearInterval(this.currentIntervalTestIframe)
             this.currentIntervalTestIframe = -1
@@ -123,6 +125,7 @@ export default class Player {
                 else this.pause()
                 if (document.visibilityState == "hidden")
                     this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
+                this.songLoading = false;
             }
             this.audioElement.onvolumechange = () => {
                 this.#eventEl.dispatchEvent(new CustomEvent("volumechange"));
@@ -184,6 +187,7 @@ export default class Player {
             await TaskHandler.waitConnected()
             var wtId = TaskHandler.addTask(url, await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "ListenScript")), true, true, true, (data, wi) => {
                 clearInterval(this.currentIntervalTestIframe)
+                this.songLoading = false;
             }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying.includes(Utils.app.platform))
             this.currentWtId = wtId
             this.currentUrl = url
@@ -301,7 +305,7 @@ export default class Player {
 
     async previous() {
         console.log("previous song")
-        if (await Utils.player.getCurrentTime() > 5000) {
+        if (!this.songLoading && this.currentTime != -1 && await Utils.player.getCurrentTime() > 5000) {
             Utils.player.seek(0)
         }
         else {
