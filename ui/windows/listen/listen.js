@@ -94,6 +94,8 @@ export default class ListenWindow extends HTMLElement {
                                         if(parent.parent) parent.parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, '` + origin + `')
                                         else parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, '` + origin + `')
                                     });
+                                    navigator.mediaSession.setActionHandler('seekbackward', null);
+                                    navigator.mediaSession.setActionHandler('seekforward', null);
                                 }
                             }
                         })`)
@@ -258,8 +260,8 @@ export default class ListenWindow extends HTMLElement {
                         navigator.mediaSession.setActionHandler('play', () => { Utils.player.play() });
                         navigator.mediaSession.setActionHandler('pause', () => { Utils.player.pause() });
                         //navigator.mediaSession.setActionHandler('stop', () => { /* Code excerpted. */ });
-                        //navigator.mediaSession.setActionHandler('seekbackward', () => { /* Code excerpted. */ });
-                        //navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
+                        navigator.mediaSession.setActionHandler('seekbackward', null);
+                        navigator.mediaSession.setActionHandler('seekforward', null);
                         navigator.mediaSession.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime) });
                     }
                     else {

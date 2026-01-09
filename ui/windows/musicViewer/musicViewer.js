@@ -37,11 +37,12 @@ export default class MusicViewerWindow extends HTMLElement {
         this.ontransitionend = () => { };
         this.style.opacity = "0%"
         this.style.width = "100%"
-        this.style.position = "relative"
+        this.style.position = Utils.app.platform == "iOS" ? "absolute" : "relative"
         this.style.zIndex = "1"
         this.style.transition = "opacity 0.4s"
         Import.getData("/ui/windows/musicViewer/musicViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
             let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+            let top = Math.max(36, insets.top / devicePixelRatio);
             if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                 this.style.marginTop = "0px"
                 this.style.height = "calc(100% - 138px - " + insets.bottom / devicePixelRatio + "px)"
@@ -51,6 +52,7 @@ export default class MusicViewerWindow extends HTMLElement {
                 this.style.height = "calc(100% - 125px - " + insets.bottom / devicePixelRatio + "px)"
             }
             shadow.innerHTML = html
+            shadow.querySelector("#topbar").style.marginTop = (top) + "px";
             this.translation = new Translations(shadow.children[1])
             new ThemeColor(shadow.children[1])
             window.addEventListener("popstate", (e) => {

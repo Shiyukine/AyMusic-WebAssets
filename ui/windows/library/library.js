@@ -42,6 +42,10 @@ export default class LibraryWindow extends HTMLElement {
         Import.getData("/ui/windows/library/library" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
+                let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+                let top = Math.max(36, insets.top / devicePixelRatio) - 20;
+                shadow.querySelector(".library").style.marginTop = (top) + "px";
+                shadow.querySelector(".library").style.height = "calc(100% - " + (top) + "px)";
                 /*shadow.getElementById("menu").addEventListener("wheel", (ev) => {
                     let newIndex;
                     if (ev.deltaY > 0) newIndex = this.selectedIndex + 1

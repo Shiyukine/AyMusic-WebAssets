@@ -68,20 +68,34 @@ export default class LoginPanel extends HTMLElement {
             this.#iframe = this.shadowRoot.getElementById("iframe")
             this.#cache = this.shadowRoot.getElementById("cache")
             this.#svg = this.shadowRoot.getElementById("svg")
-            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-                let top = Math.max(36, insets.top / devicePixelRatio);
-                this.shadowRoot.getElementById("login").style.top = (top) + "px";
-                this.shadowRoot.getElementById("login").style.height = "calc(100% - " + (top) + "px - " + (insets.bottom / devicePixelRatio) + "px)";
-            }
-            this.shadowRoot.getElementById("cssImport").onload = () => {
+            this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.shadowRoot.getElementById("loginBG").ontransitionend = () => { };
                 if (document.getElementById("menu_win"))
                     document.getElementById("menu_win").style.zIndex = "0"
                 this.translation = new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
+                let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+                if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                    let top = Math.max(36, insets.top / devicePixelRatio);
+                    if (isForModification == "modify") {
+                        this.shadowRoot.getElementById("topbar").style.visibility = "visible";
+                        this.shadowRoot.getElementById("topbar").style.top = (top) + "px";
+                        this.shadowRoot.getElementById("login").style.top = (top + 41 + 15) + "px";
+                        this.shadowRoot.getElementById("login").style.height = "calc(100% - " + (top + 41 + 15) + "px - " + (insets.bottom / devicePixelRatio) + "px)";
+                    }
+                    else {
+                        this.shadowRoot.getElementById("topbar").style.visibility = "collapse";
+                        this.shadowRoot.getElementById("login").style.top = (top) + "px";
+                        this.shadowRoot.getElementById("login").style.height = "calc(100% - " + (top) + "px - " + (insets.bottom / devicePixelRatio) + "px)";
+                    }
+                }
             }
             this.shadowRoot.getElementById("loginBG").onclick = () => {
+                if (isForModification == "modify") {
+                    history.back()
+                }
+            }
+            this.shadowRoot.getElementById("back").onclick = () => {
                 if (isForModification == "modify") {
                     history.back()
                 }

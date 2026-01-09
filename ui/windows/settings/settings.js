@@ -21,6 +21,10 @@ export default class SettingsWindow extends HTMLElement {
         Import.getData("/ui/windows/settings/settings" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
+                let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+                let top = Math.max(36, insets.top / devicePixelRatio) - 20;
+                shadow.querySelector(".settings").style.marginTop = (top) + "px";
+                shadow.querySelector(".settings").style.height = "calc(100% - " + (top - 20) + "px)";
                 shadow.getElementById("menu").onwheel = (ev) => {
                     let newIndex;
                     if (ev.deltaY > 0) newIndex = this.selectedIndex + 1

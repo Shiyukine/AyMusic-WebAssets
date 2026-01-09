@@ -29,8 +29,11 @@ export default class ListenViewerWindow extends HTMLElement {
         this.style.right = "0"
         this.style.top = "0"
         this.style.zIndex = "3"
-        Import.getData("/ui/windows/listenViewer/listenViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then((html) => {
+        Import.getData("/ui/windows/listenViewer/listenViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
             shadow.innerHTML = html
+            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+            let top = Math.max(36, insets.top / devicePixelRatio);
+            shadow.querySelector("#topbar").style.top = (top) + "px";
             this.ontransitionend = () => { }
             /**
              * @type {ProgressBar}

@@ -238,7 +238,6 @@ select:not(:-internal-list-box) {
 .wintitle {
     text-align: center;
     font-size: 30px;
-    padding-top: 20px;
 }
 
 .big {

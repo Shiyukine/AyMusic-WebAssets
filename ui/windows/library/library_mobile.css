@@ -56,10 +56,10 @@ p {
 
 #view {
     /* margin-left: 25px; */
-    margin-top: 25px;
+    margin-top: 0px;
     border-radius: 15px;
     position: relative;
-    height: calc(100% - 38px);
+    height: calc(100% - 13px);
 }
 
 .panel {

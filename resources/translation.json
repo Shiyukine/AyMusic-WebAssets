@@ -145,6 +145,7 @@
         "{playlistPicker.wait}": "Please wait...",
         "{playlistPicker.choosePl}": "Please choose a playlist to put your songs in.",
         "{playlistPicker.noAvailPlaylists}": "You have no playlists. Please create a playlist to continue.",
-        "{playlistPicker.choose}": "Choose"
+        "{playlistPicker.choose}": "Choose",
+        "{loginPanel.title}": "Modify my account"
     }
 }
