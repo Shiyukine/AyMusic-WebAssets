@@ -32,7 +32,7 @@ export default class LocalMusicHandler {
     }
 
     static async filePicker() {
-        if (Utils.app.platform == "Android") {
+        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
             Utils.app.remoteClient.pickUpMusic()
             return new Promise(resolve => {
                 window.listeners.filePickerCallback = (urls) => {
