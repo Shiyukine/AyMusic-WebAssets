@@ -33,9 +33,12 @@ export default class SongGrid extends HTMLElement {
     cm2 = null;
 
     overrideClick = null;
+    /**
+     * @type {{name: string, action: function}[]}
+     */
+    contextMenuAddItems = [];
 
     /**
-     * 
      * @param {Song} song 
      * @param {Playlist|Album|Singer} object
      */
@@ -215,6 +218,9 @@ export default class SongGrid extends HTMLElement {
                             }
                         }, { signal: this.controller.signal });
                         cm.beforeShow = async () => {
+                            for (let item of this.contextMenuAddItems) {
+                                cm.addElement(item.name, item.action)
+                            }
                             cm.addElement("{wt.addQueue}", () => {
                                 //Utils.newError("Can't do this", "This feature will be added soon :)")
                                 Utils.queueManager.addToQueue(this.song)

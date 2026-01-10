@@ -95,9 +95,11 @@ export default class LoginPanel extends HTMLElement {
                     history.back()
                 }
             }
-            this.shadowRoot.getElementById("back").onclick = () => {
-                if (isForModification == "modify") {
-                    history.back()
+            if (this.shadowRoot.getElementById("back")) {
+                this.shadowRoot.getElementById("back").onclick = () => {
+                    if (isForModification == "modify") {
+                        history.back()
+                    }
                 }
             }
             let loaded = false;

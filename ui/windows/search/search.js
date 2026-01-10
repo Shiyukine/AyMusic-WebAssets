@@ -53,6 +53,16 @@ export default class SearchWindow extends HTMLElement {
                 shadow.getElementById("launchSearch").addEventListener("click", async () => {
                     this.launchSearch()
                 })
+                shadow.getElementById("clearSearch").style.display = "none"
+                shadow.getElementById("clearSearch").addEventListener("click", async () => {
+                    shadow.getElementById("tb_search").value = ""
+                    shadow.getElementById("tb_search").focus()
+                    shadow.getElementById("suggest").style.display = "none"
+                    shadow.getElementById("clearSearch").style.display = "none"
+                    this.anSearch = null
+                    if (this.elementFocus) this.elementFocus.classList.remove("lifocused")
+                    this.elementFocus = null
+                })
                 /*window.addEventListener("mousedown", () => {
                     if (shadow.getElementById("suggest").style.display != "none" && !this.elementFocus) shadow.getElementById("suggest").style.display = "none"
                 })*/
@@ -65,6 +75,7 @@ export default class SearchWindow extends HTMLElement {
                 })
                 shadow.getElementById("tb_search").addEventListener("focus", () => {
                     isSearchFocused = true
+                    shadow.getElementById("tb_search").select()
                 });
                 window.addEventListener("click", () => {
                     this.anSearch = null
@@ -124,6 +135,7 @@ export default class SearchWindow extends HTMLElement {
                             let data = await (await fetch("https://suggestqueries-clients6.youtube.com/complete/search?client=youtube&hl=en&gl=fr&gs_rn=64&gs_ri=youtube&ds=yt&cp=12&gs_id=2p&callback=uwu&q=" + shadow.getElementById("tb_search").value)).text()
                             if (!isSearchFocused) return;
                             shadow.getElementById("suggest").style.display = ""
+                            shadow.getElementById("clearSearch").style.display = ""
                             data = data.replace("uwu && uwu(", "").slice(0, -1)
                             let json = JSON.parse(data)
                             let arr = json[1]
@@ -157,6 +169,7 @@ export default class SearchWindow extends HTMLElement {
                         }
                         else {
                             shadow.getElementById("suggest").style.display = "none"
+                            shadow.getElementById("clearSearch").style.display = "none"
                         }
                     }
                 })

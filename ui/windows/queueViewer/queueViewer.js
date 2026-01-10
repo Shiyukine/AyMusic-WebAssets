@@ -86,7 +86,7 @@ export default class QueueViewerWindow extends HTMLElement {
                 window.addEventListener("pointerdown", (e) => {
                     var rect = e.target.getBoundingClientRect();
                     var y = rect.bottom - e.clientY
-                    if (!this.isClosed && !mouseHover && y >= 0) {
+                    if (!this.isClosed && !mouseHover && e.target != this && y >= 0) {
                         this.hide()
                     }
                 })
@@ -111,6 +111,12 @@ export default class QueueViewerWindow extends HTMLElement {
                     songGrid.overrideClick = () => {
                         Utils.queueManager.seekToSong(song)
                     }
+                    songGrid.contextMenuAddItems.push({
+                        name: "{qv.removeFromQueue}",
+                        action: () => {
+                            Utils.queueManager.removeFromQueue(parseInt(i))
+                        }
+                    })
                     this.shadowRoot.getElementById("next").appendChild(songGrid)
                 }
             }

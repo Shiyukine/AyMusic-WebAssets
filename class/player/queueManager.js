@@ -201,6 +201,22 @@ export default class QueueManager {
     }
 
     /**
+     * 
+     * @param {number} index 
+     */
+    removeFromQueue(index) {
+        if (index < 0 || index >= this.allSongs.length) {
+            console.error("Cannot remove from queue, index out of bounds!");
+            return;
+        }
+        this.allSongs.splice(index, 1);
+        if (index <= this.currentIndex && this.currentIndex > 0) {
+            this.currentIndex--;
+        }
+        this.#eventEl.dispatchEvent(new CustomEvent("queuechange"));
+    }
+
+    /**
      * @param {Playlist} playlist
      */
     async addPlaylistToQueue(playlist) {

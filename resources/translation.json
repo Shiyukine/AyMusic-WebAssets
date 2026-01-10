@@ -84,6 +84,7 @@
         "{lib.modifySong}": "Modify this song",
         "{qv.curPlaying}": "Current song",
         "{qv.next}": "Next songs",
+        "{qv.removeFromQueue}": "Remove from queue",
         "{musicViewer.title}": "View something",
         "{listenViewer.title}": "Playing now",
         "{lv.noData}": "No data for this song :(",
