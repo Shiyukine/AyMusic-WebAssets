@@ -111,6 +111,14 @@ export default class PlatformHandler {
         else return []
     }
 
+    static async getPlatformInterceptRequests(platform) {
+        var platforms = await this.searchPlatforms()
+        if (platform && platforms) {
+            return platforms["Servers"][platform]["InterceptRequests"] ? platforms["Servers"][platform]["InterceptRequests"] : []
+        }
+        else return []
+    }
+
     static async setPlatformSetting(platform, setting, value) {
         var platforms = await this.searchPlatforms()
         if (platform && platforms) {

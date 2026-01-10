@@ -90,13 +90,15 @@ export default class LoginPanel extends HTMLElement {
                     }
                 }
             }
-            this.shadowRoot.getElementById("loginBG").onclick = () => {
-                if (isForModification == "modify") {
-                    history.back()
-                }
-            }
             if (this.shadowRoot.getElementById("back")) {
                 this.shadowRoot.getElementById("back").onclick = () => {
+                    if (isForModification == "modify") {
+                        history.back()
+                    }
+                }
+            }
+            else {
+                this.shadowRoot.getElementById("loginBG").onclick = () => {
                     if (isForModification == "modify") {
                         history.back()
                     }
