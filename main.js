@@ -186,7 +186,7 @@ async function main() {
                         document.getElementById("main").appendChild(info)
                     }
                 }
-                if (Utils.app.remoteClient.haveCookie(Utils.servURL, "PHPSESSID").length > 0 && Utils.apiManager.haveCache({ act: "getUserInfo" })) {
+                if ((await Utils.app.remoteClient.haveCookie(Utils.servURL, "PHPSESSID")).length > 0 && Utils.apiManager.haveCache({ act: "getUserInfo" })) {
                     cb()
                 }
                 else {

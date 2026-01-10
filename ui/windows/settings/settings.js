@@ -201,13 +201,13 @@ export default class SettingsWindow extends HTMLElement {
                     let btn1 = document.createElement("p")
                     btn1.classList.add("link")
                     btn1.classList.add("inline")
-                    if (Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName).length > 0) {
+                    if ((await Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName)).length > 0) {
                         btn1.innerText = "{set.music.rmAccount}"
                         btn1.onclick = async () => {
                             await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LogoutUrl"),
                                 await PlatformHandler.getPlatformUrl(platform, "LogoutUrlCallback"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
                             let interv = setInterval(async () => {
-                                if (Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName).length == 0) {
+                                if ((await Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName)).length == 0) {
                                     clearInterval(interv)
                                     this.refreshPlatformList()
                                 }
@@ -219,7 +219,7 @@ export default class SettingsWindow extends HTMLElement {
                         btn1.onclick = async () => {
                             await SettingsWindow.connectToPlatform(platform)
                             let interv = setInterval(async () => {
-                                if (Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName).length > 0) {
+                                if ((await Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName)).length > 0) {
                                     clearInterval(interv)
                                     this.refreshPlatformList()
                                 }
@@ -227,7 +227,7 @@ export default class SettingsWindow extends HTMLElement {
                         }
                     }
                     div.appendChild(btn1)
-                    if ((await PlatformHandler.getPlatformSettings(platform)).SupportsPlaylistsImport && Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName).length > 0) {
+                    if ((await PlatformHandler.getPlatformSettings(platform)).SupportsPlaylistsImport && (await Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName)).length > 0) {
                         let btn3 = document.createElement("p")
                         btn3.classList.add("link")
                         btn3.classList.add("inline")
@@ -293,7 +293,7 @@ export default class SettingsWindow extends HTMLElement {
                             { text: "Close", isPositive: false, onclick: async () => { inf.close() } }], true)
                         document.getElementById("main").appendChild(inf)
                         let interv = setInterval(async () => {
-                            if (Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName).length > 0) {
+                            if ((await Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName)).length > 0) {
                                 clearInterval(interv)
                                 if (await PlatformHandler.getPlatformBySongUrl(Utils.queueManager.currentSong.url) == platform) {
                                     if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
