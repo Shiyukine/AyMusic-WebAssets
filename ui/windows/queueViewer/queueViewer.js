@@ -12,6 +12,7 @@ import ThemeColor from "../../../class/themeColor.js";
 
 export default class QueueViewerWindow extends HTMLElement {
     isClosed = true;
+    abort = new AbortController();
 
     constructor() {
         super();
@@ -37,6 +38,15 @@ export default class QueueViewerWindow extends HTMLElement {
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.translation = new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
+                this.abort = new AbortController();
+                window.addEventListener("popstate", (e) => {
+                    if (e.state.where != "queueViewer") {
+                        this.hide()
+                    }
+                    else {
+                        this.show(false)
+                    }
+                }, { signal: this.abort.signal })
                 Utils.queueManager.onQueueChanged(() => {
                     this.refresh()
                 })
@@ -51,7 +61,7 @@ export default class QueueViewerWindow extends HTMLElement {
                     this.style.transition = ""
                     dragInfo.drag = true
                     dragInfo.yBase = e.y
-                })
+                }, { signal: this.abort.signal })
                 window.addEventListener("pointermove", (e) => {
                     if (dragInfo.drag && !this.isClosed) {
                         let mov = e.y - dragInfo.yBase
@@ -64,12 +74,12 @@ export default class QueueViewerWindow extends HTMLElement {
                         //this.style.top = ((Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 200 : 45) + mov) + "px"
                         this.style.transform = "translateY(" + (mov) + "px)"
                     }
-                })
+                }, { signal: this.abort.signal })
                 window.addEventListener("pointerup", (e) => {
                     if (dragInfo.drag && !this.isClosed) {
                         if (e.y - dragInfo.yBase > 100) {
                             this.style.transition = "0.4s"
-                            this.hide()
+                            history.back()
                         }
                         else {
                             this.style.transition = "0.3s"
@@ -79,7 +89,7 @@ export default class QueueViewerWindow extends HTMLElement {
                         dragInfo.drag = false
                         dragInfo.yBase = 0
                     }
-                })
+                }, { signal: this.abort.signal })
                 let mouseHover = false
                 this.addEventListener("pointerenter", () => mouseHover = true)
                 this.addEventListener("pointerleave", () => mouseHover = false)
@@ -87,9 +97,16 @@ export default class QueueViewerWindow extends HTMLElement {
                     var rect = e.target.getBoundingClientRect();
                     var y = rect.bottom - e.clientY
                     if (!this.isClosed && !mouseHover && e.target != this && y >= 0) {
-                        this.hide()
+                        if (e.target.tagName != 'CONTEXT-MENU') {
+                            history.back()
+                        }
+                        else {
+                            setTimeout(() => {
+                                this.hide()
+                            }, 300);
+                        }
                     }
-                })
+                }, { signal: this.abort.signal })
             }
         })
     }
@@ -125,8 +142,10 @@ export default class QueueViewerWindow extends HTMLElement {
         }
     }
 
-    show() {
+    show(updateHistory = true) {
+        if (!this.isClosed) return
         document.getElementById("main").appendChild(this)
+        if (updateHistory) window.history.pushState({ where: "queueViewer" }, "")
         this.clientWidth //wait element loaded
         this.style.transition = "0.3s"
         this.style.transform = "translateY(0px)"
@@ -141,6 +160,7 @@ export default class QueueViewerWindow extends HTMLElement {
             this.clearAll()
             this.ontransitionend = () => { }
             this.parentElement.removeChild(this)
+            this.abort.abort();
         }
         this.style.transform = "translateY(" + window.innerHeight + "px)"
     }

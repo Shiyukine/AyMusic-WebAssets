@@ -52,7 +52,11 @@ export default class MusicViewerWindow extends HTMLElement {
                 this.style.height = "calc(100% - 125px - " + insets.bottom / devicePixelRatio + "px)"
             }
             shadow.innerHTML = html
-            if (shadow.querySelector("#topbar")) shadow.querySelector("#topbar").style.marginTop = (top) + "px";
+            if (shadow.querySelector("#topbar")) {
+                shadow.querySelector("#topbar").style.marginTop = (top) + "px";
+                shadow.querySelector("#list").style.height = "calc(100% - " + (211 - (40 - top)) + "px)"
+                shadow.querySelector("#edit").style.height = "calc(100% - " + (211 - (40 - top)) + "px)"
+            }
             this.translation = new Translations(shadow.children[1])
             new ThemeColor(shadow.children[1])
             window.addEventListener("popstate", (e) => {
