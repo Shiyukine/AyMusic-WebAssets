@@ -158,11 +158,13 @@ export default class Player {
                 let includes = bypass.includes
                 Utils.app.remoteClient.addBadUrl(url, includes)
             }
-            for (let bypass of await PlatformHandler.getPlatformInterceptRequests(platform)) {
-                let url = bypass.url
-                let includes = bypass.includes
-                Utils.app.remoteClient.addInterceptAllWebRequest(url, includes)
-                console.log("Intercepting requests: " + url + " | includes: " + includes)
+            if (Utils.app.remoteClient.addInterceptAllWebRequest) {
+                for (let bypass of await PlatformHandler.getPlatformInterceptRequests(platform)) {
+                    let url = bypass.url
+                    let includes = bypass.includes
+                    Utils.app.remoteClient.addInterceptAllWebRequest(url, includes)
+                    console.log("Intercepting requests: " + url + " | includes: " + includes)
+                }
             }
             if ((await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform &&
                 (await PlatformHandler.getPlatformSettings(platform)).Token == "") {
