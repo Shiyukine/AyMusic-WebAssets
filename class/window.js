@@ -11,58 +11,32 @@ export default class Window {
         })
         var topbar = document.createElement("div")
         topbar.classList.add("windowTopBar")
+        var mvmt = document.createElement("div")
+        mvmt.classList.add("mvmt")
+        mvmt.id = "win_mvmt"
         if (Utils.app.platform == "Windows") {
             topbar.classList.add("colorTopBar")
             var icon = document.createElement("img")
             icon.src = "/resources/icon.ico"
             icon.classList.add("left")
             topbar.appendChild(icon)
-            var mvmt = document.createElement("div")
             /*mvmt.addEventListener("pointerdown", async function (e) {
                 if (e.button == 0) await Utils.app.remoteClient.beginMoveWindow()
             })
             mvmt.addEventListener("pointerup", async function (e) {
                 if (e.button == 2) await Utils.app.remoteClient.rightClickWindow()
             })*/
-            mvmt.classList.add("mvmt")
-            mvmt.id = "win_mvmt"
             topbar.appendChild(mvmt)
-            var wclose = document.createElement("img")
-            wclose.addEventListener("click", () => Utils.app.remoteClient.closeWindow());
-            wclose.src = "/resources/wclose.png"
-            wclose.classList.add("clickable")
-            var wchange = document.createElement("img")
-            wchange.src = "/resources/wchange.png"
-            wchange.addEventListener("click", async () => {
-                var ws = await Utils.app.remoteClient.getWindowState()
-                if (ws == 0) {
-                    Utils.app.remoteClient.maxWindow()
-                }
-                else {
-                    Utils.app.remoteClient.normalWindow()
-                }
-            });
-            wchange.classList.add("clickable")
-            var wmin = document.createElement("img")
-            wmin.src = "/resources/wmin.png"
-            wmin.addEventListener("click", () => Utils.app.remoteClient.hideWindow());
-            wmin.classList.add("clickable")
-            topbar.appendChild(wclose)
-            topbar.appendChild(wchange)
-            topbar.appendChild(wmin)
         }
         if (Utils.app.platform == "MacOS") {
             topbar.classList.add("colorTopBar")
             topbar.classList.add("macOS")
-            var mvmt = document.createElement("div")
             /*mvmt.addEventListener("pointerdown", async function (e) {
                 if (e.button == 0) await Utils.app.remoteClient.beginMoveWindow()
             })
             mvmt.addEventListener("pointerup", async function (e) {
                 if (e.button == 2) await Utils.app.remoteClient.rightClickWindow()
             })*/
-            mvmt.classList.add("mvmt")
-            mvmt.id = "win_mvmt"
             topbar.appendChild(mvmt)
         }
         var back = await Utils.createSVGPath("Back", "white", () => history.back(), Utils.app.platform == "MacOS" ? 28 : 29)
@@ -80,7 +54,7 @@ export default class Window {
             appName.classList.add("left")
             topbar.appendChild(appName)
         }
-        if(Utils.app.platform == "MacOS") {
+        if (Utils.app.platform == "MacOS") {
             back.style.marginLeft = "80px"
         }
         document.body.appendChild(topbar)
