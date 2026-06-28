@@ -84,7 +84,7 @@ export default class App {
         }
     }
 
-    recieveEventClient(event) {
+    receiveEventClient(event) {
         this.#eventEl.dispatchEvent(new CustomEvent(event));
     }
 
