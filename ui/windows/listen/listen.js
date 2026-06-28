@@ -765,7 +765,7 @@ export default class ListenWindow extends HTMLElement {
                         cm.addSubContextMenu("{lib.addToPl}", cm3)
                         if (Utils.queueManager.currentSong != null
                             && Utils.queueManager.currentObject != null
-                            && Utils.queueManager.currentObject.id != Utils.libManager.userInfo.likedSongsPlId
+                            && Utils.queueManager.currentObject.id != "pl_" + Utils.libManager.userInfo.likedSongsPlId
                             && Utils.libManager.userPlaylists.filter((pl) => pl.id == Utils.queueManager.currentObject.id.replace("pl_", "")).length > 0) {
                             let result = await Utils.apiManager.doPostRequest({
                                 act: "getIdSongsInPlaylist",
