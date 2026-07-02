@@ -62,10 +62,6 @@ export default class Player {
                 this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb, { detail: e.data.data }));
             }
         })
-
-        // Start background keep-alive for iOS to prevent suspension after switching songs when the app is in the background.
-        if (Utils.app.platform == "iOS")
-            this.startBackgroundKeepAlive()
     }
 
     objurl = "";

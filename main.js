@@ -121,6 +121,8 @@ async function main() {
                 //
                 await Utils.apiManager.init()
                 //
+                if (Utils.app.platform == "iOS") Utils.player.startBackgroundKeepAlive()
+                //
                 //await Adblock.init()
                 //
                 Update.searchUpdate(loadPanel);
