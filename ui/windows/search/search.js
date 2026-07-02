@@ -75,7 +75,6 @@ export default class SearchWindow extends HTMLElement {
                 })
                 shadow.getElementById("tb_search").addEventListener("focus", () => {
                     isSearchFocused = true
-                    shadow.getElementById("tb_search").select()
                 });
                 window.addEventListener("click", () => {
                     this.anSearch = null

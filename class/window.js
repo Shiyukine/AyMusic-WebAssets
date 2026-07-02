@@ -56,6 +56,12 @@ export default class Window {
         }
         if (Utils.app.platform == "MacOS") {
             back.style.marginLeft = "80px"
+            window.app.addEventListener('enter-fullscreen', (fullscreen) => {
+                back.style.marginLeft = "10px"
+            })
+            window.app.addEventListener('leave-fullscreen', (fullscreen) => {
+                back.style.marginLeft = "80px"
+            })
         }
         document.body.appendChild(topbar)
         new ThemeColor(topbar)

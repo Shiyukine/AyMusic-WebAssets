@@ -6,10 +6,7 @@
     "author": "Shiyukine",
     "license": "ISC",
     "devDependencies": {
-        "@typescript-eslint/eslint-plugin": "^5.8.0",
-        "@typescript-eslint/parser": "^5.8.0",
-        "eslint": "^8.57.1",
-        "eslint-config-google": "^0.14.0"
+        "eslint": "^10.6.0"
     },
     "dependencies": {
         "require": "^0.4.4",
