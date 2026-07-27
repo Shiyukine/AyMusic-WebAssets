@@ -1032,13 +1032,16 @@ export default class ListenWindow extends HTMLElement {
                 for (let sing of Utils.queueManager.currentSong.additionalSingers) {
                     singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
                 }
+                if (singer.length < 2) singer += "  ";
+                let title = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
+                if (title.length < 2) title += "  ";
                 let out = {
-                    details: "" + (Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title),
+                    details: "" + (title),
                     state: "" + (singer),
                     name: "AyMusic",
                     //endTimestamp: Date.now() + ((Utils.queueManager.currentSong.cropEnd != -1 ? Utils.queueManager.currentSong.cropEnd : pb.getMax()) - pb.getValue()),
                     assets: {
-                        large_image: Utils.queueManager.currentSong.imgUrl != "localImg" ? Utils.queueManager.currentSong.imgUrl : "big_icon",
+                        large_image: Utils.queueManager.currentSong.imgUrl != "localImg" && Utils.queueManager.currentSong.imgUrl != "" ? Utils.queueManager.currentSong.imgUrl : "big_icon",
                         large_text: "AyMusic by Aketsuky",
                         small_image: plat,
                         small_text: "Music from " + platName,
