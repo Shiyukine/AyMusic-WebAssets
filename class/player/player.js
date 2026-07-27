@@ -322,6 +322,66 @@ export default class Player {
         }
     }
 
+    async startBackgroundKeepAlive() {
+        let dummyPlayer = new Audio();
+        dummyPlayer.loop = true;
+        // https://github.com/anars/blank-audio/blob/master/1-hour-of-silence.mp3
+        dummyPlayer.src = "/resources/1-hour-of-silence.mp3";
+
+        // Play the dummy track to explicitly request Control Center dominance
+        await dummyPlayer.play();
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: "Waiting for song...",
+                artist: "AyMusic",
+                album: "Waiting for song...",
+                artwork: []
+            });
+            navigator.mediaSession.setActionHandler('play', this.play);
+            navigator.mediaSession.setActionHandler('pause', this.pause);
+            navigator.mediaSession.setActionHandler('nexttrack', this.next);
+            navigator.mediaSession.setActionHandler('previoustrack', this.previous);
+            console.log("Carrier wave active. JS thread is now protected from iOS suspension.");
+        } else {
+            console.warn("Media Session API not supported on this device.");
+        }
+        this.#eventEl.addEventListener("play", async () => {
+            dummyPlayer.play();
+            let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+            for (let sing of Utils.queueManager.currentSong.additionalSingers) {
+                singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
+            }
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
+                artist: singer,
+                album: Utils.queueManager.currentSong.album,
+                artwork: [
+                    {
+                        src: Utils.queueManager.currentSong.imgUrl,
+                        sizes: "300x300",
+                        type: "image/jpeg"
+                    }
+                ]
+            });
+            // Update the playback state to "playing"
+            navigator.mediaSession.playbackState = 'playing';
+            // Update the playback position
+            let dur = await this.getDuration()
+            if (dur == -1) dur = parseFloat(Utils.queueManager.currentSong.time)
+            console.log("updating position state: duration=" + dur + " currentTime=" + (await this.getCurrentTime()))
+            navigator.mediaSession.setPositionState({
+                duration: dur / 1000,
+                playbackRate: 1.0,
+                position: (await this.getCurrentTime()) / 1000
+            });
+        });
+        this.#eventEl.addEventListener("pause", () => {
+            dummyPlayer.pause();
+            // Update the playback state to "paused"
+            navigator.mediaSession.playbackState = 'paused';
+        });
+    }
+
     changeShuffle(activate) {
         console.log("changing shuffle")
         Utils.queueManager.shuffle = activate
