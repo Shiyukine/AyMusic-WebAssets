@@ -111,7 +111,7 @@ export default class PlaylistImporter extends HTMLElement {
                                 url = url.split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
                             }
                             this.curTaskUrl = url;
-                            let script = await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "GetPlaylistItemsScript"))
+                            let script = await (await fetch(await PlatformHandler.getPlatformUrl(platform, "GetPlaylistItemsScript"))).text()
                             this.curWtId = TaskHandler.addTask(url, script, false, true, true, async (data) => {
                             }, false)
                         }
@@ -228,7 +228,7 @@ export default class PlaylistImporter extends HTMLElement {
             url = url.split("%token%").join((await PlatformHandler.getPlatformSettings(platform)).Token)
         }
         this.curTaskUrl = url;
-        let script = await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "GetPlaylistsScript"))
+        let script = await (await fetch(await PlatformHandler.getPlatformUrl(platform, "GetPlaylistsScript"))).text()
         this.curWtId = TaskHandler.addTask(url, script, false, true, false, async (data) => {
             if (data == "Error" && (await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
                 console.log("Platform need refresh token")

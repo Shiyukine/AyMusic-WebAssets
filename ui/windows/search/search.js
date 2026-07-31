@@ -327,7 +327,7 @@ export default class SearchWindow extends HTMLElement {
                 albumsUrlExist.push(albumID)
             }
         }
-        let script = await Utils.app.httpRequestGET(await PlatformHandler.getPlatformUrl(platform, "SearchScript"))
+        let script = await (await fetch(await PlatformHandler.getPlatformUrl(platform, "SearchScript"))).text()
         TaskHandler.addTask(searchUrl, script, false, true, false, async (data) => {
             if (data == "Error" && (await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
                 console.log("Platform need refresh token")

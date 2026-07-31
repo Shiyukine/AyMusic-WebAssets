@@ -118,15 +118,9 @@ export default class App {
 
     async httpRequestGET(url) {
         if (Utils.app.platform == "Android") {
-            return new Promise(r => {
-                window.listeners.httpRequestCallback = (data) => {
-                    window.listeners.httpRequestCallback = (data) => { }
-                    r(data)
-                }
-                Utils.app.remoteClient.httpRequestGET(url)
-            })
+            return this.remoteClient.httpRequestGET(url)
         }
-        else return await Utils.app.remoteClient.httpRequestGET(url, {
+        else return await this.remoteClient.httpRequestGET(url, {
             headers: {
                 "pragma": "no-cache",
                 "cache-control": "no-cache"

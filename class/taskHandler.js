@@ -9,7 +9,7 @@ export default class TaskHandler {
 
     static async addAdblock() {
         console.log("Loading adblock injecter")
-        let script = await Utils.app.httpRequestGET(Utils.servURL + "/dl/AyMusic/scripts/adblock_content.js")
+        let script = await (await fetch(Utils.servURL + "/dl/AyMusic/scripts/adblock_content.js")).text()
         this.blockAdsContent = script
         console.log("Adblock injecter loaded")
     }

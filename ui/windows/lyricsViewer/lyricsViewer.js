@@ -111,7 +111,7 @@ export default class LyricsViewerWindow extends HTMLElement {
             this.refreshing = true
             this.shadowRoot.getElementById("lyrics").innerText = '{lv.fetching}'
             console.log("Refreshing lyricsViewer")
-            let script = await Utils.app.httpRequestGET(Utils.servURL + "/dl/AyMusic/scripts/MusixMatch/google.js")
+            let script = await (await fetch(Utils.servURL + "/dl/AyMusic/scripts/MusixMatch/google.js")).text()
             let title = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
             let artist = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
             title = title.split("(")[0]
