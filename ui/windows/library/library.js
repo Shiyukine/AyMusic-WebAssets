@@ -65,7 +65,9 @@ export default class LibraryWindow extends HTMLElement {
                 this.changeView(this.selectedIndex, false)
                 this.changeViewMyLib(0)
                 this.style.opacity = "1"
-                this.refreshUserPlaylists()
+                Utils.libManager.refreshUserInfo(() => {
+                    this.refreshUserPlaylists()
+                })
                 if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                     shadow.getElementById("libBack").onclick = () => {
                         history.back()

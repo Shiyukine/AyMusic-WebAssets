@@ -127,10 +127,9 @@ export default class LoginPanel extends HTMLElement {
                             cacheKey: Utils.servURL + "account/" + value(3) + "/pp.gif"
                         })
                     }
-                    Utils.apiManager.refreshApiKey()
                     console.log("Welcome " + Utils.actualAccount.id + " to AyMusic!")
+                    document.getElementById("menu_win").changeAccountAvatar()
                     if (isForModification == "modify") {
-                        document.getElementById("menu_win").changeAccountAvatar()
                         document.getElementById("menu_win").anWindow.win.changeAccount();
                         this.#eventEl.dispatchEvent(new CustomEvent("changedinfos"));
                     }

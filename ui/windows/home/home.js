@@ -23,13 +23,18 @@ export default class HomeWindow extends HTMLElement {
                 this.translation = new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
                 this.style.opacity = "1"
-                this.refreshHome()
+                Utils.libManager.refreshUserInfo(() => {
+                    this.refreshHome()
+                })
             }
         })
     }
 
     async refreshHome() {
         console.log("Refreshing home")
+        for (let i = this.shadowRoot.getElementById("main").children.length - 1; i >= 0; i--) {
+            this.shadowRoot.getElementById("main").removeChild(this.shadowRoot.getElementById("main").children[i])
+        }
         var pls = Utils.libManager.userPlaylists;
         let date = new Date(Date.now())
         let h = date.getHours()

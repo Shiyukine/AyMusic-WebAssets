@@ -4,40 +4,48 @@ import Utils from "../utils/utils.js";
 export default class PlatformHandler {
 
     static platforms = null;
-    static cachedPlatforms = null;
     static searchingTokenForPlatform = [];
+    static loadedFromCache = false;
     static origin = "app://cache"
-    static loadedByCache = false;
+    static event = document.createElement("event");
 
-    static searchPlatforms() {
-        return new Promise((resolve) => {
-            if (!this.platforms) {
-                if (Utils.app.platform == "Android") Utils.app.remoteClient.addBypassWebRequest(Utils.servURL + "dl/AyMusic/scripts/servers.json")
-                fetch(Utils.servURL + "dl/AyMusic/scripts/servers.json").then(async (result) => {
-                    this.platforms = await result.json()
-                    Utils.app.remoteClient.saveCache("servers.json", new TextEncoder("utf-8").encode(JSON.stringify(this.platforms)))
-                    this.loadedByCache = false
-                    this.cachedPlatforms = null
+    static async init(retry = 0) {
+        if (Utils.app.platform == "Android") this.origin = "https://mycache"
+        if (retry == 0) {
+            try {
+                let rep = await fetch(this.origin + "/servers.json")
+                this.platforms = await rep.json()
+                this.loadedFromCache = true
+                this.event.dispatchEvent(new Event("platformsAvailable"))
+            }
+            catch {
+                console.warn("Cannot load servers.json from cache")
+            }
+        }
+        try {
+            let result = await fetch(Utils.servURL + "dl/AyMusic/scripts/servers.json")
+            this.platforms = await result.json()
+            Utils.app.remoteClient.saveCache("servers.json", new TextEncoder("utf-8").encode(JSON.stringify(this.platforms)))
+            this.loadedFromCache = false
+            this.event.dispatchEvent(new Event("platformsAvailable"))
+        }
+        catch {
+            let delay = 1000 * Math.pow(2, retry)
+            if (delay > 30000) delay = 30000
+            await Utils.delay(delay)
+            return await this.init(retry + 1)
+        }
+    }
+
+    static async searchPlatforms() {
+        if (this.platforms) return this.platforms
+        else {
+            return new Promise((resolve) => {
+                this.event.addEventListener("platformsAvailable", () => {
                     resolve(this.platforms)
-                }).catch(async (e) => {
-                    if (!this.loadedByCache) console.warn("Cannot fetch servers.json, trying to load from cache...", e)
-                    if (Utils.app.platform == "Android") this.origin = "https://mycache"
-                    fetch(this.origin + "/servers.json").then(async (rep) => {
-                        let json = await rep.json()
-                        this.loadedByCache = true
-                        this.cachedPlatforms = json
-                        resolve(json)
-                    }).catch((f) => {
-                        console.error(f)
-                        resolve(null)
-                    })
                 })
-                if (this.loadedByCache) resolve(this.cachedPlatforms)
-            }
-            else {
-                resolve(this.platforms)
-            }
-        })
+            })
+        }
     }
 
     static async getAvailablePlatforms() {

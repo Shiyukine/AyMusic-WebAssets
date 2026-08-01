@@ -33,7 +33,7 @@ export default class LibraryManager {
 
     refreshUserInfo(cb) {
         console.log("Refreshing user info")
-        Utils.apiManager.fetchAPIThenCache({ act: "getUserInfo" }, (info) => {
+        Utils.apiManager.fetchAPI({ act: "getUserInfo" }, (info) => {
             try {
                 this.userPlaylists = []
                 this.userInfo.curMusic = info["curMusic"]

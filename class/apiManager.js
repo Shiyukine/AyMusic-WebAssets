@@ -9,6 +9,11 @@ export default class ApiManager {
     disconnected = false
     cache = {}
     origin = "app://cache"
+    /**
+     * @type {EventTarget}
+     */
+    event = null;
+    alreadyWaitingLogin = false;
 
     async init() {
         try {
@@ -20,11 +25,6 @@ export default class ApiManager {
         catch {
             Utils.app.remoteClient.saveCache("API/index", new TextEncoder("utf-8").encode(JSON.stringify(this.cache)))
         }
-    }
-
-    refreshApiKey() {
-        this.userId = Utils.actualAccount.id
-        this.apiKey = Utils.actualAccount.apiKey
     }
 
     async getAccountInfo() {
@@ -70,38 +70,8 @@ export default class ApiManager {
         }
     }
 
-    fetchAPIThenCache(body, callback) {
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 2000)
-        this.doPostRequest(body, controller).then(rep => {
-            if (rep && rep.success !== false) {
-                if (JSON.stringify(body) in this.cache) {
-                    if (callback) callback(rep)
-                    Utils.app.remoteClient.saveCache("API/" + this.cache[JSON.stringify(body)], new TextEncoder("utf-8").encode(JSON.stringify(rep)))
-                }
-                else {
-                    this.cache[JSON.stringify(body)] = (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2) + (Math.random() + 1).toString(36).substring(2)
-                    if (callback) callback(rep)
-                    Utils.app.remoteClient.saveCache("API/" + this.cache[JSON.stringify(body)], new TextEncoder("utf-8").encode(JSON.stringify(rep)))
-                    Utils.app.remoteClient.saveCache("API/index", new TextEncoder("utf-8").encode(JSON.stringify(this.cache)))
-                }
-            }
-            else {
-                if (JSON.stringify(body) in this.cache) {
-                    fetch(this.origin + "/API/" + this.cache[JSON.stringify(body)]).then(async rep => {
-                        let json = await rep.json()
-                        if (json) {
-                            if (callback) callback(json)
-                        }
-                    })
-                }
-            }
-        })
-    }
-
-    async doPostRequest(content, controller = null) {
+    async doPostRequest(content, retry = 0) {
         //console.log("-> POST request : SENDING. Action : " + content.act)
-        let start = Date.now();
         var newDico = {
             apiKey: this.apiKey,
             platform: Utils.app.platform,
@@ -120,8 +90,7 @@ export default class ApiManager {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(newDico),
-                    signal: controller ? controller.signal : null
+                    body: JSON.stringify(newDico)
                 });
                 var result = await rawResponse.json();
                 try {
@@ -137,23 +106,29 @@ export default class ApiManager {
                     else {
                         //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
                         //console.error(result)
-                        if (this.countFailed == 0) {
-                            if (result["reason"].includes("Bad API key")) {
-                                this.countFailed += 1
-                                return new Promise((resolve) => {
-                                    var logP = new LoginPanel("refresh");
-                                    logP.style.display = "none"
-                                    document.getElementById("main").appendChild(logP);
-                                    logP.notConnected = () => {
-                                        logP.style.display = ""
-                                    }
-                                    logP.logged = async () => {
-                                        this.countFailed == 0
-                                        resolve(await this.doPostRequest(content))
-                                    };
-                                })
+                        if (result["reason"].includes("Bad API key")) {
+                            if (!this.alreadyWaitingLogin) {
+                                this.alreadyWaitingLogin = true;
+                                this.event = document.createElement("event");
+                                var logP = new LoginPanel("refresh");
+                                logP.style.display = "none"
+                                document.getElementById("main").appendChild(logP);
+                                logP.notConnected = () => {
+                                    logP.style.display = ""
+                                }
+                                logP.logged = async () => {
+                                    this.userId = Utils.actualAccount.id
+                                    this.apiKey = Utils.actualAccount.apiKey
+                                    this.event.dispatchEvent(new Event("apiKeyRefreshed"));
+                                    this.alreadyWaitingLogin = false;
+                                };
                             }
-                            else return result
+                            return new Promise((resolve) => {
+                                this.event.addEventListener("apiKeyRefreshed", async () => {
+                                    let rep = await this.doPostRequest(content)
+                                    resolve(rep)
+                                })
+                            })
                         }
                         else return result
                     }
@@ -171,7 +146,10 @@ export default class ApiManager {
             //console.log("<- POST request : ERROR (" + (Date.now() - start) + "ms)")
             Utils.showMiniError(15, "You are disconnected from the server")
             this.disconnected = true
-            return;
+            let delay = 1000 * Math.pow(2, retry)
+            if (delay > 30000) delay = 30000
+            await Utils.delay(delay)
+            return await this.doPostRequest(content, retry + 1)
         }
     }
 }

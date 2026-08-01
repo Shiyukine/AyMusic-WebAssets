@@ -8,7 +8,7 @@ export default class Update {
      */
     static infoPanel = null;
 
-    static async searchUpdate(panelInfo) {
+    static async searchUpdate() {
         if (!Utils.app.isRelease) {
             console.warn("Updates are disabled in debug mode")
             return
@@ -16,7 +16,12 @@ export default class Update {
         let curUpdate = 0
         let maxUpdate = 0
         return new Promise(resolve => {
-            Update.infoPanel = panelInfo
+            if (!Update.infoPanel) {
+                var loadPanel = new InfoPanel("Searching for updates...", "Please wait...", null, true);
+                loadPanel.style.width = loadPanel.style.height = "100%";
+                loadPanel.style.position = "absolute";
+                Update.infoPanel = loadPanel
+            }
             var a = (state) => {
                 Update.infoPanel.changeloading(state.cur / state.max * 100)
                 if (state.step == 0) Update.infoPanel.changeText(null, "Downloading update file...")

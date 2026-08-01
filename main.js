@@ -11,6 +11,7 @@ import LocalMusicHandler from "./class/utils/localMusicHandler.js";
 import ThemeColor from "./class/themeColor.js";
 import MusicViewerWindow from "./ui/windows/musicViewer/musicViewer.js";
 import TaskHandler from "./class/taskHandler.js";
+import PlatformHandler from "./class/player/platformHandler.js";
 
 async function main() {
     window.app = Utils.app;
@@ -85,10 +86,6 @@ async function main() {
                     document.getElementById("main").appendChild(info)
                     await info.showDialog()
                 }
-                var loadPanel = new InfoPanel("Searching for updates...", "Please wait...", null, true);
-                loadPanel.style.width = loadPanel.style.height = "100%";
-                loadPanel.style.position = "absolute";
-                //loadPanel.show();
                 console.log("Getting server URL");
                 Utils.realServURL = (await (await fetch("https://raw.githubusercontent.com/Shiyukine/Shiyukine/main/serv.txt")).text()).replace("\n", "");
                 if (Utils.app.isRelease)
@@ -116,6 +113,8 @@ async function main() {
                     Utils.postMessageSW = registration.active.postMessage.bind(registration.active);
                 });
                 //
+                PlatformHandler.init()
+                //
                 LocalMusicHandler.init()
                 await LocalMusicHandler.getLocalLibrary()
                 //
@@ -125,9 +124,7 @@ async function main() {
                 //
                 //await Adblock.init()
                 //
-                Update.searchUpdate(loadPanel);
-                //loadPanel.changeText("Connecting to your account...", "Please wait...");
-                //loadPanel.changeloading(true)
+                Update.searchUpdate();
                 //
                 // add all consent links here
                 Utils.app.remoteClient.registerIframeUrl("https://consent.google.com/", `setInterval(() => document.getElementsByClassName("saveButtonContainer")[0].children[0].submit(), 100)`)
@@ -160,22 +157,19 @@ async function main() {
                     if (Utils.app.platform == "Android") {
                         Utils.app.remoteClient.syncCookies()
                     }
-                    loadPanel.changeText("Getting your playlists...");
-                    Utils.libManager.refreshUserInfo(() => {
-                        let lp = document.getElementById("loadPanel");
-                        lp.children[0].classList.add("pauseSVG");
-                        let mainPanel = document.getElementById("main");
-                        if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS")
-                            document.getElementsByClassName("windowTopBar")[0].classList.add("loaded")
-                        mainPanel.removeChild(lp);
-                        document.body.classList.remove("loading");
-                        let menuWin = new MenuWindow()
-                        Utils.menu = menuWin
-                        let viewerWin = new MusicViewerWindow()
-                        Utils.musicViewer = viewerWin
-                        mainPanel.appendChild(menuWin);
-                        mainPanel.appendChild(new ListenWindow())
-                    })
+                    let lp = document.getElementById("loadPanel");
+                    lp.children[0].classList.add("pauseSVG");
+                    let mainPanel = document.getElementById("main");
+                    if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS")
+                        document.getElementsByClassName("windowTopBar")[0].classList.add("loaded")
+                    mainPanel.removeChild(lp);
+                    document.body.classList.remove("loading");
+                    let menuWin = new MenuWindow()
+                    Utils.menu = menuWin
+                    let viewerWin = new MusicViewerWindow()
+                    Utils.musicViewer = viewerWin
+                    mainPanel.appendChild(menuWin);
+                    mainPanel.appendChild(new ListenWindow())
                     if (Utils.app.settings.firstOpen) {
                         var info = new InfoPanel("Welcome to AyMusic!", "Hello! Thanks for testing our app.\n"
                             + "We would like to remind you that this app isn't in its release state. So, the Aketsuky Team can reset the database and it may have bugs in several features of AyMusic.\n"
@@ -197,7 +191,6 @@ async function main() {
                     logP.style.position = "absolute";
                     document.getElementById("main").appendChild(logP);
                     logP.notConnected = () => {
-                        loadPanel.hide();
                     }
                     logP.logged = () => {
                         cb()
