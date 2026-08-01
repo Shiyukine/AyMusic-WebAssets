@@ -84,8 +84,8 @@ p {
 
 .panelInfo {
     display: flow-root;
-    height: 46px;
-    margin-top: -5px;
+    height: 40px;
+        margin-top: 1px;
 }
 
 .panelInfo>p,
