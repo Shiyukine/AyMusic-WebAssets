@@ -123,8 +123,8 @@ export default class ApiManager {
                                 logP.logged = async () => {
                                     this.userId = Utils.actualAccount.id
                                     this.apiKey = Utils.actualAccount.apiKey
-                                    this.event.dispatchEvent(new Event("apiKeyRefreshed"));
                                     this.alreadyWaitingLogin = false;
+                                    this.event.dispatchEvent(new Event("apiKeyRefreshed"));
                                 };
                             }
                             return new Promise((resolve) => {
