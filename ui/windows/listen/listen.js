@@ -832,42 +832,42 @@ export default class ListenWindow extends HTMLElement {
                         }
                     }
                 }
-                Utils.libManager.refreshUserInfo(async () => {
-                    if (Utils.libManager.userInfo.curMusic != null) {
-                        if (Utils.libManager.userInfo.curObject.startsWith("pl_")) {
+                Utils.apiManager.doPostRequest({ act: "getUserInfo" }).then(async (rep) => {
+                    if (rep.curMusic != null) {
+                        if (rep.curObject.startsWith("pl_")) {
                             let result = null;
                             for (let pl of Utils.libManager.userPlaylists) {
-                                if ("pl_" + pl.id == Utils.libManager.userInfo.curObject) {
+                                if ("pl_" + pl.id == rep.curObject) {
                                     result = pl;
                                 }
                             }
-                            await Utils.queueManager.changeQueue(result, Utils.libManager.userInfo.curMusic, window.enableFirstAutoPlay || false)
+                            await Utils.queueManager.changeQueue(result, rep.curMusic, window.enableFirstAutoPlay || false)
                         }
-                        else if (Utils.libManager.userInfo.curObject.startsWith("al_")) {
+                        else if (rep.curObject.startsWith("al_")) {
                             Utils.apiManager.fetchAPI({
                                 act: "getAlbumInfo",
-                                id: Utils.libManager.userInfo.curObject.replace("al_", ""),
+                                id: rep.curObject.replace("al_", ""),
                                 offset: 0
                             }, async (result) => {
                                 let al = result["albumInfo"]
-                                await Utils.queueManager.changeQueue(new Album(al.id, al.name, al.singerID, al.type, al.imgUrl, al.albumUrl), Utils.libManager.userInfo.curMusic, window.enableFirstAutoPlay || false)
+                                await Utils.queueManager.changeQueue(new Album(al.id, al.name, al.singerID, al.type, al.imgUrl, al.albumUrl), rep.curMusic, window.enableFirstAutoPlay || false)
                             })
                         }
-                        else if (Utils.libManager.userInfo.curObject.startsWith("si_")) {
+                        else if (rep.curObject.startsWith("si_")) {
                             Utils.apiManager.fetchAPI({
                                 act: "getSingerInfo",
-                                id: Utils.libManager.userInfo.curObject.replace("si_", "")
+                                id: rep.curObject.replace("si_", "")
                             }, async (result) => {
                                 let al = result["singerInfo"]
-                                await Utils.queueManager.changeQueue(new Singer(al.id, al.name, al.imgUrl, al.singerUrl, al.aliasName), Utils.libManager.userInfo.curMusic, window.enableFirstAutoPlay || false)
+                                await Utils.queueManager.changeQueue(new Singer(al.id, al.name, al.imgUrl, al.singerUrl, al.aliasName), rep.curMusic, window.enableFirstAutoPlay || false)
                             })
                         }
                         else {
                             Utils.apiManager.fetchAPI({
                                 act: "getSongInfo",
-                                id: Utils.libManager.userInfo.curMusic.replace("so_", "")
+                                id: rep.curMusic.replace("so_", "")
                             }, async (obj) => {
-                                await Utils.queueManager.changeQueue(new Song(obj.songID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName), Utils.libManager.userInfo.curMusic, window.enableFirstAutoPlay || false)
+                                await Utils.queueManager.changeQueue(new Song(obj.songID.replace("so_", ""), obj.url, obj.dateAdded, obj.title, obj.imgUrl, obj.time, obj.isExplicit, obj.addedBy, obj.cropStart, obj.cropEnd, obj.singerID, obj.singerName, obj.albumName, obj.albumID, obj.albumUrl, obj.singerUrl, obj.additionalSingers, obj.aliasTitle, obj.aliasSongSingerName, obj.aliasSingerName), rep.curMusic, window.enableFirstAutoPlay || false)
                             })
                         }
                     }

@@ -8,6 +8,10 @@ export default class TaskHandler {
     static allowBgTask = true;
     static blockAdsContent = "";
 
+    static async init() {
+        if (this.blockAdsContent == "") await this.addAdblock()
+    }
+
     static async addAdblock() {
         console.log("Loading adblock injecter")
         let script = await (await fetch(Utils.servURL + "/dl/AyMusic/scripts/adblock_content.js")).text()
@@ -23,12 +27,15 @@ export default class TaskHandler {
             stopTaskManually: stopTaskManually,
             callback: callback,
             needDisplayNone: needDisplayNone,
-            channel: channel
+            channel: channel,
+            taskAdded: false,
+            event: new EventTarget()
         };
         if (this.wbs[channel]) {
             let wtOld = this.wbs[channel]
             this.removeTask(wtOld)
         }
+        this.wbs[wt.channel] = wt
         this.createTask(wt)
         return wt.id
     }
@@ -120,7 +127,8 @@ export default class TaskHandler {
             if (!wt.stopTaskManually || Utils.app.isRelease) this.removeTask(wt)
         })
         document.getElementById("iframes").appendChild(iframe)
-        this.wbs[wt.channel] = wt
+        wt.taskAdded = true
+        wt.event.dispatchEvent(new Event("taskAdded"))
         console.log("Task in process: " + wt.url);
     }
 
@@ -190,6 +198,13 @@ export default class TaskHandler {
 
     static async removeTask(wt) {
         if (wt) {
+            if (!wt.taskAdded) {
+                await new Promise((resolve) => {
+                    wt.event.addEventListener("taskAdded", () => {
+                        resolve()
+                    })
+                })
+            }
             document.getElementById("iframes").removeChild(document.getElementById("iframe_" + wt.id))
             delete this.wbs[wt.channel]
             console.log("Task url: " + wt.url + " has finished. " + (Object.keys(this.wbs).length) + " remaining task");

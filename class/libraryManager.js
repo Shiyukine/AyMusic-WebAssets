@@ -49,7 +49,7 @@ export default class LibraryManager {
                 this.userLikedObjects = info["likedSongs"]
                 this.userInfo.likedSongsPlId = info["likedSongsPlId"]
                 console.log("User info refreshed successfully")
-                cb()
+                if (cb) cb()
             }
             catch (e) {
                 Utils.newError("Unable to get your account information", e)

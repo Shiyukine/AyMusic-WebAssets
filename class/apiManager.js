@@ -35,16 +35,20 @@ export default class ApiManager {
         return JSON.stringify(body) in this.cache
     }
 
-    fetchAPI(body, callback) {
-        let result = "";
+    async fetchAPI(body, callback) {
         if (JSON.stringify(body) in this.cache) {
-            fetch(this.origin + "/API/" + this.cache[JSON.stringify(body)]).then(async rep => {
+            let result = null
+            try {
+                let rep = await fetch(this.origin + "/API/" + this.cache[JSON.stringify(body)])
                 let json = await rep.json()
                 if (json) {
                     result = JSON.stringify(json)
                     if (callback) callback(json, true)
                 }
-            })
+            }
+            catch (e) {
+                console.error("Error when fetching API cache for body: " + JSON.stringify(body), e)
+            }
             this.doPostRequest(body).then(rep => {
                 if (rep && result != JSON.stringify(rep)) {
                     if (rep.success !== false) {

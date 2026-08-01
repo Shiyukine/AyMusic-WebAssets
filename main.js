@@ -115,6 +115,8 @@ async function main() {
                 //
                 PlatformHandler.init()
                 //
+                TaskHandler.init()
+                //
                 LocalMusicHandler.init()
                 await LocalMusicHandler.getLocalLibrary()
                 //
@@ -157,6 +159,7 @@ async function main() {
                     if (Utils.app.platform == "Android") {
                         Utils.app.remoteClient.syncCookies()
                     }
+                    Utils.libManager.refreshUserInfo(); //refresh user info to get the latest data
                     let lp = document.getElementById("loadPanel");
                     lp.children[0].classList.add("pauseSVG");
                     let mainPanel = document.getElementById("main");
