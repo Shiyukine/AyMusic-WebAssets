@@ -328,7 +328,7 @@ export default class SearchWindow extends HTMLElement {
             }
         }
         let script = await (await fetch(await PlatformHandler.getPlatformUrl(platform, "SearchScript"))).text()
-        TaskHandler.addTask(searchUrl, script, false, true, false, async (data) => {
+        TaskHandler.addTask(searchUrl, script, "search", true, false, async (data) => {
             if (data == "Error" && (await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
                 console.log("Platform need refresh token")
                 await PlatformHandler.refreshTokenForPlatform(platform)

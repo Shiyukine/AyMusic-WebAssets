@@ -112,7 +112,7 @@ export default class PlaylistImporter extends HTMLElement {
                             }
                             this.curTaskUrl = url;
                             let script = await (await fetch(await PlatformHandler.getPlatformUrl(platform, "GetPlaylistItemsScript"))).text()
-                            this.curWtId = TaskHandler.addTask(url, script, false, true, true, async (data) => {
+                            this.curWtId = TaskHandler.addTask(url, script, "playlistItems-Import", true, true, async (data) => {
                             }, false)
                         }
                         else {
@@ -229,7 +229,7 @@ export default class PlaylistImporter extends HTMLElement {
         }
         this.curTaskUrl = url;
         let script = await (await fetch(await PlatformHandler.getPlatformUrl(platform, "GetPlaylistsScript"))).text()
-        this.curWtId = TaskHandler.addTask(url, script, false, true, false, async (data) => {
+        this.curWtId = TaskHandler.addTask(url, script, "fetchPlaylists-Import", true, false, async (data) => {
             if (data == "Error" && (await PlatformHandler.getPlatformSettings(platform)).RequireUserLoggedOnPlatform) {
                 console.log("Platform need refresh token")
                 await PlatformHandler.refreshTokenForPlatform(platform)

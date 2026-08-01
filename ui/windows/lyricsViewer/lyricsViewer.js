@@ -122,7 +122,7 @@ export default class LyricsViewerWindow extends HTMLElement {
                 artist = encodeURIComponent(artist)
             }
             /**/
-            TaskHandler.addTask("https://www.google.com/search?hl=en&q=" + (title + " " + artist + " lyrics").split(" ").join("+"), script, false, true, false, async (data) => {
+            TaskHandler.addTask("https://www.google.com/search?hl=en&q=" + (title + " " + artist + " lyrics").split(" ").join("+"), script, "fetchLyrics", true, false, async (data) => {
                 if (data instanceof Error) {
                     console.error(data)
                     this.shadowRoot.getElementById("lyrics").innerText = "{lv.noData}"
@@ -151,13 +151,13 @@ export default class LyricsViewerWindow extends HTMLElement {
                                 "cache-control": "no-cache"
                             }
                         })
-                        TaskHandler.addTask("https://www.musixmatch.com/search/" + encodeURI(Utils.queueManager.currentSong.title + " " + Utils.queueManager.currentSong.singerName), script2, false, true, false, (nurl) => {
+                        TaskHandler.addTask("https://www.musixmatch.com/search/" + encodeURI(Utils.queueManager.currentSong.title + " " + Utils.queueManager.currentSong.singerName), script2, "fetchLyrics", true, false, (nurl) => {
                             if (nurl == "ERROR") {
                                 this.shadowRoot.getElementById("lyrics").innerText = "{lv.noData}"
                                 this.refreshing = false
                             }
                             else {
-                                TaskHandler.addTask(nurl, script, false, true, false, (data) => {
+                                TaskHandler.addTask(nurl, script, "fetchLyrics", true, false, (data) => {
                                     this.shadowRoot.getElementById("lyrics").innerText = data
                                     this.refreshing = false
                                 })

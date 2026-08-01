@@ -1,9 +1,10 @@
 import Utils from "./utils/utils.js";
 
 export default class TaskHandler {
-    static wbs = [[], []];
-    static waiting = [];
-    static maxTask = 5;
+    /**
+     * @type {Object.<string, {url: string, script: string, stopTaskManually: boolean, callback: function, needDisplayNone: boolean, channel: string}>}
+     */
+    static wbs = {};
     static allowBgTask = true;
     static blockAdsContent = "";
 
@@ -14,30 +15,21 @@ export default class TaskHandler {
         console.log("Adblock injecter loaded")
     }
 
-    static addTask(url, script, urgent, displayFailError, stopTaskManually, callback, needDisplayNone = true) {
+    static addTask(url, script, channel, displayFailError /*deprecated*/, stopTaskManually, callback, needDisplayNone = true) {
         var wt = {
-            id: Date.now(),
+            id: Date.now() + (Math.random() + 1).toString(36).substring(7),
             url: url,
             script: script,
-            displayFailError: displayFailError,
             stopTaskManually: stopTaskManually,
             callback: callback,
-            needDisplayNone: needDisplayNone
+            needDisplayNone: needDisplayNone,
+            channel: channel
         };
-        if (this.wbs[0].length < this.maxTask || urgent) {
-            if (urgent) {
-                this.waiting.splice(0, 0, wt);
-                this.purgeCurrentWebTask(1);
-            }
-            else {
-                this.createTask(wt);
-            }
-            console.log("Added new task. Url: " + url + ". Urgent: " + urgent + ". " + (this.wbs[0].length + this.waiting.length) + " remaining task");
+        if (this.wbs[channel]) {
+            let wtOld = this.wbs[channel]
+            this.removeTask(wtOld)
         }
-        else {
-            this.waiting.push(wt);
-            console.log("Added new task in waiting list. Url: " + url + ". " + (this.wbs[0].length + this.waiting.length) + " remaining task");
-        }
+        this.createTask(wt)
         return wt.id
     }
 
@@ -50,7 +42,7 @@ export default class TaskHandler {
         if (this.blockAdsContent == "") await this.addAdblock()
         Utils.app.remoteClient.registerIframeUrl(wt.url, `(async () => {\n`
             + this.blockAdsContent + `;\n
-            var wtId = ` + wt.id + `; 
+            var wtId = "` + wt.id + `"; 
             var wtUrl = "` + wt.url + `";
             var platform = "` + Utils.app.platform + `";
             let func = async () => {
@@ -116,19 +108,19 @@ export default class TaskHandler {
         iframe.allow = "autoplay; encrypted-media"
         iframe.style.width = "100%"
         iframe.style.height = "100%"
-        if (wt.needDisplayNone) iframe.style.display = "none"
+        if (wt.needDisplayNone) iframe.style.display = "none";
+        iframe.id = "iframe_" + wt.id
         iframe.src = wt.url;
         TaskHandler.postJs(iframe, wt).then((data) => {
             wt.callback(data, wt.id)
-            if (!wt.stopTaskManually) this.switchTask(wt)
+            if (!wt.stopTaskManually) this.removeTask(wt)
         }).catch((e) => {
             wt.callback(e, wt.id)
             // keep task when debugging
-            if (!wt.stopTaskManually || Utils.app.isRelease) this.switchTask(wt)
+            if (!wt.stopTaskManually || Utils.app.isRelease) this.removeTask(wt)
         })
         document.getElementById("iframes").appendChild(iframe)
-        this.wbs[0].push(wt);
-        this.wbs[1].push(iframe);
+        this.wbs[wt.channel] = wt
         console.log("Task in process: " + wt.url);
     }
 
@@ -152,10 +144,14 @@ export default class TaskHandler {
         let controller = new AbortController();
         return new Promise((resolve) => {
             let id = Date.now() + (Math.random() + 1).toString(36).substring(7);
-            for (let i in this.wbs[0]) {
-                let wt = this.wbs[0][i]
+            for (let wt of Object.values(this.wbs)) {
                 if (wt.url == url) {
-                    let iframe = this.wbs[1][i]
+                    let iframe = document.getElementById("iframe_" + wt.id)
+                    if (!iframe) {
+                        console.error("No iframe found for task " + wt.id + " with url " + wt.url)
+                        resolve(null)
+                        return
+                    }
                     window.addEventListener("message", (e) => {
                         //console.log(e)
                         if (/*e.origin == Utils.servURL.slice(0, -1) &&*/ e.data.id == id) {
@@ -192,77 +188,22 @@ export default class TaskHandler {
         await this.waitConnected(attempt + 1)
     }
 
-    static async switchTask(wt) {
-        if (this.wbs[0].length > 0 && wt != null) {
-            document.getElementById("iframes").removeChild(this.wbs[1][this.wbs[0].indexOf(wt)])
-            this.wbs[1].splice(this.wbs[0].indexOf(wt), 1)
-            this.wbs[0].splice(this.wbs[0].indexOf(wt), 1)
-            console.log("Task url: " + wt.url + " has finished. " + (this.wbs[0].length + this.waiting.length) + " remaining task");
-        }
-        //var b = this.wbs[0].length == 0;
-        if (this.waiting.length > 0) {
-            var nwt = this.waiting[0];
-            //await this.waitConnected()
-            this.createTask(nwt);
-            this.waiting.splice(this.waiting.indexOf(nwt), 1);
-            console.log("Switched 1 task. Url of new task: " + nwt.url + ". " + (this.wbs[0].length + this.waiting.length) + " remaining task");
+    static async removeTask(wt) {
+        if (wt) {
+            document.getElementById("iframes").removeChild(document.getElementById("iframe_" + wt.id))
+            delete this.wbs[wt.channel]
+            console.log("Task url: " + wt.url + " has finished. " + (Object.keys(this.wbs).length) + " remaining task");
         }
     }
 
-    static purgeCurrentWebTask(number) {
-        //-1 for all
-        if (this.wbs[0].length >= this.maxTask) {
-            if (number > 0) {
-                for (let i = 0; i < number; i++) {
-                    this.switchTask(this.wbs[0][0]);
-                }
-            }
-            else {
-                for (let wt of this.wbs[0]) {
-                    this.switchTask(wt);
-                }
-            }
-            console.log("Purged " + number + " tasks");
-        }
-        else {
-            this.switchTask(null);
-            console.log("Purged no tasks.");
-        }
-    }
-
-    static haveTasksForUrl(url, includeWaiting) {
-        var i = 0;
-        for (let wt of this.wbs[0]) {
-            if (wt.url == url) i++;
-        }
-        if (includeWaiting) {
-            for (let wt of this.waiting) {
-                if (wt.url == url) i++;
+    static stopWebTaskManually(url, includeWaiting = undefined /*deprecated*/) {
+        for (let wt of Object.values(this.wbs)) {
+            if (wt.url == url && wt.stopTaskManually) {
+                this.removeTask(wt);
+                console.log("Stopped task manually: " + wt.url)
+                return true;
             }
         }
-        return i;
-    }
-
-    static stopWebTaskManually(url, includeWaiting) {
-        for (let wt of this.wbs[0]) {
-            if (wt.url == url && wt.stopTaskManually) this.switchTask(wt);
-        }
-        if (includeWaiting) {
-            for (let wt of this.waiting) {
-                if (wt.url == url && wt.stopTaskManually) this.switchTask(wt);
-            }
-        }
-    }
-
-    static getFirstTaskForUrl(url, includeWaiting) {
-        for (let wt of this.wbs[0]) {
-            if (wt.url == url) return wt;
-        }
-        if (includeWaiting) {
-            for (let wt of this.waiting) {
-                if (wt.url == url) return wt;
-            }
-        }
-        return null;
+        return false;
     }
 }

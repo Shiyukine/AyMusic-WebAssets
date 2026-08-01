@@ -177,7 +177,7 @@ export default class PlatformHandler {
                         Utils.app.remoteClient.loadBackgroundWeb(url)
                     }
                     else {
-                        TaskHandler.addTask(url, "", false, true, true, () => {
+                        TaskHandler.addTask(url, "", "refreshToken", true, true, () => {
                             var intv = setInterval(async () => {
                                 if (await Utils.app.remoteClient.getClientToken(platform)) {
                                     await PlatformHandler.setPlatformSetting(platform, "Token", await Utils.app.remoteClient.getClientToken(platform))

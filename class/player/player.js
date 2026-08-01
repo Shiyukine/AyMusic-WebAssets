@@ -193,7 +193,7 @@ export default class Player {
                 }
             }
             await TaskHandler.waitConnected()
-            var wtId = TaskHandler.addTask(url, await (await fetch(await PlatformHandler.getPlatformUrl(platform, "ListenScript"))).text(), true, true, true, (data, wi) => {
+            var wtId = TaskHandler.addTask(url, await (await fetch(await PlatformHandler.getPlatformUrl(platform, "ListenScript"))).text(), "playSong", true, true, (data, wi) => {
                 clearInterval(this.currentIntervalTestIframe)
                 this.songLoading = false;
             }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying.includes(Utils.app.platform))
