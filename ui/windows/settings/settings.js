@@ -173,7 +173,10 @@ export default class SettingsWindow extends HTMLElement {
                     document.getElementById("main").appendChild(ip)
                     ip.show()
                 }
-                shadow.getElementById("about_ver").innerText += " " + Utils.app.versionName
+                let chromeVer = navigator.userAgent.split(Utils.app.platform == "iOS" ? "AppleWebKit/" : "Chrome/")[1].split(" ")[0]
+                let engine = "Chrome"
+                if (Utils.app.platform == "iOS") engine = "Safari"
+                shadow.getElementById("about_ver").innerText += " " + Utils.app.versionName + "\n" + engine + " - v" + chromeVer
                 this.changeView(this.selectedIndex)
                 this.style.opacity = "1"
             }
