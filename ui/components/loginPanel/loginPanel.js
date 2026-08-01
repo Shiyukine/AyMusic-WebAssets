@@ -128,7 +128,8 @@ export default class LoginPanel extends HTMLElement {
                         })
                     }
                     console.log("Welcome " + Utils.actualAccount.id + " to AyMusic!")
-                    document.getElementById("menu_win").changeAccountAvatar()
+                    if (document.getElementById("menu_win"))
+                        document.getElementById("menu_win").changeAccountAvatar()
                     if (isForModification == "modify") {
                         document.getElementById("menu_win").anWindow.win.changeAccount();
                         this.#eventEl.dispatchEvent(new CustomEvent("changedinfos"));

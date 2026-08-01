@@ -2,6 +2,7 @@ import Import from "../../../class/import.js";
 import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
 import Song from "../../../class/music/song.js";
+import Playlist from "../../../class/music/playlist.js";
 import PlatformHandler from "../../../class/player/platformHandler.js";
 import TimerHandler from "../../../class/player/timerHandler.js";
 import TaskHandler from "../../../class/taskHandler.js";
@@ -836,9 +837,10 @@ export default class ListenWindow extends HTMLElement {
                     if (rep.curMusic != null) {
                         if (rep.curObject.startsWith("pl_")) {
                             let result = null;
-                            for (let pl of Utils.libManager.userPlaylists) {
+                            for (let pl of rep.playlists) {
                                 if ("pl_" + pl.id == rep.curObject) {
-                                    result = pl;
+                                    let npl = new Playlist(pl.id, pl.name, pl.userID, pl.desc, pl.imgUrl, pl.isPrivate, pl.rank)
+                                    result = npl;
                                 }
                             }
                             await Utils.queueManager.changeQueue(result, rep.curMusic, window.enableFirstAutoPlay || false)
