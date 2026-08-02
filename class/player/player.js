@@ -203,14 +203,19 @@ export default class Player {
         this.currentSongUrl = song.url
         this.#eventEl.dispatchEvent(new CustomEvent("songchange"));
         console.log("audio element created")
-        if (!this.isLocalMusic) {
-            this.currentIntervalTestIframe = setInterval(async () => {
-                if (Utils.app.remoteClient.getIframeStatus(this.currentUrl) == 2 /*failed*/) {
-                    clearInterval(this.currentIntervalTestIframe)
-                    await TaskHandler.waitConnected()
-                    this.playSong(this.currentSong, this.needPlay)
-                }
-            }, 1000)
+        if (Utils.app.remoteClient.getIframeStatus) {
+            if (!this.isLocalMusic) {
+                this.currentIntervalTestIframe = setInterval(async () => {
+                    if (Utils.app.remoteClient.getIframeStatus(this.currentUrl) == 2 /*failed*/) {
+                        clearInterval(this.currentIntervalTestIframe)
+                        await TaskHandler.waitConnected()
+                        this.playSong(this.currentSong, this.needPlay)
+                    }
+                }, 1000)
+            }
+        }
+        else {
+            console.warn("getIframeStatus not supported")
         }
     }
 

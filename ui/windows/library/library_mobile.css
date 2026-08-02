@@ -85,7 +85,7 @@ p {
 .panelInfo {
     display: flow-root;
     height: 40px;
-        margin-top: 1px;
+    margin-top: 1px;
 }
 
 .panelInfo>p,
@@ -347,7 +347,7 @@ button:disabled {
 
 #pl_create {
     position: absolute;
-    bottom: 30px;
+    bottom: 40px;
     right: 0;
 }
 
@@ -368,7 +368,8 @@ svg:hover {
     padding: 0px;
 }
 
-#libBack {
+#libBack,
+#libBack2 {
     float: left;
     margin-left: 15px;
     margin-top: 5px;
@@ -376,14 +377,4 @@ svg:hover {
     width: 35px;
     height: 35px;
     /* color: rgb(0, 204, 255); */
-}
-
-#libBack2 {
-    float: left;
-    margin-left: 14px;
-    margin-top: -1px;
-    margin-right: 15px;
-    width: 35px;
-    height: 35px;
-    color: white;
 }
