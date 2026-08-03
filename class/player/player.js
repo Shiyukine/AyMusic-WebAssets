@@ -322,7 +322,7 @@ export default class Player {
             Utils.player.seek(0)
         }
         else {
-            let song = await Utils.queueManager.previousSong()
+            let song = await Utils.queueManager.previousSong(force)
             this.playSong(song)
         }
     }

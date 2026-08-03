@@ -291,8 +291,8 @@ export default class QueueManager {
         return array;
     }
 
-    async previousSong() {
-        if (!Utils.player.songLoading && Utils.player.currentTime != -1 && await Utils.player.getCurrentTime() > 5000) {
+    async previousSong(force = false) {
+        if (!force && !Utils.player.songLoading && Utils.player.currentTime != -1 && await Utils.player.getCurrentTime() > 5000) {
             return this.currentSong
         }
         let song = null;
