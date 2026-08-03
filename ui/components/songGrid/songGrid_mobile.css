@@ -16,6 +16,20 @@
     src: url("/resources/quicksand.ttf");
 }
 
+@keyframes click {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.95);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
 .panel_ep {
     background-color: rgb(39, 39, 39);
     width: calc(100% - 10px);
@@ -23,8 +37,9 @@
     cursor: auto;
 }
 
-.panel_ep:hover {
-    box-shadow: 0px 0px 0px black;
+/*click animation*/
+.panel_ep.click {
+    animation: click 0.3s;
 }
 
 .panel_ep #svg {

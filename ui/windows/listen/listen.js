@@ -16,6 +16,7 @@ import ListenViewerWindow from "../listenViewer/listenViewer.js";
 import LyricsViewerWindow from "../lyricsViewer/lyricsViewer.js";
 import QueueViewerWindow from "../queueViewer/queueViewer.js";
 import SettingsWindow from "../settings/settings.js";
+import GestureHandler from "../../../class/gestureHandler.js";
 
 export default class ListenWindow extends HTMLElement {
     fakeMetadata = {
@@ -946,6 +947,19 @@ export default class ListenWindow extends HTMLElement {
                         else {
                             Utils.player.play()
                         }
+                    }
+                })
+                let gesture = new GestureHandler(shadow.querySelector("#left"), false)
+                gesture.addEventListener("left", () => {
+                    if (Utils.queueManager.canNext()) {
+                        Utils.player.next()
+                        gesture.acceptGesture()
+                    }
+                })
+                gesture.addEventListener("right", () => {
+                    if (Utils.queueManager.canPrevious()) {
+                        Utils.player.previous()
+                        gesture.acceptGesture()
                     }
                 })
             }

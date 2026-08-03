@@ -83,10 +83,13 @@ img {
     width: 100%;
     position: relative;
     left: 50%;
-    display: grid;
     transform: translate(-50%, 0px);
+}
+
+#left_scroll {
     align-content: center;
     text-align: center;
+    display: grid;
 }
 
 .left_container {

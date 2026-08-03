@@ -10,13 +10,15 @@
         <p>{listenViewer.title}</p>
     </div>
     <div class="left">
-        <img id="music_img" src="/resources/icon.ico">
-        <div class="left_container">
-            <div class="divMask">
-                <p id="music_title">{unknown.title}</p>
-            </div>
-            <div class="divMask" style="margin-top: 5px;">
-                <p id="music_artist">{unknown.artist}</p>
+        <div id="left_scroll">
+            <img id="music_img" src="/resources/icon.ico">
+            <div class="left_container">
+                <div class="divMask">
+                    <p id="music_title">{unknown.title}</p>
+                </div>
+                <div class="divMask" style="margin-top: 5px;">
+                    <p id="music_artist">{unknown.artist}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -45,7 +47,7 @@
                     fill="currentColor"></path>
             </svg>
         </div>
-        <div style="display: flex; justify-content: center; margin-top: 5px; margin-bottom: 5px;">
+        <div style="display: flex; justify-content: center; margin-top: 15px; margin-bottom: 15px;">
             <p id="curTime" style="text-align: end;">0:00:00</p>
             <progress-bar id="pb" value="0" max="100"></progress-bar>
             <p id="maxTime" style="text-align: start;">0:00:00</p>

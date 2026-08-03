@@ -161,13 +161,13 @@ export default class LibraryWindow extends HTMLElement {
                     }
                 })
                 var gest = new GestureHandler(shadow.getElementById("mylib_list"))
-                gest.addEventListener("right", () => {
+                gest.addEventListener("left", () => {
                     if (this.selectedIndexMyLib + 1 < this.shadowRoot.getElementById("mylib_topbar").children.length) {
                         gest.acceptGesture()
                         this.changeViewMyLib(this.selectedIndexMyLib + 1)
                     }
                 })
-                gest.addEventListener("left", () => {
+                gest.addEventListener("right", () => {
                     if (this.selectedIndexMyLib - 1 > -1) {
                         gest.acceptGesture()
                         this.changeViewMyLib(this.selectedIndexMyLib - 1)

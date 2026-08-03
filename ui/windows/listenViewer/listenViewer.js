@@ -11,6 +11,7 @@ import ContextMenu from "../../components/contextMenu/contextMenu.js";
 import ProgressBar from "../../components/progressBar/progressBar.js";
 import LyricsViewerWindow from "../lyricsViewer/lyricsViewer.js";
 import QueueViewerWindow from "../queueViewer/queueViewer.js";
+import GestureHandler from "../../../class/gestureHandler.js";
 
 export default class ListenViewerWindow extends HTMLElement {
     isClosed = true;
@@ -325,6 +326,26 @@ export default class ListenViewerWindow extends HTMLElement {
                 //changed child index 1 to 2 with bg !
                 this.translation = new Translations(shadow.children[2])
                 new ThemeColor(shadow.children[2])
+                let gesture = new GestureHandler(shadow.querySelector("#left_scroll"), false, 90)
+                gesture.addEventListener("left", () => {
+                    if (Utils.queueManager.canNext()) {
+                        Utils.player.next()
+                        gesture.acceptGesture()
+                    }
+                })
+                gesture.addEventListener("right", () => {
+                    if (Utils.queueManager.canPrevious()) {
+                        Utils.player.previous()
+                        gesture.acceptGesture()
+                    }
+                })
+                let gesture2 = new GestureHandler(shadow.querySelector("#listen"), true, 100)
+                let quitViewer = () => {
+                    history.back()
+                    gesture2.acceptGesture()
+                }
+                gesture2.addEventListener("bottom", quitViewer)
+                gesture2.addEventListener("top", quitViewer)
             }
         })
     }

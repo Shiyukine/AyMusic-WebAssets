@@ -9,6 +9,7 @@ import Singer from "../../../class/music/singer.js";
 import Playlist from "../../../class/music/playlist.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
 import ThemeColor from "../../../class/themeColor.js";
+import GestureHandler from "../../../class/gestureHandler.js";
 
 export default class QueueViewerWindow extends HTMLElement {
     isClosed = true;
@@ -53,43 +54,17 @@ export default class QueueViewerWindow extends HTMLElement {
                 Utils.player.onSongChange(() => {
                     this.refresh()
                 })
-                let dragInfo = {
-                    drag: false,
-                    yBase: 0
-                };
-                shadow.getElementById("close").addEventListener("pointerdown", (e) => {
-                    this.style.transition = ""
-                    dragInfo.drag = true
-                    dragInfo.yBase = e.y
-                }, { signal: this.abort.signal })
-                window.addEventListener("pointermove", (e) => {
-                    if (dragInfo.drag && !this.isClosed) {
-                        let mov = e.y - dragInfo.yBase
-                        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-                            if (mov < dragInfo.yBase - 225) mov = dragInfo.yBase - 225
-                        }
-                        else {
-                            if (mov < dragInfo.yBase - 70) mov = dragInfo.yBase - 70
-                        }
-                        //this.style.top = ((Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 200 : 45) + mov) + "px"
-                        this.style.transform = "translateY(" + (mov) + "px)"
-                    }
-                }, { signal: this.abort.signal })
-                window.addEventListener("pointerup", (e) => {
-                    if (dragInfo.drag && !this.isClosed) {
-                        if (e.y - dragInfo.yBase > 100) {
-                            this.style.transition = "0.4s"
-                            history.back()
-                        }
-                        else {
-                            this.style.transition = "0.3s"
-                            //this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "200px" : "45px"
-                            this.style.transform = "translateY(0px)"
-                        }
-                        dragInfo.drag = false
-                        dragInfo.yBase = 0
-                    }
-                }, { signal: this.abort.signal })
+                let gesture2 = new GestureHandler(this, true, 100)
+                let quitViewer = () => {
+                    gesture2.acceptGesture()
+                    history.back()
+                }
+                gesture2.addEventListener("bottom", quitViewer)
+                gesture2.blockSwipeFrom("bottom")
+                shadow.getElementById("scroll").addEventListener("scroll", () => {
+                    if (shadow.getElementById("scroll").scrollTop > 0) gesture2.blockSwipeFrom("top")
+                    else gesture2.dontBlockSwipeFrom("top")
+                })
                 let mouseHover = false
                 this.addEventListener("pointerenter", () => mouseHover = true)
                 this.addEventListener("pointerleave", () => mouseHover = false)

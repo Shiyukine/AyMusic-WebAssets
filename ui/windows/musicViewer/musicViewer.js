@@ -10,6 +10,7 @@ import Utils from "../../../class/utils/utils.js";
 import AlbumGrid from "../../components/albumGrid/albumGrid.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
 import TextBox from "../../components/textBox/textBox.js";
+import GestureHandler from "../../../class/gestureHandler.js";
 
 export default class MusicViewerWindow extends HTMLElement {
     selectedIndex = 0;
@@ -207,6 +208,13 @@ export default class MusicViewerWindow extends HTMLElement {
                 shadow.getElementById("back").onclick = () => {
                     history.back()
                 }
+                let gesture2 = new GestureHandler(shadow.querySelector("#music"), true, 100)
+                let quitViewer = () => {
+                    gesture2.acceptGesture()
+                    history.back()
+                }
+                gesture2.addEventListener("bottom", quitViewer)
+                gesture2.blockSwipeFrom("bottom")
             }
         })
     }

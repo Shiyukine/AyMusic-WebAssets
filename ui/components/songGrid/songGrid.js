@@ -150,6 +150,16 @@ export default class SongGrid extends HTMLElement {
                 }
             });
         }
+        else {
+            this.shadowRoot.querySelector(".panel_ep").addEventListener("click", () => {
+                this.shadowRoot.querySelector(".panel_ep").classList.add("click")
+            })
+            this.shadowRoot.querySelector(".panel_ep").addEventListener("animationend", (event) => {
+                if (event.animationName == "click") {
+                    this.shadowRoot.querySelector(".panel_ep").classList.remove("click")
+                }
+            })
+        }
         let plat = song.imgUrl == "localImg" ? "iconround" : await PlatformHandler.getPlatformBySongUrl(song.url)
         plat = plat.toLowerCase()
         this.shadowRoot.getElementById("platform").style.backgroundImage = "url('/resources/" + plat + ".ico')"
