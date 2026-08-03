@@ -147,6 +147,7 @@ export default class LoginPanel extends HTMLElement {
                 }
                 if ((url.includes("login/?inapp=1") || url.includes("confirm.php")) && (isForModification == "" || isForModification == "refresh")) {
                     this.#eventEl.dispatchEvent(new CustomEvent("notconnected"));
+                    document.getElementById("bgImg").classList.add("no-blur")
                     this.style.opacity = "1"
                 }
             }
@@ -160,10 +161,12 @@ export default class LoginPanel extends HTMLElement {
             this.clientWidth
             if (isForModification == "modify") {
                 this.#iframe.src = Utils.servURL + "account/?inapp=1&date=" + Date.now().toString()
+                document.getElementById("bgImg").classList.add("no-blur")
                 this.style.opacity = "1"
             }
             if (isForModification == "logout") {
                 this.#iframe.src = Utils.servURL + "login/logout.php?inapp=1&date=" + Date.now().toString()
+                document.getElementById("bgImg").classList.add("no-blur")
                 this.style.opacity = "1"
             }
         })
@@ -186,6 +189,7 @@ export default class LoginPanel extends HTMLElement {
             this.#endLogin();
         };
         if (triggerEvent) this.#eventEl.dispatchEvent(new CustomEvent("logged"));
+        document.getElementById("bgImg").classList.remove("no-blur")
         if (this.isForModification == "refresh") this.#endLogin()
         else this.shadowRoot.getElementById("loginBG").style.opacity = "0%"
     }

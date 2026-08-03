@@ -352,6 +352,7 @@ export default class ListenViewerWindow extends HTMLElement {
 
     async show() {
         document.getElementById("main").appendChild(this)
+        document.getElementById("bgImg").classList.add("no-blur")
         this.clientWidth //wait
         this.style.opacity = "1"
         if (this.isClosed && (Utils.app.platform == "Android" || Utils.app.platform == "iOS")) window.history.pushState({ where: "listenViewer", id: this.id }, "", "/index.html")
@@ -401,6 +402,7 @@ export default class ListenViewerWindow extends HTMLElement {
         this.style.opacity = "0%"
         this.isClosed = true
         if (this.goToMusicViewer != "") Utils.musicViewer.changeView(this.goToMusicViewer)
+        else document.getElementById("bgImg").classList.remove("no-blur")
         this.goToMusicViewer = ""
     }
 

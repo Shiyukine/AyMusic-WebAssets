@@ -63,6 +63,11 @@ p {
     transform: scale(1.2);
 }
 
+#bgImg.no-blur {
+    filter: none !important;
+    transition: none !important;
+}
+
 #loadPanel {
     text-align: center;
     justify-content: center;

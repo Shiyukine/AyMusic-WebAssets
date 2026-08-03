@@ -161,6 +161,7 @@ export default class ContextMenu extends HTMLElement {
                                 bubbles: true,
                                 cancelable: true
                             }))
+                            this.hide(false)
                         }
                     }
                 }

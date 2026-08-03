@@ -70,11 +70,11 @@ export default class MusicViewerWindow extends HTMLElement {
                 }
                 gesture2.addEventListener("bottom", quitViewer)
                 gesture2.blockSwipeFrom("bottom")
-                shadow.getElementById("edit").addEventListener("scroll", () => {
+                shadow.getElementById("edit").addEventListener("touchend", () => {
                     if (shadow.getElementById("edit").scrollTop > 0) gesture2.blockSwipeFrom("top")
                     else gesture2.dontBlockSwipeFrom("top")
                 })
-                shadow.getElementById("list").addEventListener("scroll", () => {
+                shadow.getElementById("list").addEventListener("touchend", () => {
                     if (shadow.getElementById("list").scrollTop > 0) gesture2.blockSwipeFrom("top")
                     else gesture2.dontBlockSwipeFrom("top")
                 })
@@ -261,6 +261,7 @@ export default class MusicViewerWindow extends HTMLElement {
     async changeView(objectID, updateHistory = true) {
         if (!this.parentElement) {
             document.getElementById("main").appendChild(this)
+            document.getElementById("bgImg").classList.add("no-blur")
             Utils.menu.havePopup()
         }
         //wait
@@ -613,6 +614,7 @@ export default class MusicViewerWindow extends HTMLElement {
                 if (this.style.opacity != "1") this.parentElement.removeChild(this)
                 this.ontransitionend = () => { };
             };
+            document.getElementById("bgImg").classList.remove("no-blur")
             this.style.opacity = "0%"
             // it's okay to view the new content of something after panel closed
             this.fullObjId = ""

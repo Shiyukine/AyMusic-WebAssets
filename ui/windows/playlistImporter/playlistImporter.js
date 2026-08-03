@@ -271,6 +271,7 @@ export default class PlaylistImporter extends HTMLElement {
 
     show() {
         if (this.#loaded) this.shadowRoot.getElementById("cssImport").dispatchEvent(new CustomEvent("load"));
+        document.getElementById("bgImg").classList.add("no-blur")
         if (document.getElementById("menu_win"))
             document.getElementById("menu_win").style.zIndex = "0"
     }
@@ -326,6 +327,7 @@ export default class PlaylistImporter extends HTMLElement {
         try {
             this.shadowRoot.getElementById("panelInfoBG").style.opacity = "0%";
             this.shadowRoot.getElementById("panelInfoBG").style.zIndex = "0"
+            document.getElementById("bgImg").classList.remove("no-blur")
             if (document.getElementById("menu_win"))
                 document.getElementById("menu_win").style.zIndex = ""
         }
