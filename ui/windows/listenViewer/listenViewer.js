@@ -335,7 +335,7 @@ export default class ListenViewerWindow extends HTMLElement {
                 })
                 gesture.addEventListener("right", () => {
                     if (Utils.queueManager.canPrevious()) {
-                        Utils.player.previous()
+                        Utils.player.previous(true)
                         gesture.acceptGesture()
                     }
                 })

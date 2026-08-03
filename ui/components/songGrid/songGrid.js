@@ -151,7 +151,8 @@ export default class SongGrid extends HTMLElement {
             });
         }
         else {
-            this.shadowRoot.querySelector(".panel_ep").addEventListener("click", () => {
+            this.shadowRoot.querySelector(".panel_ep").addEventListener("click", (event) => {
+                if (event.target.tagName.toLowerCase() == "svg" || event.target.tagName.toLowerCase() == "path") return
                 this.shadowRoot.querySelector(".panel_ep").classList.add("click")
             })
             this.shadowRoot.querySelector(".panel_ep").addEventListener("animationend", (event) => {

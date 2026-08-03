@@ -316,9 +316,9 @@ export default class Player {
         }
     }
 
-    async previous() {
+    async previous(force = false) {
         console.log("previous song")
-        if (!this.songLoading && this.currentTime != -1 && await Utils.player.getCurrentTime() > 5000) {
+        if (!this.songLoading && this.currentTime != -1 && await Utils.player.getCurrentTime() > 5000 && !force) {
             Utils.player.seek(0)
         }
         else {

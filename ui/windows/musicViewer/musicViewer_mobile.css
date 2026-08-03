@@ -59,6 +59,7 @@ h3 {
     transition: 0.4s background;
     cursor: pointer;
     border-radius: 15px;
+    width: 42px;
 }
 
 #musicBG svg:hover {

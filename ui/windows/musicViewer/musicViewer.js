@@ -31,6 +31,7 @@ export default class MusicViewerWindow extends HTMLElement {
     scrolls = {};
     lastOffsets = {};
     offsetsSize = {};
+    histCounter = 0;
 
     constructor() {
         super();
@@ -60,15 +61,42 @@ export default class MusicViewerWindow extends HTMLElement {
             }
             this.translation = new Translations(shadow.children[1])
             new ThemeColor(shadow.children[1])
+            let gesture2 = null
+            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                gesture2 = new GestureHandler(shadow.querySelector("#music"), true, 100)
+                let quitViewer = () => {
+                    gesture2.acceptGesture()
+                    history.go(-this.histCounter)
+                }
+                gesture2.addEventListener("bottom", quitViewer)
+                gesture2.blockSwipeFrom("bottom")
+                shadow.getElementById("edit").addEventListener("scroll", () => {
+                    if (shadow.getElementById("edit").scrollTop > 0) gesture2.blockSwipeFrom("top")
+                    else gesture2.dontBlockSwipeFrom("top")
+                })
+                shadow.getElementById("list").addEventListener("scroll", () => {
+                    if (shadow.getElementById("list").scrollTop > 0) gesture2.blockSwipeFrom("top")
+                    else gesture2.dontBlockSwipeFrom("top")
+                })
+            }
             window.addEventListener("popstate", (e) => {
                 if (e.state.where == "musicViewer") {
                     if (e.state.panel == "main") {
                         this.changeView(e.state.objId, false)
                         shadow.getElementById("edit").style.display = "none"
+                        if (gesture2) {
+                            if (shadow.getElementById("list").scrollTop > 0) gesture2.blockSwipeFrom("top")
+                            else gesture2.dontBlockSwipeFrom("top")
+                        }
                     }
                     if (e.state.panel == "edit") {
                         shadow.getElementById("edit").style.display = ""
+                        if (gesture2) {
+                            if (shadow.getElementById("edit").scrollTop > 0) gesture2.blockSwipeFrom("top")
+                            else gesture2.dontBlockSwipeFrom("top")
+                        }
                     }
+                    this.histCounter--
                 }
                 else {
                     this.close()
@@ -90,6 +118,7 @@ export default class MusicViewerWindow extends HTMLElement {
             shadow.getElementById("edit_btn").onclick = () => {
                 shadow.getElementById("edit").style.display = ""
                 window.history.pushState({ where: "musicViewer", panel: "edit" }, "", "/index.html")
+                this.histCounter++
             }
             shadow.getElementById("edit_curT1").onclick = async () => {
                 if (this.object.id == Utils.queueManager.currentSong.id) {
@@ -208,13 +237,6 @@ export default class MusicViewerWindow extends HTMLElement {
                 shadow.getElementById("back").onclick = () => {
                     history.back()
                 }
-                let gesture2 = new GestureHandler(shadow.querySelector("#music"), true, 100)
-                let quitViewer = () => {
-                    gesture2.acceptGesture()
-                    history.back()
-                }
-                gesture2.addEventListener("bottom", quitViewer)
-                gesture2.blockSwipeFrom("bottom")
             }
         })
     }
@@ -473,6 +495,7 @@ export default class MusicViewerWindow extends HTMLElement {
             this.loaded = true
         }
         if (updateHistory) window.history.pushState({ where: "musicViewer", objId: objectID, panel: "main" }, "", "/index.html")
+        this.histCounter++
     }
 
     addScrollEventForList(parentElementId, listId) {
@@ -593,6 +616,7 @@ export default class MusicViewerWindow extends HTMLElement {
             this.style.opacity = "0%"
             // it's okay to view the new content of something after panel closed
             this.fullObjId = ""
+            this.histCounter = 0
             //this.controller.abort()
         }
     }
