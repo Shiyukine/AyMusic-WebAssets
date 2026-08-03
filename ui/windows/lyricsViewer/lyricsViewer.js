@@ -66,6 +66,18 @@ export default class LyricsViewerWindow extends HTMLElement {
                     if (shadow.getElementById("scroll").scrollTop > 0) gesture2.blockSwipeFrom("top")
                     else gesture2.dontBlockSwipeFrom("top")
                 })
+                shadow.getElementById("close").addEventListener("pointerenter", () => {
+                    gesture2.dontBlockSwipeFrom("top")
+                })
+                shadow.getElementById("close").addEventListener("pointerleave", () => {
+                    if (shadow.getElementById("scroll").scrollTop > 0) gesture2.blockSwipeFrom("top")
+                })
+                shadow.getElementById("close").addEventListener("touchstart", () => {
+                    gesture2.dontBlockSwipeFrom("top")
+                })
+                shadow.getElementById("close").addEventListener("touchend", () => {
+                    if (shadow.getElementById("scroll").scrollTop > 0) gesture2.blockSwipeFrom("top")
+                })
                 let mouseHover = false
                 this.addEventListener("pointerenter", () => mouseHover = true)
                 this.addEventListener("pointerleave", () => mouseHover = false)
