@@ -112,6 +112,7 @@ export default class LoginPanel extends HTMLElement {
                 if (url.includes("islogged.php")) {
                     let data = await this.#getIframeHtml()
                     let text = data.split("<br>").join("\n");
+                    if (text.includes("<script")) text = text.split("<script")[0]
                     let params = text.split("\n")
                     let value = i => params[i].split(" = ")[1]
                     Utils.actualAccount = {
