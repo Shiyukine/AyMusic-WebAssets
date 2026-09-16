@@ -56,6 +56,22 @@ export default class LoginPanel extends HTMLElement {
         })
     }
 
+    #testiOSCookies = () => {
+        let jsctrl = new AbortController();
+        let messID = "log2_" + Date.now() + (Math.random() + 1).toString(36).substring(7)
+        return new Promise((resolve) => {
+            window.addEventListener("message", (e) => {
+                if (e.origin == Utils.servURL.slice(0, -1) && e.data.id == messID) {
+                    if (e.data.message == "callbackTestiOSCookies") {
+                        jsctrl.abort()
+                        resolve(e.data.data)
+                    }
+                }
+            }, { signal: jsctrl.signal })
+            this.#iframe.contentWindow.postMessage({ message: "testiOSCookies", id: messID }, Utils.servURL)
+        })
+    }
+
     constructor(isForModification) {
         super(isForModification);
         var shadow = this.attachShadow({ mode: "open" })
@@ -150,6 +166,12 @@ export default class LoginPanel extends HTMLElement {
                     this.#eventEl.dispatchEvent(new CustomEvent("notconnected"));
                     document.getElementById("bgImg").classList.add("no-blur")
                     this.style.opacity = "1"
+                    if (Utils.app.platform == "iOS") {
+                        let testCookies = await this.#testiOSCookies()
+                        if (!testCookies) {
+                            Utils.newError("Unable to access cookies", "Because of new iOS privacy restrictions, you need to allow cross-site tracking for AyMusic to be able to log in. Please go to Settings > Apps > AyMusic and enable 'Allow Cross-Site Tracking'.")
+                        }
+                    }
                 }
             }
             setTimeout(() => {
@@ -218,6 +240,17 @@ export default class LoginPanel extends HTMLElement {
                     if(e.data.message == 'html')
                     {
                         parent.postMessage({message: 'callbackHTML', data: document.body.innerHTML, id: e.data.id}, '` + origin + `')
+                    }
+                    if(e.data.message == 'testiOSCookies')
+                    {
+                        document.requestStorageAccess().then(
+                            () => {
+                                parent.postMessage({message: 'callbackTestiOSCookies', data: true, id: e.data.id}, '` + origin + `')     
+                            },
+                            () => {
+                                parent.postMessage({message: 'callbackTestiOSCookies', data: false, id: e.data.id}, '` + origin + `')
+                            }
+                        );
                     }
                 }
             })`)
