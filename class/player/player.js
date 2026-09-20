@@ -342,10 +342,6 @@ export default class Player {
                 album: "Waiting for song...",
                 artwork: []
             });
-            navigator.mediaSession.setActionHandler('play', this.play);
-            navigator.mediaSession.setActionHandler('pause', this.pause);
-            navigator.mediaSession.setActionHandler('nexttrack', this.next);
-            navigator.mediaSession.setActionHandler('previoustrack', this.previous);
             console.log("Carrier wave active. JS thread is now protected from iOS suspension.");
         } else {
             console.warn("Media Session API not supported on this device.");
@@ -359,7 +355,7 @@ export default class Player {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
                 artist: singer,
-                album: Utils.queueManager.currentSong.album,
+                album: Utils.queueManager.currentSong.albumName,
                 artwork: [
                     {
                         src: Utils.queueManager.currentSong.imgUrl,
@@ -368,22 +364,13 @@ export default class Player {
                     }
                 ]
             });
-            // Update the playback state to "playing"
-            navigator.mediaSession.playbackState = 'playing';
-            // Update the playback position
             let dur = await this.getDuration()
             if (dur == -1) dur = parseFloat(Utils.queueManager.currentSong.time)
-            console.log("updating position state: duration=" + dur + " currentTime=" + (await this.getCurrentTime()))
             navigator.mediaSession.setPositionState({
                 duration: dur / 1000,
                 playbackRate: 1.0,
                 position: (await this.getCurrentTime()) / 1000
             });
-        });
-        this.#eventEl.addEventListener("pause", () => {
-            dummyPlayer.pause();
-            // Update the playback state to "paused"
-            navigator.mediaSession.playbackState = 'paused';
         });
     }
 

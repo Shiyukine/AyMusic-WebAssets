@@ -73,9 +73,23 @@ export default class ListenWindow extends HTMLElement {
                         {
                             if(e.origin.includes('` + origin + `'))
                             {
+                                if(typeof window.newMediaSession == 'undefined' || window.newMediaSession == null) {
+                                    try {
+                                        window.newMediaSession = navigator.mediaSession;
+                                        Object.defineProperty(navigator, 'mediaSession', {
+                                            value: Object.create(null), // Replaces it with an empty, useless object
+                                            configurable: false,
+                                            writable: false
+                                        });
+                                        console.log("MediaSession has been successfully blocked.");
+                                    } catch (e) {
+                                        console.error("Failed to block MediaSession:", e);
+                                    }
+                                }
+
                                 if(e.data.message == 'changeMediaMetadata')
                                 {
-                                    navigator.mediaSession.metadata = new window.MediaMetadata({
+                                    window.newMediaSession.metadata = new window.MediaMetadata({
                                         title: e.data.inData.title,
                                         artist: e.data.inData.artist,
                                         album: e.data.inData.album,
@@ -84,20 +98,22 @@ export default class ListenWindow extends HTMLElement {
                                 }
                                 if(e.data.message == 'changePositionState')
                                 {
-                                    navigator.mediaSession.setPositionState({
+                                    window.newMediaSession.setPositionState({
                                         playbackRate: e.data.inData.pR,
                                         position: e.data.inData.cur / 1000,
                                         duration: e.data.inData.dur / 1000
                                     });
+                                    if(e.data.inData.isPlaying) window.newMediaSession.playbackState = "playing";
+                                    else window.newMediaSession.playbackState = "paused";
                                 }
                                 if(e.data.message == 'setActionHandler')
                                 {
-                                    navigator.mediaSession.setActionHandler(e.data.inData.action, (event) => { 
+                                    window.newMediaSession.setActionHandler(e.data.inData.action, (event) => { 
                                         if(parent.parent) parent.parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, '` + origin + `')
                                         else parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, '` + origin + `')
                                     });
-                                    navigator.mediaSession.setActionHandler('seekbackward', null);
-                                    navigator.mediaSession.setActionHandler('seekforward', null);
+                                    window.newMediaSession.setActionHandler('seekbackward', null);
+                                    window.newMediaSession.setActionHandler('seekforward', null);
                                 }
                             }
                         })`)
@@ -264,7 +280,7 @@ export default class ListenWindow extends HTMLElement {
                         //navigator.mediaSession.setActionHandler('stop', () => { /* Code excerpted. */ });
                         navigator.mediaSession.setActionHandler('seekbackward', null);
                         navigator.mediaSession.setActionHandler('seekforward', null);
-                        navigator.mediaSession.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime) });
+                        navigator.mediaSession.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime * 1000) });
                     }
                     else {
                         if (!Utils.player.isLocalMusic) Utils.app.remoteClient.sessionChangePlaying(false)

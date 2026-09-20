@@ -345,7 +345,7 @@ export default class ListenViewerWindow extends HTMLElement {
                     gesture2.acceptGesture()
                 }
                 gesture2.addEventListener("bottom", quitViewer)
-                gesture2.addEventListener("top", quitViewer)
+                gesture2.blockSwipeFrom("bottom")
             }
         })
     }

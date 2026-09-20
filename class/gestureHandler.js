@@ -164,9 +164,10 @@ export default class GestureHandler {
             element.beingControlledByGesture = undefined;
         }
         element.addEventListener("click", callbackStop, true)
-        if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") element.addEventListener("touchend", callbackStop, true)
-        else window.addEventListener("pointerup", callbackStop, true)
+        window.addEventListener("touchend", callbackStop, true)
+        window.addEventListener("pointerup", callbackStop, true)
         element.addEventListener("mouseleave", callbackStop, true)
+        document.addEventListener("visibilitychange", callbackStop, true)
     }
 
     addEventListener(event, callback) {
