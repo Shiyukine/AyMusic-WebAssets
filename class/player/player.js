@@ -335,17 +335,7 @@ export default class Player {
 
         // Play the dummy track to explicitly request Control Center dominance
         await dummyPlayer.play();
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: "Waiting for song...",
-                artist: "AyMusic",
-                album: "Waiting for song...",
-                artwork: []
-            });
-            console.log("Carrier wave active. JS thread is now protected from iOS suspension.");
-        } else {
-            console.warn("Media Session API not supported on this device.");
-        }
+        console.log("Background keep-alive started");
         this.#eventEl.addEventListener("play", async () => {
             dummyPlayer.play();
             let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
