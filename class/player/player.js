@@ -30,6 +30,12 @@ export default class Player {
     songLoading = true;
 
     constructor() {
+        if ("audioSession" in navigator) {
+            // Set the audio session type for media playback
+            navigator.audioSession.type = "playback";
+            console.log("Audio session type set to 'playback'");
+        }
+
         window.addEventListener("message", (e) => {
             //console.log(e)
             if (e.data.id == this.currentWtId && e.data.message == "jseventcb") {
@@ -333,9 +339,12 @@ export default class Player {
         // https://github.com/anars/blank-audio/blob/master/1-hour-of-silence.mp3
         dummyPlayer.src = "/resources/1-hour-of-silence.mp3";
 
-        // Play the dummy track to explicitly request Control Center dominance
-        await dummyPlayer.play();
-        console.log("Background keep-alive started");
+        try {
+            await dummyPlayer.play();
+            console.log("Background keep-alive started");
+        } catch (error) {
+            console.error("Failed to start background keep-alive first time:", error);
+        }
         this.#eventEl.addEventListener("play", async () => {
             dummyPlayer.play();
             let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
