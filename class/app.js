@@ -74,13 +74,17 @@ export default class App {
                 }
                 this.remoteClient.changeSettingFile(JSON.stringify(this.settings))
                 this.#eventEl.dispatchEvent(new CustomEvent("loaded"));
+                return true;
             }
             catch (e) {
                 console.error(e)
+                this.registered = false;
+                return false;
             }
         }
         else {
             console.warn("Client already registred! Ignoring.")
+            return false;
         }
     }
 
