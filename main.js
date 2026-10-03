@@ -12,6 +12,7 @@ import ThemeColor from "./class/themeColor.js";
 import MusicViewerWindow from "./ui/windows/musicViewer/musicViewer.js";
 import TaskHandler from "./class/taskHandler.js";
 import PlatformHandler from "./class/player/platformHandler.js";
+import ImageCacheHandler from "./class/imageCacheHandler.js";
 
 async function main() {
     window.app = Utils.app;
@@ -35,28 +36,7 @@ async function main() {
     Utils.app.loaded = async function () {
         if (!window.loaded) {
             window.loaded = true;
-            try {
-                const registration = await navigator.serviceWorker.register("/sw.js", {
-                    scope: "/",
-                });
-                if (registration.installing) {
-                    console.log("Service worker installing");
-                } else if (registration.waiting) {
-                    console.log("Service worker installed");
-                } else if (registration.active) {
-                    console.log("Service worker active");
-                }
-                if (Utils.app.versionId != Utils.app.getSetting("serviceWorkerVersionCode")) {
-                    console.log("Service worker version changed, unregistering old service worker");
-                    await registration.unregister();
-                    await navigator.serviceWorker.register("/sw.js", {
-                        scope: "/",
-                    });
-                    Utils.app.changeSetting("serviceWorkerVersionCode", Utils.app.versionId);
-                }
-            } catch (error) {
-                console.error(`Registration failed with ${error}`);
-            }
+            await ImageCacheHandler.init()
             try {
                 console.log("AyMusic client registered: " + Utils.app.platform + ", version: " + Utils.app.versionName + " (" + Utils.app.versionId + "), isRelease: " + Utils.app.isRelease);
                 if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS") {
@@ -94,24 +74,6 @@ async function main() {
                     Utils.servURL = "https://192.168.0.33/";
                 await Utils.app.remoteClient.changeServURL(Utils.servURL)
                 console.log("Server URL: " + Utils.servURL);
-                navigator.serviceWorker.ready.then((registration) => {
-                    registration.active.postMessage({
-                        action: "excludeResource",
-                        url: Utils.servURL + "dl/",
-                        includes: true,
-                    });
-                    registration.active.postMessage({
-                        action: "excludeResource",
-                        url: Utils.servURL + "api/",
-                        includes: true,
-                    });
-                    registration.active.postMessage({
-                        action: "excludeResource",
-                        url: "google.com",
-                        includes: true,
-                    });
-                    Utils.postMessageSW = registration.active.postMessage.bind(registration.active);
-                });
                 //
                 PlatformHandler.init()
                 //
