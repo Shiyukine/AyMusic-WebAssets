@@ -1,3 +1,5 @@
+import ImageCacheHandler from "../imageCacheHandler.js"
+
 export default class Singer {
 
     id = ""
@@ -10,7 +12,7 @@ export default class Singer {
     constructor(id, name, imgUrl, singerUrl, dateAdded = 0, aliasName = "") {
         this.id = id;
         this.name = name ? name.trim() : name;
-        this.imgUrl = imgUrl;
+        this.imgUrl = ImageCacheHandler.getCacheForImageUrl(imgUrl);
         this.dateAdded = dateAdded;
         this.aliasName = aliasName ? aliasName.trim() : aliasName;
         this.singerUrl = singerUrl;

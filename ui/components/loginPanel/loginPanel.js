@@ -3,6 +3,7 @@ import Import from "../../../class/import.js";
 import Translations from "../../../class/translations.js";
 import ThemeColor from "../../../class/themeColor.js";
 import InfoPanel from "../../components/infoPanel/infoPanel.js";
+import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 
 export default class LoginPanel extends HTMLElement {
     /**
@@ -137,7 +138,7 @@ export default class LoginPanel extends HTMLElement {
                         id: value(3),
                         email: value(0),
                         apiKey: value(7),
-                        avatarUrl: Utils.servURL + "account/" + value(3) + "/pp.gif"
+                        avatarUrl: ImageCacheHandler.getCacheForImageUrl(Utils.servURL + "account/" + value(3) + "/pp.gif", isForModification == "modify")
                     }
                     if (isForModification == "modify") {
                         Utils.postMessageSW({

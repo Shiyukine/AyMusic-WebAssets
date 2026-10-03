@@ -1,3 +1,5 @@
+import ImageCacheHandler from "../imageCacheHandler.js"
+
 export default class Album {
 
     id = ""
@@ -11,7 +13,7 @@ export default class Album {
     constructor(id, name, singerID, type, imgUrl, albumUrl, datedAdded = 0) {
         this.id = id;
         this.name = name ? name.trim() : name;
-        this.imgUrl = imgUrl;
+        this.imgUrl = ImageCacheHandler.getCacheForImageUrl(imgUrl);
         this.singerID = singerID;
         this.type = type;
         this.dateAdded = datedAdded;

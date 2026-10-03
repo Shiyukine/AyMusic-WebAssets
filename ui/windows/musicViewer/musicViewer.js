@@ -11,6 +11,7 @@ import AlbumGrid from "../../components/albumGrid/albumGrid.js";
 import SongGrid from "../../components/songGrid/songGrid.js";
 import TextBox from "../../components/textBox/textBox.js";
 import GestureHandler from "../../../class/gestureHandler.js";
+import ImageCacheHandler from "../../../class/imageCacheHandler.js";
 
 export default class MusicViewerWindow extends HTMLElement {
     selectedIndex = 0;
@@ -295,7 +296,7 @@ export default class MusicViewerWindow extends HTMLElement {
                     this.offsetsSize = {};
                     this.shadowRoot.getElementById("title").innerText = info["playlistInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = "By " + info["playlistInfo"]["userID"]
-                    this.shadowRoot.getElementById("cover").src = info["playlistInfo"]["imgUrl"] != "" ? info["playlistInfo"]["imgUrl"] : "/resources/icon.ico"
+                    this.shadowRoot.getElementById("cover").src = info["playlistInfo"]["imgUrl"] != "" ? ImageCacheHandler.getCacheForImageUrl(info["playlistInfo"]["imgUrl"]) : "/resources/icon.ico"
                     let div = this.addList("{mv.musicInPl}", "songs_list")
                     this.translation.translateAll()
                     let songs = info["songs"]["songs"]
@@ -329,7 +330,7 @@ export default class MusicViewerWindow extends HTMLElement {
                     this.offsetsSize = {};
                     this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerHTML = "<span>{mv.by}</span> <span>" + info["albumInfo"]["singerID"] + "</span>"
-                    this.shadowRoot.getElementById("cover").src = info["albumInfo"]["imgUrl"] != "" ? info["albumInfo"]["imgUrl"] : "/resources/icon.ico"
+                    this.shadowRoot.getElementById("cover").src = info["playlistInfo"]["imgUrl"] != "" ? ImageCacheHandler.getCacheForImageUrl(info["playlistInfo"]["imgUrl"]) : "/resources/icon.ico"
                     let div = this.addList("{mv.songsInAlbum}", "album_songs_list")
                     this.translation.translateAll()
                     let songs = info["songs"]["songs"]
@@ -386,7 +387,7 @@ export default class MusicViewerWindow extends HTMLElement {
                     }
                     this.shadowRoot.getElementById("title").innerText = info["singerInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerText = info["singerInfo"]["aliasName"] && info["singerInfo"]["aliasName"] != "" ? info["singerInfo"]["aliasName"] : "{mv.artistSimple}"
-                    this.shadowRoot.getElementById("cover").src = info["singerInfo"]["imgUrl"] != "" ? info["singerInfo"]["imgUrl"] : "/resources/icon.ico"
+                    this.shadowRoot.getElementById("cover").src = info["singerInfo"]["imgUrl"] != "" ? ImageCacheHandler.getCacheForImageUrl(info["singerInfo"]["imgUrl"]) : "/resources/icon.ico"
                     let div = this.addList("{mv.latestArtistSongs}", "artist_songs_list", false)
                     let div2 = this.addList("{mv.albumsArtist}", "artist_albums_list", false)
                     this.translation.translateAll()
@@ -466,7 +467,7 @@ export default class MusicViewerWindow extends HTMLElement {
                             }
                             this.shadowRoot.getElementById("subtitle").appendChild(span2)
                         }
-                        this.shadowRoot.getElementById("cover").src = info["imgUrl"] != "" ? info["imgUrl"] : "/resources/icon.ico"
+                        this.shadowRoot.getElementById("cover").src = info["imgUrl"] != "" ? ImageCacheHandler.getCacheForImageUrl(info["imgUrl"]) : "/resources/icon.ico"
                     }
                     /**
                      * @type {TextBox}

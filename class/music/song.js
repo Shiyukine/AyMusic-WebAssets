@@ -1,5 +1,6 @@
 import LocalMusicHandler from "../utils/localMusicHandler.js"
 import Singer from "./singer.js"
+import ImageCacheHandler from "../imageCacheHandler.js"
 
 export default class Song {
 
@@ -34,7 +35,7 @@ export default class Song {
         this.url = url;
         this.positionOrDate = positionOrDate;
         this.title = title ? title.trim() : title;
-        this.imgUrl = imgUrl;
+        this.imgUrl = ImageCacheHandler.getCacheForImageUrl(imgUrl);
         this.time = time;
         this.isExplicit = isExplicit;
         this.addedBy = addedBy;

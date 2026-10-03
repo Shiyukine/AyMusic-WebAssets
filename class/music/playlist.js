@@ -1,3 +1,5 @@
+import ImageCacheHandler from "../imageCacheHandler.js"
+
 export default class Playlist {
 
     id = ""
@@ -14,7 +16,7 @@ export default class Playlist {
         this.name = name ? name.trim() : name;
         this.userID = userID;
         this.desc = desc;
-        this.imgUrl = imgUrl;
+        this.imgUrl = ImageCacheHandler.getCacheForImageUrl(imgUrl);
         this.isPrivate = isPrivate;
         this.rank = rank;
         this.dateAdded = dateAdded;
