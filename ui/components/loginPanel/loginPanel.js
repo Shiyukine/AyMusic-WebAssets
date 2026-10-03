@@ -2,6 +2,7 @@ import Utils from "../../../class/utils/utils.js";
 import Import from "../../../class/import.js";
 import Translations from "../../../class/translations.js";
 import ThemeColor from "../../../class/themeColor.js";
+import InfoPanel from "../../components/infoPanel/infoPanel.js";
 
 export default class LoginPanel extends HTMLElement {
     /**
@@ -169,7 +170,19 @@ export default class LoginPanel extends HTMLElement {
                     if (Utils.app.platform == "iOS") {
                         let testCookies = await this.#testiOSCookies()
                         if (!testCookies) {
-                            Utils.newError("Unable to access cookies", "Because of new iOS privacy restrictions, you need to allow cross-site tracking for AyMusic to be able to log in. Please go to Settings > Apps > AyMusic and enable 'Allow Cross-Site Tracking'.")
+                            let infoPanel = new InfoPanel("Cannot logging-in", "Because of new iOS privacy restrictions, you need to allow cross-site tracking for AyMusic to be able to log in. Please click on 'Open Settings', enable 'Allow Cross-Website Tracking', and go back to the app.",
+                                [
+                                    {
+                                        text: "Open Settings",
+                                        isPositive: true,
+                                        onclick: () => {
+                                            Utils.app.remoteClient.openLink("app-settings:")
+                                        }
+                                    },
+                                ]
+                            )
+                            infoPanel.showDialog()
+                            document.body.appendChild(infoPanel)
                         }
                     }
                 }
