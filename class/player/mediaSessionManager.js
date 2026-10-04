@@ -80,6 +80,15 @@ export default class MediaSessionManager {
             Utils.app.remoteClient.sessionChangeMediaMetadata(data.title, data.album, data.artist, data.artwork[0].src)
         }
         else {
+            if (data.artwork && data.artwork.length > 0 && !data.artwork[0].src.startsWith("http")) {
+                let blob = await (await fetch(data.artwork[0].src)).blob();
+                let dataUrl = await new Promise(resolve => {
+                    let reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(blob);
+                });
+                data.artwork[0].src = dataUrl;
+            }
             if (context.mainFrame) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: data.title,
