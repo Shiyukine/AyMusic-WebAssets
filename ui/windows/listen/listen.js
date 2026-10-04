@@ -161,6 +161,9 @@ export default class ListenWindow extends HTMLElement {
                         await Utils.player.play()
                         this.updateMediaSession("playbackState", true)
                     }
+                    setTimeout(() => {
+                        if (Utils.app.platform == "Android") MediaSessionManager.setPlaybackStatePlaying(true)
+                    }, 100)
                 })
                 Utils.player.onTimeUpdate(async () => {
                     let cur = await Utils.player.getCurrentTime()
