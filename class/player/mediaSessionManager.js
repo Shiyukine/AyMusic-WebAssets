@@ -109,7 +109,7 @@ export default class MediaSessionManager {
      */
     static async setPlaybackState(state, context = { mainFrame: true, subFrame: true }) {
         if (Utils.app.platform == "Android") {
-            Utils.app.remoteClient.sessionChangePositionState(state.cur, state.dur, state.pR, state.playing, state.shuffle, state.repeat)
+            Utils.app.remoteClient.sessionChangePositionState(state.position, state.duration, state.playbackRate, state.playing, state.shuffle, state.repeat)
         }
         else {
             if (context.mainFrame) {
