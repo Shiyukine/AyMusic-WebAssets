@@ -17,16 +17,10 @@ import LyricsViewerWindow from "../lyricsViewer/lyricsViewer.js";
 import QueueViewerWindow from "../queueViewer/queueViewer.js";
 import SettingsWindow from "../settings/settings.js";
 import GestureHandler from "../../../class/gestureHandler.js";
+import MediaSessionManager from "../../../class/player/mediaSessionManager.js";
+import DiscordRPCHandler from "../../../class/discordRPCHandler.js";
 
 export default class ListenWindow extends HTMLElement {
-    fakeMetadata = {
-        title: null,
-        artist: null,
-        album: null,
-        artwork: [
-            { src: null, sizes: '512x512', type: 'image/png' },
-        ]
-    }
     needRefreshTime = {
         time: - 1,
         songID: null
@@ -61,7 +55,6 @@ export default class ListenWindow extends HTMLElement {
                 this.shadowRoot.getElementById("listen").style = ""
                 let firstS = true;
                 Utils.player.onSongChange(async () => {
-                    this.clearUrls()
                     shadow.getElementById("changeState").children[1].classList.add("playSVG")
                     if (!Utils.player.isLocalMusic) {
                         let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
@@ -69,54 +62,7 @@ export default class ListenWindow extends HTMLElement {
                         if (Utils.app.platform == "Android") origin = "https://myapp"
                         let iframeUrl = "IframeUrlMediaSession"
                         if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") iframeUrl = "IframeUrlMediaSessionMobile"
-                        Utils.app.remoteClient.registerIframeUrl(await PlatformHandler.getPlatformUrl(platform, iframeUrl), `addEventListener('message', async (e) =>
-                        {
-                            if(e.origin.includes('` + origin + `'))
-                            {
-                                if(typeof window.newMediaSession == 'undefined' || window.newMediaSession == null) {
-                                    try {
-                                        window.newMediaSession = navigator.mediaSession;
-                                        Object.defineProperty(navigator, 'mediaSession', {
-                                            value: Object.create(null), // Replaces it with an empty, useless object
-                                            configurable: false,
-                                            writable: false
-                                        });
-                                        console.log("MediaSession has been successfully blocked.");
-                                    } catch (e) {
-                                        console.error("Failed to block MediaSession:", e);
-                                    }
-                                }
-
-                                if(e.data.message == 'changeMediaMetadata')
-                                {
-                                    window.newMediaSession.metadata = new window.MediaMetadata({
-                                        title: e.data.inData.title,
-                                        artist: e.data.inData.artist,
-                                        album: e.data.inData.album,
-                                        artwork: JSON.parse(e.data.inData.artwork)
-                                    });
-                                }
-                                if(e.data.message == 'changePositionState')
-                                {
-                                    window.newMediaSession.setPositionState({
-                                        playbackRate: e.data.inData.pR,
-                                        position: e.data.inData.cur / 1000,
-                                        duration: e.data.inData.dur / 1000
-                                    });
-                                    if(e.data.inData.isPlaying) window.newMediaSession.playbackState = "playing";
-                                    else window.newMediaSession.playbackState = "paused";
-                                }
-                                if(e.data.message == 'setActionHandler')
-                                {
-                                    window.newMediaSession.setActionHandler(e.data.inData.action, (event) => { 
-                                        if(parent.parent) parent.parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, '` + origin + `')
-                                        else parent.postMessage({message: 'setActionHandlerCB', action: e.data.inData.action, id: e.data.id, event: event}, '` + origin + `')
-                                    });
-                                    window.newMediaSession.setActionHandler('seekbackward', null);
-                                    window.newMediaSession.setActionHandler('seekforward', null);
-                                }
-                            }
-                        })`)
+                        MediaSessionManager.overrideMediaSessionTaskUrl(await PlatformHandler.getPlatformUrl(platform, iframeUrl))
                     }
                     shadow.getElementById("music_title").innerText = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
                     shadow.getElementById("music_artist").innerText = ""
@@ -168,123 +114,23 @@ export default class ListenWindow extends HTMLElement {
                     }
                     firstS = false
                     if (Utils.player.isLocalMusic) {
-                        if (Utils.queueManager.currentSong.canBeLoaded) {
-                            var imge = this.shadowRoot.getElementById("music_img");
-                            imge.onerror = () => {
-                                imge.src = "/resources/icon.ico"
-                            }
-                            imge.onload = async () => {
-                                let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
-                                for (let sing of Utils.queueManager.currentSong.additionalSingers) {
-                                    singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
-                                }
-                                if (Utils.app.platform != "Android") {
-                                    let blob = await (await fetch(imge.src)).blob();
-                                    let dataUrl = await new Promise(resolve => {
-                                        let reader = new FileReader();
-                                        reader.onload = () => resolve(reader.result);
-                                        reader.readAsDataURL(blob);
-                                    });
-                                    navigator.mediaSession.metadata = new window.MediaMetadata({
-                                        title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                        artist: singer,
-                                        album: Utils.queueManager.currentSong.albumName,
-                                        artwork: [
-                                            { src: dataUrl, sizes: '512x512', type: 'image/png' },
-                                        ]
-                                    });
-                                }
-                                else {
-                                    this.fakeMetadata = {
-                                        title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                        artist: singer,
-                                        album: Utils.queueManager.currentSong.albumName,
-                                        artwork: [
-                                            { src: imge.src, sizes: '512x512', type: 'image/png' },
-                                        ]
-                                    }
-                                    Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
-                                }
-                            }
-                            let imgU = "app://data"
-                            if (Utils.app.platform == "Android") imgU = "https://mydata";
-                            imge.src = imgU + "/Image/" + Utils.queueManager.currentSong.id + ".png"
+                        var imge = this.shadowRoot.getElementById("music_img");
+                        imge.onerror = () => {
+                            imge.src = "/resources/icon.ico"
                         }
-                        else {
-                            this.shadowRoot.getElementById("music_img").src = "/resources/icon.ico"
-                            let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
-                            for (let sing of Utils.queueManager.currentSong.additionalSingers) {
-                                singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
-                            }
-                            if (Utils.app.platform != "Android") {
-                                navigator.mediaSession.metadata = new window.MediaMetadata({
-                                    title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                    artist: singer,
-                                    album: Utils.queueManager.currentSong.albumName,
-                                    artwork: [
-                                        { src: "/resources/icon.ico", sizes: '512x512', type: 'image/png' },
-                                    ]
-                                });
-                            }
-                            else {
-                                this.fakeMetadata = {
-                                    title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                    artist: singer,
-                                    album: Utils.queueManager.currentSong.albumName,
-                                    artwork: [
-                                        { src: "/resources/icon.ico", sizes: '512x512', type: 'image/png' },
-                                    ]
-                                }
-                                Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
-                            }
+                        imge.onload = () => {
+                            this.updateMediaSession("metadata", true)
                         }
+                        let imgU = "app://data"
+                        if (Utils.app.platform == "Android") imgU = "https://mydata";
+                        imge.src = imgU + "/Image/" + Utils.queueManager.currentSong.id + ".png"
                     }
                     else {
                         this.shadowRoot.getElementById("music_img").src = Utils.queueManager.currentSong.imgUrl
-                        let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
-                        for (let sing of Utils.queueManager.currentSong.additionalSingers) {
-                            singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
-                        }
-                        if (Utils.app.platform != "Android") {
-                            navigator.mediaSession.metadata = new window.MediaMetadata({
-                                title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                artist: singer,
-                                album: Utils.queueManager.currentSong.albumName,
-                                artwork: [
-                                    { src: Utils.queueManager.currentSong.imgUrl, sizes: '512x512', type: 'image/png' },
-                                ]
-                            });
-                        }
-                        else {
-                            this.fakeMetadata = {
-                                title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                artist: singer,
-                                album: Utils.queueManager.currentSong.albumName,
-                                artwork: [
-                                    { src: Utils.queueManager.currentSong.imgUrl, sizes: '512x512', type: 'image/png' },
-                                ]
-                            }
-                            Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
-                        }
+                        this.updateMediaSession("metadata", true)
                     }
-                    if (Utils.app.platform != "Android") {
-                        navigator.mediaSession.playbackState = "paused";
-                        navigator.mediaSession.setActionHandler('previoustrack', Utils.queueManager.canPrevious() ? () => {
-                            Utils.player.previous()
-                        } : null);
-                        navigator.mediaSession.setActionHandler("nexttrack", Utils.queueManager.canNext() ? () => {
-                            Utils.player.next()
-                        } : null);
-                        navigator.mediaSession.setActionHandler('play', () => { Utils.player.play() });
-                        navigator.mediaSession.setActionHandler('pause', () => { Utils.player.pause() });
-                        //navigator.mediaSession.setActionHandler('stop', () => { /* Code excerpted. */ });
-                        navigator.mediaSession.setActionHandler('seekbackward', null);
-                        navigator.mediaSession.setActionHandler('seekforward', null);
-                        navigator.mediaSession.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime * 1000) });
-                    }
-                    else {
-                        if (!Utils.player.isLocalMusic) Utils.app.remoteClient.sessionChangePlaying(false)
-                    }
+                    MediaSessionManager.setPlaybackStatePlaying(false)
+                    this.updateMediaSession("actionHandler", true)
                 })
                 let firstPlay = true
                 Utils.player.onLoadedMetadata(async () => {
@@ -297,39 +143,23 @@ export default class ListenWindow extends HTMLElement {
                         shadow.getElementById("changeState").children[1].classList.remove("playSVG")
                         if (await Utils.player.getState()) {
                             shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
-                            if (Utils.app.platform != "Android") {
-                                navigator.mediaSession.playbackState = "playing";
-                            }
-                            else {
-                                Utils.app.remoteClient.sessionChangePlaying(true)
-                            }
+                            MediaSessionManager.setPlaybackStatePlaying(true)
                         }
                     }
-                    if (!Utils.player.isLocalMusic) {
-                        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                        this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                        this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                        this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
-                            pR: 1,
-                            cur: pb.getValue(),
-                            dur: pb.getMax(),
-                            isPlaying: await Utils.player.getState()
-                        })
-                    }
-                    else {
-                        if (Utils.app.platform == "Android") {
-                            Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
-                        }
-                    }
+                    this.updateMediaSession("metadata", true)
+                    this.updateMediaSession("actionHandler", true)
+                    this.updateMediaSession("playbackState", true)
                     if (firstPlay && Utils.queueManager.currentSong != null && !Utils.player.needPlay) {
                         await Utils.player.seek(Utils.libManager.userInfo.curTime)
+                        this.updateMediaSession("playbackState", true)
                         firstPlay = false
                     }
                     if (this.needRefreshTime.time != -1 && this.needRefreshTime.songID == Utils.queueManager.currentSong.id && this.needRefreshTime.time + 5000 < await Utils.player.getDuration()) {
                         await Utils.player.seek(this.needRefreshTime.time)
                         this.needRefreshTime.time = -1
                         this.needRefreshTime.songID = null
-                        Utils.player.play()
+                        await Utils.player.play()
+                        this.updateMediaSession("playbackState", true)
                     }
                 })
                 Utils.player.onTimeUpdate(async () => {
@@ -337,60 +167,25 @@ export default class ListenWindow extends HTMLElement {
                     if (!mouseDownPb) pb.changeValue(cur)
                     if (document.visibilityState == "visible")
                         shadow.getElementById("curTime").firstChild.textContent = Utils.msToTime(cur)
-                    if (cur <= pb.getMax()) {
-                        if (!Utils.player.isLocalMusic) {
-                            let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                            //this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                            //this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                            if (Utils.app.platform == "Android") {
-                                this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
-                                    pR: 1,
-                                    cur: cur,
-                                    dur: pb.getMax(),
-                                    isPlaying: await Utils.player.getState()
-                                })
-                            }
-                        }
-                        else {
-                            if (Utils.app.platform != "Android") {
-                                navigator.mediaSession.setPositionState({
-                                    playbackRate: 1,
-                                    position: cur / 1000,
-                                    duration: pb.getMax() / 1000
-                                });
-                            }
-                            else {
-                                let data = {
-                                    pR: 1,
-                                    cur: cur,
-                                    dur: pb.getMax(),
-                                    isPlaying: await Utils.player.getState()
-                                }
-                                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying, Utils.queueManager.shuffle, Utils.queueManager.repeat)
-                            }
-                        }
-                    }
                     if ((cur - Utils.queueManager.currentSong.cropStart) >= 0 && (cur - Utils.queueManager.currentSong.cropStart) < 1000 && await Utils.player.getState()) {
-                        this.updateDiscordRPC(pb, false)
+                        DiscordRPCHandler.updateDiscordRPC(pb, false)
                     }
                 })
                 let lastTime = /*await Utils.player.getCurrentTime()*/0;
-                if (!(Utils.app.platform == "Android" || Utils.app.platform == "iOS")) {
-                    setInterval(async () => {
-                        let cur = await Utils.player.getCurrentTime()
-                        if (cur != lastTime && await Utils.player.getDuration()) {
-                            Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
-                            Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
-                            await Utils.apiManager.doPostRequest({
-                                act: "updateUserInfo",
-                                curTime: cur,
-                                curMusic: Utils.libManager.userInfo.curMusic,
-                                curObject: Utils.libManager.userInfo.curObject
-                            })
-                            lastTime = cur
-                        }
-                    }, 15000)
-                }
+                setInterval(async () => {
+                    let cur = await Utils.player.getCurrentTime()
+                    if (cur != lastTime && await Utils.player.getDuration()) {
+                        Utils.libManager.userInfo.curObject = Utils.queueManager.currentObject.id
+                        Utils.libManager.userInfo.curMusic = "so_" + Utils.queueManager.currentSong.id
+                        await Utils.apiManager.doPostRequest({
+                            act: "updateUserInfo",
+                            curTime: cur,
+                            curMusic: Utils.libManager.userInfo.curMusic,
+                            curObject: Utils.libManager.userInfo.curObject
+                        })
+                        lastTime = cur
+                    }
+                }, 15000)
                 let mouseDownPb = false;
                 pb.onChanging(() => {
                     mouseDownPb = true;
@@ -398,7 +193,7 @@ export default class ListenWindow extends HTMLElement {
                 pb.onRelease(async () => {
                     mouseDownPb = false;
                     await Utils.player.seek(pb.getValue());
-                    this.updateDiscordRPC(pb, !await Utils.player.getState())
+                    DiscordRPCHandler.updateDiscordRPC(pb, !await Utils.player.getState())
                 })
                 Utils.musicViewer.onSongChange((e) => {
                     if (e.detail.objId.startsWith("so_") && Utils.queueManager.currentSong.id == e.detail.objId.replace("so_", "")) {
@@ -432,7 +227,10 @@ export default class ListenWindow extends HTMLElement {
                         document.title = shadow.getElementById("music_title").innerText + " • " + shadow.getElementById("music_artist").innerText.replace(" • ", ", ") + " - AyMusic"
                         Utils.queueManager.currentSong.cropStart = e.detail.cropStart
                         Utils.queueManager.currentSong.cropEnd = e.detail.cropEnd
-                        this.updateDiscordRPC(pb, true)
+                        DiscordRPCHandler.updateDiscordRPC(pb, true)
+                        this.updateMediaSession("metadata", true)
+                        this.updateMediaSession("actionHandler", true)
+                        this.updateMediaSession("playbackState", true)
                     }
                 })
                 Utils.player.onShuffleChange(async () => {
@@ -444,28 +242,9 @@ export default class ListenWindow extends HTMLElement {
                     }
                     shadow.getElementById("next").style.color = Utils.queueManager.canNext() ? "white" : "gray"
                     shadow.getElementById("previous").style.color = Utils.queueManager.canPrevious() ? "white" : "gray"
-                    if (Utils.app.platform != "Android") {
-                        navigator.mediaSession.setActionHandler('previoustrack', Utils.queueManager.canPrevious() ? () => {
-                            Utils.player.previous()
-                        } : null);
-                        navigator.mediaSession.setActionHandler("nexttrack", Utils.queueManager.canNext() ? () => {
-                            Utils.player.next()
-                        } : null);
-                    }
-                    else {
-                        const data = {
-                            pR: 1,
-                            cur: await Utils.player.getCurrentTime(),
-                            dur: pb.getMax(),
-                            isPlaying: await Utils.player.getState()
-                        }
-                        Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying, Utils.queueManager.shuffle, Utils.queueManager.repeat)
-                    }
                     Utils.app.changeSetting("shuffle", Utils.queueManager.shuffle)
-                    if (!Utils.player.isLocalMusic && Utils.queueManager.currentSong != null) {
-                        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                        this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                    }
+                    this.updateMediaSession("actionHandler")
+                    this.updateMediaSession("playbackState")
                 })
                 Utils.player.onRepeatChange(async () => {
                     if (Utils.queueManager.repeat == 0) {
@@ -482,95 +261,23 @@ export default class ListenWindow extends HTMLElement {
                     }
                     shadow.getElementById("next").style.color = Utils.queueManager.canNext() ? "white" : "gray"
                     shadow.getElementById("previous").style.color = Utils.queueManager.canPrevious() ? "white" : "gray"
-                    if (Utils.app.platform != "Android") {
-                        navigator.mediaSession.setActionHandler('previoustrack', Utils.queueManager.canPrevious() ? () => {
-                            Utils.player.previous()
-                        } : null);
-                        navigator.mediaSession.setActionHandler("nexttrack", Utils.queueManager.canNext() ? () => {
-                            Utils.player.next()
-                        } : null);
-                    }
-                    else {
-                        const data = {
-                            pR: 1,
-                            cur: await Utils.player.getCurrentTime(),
-                            dur: pb.getMax(),
-                            isPlaying: await Utils.player.getState()
-                        }
-                        Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying, Utils.queueManager.shuffle, Utils.queueManager.repeat)
-                    }
                     Utils.app.changeSetting("repeat", Utils.queueManager.repeat)
-                    if (!Utils.player.isLocalMusic && Utils.queueManager.currentSong != null) {
-                        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                        this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                    }
+                    this.updateMediaSession("actionHandler")
+                    this.updateMediaSession("playbackState")
                 })
                 Utils.player.onPlay(async () => {
                     shadow.getElementById("changeState").children[1].classList.remove("playSVG")
-                    let cur = await Utils.player.getCurrentTime()
-                    if (!Utils.player.isLocalMusic) {
-                        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                        this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                        this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                        this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
-                            pR: 1,
-                            cur: cur,
-                            dur: pb.getMax(),
-                            isPlaying: true
-                        })
-                    }
-                    else if (Utils.app.platform == "Android") {
-                        this.updateMediaSession("changeMediaMetadata", null, null)
-                        this.updateMediaSession("setActionHandler", null, null)
-                        this.updateMediaSession("changePositionState", null, {
-                            pR: 1,
-                            cur: cur,
-                            dur: pb.getMax(),
-                            isPlaying: true
-                        })
-                    }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Pause"])
-                    if (Utils.app.platform != "Android") {
-                        navigator.mediaSession.playbackState = "playing";
-                    }
-                    else {
-                        Utils.app.remoteClient.sessionChangePlaying(true)
-                    }
-                    this.updateDiscordRPC(pb, false)
+                    DiscordRPCHandler.updateDiscordRPC(pb, false)
+                    this.updateMediaSession("metadata")
+                    this.updateMediaSession("playbackState", true)
                 })
                 Utils.player.onPause(async () => {
                     shadow.getElementById("changeState").children[1].classList.remove("playSVG")
-                    let cur = await Utils.player.getCurrentTime()
-                    if (!Utils.player.isLocalMusic) {
-                        let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                        this.updateMediaSession("changeMediaMetadata", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                        this.updateMediaSession("setActionHandler", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), null)
-                        this.updateMediaSession("changePositionState", await PlatformHandler.getPlatformUrl(platform, "IframeUrlMediaSession"), {
-                            pR: 1,
-                            cur: cur,
-                            dur: pb.getMax(),
-                            isPlaying: false
-                        })
-                    }
-                    else if (Utils.app.platform == "Android") {
-                        this.updateMediaSession("changeMediaMetadata", null, null)
-                        this.updateMediaSession("setActionHandler", null, null)
-                        this.updateMediaSession("changePositionState", null, {
-                            pR: 1,
-                            cur: cur,
-                            dur: pb.getMax(),
-                            isPlaying: false
-                        })
-                    }
                     shadow.getElementById("changeState").children[0].setAttribute("d", Utils.pathsData["Play"])
-                    if (Utils.app.platform != "Android") {
-                        navigator.mediaSession.playbackState = "paused";
-                    }
-                    else {
-                        Utils.app.remoteClient.sessionChangePlaying(false)
-                    }
+                    this.updateMediaSession("playbackState", true)
                     if (pb.getValue() != pb.getMax()) {
-                        this.updateDiscordRPC(pb, true)
+                        DiscordRPCHandler.updateDiscordRPC(pb, true)
                     }
                 })
                 let anVol = 0;
@@ -934,27 +641,6 @@ export default class ListenWindow extends HTMLElement {
                         }
                     }
                 }
-                window.addEventListener("message", (e) => {
-                    //console.log(e)
-                    //console.log(e.data)
-                    if (e.data.message == "setActionHandlerCB") {
-                        if (e.data.action == "previoustrack") {
-                            Utils.player.previous()
-                        }
-                        if (e.data.action == "nexttrack") {
-                            Utils.player.next()
-                        }
-                        if (e.data.action == "play") {
-                            Utils.player.play()
-                        }
-                        if (e.data.action == "pause") {
-                            Utils.player.pause()
-                        }
-                        if (e.data.action == "seekto") {
-                            if (e.data.event.seekTime) Utils.player.seek(e.data.event.seekTime * 1000)
-                        }
-                    }
-                })
                 window.addEventListener("keydown", async (e) => {
                     if (e.key == " " && e.target == document.body && !e.repeat) {
                         if (await Utils.player.getState()) {
@@ -982,117 +668,49 @@ export default class ListenWindow extends HTMLElement {
         })
     }
 
-    urlsCreated = []
-
-    createObjURL(blob) {
-        let u = URL.createObjectURL(blob)
-        this.urlsCreated.push(u)
-    }
-
-    clearUrls() {
-        for (let url of this.urlsCreated) {
-            URL.revokeObjectURL(url)
+    async updateMediaSession(part, allContexts = false) {
+        let context = {
+            mainFrame: allContexts || Utils.queueManager.currentSong.imgUrl == "localImg",
+            subFrame: allContexts || Utils.queueManager.currentSong.imgUrl != "localImg"
         }
-    }
-
-    async updateMediaSession(part, url, data) {
-        if (Utils.app.platform != "Android") {
-            let platform = await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl);
-            let ifr = [frames[0]]
-            try {
-                ifr.push(frames[0].frames[0])
+        if (part == "metadata") {
+            let imgSrc = this.shadowRoot.getElementById("music_img").src
+            if (!Utils.queueManager.currentSong.canBeLoaded) imgSrc = "/resources/icon.ico"
+            let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
+            for (let sing of Utils.queueManager.currentSong.additionalSingers) {
+                singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
             }
-            catch { }
-            ifr.forEach(async (x) => {
-                if (typeof x != "undefined") {
-                    let targetOrigin = url;
-                    if (Utils.app.platform == "iOS") targetOrigin = "*";
-                    if (part == "changeMediaMetadata") {
-                        let dataUrl = "";
-                        if (navigator.mediaSession.metadata.artwork[0].src == "app://root/resources/icon.ico") {
-                            let blob = await (await fetch("app://root/resources/icon.ico")).blob();
-                            dataUrl = await new Promise(resolve => {
-                                let reader = new FileReader();
-                                reader.onload = () => resolve(reader.result);
-                                reader.readAsDataURL(blob);
-                            });
-                        }
-                        x.postMessage({
-                            message: part, inData: {
-                                title: navigator.mediaSession.metadata.title,
-                                album: navigator.mediaSession.metadata.album,
-                                artist: navigator.mediaSession.metadata.artist,
-                                artwork: JSON.stringify(navigator.mediaSession.metadata.artwork).split("app://root/resources/icon.ico").join(dataUrl),
-                            }, platform: platform
-                        }, targetOrigin)
-                    }
-                    if (part == "changePositionState") {
-                        x.postMessage({ message: part, inData: data, platform: platform }, targetOrigin)
-                    }
-                    if (part == "setActionHandler") {
-                        let id = Date.now() + (Math.random() + 1).toString(36).substring(7);
-                        if (Utils.queueManager.canPrevious()) x.postMessage({ message: part, inData: { action: "previoustrack" }, id: id, platform: platform }, targetOrigin)
-                        if (Utils.queueManager.canNext()) x.postMessage({ message: part, inData: { action: "nexttrack" }, id: id, platform: platform }, targetOrigin)
-                        x.postMessage({ message: part, inData: { action: "play" }, id: id, platform: platform }, targetOrigin)
-                        x.postMessage({ message: part, inData: { action: "pause" }, id: id, platform: platform }, targetOrigin)
-                        x.postMessage({ message: part, inData: { action: "seekto" }, id: id, platform: platform }, targetOrigin)
-                    }
-                }
-            })
+            MediaSessionManager.setMetadata({
+                title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
+                artist: singer,
+                album: Utils.queueManager.currentSong.albumName,
+                artwork: [
+                    { src: imgSrc, sizes: '512x512', type: 'image/png' },
+                ]
+            }, context);
         }
-        else {
-            if (part == "changeMediaMetadata") {
-                Utils.app.remoteClient.sessionChangeMediaMetadata(this.fakeMetadata.title, this.fakeMetadata.album, this.fakeMetadata.artist, this.fakeMetadata.artwork[0].src)
-            }
-            if (part == "changePositionState") {
-                Utils.app.remoteClient.sessionChangePositionState(data.cur, data.dur, data.pR, data.isPlaying, Utils.queueManager.shuffle, Utils.queueManager.repeat)
-            }
-            if (part == "setActionHandler") {
-
-            }
-            //Utils.app.remoteClient.setMediaSession()
+        else if (part == "playbackState") {
+            MediaSessionManager.setPlaybackState({
+                position: await Utils.player.getCurrentTime() / 1000,
+                duration: this.shadowRoot.getElementById("pb").getMax() / 1000,
+                playbackRate: 1,
+                playing: await Utils.player.getState(),
+                shuffle: Utils.queueManager.shuffle,
+                repeat: Utils.queueManager.repeat
+            }, context);
         }
-    }
-
-    async updateDiscordRPC(pb, setNothing = false) {
-        if (Utils.app.settings.gen_discordRPC) {
-            if (!setNothing) {
-                let buttons = []
-                if (!Utils.player.isLocalMusic) buttons.push({ label: "Listen this music", url: Utils.queueManager.currentSong.url })
-                buttons.push({ label: "Download AyMusic", url: Utils.realServURL + "projects/AyMusic.php" })
-                let plat = Utils.player.isLocalMusic ? "icon" : (await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)).toLowerCase()
-                let platName = Utils.player.isLocalMusic ? "their PC" : await PlatformHandler.getPlatformBySongUrl(Utils.player.currentSongUrl)
-                let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
-                for (let sing of Utils.queueManager.currentSong.additionalSingers) {
-                    singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
-                }
-                if (singer.length < 2) singer += "  ";
-                let title = Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title
-                if (title.length < 2) title += "  ";
-                let out = {
-                    details: "" + (title),
-                    state: "" + (singer),
-                    name: "AyMusic",
-                    //endTimestamp: Date.now() + ((Utils.queueManager.currentSong.cropEnd != -1 ? Utils.queueManager.currentSong.cropEnd : pb.getMax()) - pb.getValue()),
-                    assets: {
-                        large_image: Utils.queueManager.currentSong.imgUrl != "localImg" && Utils.queueManager.currentSong.imgUrl != "" ? Utils.queueManager.currentSong.imgUrl : "big_icon",
-                        large_text: "AyMusic by Aketsuky",
-                        small_image: plat,
-                        small_text: "Music from " + platName,
-                    },
-                    timestamps: {
-                        start: Date.now() + ((Utils.queueManager.currentSong.cropStart != -1 ? Utils.queueManager.currentSong.cropStart : 0) - pb.getValue()),
-                        end: Date.now() + ((Utils.queueManager.currentSong.cropEnd != -1 ? Utils.queueManager.currentSong.cropEnd : pb.getMax()) - pb.getValue())
-                    },
-                    type: 2,
-                    url: Utils.queueManager.currentSong.url
-                }
-                if (buttons.length > 0) out["buttons"] = buttons
-                Utils.app.remoteClient.discordRPC(out)
-            }
-            else {
-                Utils.app.remoteClient.discordRPC(null)
-            }
+        else if (part == "actionHandler") {
+            MediaSessionManager.setActionHandler('previoustrack', Utils.queueManager.canPrevious() ? () => {
+                Utils.player.previous()
+            } : null, context);
+            MediaSessionManager.setActionHandler("nexttrack", Utils.queueManager.canNext() ? () => {
+                Utils.player.next()
+            } : null, context);
+            MediaSessionManager.setActionHandler('play', () => { Utils.player.play() }, context);
+            MediaSessionManager.setActionHandler('pause', () => { Utils.player.pause() }, context);
+            MediaSessionManager.setActionHandler('seekbackward', null, context);
+            MediaSessionManager.setActionHandler('seekforward', null, context);
+            MediaSessionManager.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime * 1000) }, context);
         }
     }
 

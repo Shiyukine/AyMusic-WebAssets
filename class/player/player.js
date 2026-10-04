@@ -50,7 +50,6 @@ export default class Player {
                     this.changeVolume(this.volume)
                     if (this.needPlay) this.play()
                     else this.pause()
-                    //TaskHandler.executeJs(url, "async () => { navigator.mediaSession.metadata = " + navigator.mediaSession.metadata + " }")
                 }
             }
             if (e.data.id == this.currentWtId && e.data.message == "jseventcbdata") {
@@ -63,7 +62,6 @@ export default class Player {
                     this.changeVolume(this.volume)
                     if (this.needPlay) this.play()
                     else this.pause()
-                    //TaskHandler.executeJs(url, "async () => { navigator.mediaSession.metadata = " + navigator.mediaSession.metadata + " }")
                 }
                 this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb, { detail: e.data.data }));
             }
@@ -346,30 +344,8 @@ export default class Player {
             console.error("Failed to start background keep-alive first time:", error);
         }
         this.#eventEl.addEventListener("play", async () => {
-            dummyPlayer.play();
-            let singer = Utils.queueManager.currentSong.aliasSingerName != null ? Utils.queueManager.currentSong.aliasSingerName : Utils.queueManager.currentSong.singerName
-            for (let sing of Utils.queueManager.currentSong.additionalSingers) {
-                singer += ", " + (sing.aliasSingerName != null ? sing.aliasSingerName : sing.singerName)
-            }
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                artist: singer,
-                album: Utils.queueManager.currentSong.albumName,
-                artwork: [
-                    {
-                        src: Utils.queueManager.currentSong.imgUrl,
-                        sizes: "300x300",
-                        type: "image/jpeg"
-                    }
-                ]
-            });
-            let dur = await this.getDuration()
-            if (dur == -1) dur = parseFloat(Utils.queueManager.currentSong.time)
-            navigator.mediaSession.setPositionState({
-                duration: dur / 1000,
-                playbackRate: 1.0,
-                position: (await this.getCurrentTime()) / 1000
-            });
+            if (dummyPlayer.paused) dummyPlayer.play();
+            navigator.mediaSession.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime * 1000) });
         });
     }
 

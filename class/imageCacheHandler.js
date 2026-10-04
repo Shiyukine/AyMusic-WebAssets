@@ -51,7 +51,7 @@ export default class ImageCacheHandler {
     }
 
     static getCacheForImageUrl(url, renew = false) {
-        if (!url) return ""
+        if (!url) return "/resources/icon.ico";
 
         let origin = "app://cachenew"
 

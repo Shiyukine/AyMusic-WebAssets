@@ -35,7 +35,7 @@ export default class Song {
         this.url = url;
         this.positionOrDate = positionOrDate;
         this.title = title ? title.trim() : title;
-        this.imgUrl = ImageCacheHandler.getCacheForImageUrl(imgUrl);
+        this.imgUrl = imgUrl;
         this.time = time;
         this.isExplicit = isExplicit;
         this.addedBy = addedBy;
@@ -73,6 +73,9 @@ export default class Song {
                 //console.error("Unable to get local data for a song.")
                 this.canBeLoaded = false
             }
+        }
+        else {
+            this.imgUrl = ImageCacheHandler.getCacheForImageUrl(this.imgUrl)
         }
     }
 }
