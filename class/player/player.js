@@ -102,6 +102,7 @@ export default class Player {
         if (song.imgUrl == "localImg") {
             this.isLocalMusic = true;
             this.audioElement = new Audio()
+            if (play) this.audioElement.autoplay = true
             this.audioElement.onplay = () => {
                 this.state = true
                 this.#eventEl.dispatchEvent(new CustomEvent("play"));
@@ -125,8 +126,10 @@ export default class Player {
                 this.duration = this.audioElement.duration * 1000
                 this.#eventEl.dispatchEvent(new CustomEvent("loadedmetadata"));
                 this.audioElement.volume = this.volume / 100;
-                if (play) this.play()
-                else this.pause()
+                setTimeout(() => {
+                    if (play) this.play()
+                    else this.pause()
+                }, 100)
                 if (document.visibilityState == "hidden")
                     this.#eventEl.dispatchEvent(new CustomEvent("timeupdate"));
                 this.songLoading = false;

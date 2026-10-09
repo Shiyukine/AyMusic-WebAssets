@@ -80,6 +80,15 @@ export default class MediaSessionManager {
             Utils.app.remoteClient.sessionChangeMediaMetadata(data.title, data.album, data.artist, data.artwork[0].src)
         }
         else {
+            if (data.artwork && data.artwork.length > 0 && !data.artwork[0].src.startsWith("http")) {
+                let blob = await (await fetch(data.artwork[0].src)).blob();
+                let dataUrl = await new Promise(resolve => {
+                    let reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(blob);
+                });
+                data.artwork[0].src = dataUrl;
+            }
             if (context.mainFrame) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: data.title,
@@ -109,7 +118,7 @@ export default class MediaSessionManager {
      */
     static async setPlaybackState(state, context = { mainFrame: true, subFrame: true }) {
         if (Utils.app.platform == "Android") {
-            Utils.app.remoteClient.sessionChangePositionState(state.cur, state.dur, state.pR, state.playing, state.shuffle, state.repeat)
+            Utils.app.remoteClient.sessionChangePositionState(state.position, state.duration, state.playbackRate, state.playing, state.shuffle, state.repeat)
         }
         else {
             if (context.mainFrame) {
