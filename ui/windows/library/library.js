@@ -104,7 +104,7 @@ export default class LibraryWindow extends HTMLElement {
                                 await Utils.libManager.updatePlaylist(this.selectedPl.id, name.getText(), desc.getText(), imgUrl.getText(), isPriv.value === "1", 0)
                             }
                             this.refreshUserPlaylists()
-                            this.changeView(this.shadowRoot.getElementById("menu").children.length - 1)
+                            history.back()
                         }
                         else {
                             Utils.newError("Can't create a playlist", "Please don't put \"{\" or \"}\" in the name of this playlist.")

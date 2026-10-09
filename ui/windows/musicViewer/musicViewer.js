@@ -330,7 +330,7 @@ export default class MusicViewerWindow extends HTMLElement {
                     this.offsetsSize = {};
                     this.shadowRoot.getElementById("title").innerText = info["albumInfo"]["name"]
                     this.shadowRoot.getElementById("subtitle").innerHTML = "<span>{mv.by}</span> <span>" + info["albumInfo"]["singerID"] + "</span>"
-                    this.shadowRoot.getElementById("cover").src = info["playlistInfo"]["imgUrl"] != "" ? ImageCacheHandler.getCacheForImageUrl(info["playlistInfo"]["imgUrl"]) : "/resources/icon.ico"
+                    this.shadowRoot.getElementById("cover").src = info["albumInfo"]["imgUrl"] != "" ? ImageCacheHandler.getCacheForImageUrl(info["albumInfo"]["imgUrl"]) : "/resources/icon.ico"
                     let div = this.addList("{mv.songsInAlbum}", "album_songs_list")
                     this.translation.translateAll()
                     let songs = info["songs"]["songs"]
