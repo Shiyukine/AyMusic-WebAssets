@@ -88,9 +88,7 @@ export default class QueueViewerWindow extends HTMLElement {
                             history.back()
                         }
                         else {
-                            setTimeout(() => {
-                                this.hide()
-                            }, 300);
+                            this.hide()
                         }
                     }
                 }, { signal: this.abort.signal })
@@ -144,9 +142,13 @@ export default class QueueViewerWindow extends HTMLElement {
         this.style.transition = "0.3s"
         this.ontransitionend = () => {
             this.isClosed = true
-            this.clearAll()
+            // let the transition finish before clearing the content, otherwise the transition will be interrupted 
+            setTimeout(() => {
+                if (!this.isClosed) return
+                this.clearAll()
+                this.parentElement.removeChild(this)
+            }, 1000);
             this.ontransitionend = () => { }
-            this.parentElement.removeChild(this)
             this.abort.abort();
         }
         this.style.transform = "translateY(" + window.innerHeight + "px)"
