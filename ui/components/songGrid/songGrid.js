@@ -284,6 +284,14 @@ export default class SongGrid extends HTMLElement {
                                 }
                             }
                             cm.addSubContextMenu("{lib.addToPl}", cm2)
+                            if (this.song.imgUrl !== "localImg" && navigator.share) {
+                                cm.addElement("{lib.shareSong}", () => {
+                                    navigator.share({
+                                        title: this.song.aliasTitle != null ? this.song.aliasTitle : this.song.title,
+                                        url: this.song.url
+                                    })
+                                })
+                            }
                         }
                         if (this.isMySong()) {
                             this.shadowRoot.getElementById("title").style.color = "#00ccff"

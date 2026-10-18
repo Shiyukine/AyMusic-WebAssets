@@ -82,6 +82,7 @@
         "{lib.removeFromCurrentPl}": "Remove from the current playlist",
         "{lib.openLink}": "Open link in your browser",
         "{lib.modifySong}": "Modify this song",
+        "{lib.shareSong}": "Share",
         "{qv.curPlaying}": "Current song",
         "{qv.next}": "Next songs",
         "{qv.removeFromQueue}": "Remove from queue",

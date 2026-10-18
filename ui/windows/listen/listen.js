@@ -506,6 +506,14 @@ export default class ListenWindow extends HTMLElement {
                                 })
                             }
                         }
+                        if (Utils.queueManager.currentSong != null && Utils.queueManager.currentSong.imgUrl !== "localImg" && navigator.share) {
+                            cm.addElement("{lib.shareSong}", () => {
+                                navigator.share({
+                                    title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
+                                    url: Utils.queueManager.currentSong.url
+                                })
+                            })
+                        }
                     }
                     shadow.getElementById("menu").onclick = (e) => {
                         cm.show(e)
