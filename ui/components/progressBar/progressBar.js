@@ -1,6 +1,5 @@
 import Import from "../../../class/import.js";
 import ThemeColor from "../../../class/themeColor.js";
-import Translations from "../../../class/translations.js";
 import LocalMusicHandler from "../../../class/utils/localMusicHandler.js";
 import Utils from "../../../class/utils/utils.js";
 import * as id3 from "../../../plugins/id3/id3.js";
@@ -152,7 +151,6 @@ export default class ProgressBar extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this.translation.end()
         //this.controller.abort()
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.lastChild);
