@@ -209,8 +209,10 @@ export default class SettingsWindow extends HTMLElement {
                         btn1.onclick = async () => {
                             await Utils.app.remoteClient.openWebsiteInNewWindow(await PlatformHandler.getPlatformUrl(platform, "LogoutUrl"),
                                 await PlatformHandler.getPlatformUrl(platform, "LogoutUrlCallback"), (await PlatformHandler.getPlatformSettings(platform)).UseIncludeUrlFilter)
+                            let ok = false
                             let interv = setInterval(async () => {
-                                if ((await Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName)).length == 0) {
+                                if (!ok && (await Utils.app.remoteClient.haveCookie((await PlatformHandler.getPlatformSettings(platform)).CookieUrl, (await PlatformHandler.getPlatformSettings(platform)).CookieName)).length == 0) {
+                                    ok = true
                                     clearInterval(interv)
                                     this.refreshPlatformList()
                                 }
