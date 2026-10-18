@@ -24,7 +24,10 @@ export default class HomeWindow extends HTMLElement {
                 new ThemeColor(shadow.children[1])
                 this.style.opacity = "1"
                 Utils.libManager.refreshUserInfo(() => {
-                    this.refreshHome()
+                    try {
+                        this.refreshHome()
+                    }
+                    catch (e) { }
                 })
             }
         })
