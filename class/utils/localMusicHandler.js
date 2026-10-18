@@ -106,7 +106,7 @@ export default class LocalMusicHandler {
                 allMusics.push([result + "_" + Utils.actualAccount.id, tags != null && tags.title != null ? tags.title : null, "localImg", tags.duration])
                 if (tags != null && tags.image != null) {
                     let imgD = tags.image
-                    if (Utils.app.platform == "Android") {
+                    if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                         var bytes = new Uint8Array(tags.image);
                         imgD = []
                         for (let i = 0; i < bytes.byteLength; i++) {
@@ -132,10 +132,11 @@ export default class LocalMusicHandler {
                                 singerID: mi[0]
                             })
                             try {
+                                console.log(mi[2])
                                 await Utils.app.remoteClient.saveData("Image/" + musicID + ".png", mi[2])
                             }
                             catch (e) {
-
+                                console.error("Error saving image for musicID " + musicID + ": ", e)
                             }
                             isOk = isOk && await Utils.libManager.addObjToLikedSongs("so_" + musicID)
                             //avoid small ddos
