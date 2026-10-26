@@ -350,6 +350,7 @@ img:hover {
     transition: 0.3s;
     height: 0px;
     text-align: center;
+    position: relative;
 }
 
 #miniInfo.showInfo {
@@ -357,8 +358,9 @@ img:hover {
 }
 
 #miniInfo>p {
-    position: relative;
-    bottom: -40px;
+    position: absolute;
+    bottom: 18px;
+    width: 100%;
     margin: 0;
     /* left: 50%; */
     /* transform: translateX(-50%); */
@@ -368,5 +370,5 @@ img:hover {
 
 .infoShown {
     /*top: 40px !important;*/
-    height: calc(100% - 75px) !important;
+    height: calc(100% - 75px);
 }

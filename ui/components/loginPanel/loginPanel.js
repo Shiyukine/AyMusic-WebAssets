@@ -4,6 +4,7 @@ import Translations from "../../../class/translations.js";
 import ThemeColor from "../../../class/themeColor.js";
 import InfoPanel from "../../components/infoPanel/infoPanel.js";
 import ImageCacheHandler from "../../../class/imageCacheHandler.js";
+import TaskHandler from "../../../class/taskHandler.js";
 
 export default class LoginPanel extends HTMLElement {
     /**
@@ -25,6 +26,8 @@ export default class LoginPanel extends HTMLElement {
 
     isClosed = false;
     controller = new AbortController();
+
+    currentIntervalTestIframe = -1;
 
     #getIframeUrl = () => {
         let jsctrl = new AbortController();
@@ -188,9 +191,23 @@ export default class LoginPanel extends HTMLElement {
                     }
                 }
             }
-            setTimeout(() => {
-                if (!loaded && !this.isClosed) Utils.newError("Unable to reach the server :(", "The server is not accessible or there is an internal error when posting message to the iframe.")
-            }, 21500)
+            if (Utils.app.remoteClient.getIframeStatus) {
+                this.currentIntervalTestIframe = setInterval(async () => {
+                    if (!loaded && !this.isClosed) {
+                        if (Utils.app.remoteClient.getIframeStatus(this.#iframe.src) == 2 /*failed*/) {
+                            console.warn("Login iframe failed, reloading...")
+                            await TaskHandler.waitConnected()
+                            let currentSrc = this.#iframe.src
+                            this.#iframe.src = "about:blank"
+                            this.#iframe.src = currentSrc + "&date=" + Date.now().toString()
+                        }
+                    }
+                    else clearInterval(this.currentIntervalTestIframe)
+                }, 1000)
+            }
+            else {
+                console.warn("getIframeStatus not supported")
+            }
             if (isForModification == "" || isForModification == "refresh") {
                 this.#iframe.src = Utils.servURL + "login/?inapp=1&" + (Utils.app.platform == "Android" ? "injectscript=1" : "") + "&date=" + Date.now().toString()
             }

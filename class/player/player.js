@@ -214,6 +214,7 @@ export default class Player {
             if (!this.isLocalMusic) {
                 this.currentIntervalTestIframe = setInterval(async () => {
                     if (Utils.app.remoteClient.getIframeStatus(this.currentUrl) == 2 /*failed*/) {
+                        console.warn("Iframe failed, reloading...")
                         clearInterval(this.currentIntervalTestIframe)
                         await TaskHandler.waitConnected()
                         this.playSong(this.currentSong, this.needPlay)

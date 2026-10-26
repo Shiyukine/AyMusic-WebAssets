@@ -80,12 +80,16 @@ export default class Utils {
 
     static async showMiniError(miniErrorID, info, temp = false, colorBg = "", colorText = "") {
         console.error(info)
+        let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+        let height = Math.max(36, insets.top / devicePixelRatio) + 40;
         document.getElementById("miniInfoP").innerHTML = info
         document.getElementById("miniInfoP").style.color = colorText
         document.getElementById("miniInfo").style.backgroundColor = colorBg
         document.getElementById("miniInfo").classList.add("showInfo")
         document.getElementById("main").classList.add("infoShown")
-        document.getElementById("iframes").style.height = "calc(100% - 75px)"
+        document.getElementById("main").style.height = "calc(100% - " + height + "px)"
+        document.getElementById("iframes").style.height = "calc(100% - " + height + "px)"
+        document.getElementById("miniInfo").style.height = height + "px"
         document.getElementById("bgImgContainer").classList.add("infoShown")
         Utils.currentMiniErrorID = miniErrorID
         if (temp) {
@@ -103,6 +107,8 @@ export default class Utils {
                 document.getElementById("iframes").style.height = "calc(100% - 36px)"
                 document.getElementById("miniInfo").ontransitionend = () => { }
             }
+            document.getElementById("miniInfo").style.height = ""
+            document.getElementById("main").style.height = ""
             document.getElementById("miniInfo").classList.remove("showInfo")
             document.getElementById("main").classList.remove("infoShown")
             document.getElementById("bgImgContainer").classList.remove("infoShown")

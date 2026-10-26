@@ -388,7 +388,7 @@ img:hover {
 }
 
 #miniInfo.showInfo {
-    height: 75px;
+    height: 76px;
 }
 
 #miniInfo>p {
@@ -401,6 +401,6 @@ img:hover {
 }
 
 .infoShown {
-    top: 75px !important;
-    height: calc(100% - 75px) !important;
+    top: 76px;
+    height: calc(100% - 76px);
 }

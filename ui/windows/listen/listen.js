@@ -680,6 +680,7 @@ export default class ListenWindow extends HTMLElement {
     }
 
     async updateMediaSession(part, allContexts = false) {
+        if (!Utils.queueManager.currentSong) return;
         let context = {
             mainFrame: allContexts || Utils.queueManager.currentSong.imgUrl == "localImg",
             subFrame: allContexts || Utils.queueManager.currentSong.imgUrl != "localImg"
