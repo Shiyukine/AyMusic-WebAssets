@@ -67,6 +67,7 @@ async function main() {
                     await info.showDialog()
                 }
                 console.log("Getting server URL");
+                await TaskHandler.waitConnected()
                 Utils.realServURL = (await (await fetch("https://raw.githubusercontent.com/Shiyukine/Shiyukine/main/serv.txt")).text()).replace("\n", "");
                 if (Utils.app.isRelease)
                     Utils.servURL = Utils.realServURL;
