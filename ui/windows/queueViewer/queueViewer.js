@@ -36,6 +36,13 @@ export default class QueueViewerWindow extends HTMLElement {
             this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (200 - insets.bottom / devicePixelRatio) + "px" : "45px"
             this.style.transform = "translateY(" + window.innerHeight + "px)"
             shadow.innerHTML = html
+            let gesture2 = new GestureHandler(this, true, 100)
+            let quitViewer = () => {
+                gesture2.acceptGesture()
+                history.back()
+            }
+            gesture2.addEventListener("bottom", quitViewer)
+            gesture2.blockSwipeFrom("bottom")
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.translation = new Translations(shadow.children[1])
                 new ThemeColor(shadow.children[1])
@@ -54,13 +61,6 @@ export default class QueueViewerWindow extends HTMLElement {
                 Utils.player.onSongChange(() => {
                     this.refresh()
                 })
-                let gesture2 = new GestureHandler(this, true, 100)
-                let quitViewer = () => {
-                    gesture2.acceptGesture()
-                    history.back()
-                }
-                gesture2.addEventListener("bottom", quitViewer)
-                gesture2.blockSwipeFrom("bottom")
                 shadow.getElementById("scroll").addEventListener("scroll", () => {
                     if (shadow.getElementById("scroll").scrollTop > 0) gesture2.blockSwipeFrom("top")
                     else gesture2.dontBlockSwipeFrom("top")
@@ -77,13 +77,10 @@ export default class QueueViewerWindow extends HTMLElement {
                 shadow.getElementById("close").addEventListener("touchend", () => {
                     if (shadow.getElementById("scroll").scrollTop > 0) gesture2.blockSwipeFrom("top")
                 })
-                let mouseHover = false
-                this.addEventListener("pointerenter", () => mouseHover = true)
-                this.addEventListener("pointerleave", () => mouseHover = false)
                 window.addEventListener("pointerdown", (e) => {
                     var rect = e.target.getBoundingClientRect();
                     var y = rect.bottom - e.clientY
-                    if (!this.isClosed && !mouseHover && e.target != this && y >= 0) {
+                    if (!this.isClosed && e.target != this && y >= 0) {
                         if (e.target.tagName != 'CONTEXT-MENU') {
                             history.back()
                         }
