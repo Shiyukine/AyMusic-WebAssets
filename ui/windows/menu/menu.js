@@ -127,8 +127,16 @@ export default class MenuWindow extends HTMLElement {
                 winName = "{settings}"
             }
             awindow.classList.add("aWindow")
-            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-            awindow.style.paddingBottom = ((Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 155 : 0) + insets.bottom / devicePixelRatio) + "px";
+            let setInsets = async () => {
+                let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+                awindow.style.paddingBottom = ((Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 155 : 0) + insets.bottom / devicePixelRatio) + "px";
+                awindow.style.paddingRight = (insets.right / devicePixelRatio) + "px";
+                awindow.style.paddingLeft = (insets.left / devicePixelRatio) + "px";
+            }
+            setInsets()
+            window.addEventListener("resize", () => {
+                setInsets()
+            })
             if (Utils.app.platform == "Windows" || Utils.app.platform == "Linux" || Utils.app.platform == "MacOS") awindow.classList.add("windows")
             if (this.anWindow) {
                 let thisW = this.anWindow.win
