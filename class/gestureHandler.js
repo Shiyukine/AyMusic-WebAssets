@@ -163,7 +163,6 @@ export default class GestureHandler {
             }
             element.beingControlledByGesture = undefined;
         }
-        element.addEventListener("click", callbackStop, true)
         window.addEventListener("touchend", callbackStop, true)
         window.addEventListener("pointerup", callbackStop, true)
         element.addEventListener("mouseleave", callbackStop, true)

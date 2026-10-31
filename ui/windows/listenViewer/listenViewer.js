@@ -192,6 +192,26 @@ export default class ListenViewerWindow extends HTMLElement {
             Utils.player.onNotConnected(async () => {
                 shadow.getElementById("changeState").children[1].classList.add("playSVG")
             });
+            let gesture = new GestureHandler(shadow.querySelector("#left_scroll"), false, 90)
+            gesture.addEventListener("left", () => {
+                if (Utils.queueManager.canNext()) {
+                    Utils.player.next()
+                    gesture.acceptGesture()
+                }
+            })
+            gesture.addEventListener("right", () => {
+                if (Utils.queueManager.canPrevious()) {
+                    Utils.player.previous(true)
+                    gesture.acceptGesture()
+                }
+            })
+            let gesture2 = new GestureHandler(shadow.querySelector("#listen"), true, 100)
+            let quitViewer = () => {
+                history.back()
+                gesture2.acceptGesture()
+            }
+            gesture2.addEventListener("bottom", quitViewer)
+            gesture2.blockSwipeFrom("bottom")
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 this.shadowRoot.getElementById("listen").ontransitionend = () => { };
                 this.shadowRoot.getElementById("listen").style = ""
@@ -334,26 +354,6 @@ export default class ListenViewerWindow extends HTMLElement {
                 //changed child index 1 to 2 with bg !
                 this.translation = new Translations(shadow.children[2])
                 new ThemeColor(shadow.children[2])
-                let gesture = new GestureHandler(shadow.querySelector("#left_scroll"), false, 90)
-                gesture.addEventListener("left", () => {
-                    if (Utils.queueManager.canNext()) {
-                        Utils.player.next()
-                        gesture.acceptGesture()
-                    }
-                })
-                gesture.addEventListener("right", () => {
-                    if (Utils.queueManager.canPrevious()) {
-                        Utils.player.previous(true)
-                        gesture.acceptGesture()
-                    }
-                })
-                let gesture2 = new GestureHandler(shadow.querySelector("#listen"), true, 100)
-                let quitViewer = () => {
-                    history.back()
-                    gesture2.acceptGesture()
-                }
-                gesture2.addEventListener("bottom", quitViewer)
-                gesture2.blockSwipeFrom("bottom")
             }
         })
     }
