@@ -87,7 +87,7 @@
         "{qv.next}": "Next songs",
         "{qv.removeFromQueue}": "Remove from queue",
         "{musicViewer.title}": "View something",
-        "{listenViewer.title}": "Playing now",
+        "{listenViewer.title}": "Now Playing",
         "{lv.noData}": "No data for this song :(",
         "{lv.fetching}": "Fetching lyrics for this song.\nPlease wait...",
         "{lv.title}": "Lyrics - May not be to the right music",

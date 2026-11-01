@@ -2,6 +2,7 @@ import Import from "../../../class/import.js";
 import Album from "../../../class/music/album.js";
 import Singer from "../../../class/music/singer.js";
 import Song from "../../../class/music/song.js";
+import Playlist from "../../../class/music/playlist.js";
 import PlatformHandler from "../../../class/player/platformHandler.js";
 import TimerHandler from "../../../class/player/timerHandler.js";
 import ThemeColor from "../../../class/themeColor.js";
@@ -109,6 +110,29 @@ export default class ListenViewerWindow extends HTMLElement {
                 else {
                     this.shadowRoot.getElementById("music_img").src = Utils.queueManager.currentSong.imgUrl
                     this.shadowRoot.getElementById("bg").style.backgroundImage = "url(" + Utils.queueManager.currentSong.imgUrl + ")"
+                }
+                let curSongObj = Utils.queueManager.currentObject
+                let subtitle = this.shadowRoot.getElementById("subtitle")
+                let colon = this.shadowRoot.getElementById("colon")
+                if (curSongObj instanceof Album) {
+                    subtitle.textContent = curSongObj.name
+                    colon.textContent = ": "
+                }
+                else if (curSongObj instanceof Singer) {
+                    subtitle.textContent = curSongObj.name
+                    colon.textContent = ": "
+                }
+                else if (curSongObj instanceof Song) {
+                    subtitle.textContent = curSongObj.title
+                    colon.textContent = ": "
+                }
+                else if (curSongObj instanceof Playlist) {
+                    subtitle.textContent = curSongObj.name
+                    colon.textContent = ": "
+                }
+                else {
+                    subtitle.textContent = ""
+                    colon.textContent = ""
                 }
             })
             Utils.player.onLoadedMetadata(async () => {
