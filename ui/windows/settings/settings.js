@@ -23,7 +23,7 @@ export default class SettingsWindow extends HTMLElement {
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 let setInsets = async () => {
                     let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-                    let top = Math.max(36, insets.top / devicePixelRatio) - 20;
+                    let top = Math.max(Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 0 : 36, insets.top / devicePixelRatio) - 20;
                     shadow.querySelector(".settings").style.marginTop = (top) + "px";
                     shadow.querySelector(".settings").style.height = "calc(100% - " + (top - 20) + "px)";
                 }

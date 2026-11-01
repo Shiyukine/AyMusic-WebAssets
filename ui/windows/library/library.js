@@ -43,7 +43,7 @@ export default class LibraryWindow extends HTMLElement {
             this.shadowRoot.getElementById("cssImport").onload = async () => {
                 let setInsets = async () => {
                     let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-                    let top = Math.max(36, insets.top / devicePixelRatio) - 20;
+                    let top = Math.max(Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 0 : 36, insets.top / devicePixelRatio) - 20;
                     shadow.querySelector(".library").style.marginTop = (top) + "px";
                     if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") shadow.querySelector(".library").style.height = "calc(100% - " + (top) + "px)";
                     else shadow.querySelector(".library").style.height = "calc(100% - " + (top - 20) + "px)";

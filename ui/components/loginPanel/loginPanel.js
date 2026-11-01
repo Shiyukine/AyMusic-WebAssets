@@ -98,7 +98,7 @@ export default class LoginPanel extends HTMLElement {
                 let setInsets = async () => {
                     let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
                     if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-                        let top = Math.max(36, insets.top / devicePixelRatio);
+                        let top = Math.max(Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 0 : 36, insets.top / devicePixelRatio);
                         let right = Math.max(0, insets.right / devicePixelRatio);
                         let left = Math.max(0, insets.left / devicePixelRatio);
                         if (isForModification == "modify") {

@@ -89,7 +89,7 @@ export default class Utils {
         Utils.currentMiniErrorID = miniErrorID
         let setInsets = async () => {
             let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-            let height = Math.max(36, insets.top / devicePixelRatio) + 40;
+            let height = Math.max(Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 0 : 36, insets.top / devicePixelRatio) + 40;
             if (Utils.currentMiniErrorID == miniErrorID) {
                 document.getElementById("main").style.height = "calc(100% - " + height + "px)"
                 document.getElementById("iframes").style.height = "calc(100% - " + height + "px)"

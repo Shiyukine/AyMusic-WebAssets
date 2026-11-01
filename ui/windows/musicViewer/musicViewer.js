@@ -46,7 +46,7 @@ export default class MusicViewerWindow extends HTMLElement {
         Import.getData("/ui/windows/musicViewer/musicViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
             let setInsets = async () => {
                 let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-                let top = Math.max(36, insets.top / devicePixelRatio);
+                let top = Math.max(Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 0 : 36, insets.top / devicePixelRatio);
                 if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                     this.style.marginTop = "0px"
                     this.style.height = "calc(100% - 138px - " + insets.bottom / devicePixelRatio + "px)"

@@ -35,7 +35,7 @@ export default class ListenViewerWindow extends HTMLElement {
             shadow.innerHTML = html
             let setInsets = async () => {
                 let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-                let top = Math.max(36, insets.top / devicePixelRatio);
+                let top = Math.max(Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? 0 : 36, insets.top / devicePixelRatio);
                 shadow.querySelector("#topbar").style.top = (top) + "px";
             }
             setInsets();
