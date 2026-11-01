@@ -99,16 +99,22 @@ export default class LoginPanel extends HTMLElement {
                     let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
                     if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
                         let top = Math.max(36, insets.top / devicePixelRatio);
+                        let right = Math.max(0, insets.right / devicePixelRatio);
+                        let left = Math.max(0, insets.left / devicePixelRatio);
                         if (isForModification == "modify") {
                             this.shadowRoot.getElementById("topbar").style.visibility = "visible";
                             this.shadowRoot.getElementById("topbar").style.top = (top) + "px";
                             this.shadowRoot.getElementById("login").style.top = (top + 41 + 15) + "px";
                             this.shadowRoot.getElementById("login").style.height = "calc(100% - " + (top + 41 + 15) + "px - " + (insets.bottom / devicePixelRatio) + "px)";
+                            this.shadowRoot.getElementById("login").style.right = (right) + "px";
+                            this.shadowRoot.getElementById("login").style.width = "calc(100% - " + (right + left) + "px)";
                         }
                         else {
                             this.shadowRoot.getElementById("topbar").style.visibility = "collapse";
                             this.shadowRoot.getElementById("login").style.top = (top) + "px";
                             this.shadowRoot.getElementById("login").style.height = "calc(100% - " + (top) + "px - " + (insets.bottom / devicePixelRatio) + "px)";
+                            this.shadowRoot.getElementById("login").style.right = (right) + "px";
+                            this.shadowRoot.getElementById("login").style.width = "calc(100% - " + (right + left) + "px)";
                         }
                     }
                 }

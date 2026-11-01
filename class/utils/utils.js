@@ -97,7 +97,7 @@ export default class Utils {
             }
         }
         setInsets();
-        window.addEventListener("resize", setInsets, { signal: Utils.app.controller.signal });
+        window.addEventListener("resize", setInsets);
         if (temp) {
             setTimeout(() => {
                 Utils.hideMiniError(miniErrorID)
