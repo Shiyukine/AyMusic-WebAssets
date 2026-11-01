@@ -44,12 +44,16 @@ export default class ContextMenu extends HTMLElement {
                         : document.body.clientHeight - this.clientHeight - 10
                     if (Utils.currentMiniErrorID != -1) y -= 75
                     if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-                        let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-                        this.style.bottom = "0"
-                        this.shadowRoot.getElementById("main").style.bottom = (insets.bottom / devicePixelRatio) + "px"
-                        this.style.left = "0"
-                        this.style.right = "0"
-                        this.style.top = "0"
+                        let setInsets = async () => {
+                            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+                            this.style.bottom = "0"
+                            this.shadowRoot.getElementById("main").style.bottom = (insets.bottom / devicePixelRatio) + "px"
+                            this.style.left = "0"
+                            this.style.right = "0"
+                            this.style.top = "0"
+                        }
+                        setInsets();
+                        window.addEventListener("resize", setInsets, { signal: this.controller.signal })
                         this.style.zIndex = "9"
                         this.style.backdropFilter = "blur(20px)"
                     }

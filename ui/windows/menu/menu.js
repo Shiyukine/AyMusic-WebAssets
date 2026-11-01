@@ -31,8 +31,12 @@ export default class MenuWindow extends HTMLElement {
                     this.style.height = "100%";
                 }
                 if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-                    let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-                    this.shadowRoot.getElementById("main").style.height = (68 + insets.bottom / devicePixelRatio) + "px";
+                    let setInsets = async () => {
+                        let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+                        this.shadowRoot.getElementById("main").style.height = (68 + insets.bottom / devicePixelRatio) + "px";
+                    }
+                    setInsets();
+                    window.addEventListener("resize", setInsets)
                 }
                 this.style.position = "absolute";
                 this.style.opacity = "1"

@@ -32,8 +32,12 @@ export default class QueueViewerWindow extends HTMLElement {
         }
         if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") this.style.zIndex = "4"
         Import.getData("/ui/windows/queueViewer/queueViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
-            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-            this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (200 - insets.bottom / devicePixelRatio) + "px" : "45px"
+            let setInsets = async () => {
+                let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+                this.style.top = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (200 - insets.bottom / devicePixelRatio) + "px" : "45px"
+            }
+            setInsets();
+            window.addEventListener("resize", setInsets, { signal: this.abort.signal })
             this.style.transform = "translateY(" + window.innerHeight + "px)"
             shadow.innerHTML = html
             let gesture2 = new GestureHandler(this, true, 100)

@@ -44,16 +44,20 @@ export default class MusicViewerWindow extends HTMLElement {
         this.style.zIndex = "1"
         this.style.transition = "opacity 0.4s"
         Import.getData("/ui/windows/musicViewer/musicViewer" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
-            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-            let top = Math.max(36, insets.top / devicePixelRatio);
-            if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
-                this.style.marginTop = "0px"
-                this.style.height = "calc(100% - 138px - " + insets.bottom / devicePixelRatio + "px)"
+            let setInsets = async () => {
+                let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+                let top = Math.max(36, insets.top / devicePixelRatio);
+                if (Utils.app.platform == "Android" || Utils.app.platform == "iOS") {
+                    this.style.marginTop = "0px"
+                    this.style.height = "calc(100% - 138px - " + insets.bottom / devicePixelRatio + "px)"
+                }
+                else {
+                    this.style.marginTop = "0px"
+                    this.style.height = "calc(100% - 125px - " + insets.bottom / devicePixelRatio + "px)"
+                }
             }
-            else {
-                this.style.marginTop = "0px"
-                this.style.height = "calc(100% - 125px - " + insets.bottom / devicePixelRatio + "px)"
-            }
+            setInsets();
+            window.addEventListener("resize", setInsets, { signal: this.controller.signal })
             shadow.innerHTML = html
             if (shadow.querySelector("#topbar")) {
                 shadow.querySelector("#topbar").style.marginTop = (top) + "px";

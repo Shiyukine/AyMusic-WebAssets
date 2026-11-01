@@ -33,10 +33,14 @@ export default class ListenWindow extends HTMLElement {
         this.style.transition = "opacity 0.4s"
         this.style.position = "absolute"
         Import.getData("/ui/windows/listen/listen" + (Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? "_mobile" : "") + ".html").then(async (html) => {
-            let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
-            this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (78 + insets.bottom / devicePixelRatio) + "px" : "0"
-            this.style.left = "0"
-            this.style.right = "0"
+            let setInsets = async () => {
+                let insets = JSON.parse(await Utils.app.remoteClient.getWindowInsets());
+                this.style.bottom = Utils.app.platform == "Android" || Utils.app.platform == "iOS" ? (78 + insets.bottom / devicePixelRatio) + "px" : "0"
+                this.style.left = "0"
+                this.style.right = "0"
+            }
+            setInsets();
+            window.addEventListener("resize", setInsets)
             this.style.zIndex = "2"
             shadow.innerHTML = html
             this.shadowRoot.getElementById("cssImport").onload = async () => {
