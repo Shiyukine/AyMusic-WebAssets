@@ -55,15 +55,15 @@ export default class MusicViewerWindow extends HTMLElement {
                     this.style.marginTop = "0px"
                     this.style.height = "calc(100% - 125px - " + insets.bottom / devicePixelRatio + "px)"
                 }
+                if (shadow.querySelector("#topbar")) {
+                    shadow.querySelector("#topbar").style.marginTop = (top) + "px";
+                    shadow.querySelector("#list").style.height = "calc(100% - " + (211 - (40 - top)) + "px)"
+                    shadow.querySelector("#edit").style.height = "calc(100% - " + (211 - (40 - top)) + "px)"
+                }
             }
             setInsets();
             window.addEventListener("resize", setInsets, { signal: this.controller.signal })
             shadow.innerHTML = html
-            if (shadow.querySelector("#topbar")) {
-                shadow.querySelector("#topbar").style.marginTop = (top) + "px";
-                shadow.querySelector("#list").style.height = "calc(100% - " + (211 - (40 - top)) + "px)"
-                shadow.querySelector("#edit").style.height = "calc(100% - " + (211 - (40 - top)) + "px)"
-            }
             this.translation = new Translations(shadow.children[1])
             new ThemeColor(shadow.children[1])
             let gesture2 = null
