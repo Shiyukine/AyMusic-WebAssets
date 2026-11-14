@@ -510,12 +510,18 @@ export default class ListenWindow extends HTMLElement {
                                 })
                             }
                         }
-                        if (Utils.queueManager.currentSong != null && Utils.queueManager.currentSong.imgUrl !== "localImg" && navigator.share) {
+                        if (Utils.queueManager.currentSong != null && Utils.queueManager.currentSong.imgUrl !== "localImg") {
                             cm.addElement("{lib.shareSong}", () => {
-                                navigator.share({
-                                    title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
-                                    url: Utils.queueManager.currentSong.url
-                                })
+                                if (navigator.share) {
+                                    navigator.share({
+                                        title: Utils.queueManager.currentSong.aliasTitle != null ? Utils.queueManager.currentSong.aliasTitle : Utils.queueManager.currentSong.title,
+                                        url: Utils.queueManager.currentSong.url
+                                    })
+                                } else {
+                                    // copy to clipboard
+                                    navigator.clipboard.writeText(Utils.queueManager.currentSong.url)
+                                    Utils.showMiniError("share", "Copied to clipboard!", true, "rgb(0, 204, 255)", "#000")
+                                }
                             })
                         }
                     }

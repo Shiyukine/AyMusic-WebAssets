@@ -284,12 +284,19 @@ export default class SongGrid extends HTMLElement {
                                 }
                             }
                             cm.addSubContextMenu("{lib.addToPl}", cm2)
-                            if (this.song.imgUrl !== "localImg" && navigator.share) {
+                            if (this.song.imgUrl !== "localImg") {
                                 cm.addElement("{lib.shareSong}", () => {
-                                    navigator.share({
-                                        title: this.song.aliasTitle != null ? this.song.aliasTitle : this.song.title,
-                                        url: this.song.url
-                                    })
+                                    if (navigator.share) {
+                                        navigator.share({
+                                            title: this.song.aliasTitle != null ? this.song.aliasTitle : this.song.title,
+                                            url: this.song.url
+                                        })
+                                    }
+                                    else {
+                                        // copy to clipboard
+                                        navigator.clipboard.writeText(this.song.url)
+                                        Utils.showMiniError("share", "Copied to clipboard!", true, "rgb(0, 204, 255)", "#000")
+                                    }
                                 })
                             }
                         }
