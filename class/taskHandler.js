@@ -2,7 +2,7 @@ import Utils from "./utils/utils.js";
 
 export default class TaskHandler {
     /**
-     * @type {Object.<string, {url: string, script: string, stopTaskManually: boolean, callback: function, needDisplayNone: boolean, channel: string}>}
+     * @type {Object.<string, {url: string, script: string, stopTaskManually: boolean, callback: function, needDisplayNone: boolean, playJs: string, channel: string}>}
      */
     static wbs = {};
     static allowBgTask = true;
@@ -19,7 +19,7 @@ export default class TaskHandler {
         console.log("Adblock injecter loaded")
     }
 
-    static addTask(url, script, channel, displayFailError /*deprecated*/, stopTaskManually, callback, needDisplayNone = true) {
+    static addTask(url, script, channel, displayFailError /*deprecated*/, stopTaskManually, callback, needDisplayNone = true, playJs = "") {
         var wt = {
             id: Date.now() + (Math.random() + 1).toString(36).substring(7),
             url: url,
@@ -27,6 +27,7 @@ export default class TaskHandler {
             stopTaskManually: stopTaskManually,
             callback: callback,
             needDisplayNone: needDisplayNone,
+            playJs: playJs,
             channel: channel,
             taskAdded: false,
             event: new EventTarget()
@@ -56,6 +57,17 @@ export default class TaskHandler {
                 ` + wt.script.split("app://root").join(origin) + `;
             }
             let retData = null;
+            // iOS: WebKit refuses audible playback started without a user gesture while the page is hidden
+            // (background / Control Center). Native can call this inside this frame with a forced user gesture.
+            var playJs = ` + JSON.stringify((wt.playJs || "").split("app://root").join(origin)) + `;
+            window.__aymusicPlay = async () => {
+                if (!playJs) return "no play script";
+                try { await eval(playJs)(); return "ok"; }
+                catch (ex) { return "error: " + (ex && ex.name) + ": " + (ex && ex.message); }
+            };
+            if (platform == "iOS" && playJs && window.boundobject) {
+                window.boundobject.__manager.callNative('registerMediaFrame', { taskId: wtId, url: wtUrl });
+            }
             if(platform == "Android") {
                 try {
                     retData = await func()

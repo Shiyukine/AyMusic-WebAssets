@@ -28,6 +28,8 @@ export default class Player {
     state = null;
     currentIntervalTestIframe = -1;
     songLoading = true;
+    #keepAlive = null;
+    metadataLoaded = false;
 
     constructor() {
         if ("audioSession" in navigator) {
@@ -47,6 +49,7 @@ export default class Player {
                 }
                 this.#eventEl.dispatchEvent(new CustomEvent(e.data.cb));
                 if (e.data.cb == "loadedmetadata") {
+                    this.metadataLoaded = true
                     this.changeVolume(this.volume)
                     if (this.needPlay) this.play()
                     else this.pause()
@@ -58,6 +61,7 @@ export default class Player {
                     this.currentTime = e.data.data
                 }
                 if (e.data.cb == "loadedmetadata") {
+                    this.metadataLoaded = true
                     this.duration = e.data.data
                     this.changeVolume(this.volume)
                     if (this.needPlay) this.play()
@@ -76,6 +80,9 @@ export default class Player {
      */
     async playSong(song, play = true) {
         this.needPlay = play
+        // iOS: keep the SDK's priming blip of a restored song muted until the music is really started (see play())
+        if (Utils.app.platform == "iOS") Utils.app.remoteClient.setRestoreMute?.(!play)
+        this.metadataLoaded = false
         this.duration = -1
         this.currentTime = -1
         this.currentWtId = ""
@@ -123,6 +130,7 @@ export default class Player {
                 this.checkCropSong(this.audioElement.currentTime)
             }
             this.audioElement.onloadedmetadata = () => {
+                this.metadataLoaded = true
                 this.duration = this.audioElement.duration * 1000
                 this.#eventEl.dispatchEvent(new CustomEvent("loadedmetadata"));
                 this.audioElement.volume = this.volume / 100;
@@ -203,7 +211,8 @@ export default class Player {
             var wtId = TaskHandler.addTask(url, await (await fetch(await PlatformHandler.getPlatformUrl(platform, "ListenScript"))).text(), "playSong", true, true, (data, wi) => {
                 clearInterval(this.currentIntervalTestIframe)
                 this.songLoading = false;
-            }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying.includes(Utils.app.platform))
+            }, (await PlatformHandler.getPlatformSettings(platform)).NeedDisplayNoneWhenPlaying.includes(Utils.app.platform),
+                Utils.app.platform == "iOS" ? await PlatformHandler.getPlatformControl(platform, "Play") : "")
             this.currentWtId = wtId
             this.currentUrl = url
         }
@@ -302,6 +311,12 @@ export default class Player {
             this.audioElement.play()
         }
         else {
+            if (Utils.app.platform == "iOS") Utils.app.remoteClient.setRestoreMute?.(false)
+            // iOS, page hidden: a postMessage into the platform iframe carries no user gesture, so WebKit denies the
+            // audible play(). Let native run the play script inside that frame, where a gesture is forced.
+            if (Utils.app.platform == "iOS" && document.visibilityState != "visible" && Utils.app.remoteClient.playMediaFrame) {
+                if (await Utils.app.remoteClient.playMediaFrame(this.currentWtId) == "ok") return
+            }
             TaskHandler.executeJs(this.currentUrl, await PlatformHandler.getPlatformControl(this.currentPlatform, "Play"))
         }
     }
@@ -335,11 +350,49 @@ export default class Player {
         }
     }
 
+    /** Resume the silent keep-alive audio (WebKit pauses it on call / route-change interruptions). */
+    async ensureKeepAlive() {
+        const d = this.#keepAlive;
+        // paused=false is not enough: right after a background launch play() can be accepted while nothing loads
+        if (!d || (!d.paused && d.readyState >= 3)) return;
+        try {
+            await Promise.race([d.play(), new Promise(r => setTimeout(r, 6000))]);
+        } catch (error) {
+            console.error("Keep-alive play() failed:", error.name, error.message);
+        }
+    }
+
     async startBackgroundKeepAlive() {
         let dummyPlayer = new Audio();
         dummyPlayer.loop = true;
         // https://github.com/anars/blank-audio/blob/master/1-hour-of-silence.mp3
         dummyPlayer.src = "/resources/1-hour-of-silence.mp3";
+        this.#keepAlive = dummyPlayer;
+
+        // Called by native once the audio session is back
+        window.listeners.keepAlive = () => this.ensureKeepAlive();
+
+        // Tell native whether the page is producing audio, so it doesn't restart its own loop on top of it
+        let lastReported = null;
+        const webAudioActive = () => (!dummyPlayer.paused && dummyPlayer.readyState >= 3) || this.state === true;
+        const reportAudio = () => {
+            const active = webAudioActive();
+            if (active !== lastReported) {
+                lastReported = active;
+                Utils.app.remoteClient.setWebAudioPlaying?.(active);
+            }
+        };
+        window.__webAudioActive = webAudioActive;
+        this.#eventEl.addEventListener("play", reportAudio);
+        this.#eventEl.addEventListener("pause", reportAudio);
+        for (const ev of ["playing", "pause", "waiting", "stalled", "error", "emptied"]) {
+            dummyPlayer.addEventListener(ev, reportAudio);
+        }
+        // WebKit pauses this element on interruptions: bring it back, otherwise the web process gets suspended
+        dummyPlayer.addEventListener("pause", () => {
+            setTimeout(() => this.ensureKeepAlive(), 500);
+        });
+        document.addEventListener("visibilitychange", () => { this.ensureKeepAlive(); });
 
         try {
             await dummyPlayer.play();
@@ -348,7 +401,7 @@ export default class Player {
             console.error("Failed to start background keep-alive first time:", error);
         }
         this.#eventEl.addEventListener("play", async () => {
-            if (dummyPlayer.paused) dummyPlayer.play();
+            if (dummyPlayer.paused) this.ensureKeepAlive();
             navigator.mediaSession.setActionHandler('seekto', (e) => { if (e.seekTime) Utils.player.seek(e.seekTime * 1000) });
         });
     }

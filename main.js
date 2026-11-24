@@ -136,6 +136,22 @@ async function main() {
                     Utils.musicViewer = viewerWin
                     mainPanel.appendChild(menuWin);
                     mainPanel.appendChild(new ListenWindow())
+                    if (Utils.app.platform == "iOS") {
+                        // Called by native on Control Center play (possibly right after a relaunch in background):
+                        // wait for ListenWindow to restore the last song (paused at its saved position), then play
+                        window.listeners.resumePlayback = async () => {
+                            const sleep = (ms) => new Promise(r => setTimeout(r, ms))
+                            for (let i = 0; i < 150 && !(Utils.queueManager.currentSong && Utils.player.metadataLoaded); i++) await sleep(200)
+                            if (!Utils.queueManager.currentSong) return "no song to resume"
+                            await Utils.player.play()
+                            // Restored with autoplay=false, the Spotify SDK device may have no track to resume
+                            // ("no list was loaded"): if nothing plays shortly after, reload the song with autoplay
+                            await sleep(5000)
+                            if (Utils.player.state !== true) await Utils.player.playSong(Utils.queueManager.currentSong, true)
+                            return "play requested for " + Utils.queueManager.currentSong.title
+                        }
+                        if (Utils.app.remoteClient.notifyReady) Utils.app.remoteClient.notifyReady()
+                    }
                     if (Utils.app.settings.firstOpen) {
                         var info = new InfoPanel("Welcome to AyMusic!", "Hello! Thanks for testing our app.\n"
                             + "We would like to remind you that this app isn't in its release state. So, the Aketsuky Team can reset the database and it may have bugs in several features of AyMusic.\n"
